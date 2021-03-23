@@ -1,0 +1,39 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+/build
+/docs
+Noble2.0TestingGround/.vs/Noble2.0TestingGround/v16/.suo
+Noble2.0TestingGround/.vs/Noble2.0TestingGround/v16/Browse.VC.db
+Noble2.0TestingGround/.vs/Noble2.0TestingGround/v16/Browse.VC.opendb
+Noble2.0TestingGround/.vs/Noble2.0TestingGround/v16/ipch/AutoPCH/99860fa6343d008/MAIN.ipch

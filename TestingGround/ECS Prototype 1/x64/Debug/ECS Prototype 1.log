@@ -6,6 +6,8 @@ C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Proto
           ]
   Component.cpp
   System.cpp
+C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\System.cpp(3,1): warning C4356: 'SystemBase::self': static data member cannot be initialized via derived class
+C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\System.cpp(3,1): warning C4356: 'Component::componentSystem': static data member cannot be initialized via derived class
   main.cpp
   Generating Code...
   ECS Prototype 1.vcxproj -> C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\x64\Debug\ECS Prototype 1.exe

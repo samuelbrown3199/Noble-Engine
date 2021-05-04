@@ -1,14 +1,17 @@
 #pragma once
 #include <iostream>
 
+class SystemBase;
+
 struct Component
 {
 public:
+
+	static std::weak_ptr<SystemBase> componentSystem;
+
 	int entityID;
-	virtual void Test()
-	{
-		std::cout << "Component!" << std::endl;
-	}
+
+	static void AddToComponent(int ID);
 };
 
 struct Transform : public Component

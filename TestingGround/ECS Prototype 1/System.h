@@ -5,14 +5,23 @@
 #include "Application.h"
 #include "Component.h"
 
+#define SetupComponent(T, U) \
+std::weak_ptr<SystemBase> U::self; \
+std::weak_ptr<SystemBase> T::componentSystem; \
+
+
 class SystemBase
 {
 public:
+	static std::weak_ptr<SystemBase> self;
+
 	virtual void Update() = 0;
 	virtual void Render() = 0;
 
 	virtual void OnUpdate() {};
 	virtual void OnRender() {};
+
+	virtual void AddComponent(int ID) = 0;
 };
 
 template<typename T>
@@ -20,6 +29,11 @@ class System : public SystemBase
 {
 public:
 	std::vector<T> componentData;
+
+	static void InitializeSystem()
+	{
+		T::componentSystem = self;
+	}
 
 	void AddComponent(int ID)
 	{
@@ -52,8 +66,8 @@ public:
 		}
 	}
 
-	virtual void OnUpdate(T* comp) = 0;
-	virtual void OnRender(T* comp) = 0;
+	virtual void OnUpdate(T* comp) {};
+	virtual void OnRender(T* comp) {};
 };
 
 class TransformSystem : public System<Transform>
@@ -61,13 +75,6 @@ class TransformSystem : public System<Transform>
 	void OnUpdate(Transform* comp)
 	{
 		comp->x++;
-		std::cout << "Transform component count: " << componentData.size() << std::endl;
-		std::cout << "Transform Update! X: " << comp->x << std::endl;
-	}
-
-	void OnRender(Transform* comp)
-	{
-		std::cout << "Transform Render!" << std::endl;
 	}
 };
 

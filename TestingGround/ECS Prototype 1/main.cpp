@@ -5,10 +5,14 @@ int main()
 {
 	Application app;
 	app.InitializeApplication();
-	app.CreateEntity();
 	
 	std::shared_ptr<TransformSystem> ts = app.BindSystem<TransformSystem>();
-	ts->AddComponent(app.entities.at(0));
+
+	for (int i = 0; i < 100; i++)
+	{
+		app.CreateEntity();
+		Transform::AddToComponent(app.entities.at(i));
+	}
 
 	app.MainLoop();
 	return 0;

@@ -38,6 +38,8 @@ public:
 		}
 
 		std::shared_ptr<T> system = std::make_shared<T>();
+		system->self = system;
+		system->InitializeSystem();
 		systems.push_back(system);
 		return system;
 	}

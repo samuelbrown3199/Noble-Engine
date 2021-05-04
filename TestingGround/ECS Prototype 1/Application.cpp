@@ -1,9 +1,10 @@
 #include "Application.h"
 #include "System.h"
+#include "Entity.h"
 
 #include <iostream>
 
-std::vector<int> Application::entities;
+std::vector<Entity> Application::entities;
 std::vector<std::shared_ptr<SystemBase>> Application::systems;
 
 void Application::InitializeApplication()

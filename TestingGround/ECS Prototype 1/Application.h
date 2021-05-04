@@ -6,7 +6,10 @@
 #include <vector>
 #include <memory>
 
+#include "Entity.h"
+
 class SystemBase;
+
 
 class Application
 {
@@ -14,7 +17,7 @@ private:
 
 public:
 
-	static std::vector<int> entities;
+	static std::vector<Entity> entities;
 	static std::vector<std::shared_ptr<SystemBase>> systems;
 
 	static void InitializeApplication();

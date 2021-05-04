@@ -1,13 +1,10 @@
 ﻿  Application.cpp
-C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\Application.cpp(16,36): warning C4267: 'argument': conversion from 'size_t' to '_Ty', possible loss of data
-          with
-          [
-              _Ty=int
-          ]
+C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\Application.cpp(17,36): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   Component.cpp
+  main.cpp
   System.cpp
 C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\System.cpp(3,1): warning C4356: 'SystemBase::self': static data member cannot be initialized via derived class
 C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\System.cpp(3,1): warning C4356: 'Component::componentSystem': static data member cannot be initialized via derived class
-  main.cpp
+C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\ECS Prototype 1\System.cpp(3,1): warning C4356: 'System<Transform>::componentData': static data member cannot be initialized via derived class
   Generating Code...
   ECS Prototype 1.vcxproj -> C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-2\TestingGround\x64\Debug\ECS Prototype 1.exe

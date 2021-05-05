@@ -12,9 +12,10 @@ void Application::InitializeApplication()
 	std::cout << "Initializing Engine!" << std::endl;
 }
 
-void Application::CreateEntity()
+Entity* Application::CreateEntity()
 {
 	entities.push_back(entities.size());
+	return &entities.at(entities.size()-1);
 }
 
 void Application::MainLoop()

@@ -9,11 +9,11 @@ int main()
 	
 	std::shared_ptr<TransformSystem> ts = app.BindSystem<TransformSystem>();
 
-	int amount = 100;
+	int amount = 100000;
 	for (int i = 0; i < amount; i++)
 	{
-		app.CreateEntity();
-		Transform::AddToEntity(app.entities.at(i).entityID);
+		Entity* temp = app.CreateEntity();
+		temp->AddComponent<Transform>();
 	}
 	std::cout << "Created " << amount << " components." << std::endl;
 

@@ -22,7 +22,7 @@ public:
 
 	static void InitializeApplication();
 
-	void CreateEntity();
+	Entity* CreateEntity();
 
 	void MainLoop();
 

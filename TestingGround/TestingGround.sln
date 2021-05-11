@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataSaving", "DataSaving\Da
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECS Prototype 1", "ECS Prototype 1\ECS Prototype 1.vcxproj", "{77272A0C-8958-4D4F-B2F1-9B0F73860F8C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vulkan", "Vulkan\Vulkan.vcxproj", "{03F9AF2D-313D-47B9-B989-F3B76535F2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{77272A0C-8958-4D4F-B2F1-9B0F73860F8C}.Release|x64.Build.0 = Release|x64
 		{77272A0C-8958-4D4F-B2F1-9B0F73860F8C}.Release|x86.ActiveCfg = Release|Win32
 		{77272A0C-8958-4D4F-B2F1-9B0F73860F8C}.Release|x86.Build.0 = Release|Win32
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Debug|x64.ActiveCfg = Debug|x64
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Debug|x64.Build.0 = Debug|x64
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Debug|x86.ActiveCfg = Debug|Win32
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Debug|x86.Build.0 = Debug|Win32
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Release|x64.ActiveCfg = Release|x64
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Release|x64.Build.0 = Release|x64
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Release|x86.ActiveCfg = Release|Win32
+		{03F9AF2D-313D-47B9-B989-F3B76535F2DB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

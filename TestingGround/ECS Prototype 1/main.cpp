@@ -9,15 +9,16 @@ int main()
 	
 	std::shared_ptr<TransformSystem> ts = app.BindSystem<TransformSystem>();
 
-	int amount = 100000;
+	int amount = 10000;
+	Entity* temp;
 	for (int i = 0; i < amount; i++)
 	{
-		Entity* temp = app.CreateEntity();
+		temp = app.CreateEntity();
 		temp->AddComponent<Transform>();
 	}
 	std::cout << "Created " << amount << " components." << std::endl;
 
-	Transform* transform = Application::entities.at(0).GetComponent<Transform, TransformSystem>();
+	Transform* transform = temp->GetComponent<Transform, TransformSystem>();
 	if (transform != nullptr)
 	{
 		std::cout << "Entity contains transform!" << std::endl;

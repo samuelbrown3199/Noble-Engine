@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "Component.h"
 
+//avoid using this in actual engine library compile so intel compiler can be used. Seems like its something to do with some inheritance
 #define SetupComponent(T, U) \
 std::weak_ptr<SystemBase> U::self; \
 std::weak_ptr<SystemBase> T::componentSystem; \

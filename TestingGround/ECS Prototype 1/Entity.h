@@ -13,7 +13,7 @@ public:
 	template<typename T>
 	void AddComponent()
 	{
-		T::AddToEntity(entityID); 
+		T::AddToEntity(entityID);
 	}
 
 	template<typename T, typename U>
@@ -26,4 +26,3 @@ public:
 };
 
 #endif
-

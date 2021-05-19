@@ -1,15 +1,13 @@
 #include "Application.h"
 #include "InputManager.h"
 
-#include <iostream>
-
 namespace NobleCore
 {
 	bool Application::loop = true;
 	std::weak_ptr<Application> Application::self;
 	std::shared_ptr<Screen> Application::screen;
 
-	std::shared_ptr<Application> Application::InitializeEngine()
+	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
 	{
 		std::shared_ptr<Application> app = std::make_shared<Application>();
 		Application::self = app;
@@ -19,7 +17,7 @@ namespace NobleCore
 			std::cout << "Failed to initialize SDL!" << std::endl;
 			throw std::exception();
 		}
-		Application::screen = std::make_shared<Screen>("temp", 500, 500);
+		Application::screen = std::make_shared<Screen>(_windowName, _windowWidth, _windowHeight);
 
 		return app;
 	}
@@ -30,6 +28,7 @@ namespace NobleCore
 		{
 			//frame start
 			InputManager::HandleGeneralInput();
+			Screen::UpdateScreenSize();
 
 			//update
 

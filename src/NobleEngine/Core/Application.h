@@ -1,6 +1,8 @@
 #include "Screen.h"
 
+#include <iostream>
 #include <memory>
+#include <string>
 #include <exception>
 
 #include <SDL/SDL.h>
@@ -31,7 +33,7 @@ namespace NobleCore
 		/**
 		*Initializes the engine.
 		*/
-		static std::shared_ptr<Application> InitializeEngine();
+		static std::shared_ptr<Application> InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight);
 		/**
 		*The main engine loop.
 		*/

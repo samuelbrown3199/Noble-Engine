@@ -22,6 +22,15 @@ namespace NobleCore
 		}
 	}
 
+	void Screen::UpdateScreenSize()
+	{
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+
+		screenWidth = w;
+		screenHeight = h;
+	}
+
 	void Screen::SetWindowFullScreen(Uint32 _flags)
 	{
 		SDL_SetWindowFullscreen(window, _flags);
@@ -35,5 +44,10 @@ namespace NobleCore
 	int Screen::GetScreenHeight()
 	{
 		return screenHeight;
+	}
+
+	SDL_Window* Screen::GetWindow()
+	{
+		return window;
 	}
 }

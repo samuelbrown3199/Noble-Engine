@@ -30,8 +30,12 @@ namespace NobleCore
 		*/
 		Screen(std::string _windowName, int _width, int _height);
 		/**
+		*Updates the screen size.
+		*/
+		static void UpdateScreenSize();
+		/**
 		*This is used to set the window in and out of full screen. 
-		*Flags SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FULLSCREEN_DESKTOP or 0.
+		*Flags SDL_WINDOW_FULLSCREEN, SDL_WINDOW_FULLSCREEN_DESKTOP or 0 for Windowed Mode.
 		*/
 		static void SetWindowFullScreen(Uint32 _flags);
 		/**
@@ -42,5 +46,9 @@ namespace NobleCore
 		*Returns the screen height.
 		*/
 		static int GetScreenHeight();
+		/**
+		*Returns the SDL window pointer.
+		*/
+		static SDL_Window* GetWindow();
 	};
 }

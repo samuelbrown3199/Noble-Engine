@@ -19,8 +19,15 @@ if(MSVC)
 endif()
 
 add_definitions(-DSDL_MAIN_HANDLED)
-add_library(NobleEngine STATIC
-	src/NobleEngine/temp.cpp
+add_library(NobleEngine
+	src/NobleEngine/Core/Application.h
+	src/NobleEngine/Core/Application.cpp
+	
+	src/NobleEngine/Core/Screen.h
+	src/NobleEngine/Core/Screen.cpp
+
+	src/NobleEngine/Core/InputManager.h
+	src/NobleEngine/Core/InputManager.cpp
 )
 target_link_libraries(NobleEngine SDL2 openal32)
 

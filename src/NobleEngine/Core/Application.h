@@ -1,15 +1,21 @@
 #include "Screen.h"
 #include "AudioManager.h"
+#include "../ECS/Entity.h"
+#include "../ECS/System.h"
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <exception>
+#include <vector>
 
 #include <SDL/SDL.h>
 
 namespace NobleCore
 {
+	struct SystemBase;
+	struct Entity;
+
 	/**
 	*Stores core information and handles the main loop.
 	*/
@@ -34,6 +40,14 @@ namespace NobleCore
 		*Stores the applications audio systems.
 		*/
 		static std::shared_ptr<AudioManager> audioManager;
+		/**
+		*Stores the current entities from the loaded scene.
+		*/
+		static std::vector<Entity> entities;
+		/**
+		*Stores the engines component systems.
+		*/
+		static std::vector<std::shared_ptr<SystemBase>> componentSystems;
 	public:
 		/**
 		*Initializes the engine.
@@ -43,5 +57,32 @@ namespace NobleCore
 		*The main engine loop.
 		*/
 		static void MainEngineLoop();
+		/**
+		*Creates and returns an entity.
+		*/
+		static 	Entity* CreateEntity();
+		/**
+		*Creates and binds the system of type T.
+		*/
+		template<typename T>
+		std::shared_ptr<T> BindSystem()
+		{
+			std::shared_ptr<T> temp;
+			for (size_t sys = 0; sys < systems.size(); sys++)
+			{
+				temp = std::dynamic_pointer_cast<T>(systems.at(sys));
+				if (temp)
+				{
+					std::cout << "System is already bound!!" << std::endl;
+					return temp;
+				}
+			}
+
+			std::shared_ptr<T> system = std::make_shared<T>();
+			system->self = system;
+			system->InitializeSystem();
+			systems.push_back(system);
+			return system;
+		}
 	};
 }

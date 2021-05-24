@@ -20,6 +20,8 @@ endif()
 
 add_definitions(-DSDL_MAIN_HANDLED)
 add_library(NobleEngine
+
+#Noble Core
 	src/NobleEngine/Core/Application.h
 	src/NobleEngine/Core/Application.cpp
 	
@@ -31,6 +33,17 @@ add_library(NobleEngine
 
 	src/NobleEngine/Core/InputManager.h
 	src/NobleEngine/Core/InputManager.cpp
+
+#Noble ECS
+
+	src/NobleEngine/ECS/Entity.h
+	src/NobleEngine/ECS/Entity.cpp
+
+	src/NobleEngine/ECS/Component.h
+	src/NobleEngine/ECS/Component.cpp
+
+	src/NobleEngine/ECS/System.h
+	src/NobleEngine/ECS/System.cpp
 )
 target_link_libraries(NobleEngine SDL2 openal32)
 

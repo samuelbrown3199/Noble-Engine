@@ -8,6 +8,9 @@ namespace NobleCore
 	std::shared_ptr<Screen> Application::screen; 
 	std::shared_ptr<AudioManager> Application::audioManager;
 
+	std::vector<Entity> Application::entities;
+	std::vector<std::shared_ptr<SystemBase>> Application::componentSystems;
+
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
 	{
 		std::shared_ptr<Application> app = std::make_shared<Application>();
@@ -39,5 +42,11 @@ namespace NobleCore
 			//frame cleanup
 			InputManager::ClearFrameInputs();
 		}
+	}
+
+	Entity* Application::CreateEntity()
+	{
+		entities.push_back(entities.size());
+		return &entities.at(entities.size() - 1);
 	}
 }

@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "AudioManager.h"
 
 #include <iostream>
 #include <memory>
@@ -29,6 +30,10 @@ namespace NobleCore
 		*Stores the application screen information.
 		*/
 		static std::shared_ptr<Screen> screen;
+		/**
+		*Stores the applications audio systems.
+		*/
+		static std::shared_ptr<AudioManager> audioManager;
 	public:
 		/**
 		*Initializes the engine.

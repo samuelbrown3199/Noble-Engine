@@ -9,7 +9,7 @@
 #define SetupComponent(T, U) \
 std::weak_ptr<SystemBase> U::self; \
 std::weak_ptr<SystemBase> T::componentSystem; \
-std::vector<T> U::componentData; \
+std::vector<T> T::componentData; \
 
 
 class SystemBase
@@ -27,7 +27,6 @@ template<typename T>
 class System : public SystemBase
 {
 public:
-	static std::vector<T> componentData;
 
 	static void InitializeSystem()
 	{
@@ -42,19 +41,7 @@ public:
 			{
 				T comp;
 				comp.entityID = ID;
-				componentData.push_back(comp);
-				break;
-			}
-		}
-	}
-
-	static void GetComponent(T** _output, int ID)
-	{
-		for (int i = 0; i < componentData.size(); i++)
-		{
-			if (componentData.at(i).entityID == ID)
-			{
-				*_output = &componentData.at(i);
+				T::componentData.push_back(comp);
 				break;
 			}
 		}
@@ -62,16 +49,16 @@ public:
 
 	void Update()
 	{
-		for (int i = 0; i < componentData.size(); i++)
+		for (int i = 0; i < T::componentData.size(); i++)
 		{
-			OnUpdate(&componentData.at(i));
+			OnUpdate(&T::componentData.at(i));
 		}
 	}
 	void Render()
 	{
-		for (int i = 0; i < componentData.size(); i++)
+		for (int i = 0; i < T::componentData.size(); i++)
 		{
-			OnRender(&componentData.at(i));
+			OnRender(&T::componentData.at(i));
 		}
 	}
 

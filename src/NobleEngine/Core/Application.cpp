@@ -5,7 +5,8 @@ namespace NobleCore
 {
 	bool Application::loop = true;
 	std::weak_ptr<Application> Application::self;
-	std::shared_ptr<Screen> Application::screen;
+	std::shared_ptr<Screen> Application::screen; 
+	std::shared_ptr<AudioManager> Application::audioManager;
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
 	{
@@ -18,6 +19,7 @@ namespace NobleCore
 			throw std::exception();
 		}
 		Application::screen = std::make_shared<Screen>(_windowName, _windowWidth, _windowHeight);
+		Application::audioManager = std::make_shared<AudioManager>();
 
 		return app;
 	}

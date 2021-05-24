@@ -18,7 +18,7 @@ int main()
 	}
 	std::cout << "Created " << amount << " components." << std::endl;
 
-	Transform* transform = temp->GetComponent<Transform, TransformSystem>();
+	Transform* transform = temp->GetComponent<Transform>();
 	if (transform != nullptr)
 	{
 		std::cout << "Entity contains transform!" << std::endl;

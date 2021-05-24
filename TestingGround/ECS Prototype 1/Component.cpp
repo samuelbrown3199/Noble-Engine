@@ -2,7 +2,7 @@
 
 #include "System.h"
 
-void Component::AddToEntity(int ID)
+void ComponentBase::AddToEntity(int ID)
 {
 	componentSystem.lock()->AddComponent(ID);
 }

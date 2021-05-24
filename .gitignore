@@ -29,5 +29,9 @@
 *.out
 *.app
 
+/TestingGround/.vs
 /build
 /docs
+*.db-shm
+*.db-wal
+*.db

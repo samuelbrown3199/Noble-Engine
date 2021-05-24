@@ -16,11 +16,10 @@ public:
 		T::AddToEntity(entityID);
 	}
 
-	template<typename T, typename U>
+	template<typename T>
 	T* GetComponent()
 	{
-		T* temp = nullptr;
-		U::GetComponent(&temp, entityID);
+		T* temp = T::GetComponent(entityID);
 		return temp;
 	}
 };

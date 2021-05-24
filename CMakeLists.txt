@@ -26,6 +26,9 @@ add_library(NobleEngine
 	src/NobleEngine/Core/Screen.h
 	src/NobleEngine/Core/Screen.cpp
 
+	src/NobleEngine/Core/AudioManager.h
+	src/NobleEngine/Core/AudioManager.cpp
+
 	src/NobleEngine/Core/InputManager.h
 	src/NobleEngine/Core/InputManager.cpp
 )

@@ -18,8 +18,6 @@ namespace NobleCore
 
 		virtual void Update() = 0;
 		virtual void Render() = 0;
-
-		virtual void AddComponent(int ID) = 0;
 	};
 
 	template<typename T>
@@ -35,22 +33,6 @@ namespace NobleCore
 		static void InitializeSystem()
 		{
 			T::componentSystem = self;
-		}
-		/**
-		*Used to add the component data to the component list.
-		*/
-		void AddComponent(int ID)
-		{
-			for (int i = 0; i < Application::entities.size(); i++)
-			{
-				if (Application::entities.at(i).entityID == ID)
-				{
-					T comp;
-					comp.entityID = ID;
-					T::componentData.push_back(comp);
-					break;
-				}
-			}
 		}
 		/**
 		*Loops through the component data and updates them.

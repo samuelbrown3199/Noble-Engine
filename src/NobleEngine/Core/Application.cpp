@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "InputManager.h"
 
+#include "../Components/TransformSystem.hpp"
+
 namespace NobleCore
 {
 	bool Application::loop = true;
@@ -10,6 +12,11 @@ namespace NobleCore
 
 	std::vector<Entity> Application::entities;
 	std::vector<std::shared_ptr<SystemBase>> Application::componentSystems;
+
+	void Application::BindCoreSystems()
+	{
+		BindSystem<TransformSystem>();
+	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
 	{
@@ -23,6 +30,7 @@ namespace NobleCore
 		}
 		Application::screen = std::make_shared<Screen>(_windowName, _windowWidth, _windowHeight);
 		Application::audioManager = std::make_shared<AudioManager>();
+		Application::BindCoreSystems();
 
 		return app;
 	}
@@ -36,9 +44,15 @@ namespace NobleCore
 			Screen::UpdateScreenSize();
 
 			//update
-
+			for (int i = 0; i < componentSystems.size(); i++)
+			{
+				componentSystems.at(i)->Update();
+			}
 			//render
-
+			for (int i = 0; i < componentSystems.size(); i++)
+			{
+				componentSystems.at(i)->Render();
+			}
 			//frame cleanup
 			InputManager::ClearFrameInputs();
 		}

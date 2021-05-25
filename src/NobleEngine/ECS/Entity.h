@@ -23,11 +23,26 @@ namespace NobleCore
 		*Adds a component of the type to the Entity.
 		*/
 		template<typename T>
-		void AddComponent()
+		T* AddComponent()
 		{
-			T::AddToEntity(entityID);
-		}
+			T comp;
+			comp.entityID = entityID;
+			T::componentData.push_back(comp);
 
+			return &T::componentData.at(T::componentData.size()-1);
+		}
+		/**
+		*Adds a component of the type to the Entity.
+		*/
+		template <typename T, typename ... Args>
+		T* AddComponent(Args&&... _args)
+		{
+			T comp(std::forward<Args>(_args)...);
+			comp.entityID = entityID;
+			T::componentData.push_back(comp);
+
+			return &T::componentData.at(T::componentData.size()-1);
+		}
 		/**
 		*Gets a component of the type from the Entity.
 		*/

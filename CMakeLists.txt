@@ -44,6 +44,11 @@ add_library(NobleEngine
 
 	src/NobleEngine/ECS/System.h
 	src/NobleEngine/ECS/System.cpp
+
+#Noble Components
+
+	src/NobleEngine/Components/Transform.hpp
+	src/NobleEngine/Components/TransformSystem.hpp
 )
 target_link_libraries(NobleEngine SDL2 openal32)
 

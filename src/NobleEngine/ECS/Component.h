@@ -22,11 +22,6 @@ namespace NobleCore
 		*Stores a weak pointer to the system that handles this component type.
 		*/
 		static std::weak_ptr<SystemBase> componentSystem;
-
-		/**
-		*Adds the component to the entity at _ID.
-		*/
-		static void AddToEntity(unsigned int _ID);
 	};
 
 	/**

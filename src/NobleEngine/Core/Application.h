@@ -41,14 +41,21 @@ namespace NobleCore
 		*/
 		static std::shared_ptr<AudioManager> audioManager;
 		/**
-		*Stores the current entities from the loaded scene.
-		*/
-		static std::vector<Entity> entities;
-		/**
 		*Stores the engines component systems.
 		*/
 		static std::vector<std::shared_ptr<SystemBase>> componentSystems;
+
+		/**
+		*Binds the core engine systems.
+		*/
+		static void BindCoreSystems();
 	public:
+
+		/**
+		*Stores the current entities from the loaded scene.
+		*/
+		static std::vector<Entity> entities;
+
 		/**
 		*Initializes the engine.
 		*/
@@ -65,12 +72,12 @@ namespace NobleCore
 		*Creates and binds the system of type T.
 		*/
 		template<typename T>
-		std::shared_ptr<T> BindSystem()
+		static std::shared_ptr<T> BindSystem()
 		{
 			std::shared_ptr<T> temp;
-			for (size_t sys = 0; sys < systems.size(); sys++)
+			for (size_t sys = 0; sys < componentSystems.size(); sys++)
 			{
-				temp = std::dynamic_pointer_cast<T>(systems.at(sys));
+				temp = std::dynamic_pointer_cast<T>(componentSystems.at(sys));
 				if (temp)
 				{
 					std::cout << "System is already bound!!" << std::endl;
@@ -81,7 +88,7 @@ namespace NobleCore
 			std::shared_ptr<T> system = std::make_shared<T>();
 			system->self = system;
 			system->InitializeSystem();
-			systems.push_back(system);
+			componentSystems.push_back(system);
 			return system;
 		}
 	};

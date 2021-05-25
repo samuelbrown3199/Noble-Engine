@@ -17,7 +17,10 @@ namespace NobleCore
 		/**
 		*Constructor for the Entity.
 		*/
-		Entity(unsigned int _ID);
+		Entity(unsigned int _ID)
+		{
+			entityID = _ID;
+		}
 
 		/**
 		*Adds a component of the type to the Entity.

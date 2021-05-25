@@ -1,4 +1,8 @@
-#include "../ECS/Component.h"
+#pragma once
+#ifndef TRANSFORM_H_
+#define TRANSFORM_H_
+
+#include "../ECS/Component.hpp"
 
 #include <glm/glm.hpp>
 
@@ -9,10 +13,10 @@ namespace NobleComponents
 	*/
 	struct Transform : public NobleCore::ComponentData<Transform>
 	{
-	private:
-		glm::mat4 modelMat(glm::mat4());
-
 	public:
+
+		glm::mat4 modelMat;
+
 		/**
 		*Stores the position of the transform.
 		*/
@@ -64,3 +68,5 @@ namespace NobleComponents
 		}
 	};
 }
+
+#endif

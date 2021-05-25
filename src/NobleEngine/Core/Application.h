@@ -1,7 +1,7 @@
 #include "Screen.h"
 #include "AudioManager.h"
-#include "../ECS/Entity.h"
-#include "../ECS/System.h"
+#include "../ECS/Entity.hpp"
+#include "../ECS/System.hpp"
 
 #include <iostream>
 #include <memory>

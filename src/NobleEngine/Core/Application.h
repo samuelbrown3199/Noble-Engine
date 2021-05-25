@@ -67,7 +67,11 @@ namespace NobleCore
 		/**
 		*Creates and returns an entity.
 		*/
-		static 	Entity* CreateEntity();
+		static Entity* CreateEntity();
+		/**
+		*Finds and returns the entity with entityID of parameter _ID.
+		*/
+		static Entity* GetEntity(unsigned int _ID);
 		/**
 		*Creates and binds the system of type T.
 		*/

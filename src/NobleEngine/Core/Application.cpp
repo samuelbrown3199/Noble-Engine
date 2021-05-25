@@ -63,4 +63,17 @@ namespace NobleCore
 		entities.push_back(entities.size());
 		return &entities.at(entities.size() - 1);
 	}
+
+	Entity* Application::GetEntity(unsigned int _ID)
+	{
+		for (int i = 0; i < entities.size(); i++)
+		{
+			if (entities.at(i).entityID == _ID)
+			{
+				return &entities.at(i);
+			}
+		}
+
+		return nullptr;
+	}
 }

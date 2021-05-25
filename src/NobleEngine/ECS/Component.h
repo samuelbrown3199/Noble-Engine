@@ -10,10 +10,16 @@ namespace NobleCore
 	struct SystemBase;
 
 	/**
-	*The base struct for the component part of the ECS.
+	*The parent struct of all component types. Create your own component types by inheriting from this, for example struct Transform : public ComponentData<Transform>.
 	*/
-	struct ComponentBase
+	template<typename T>
+	struct ComponentData
 	{
+		friend struct Entity;
+		/**
+		*Stores the full list of the component types data.
+		*/
+		static std::vector<T> componentData;
 		/**
 		*Stores the entity ID for the entity this component belongs to.
 		*/
@@ -22,15 +28,8 @@ namespace NobleCore
 		*Stores a weak pointer to the system that handles this component type.
 		*/
 		static std::weak_ptr<SystemBase> componentSystem;
-	};
 
-	/**
-	*The parent struct of all component types.
-	*/
-	template<typename T>
-	struct ComponentData : public ComponentBase
-	{
-		static std::vector<T> componentData;
+	private:
 
 		static T* GetComponent(int _ID)
 		{

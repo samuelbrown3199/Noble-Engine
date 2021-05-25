@@ -25,11 +25,16 @@ namespace NobleCore
 		template<typename T>
 		T* AddComponent()
 		{
-			T comp;
-			comp.entityID = entityID;
-			T::componentData.push_back(comp);
+			T* alreadyHasComponent = GetComponent<T>();
+			if (!alreadyHasComponent)
+			{
+				T comp;
+				comp.entityID = entityID;
+				T::componentData.push_back(comp);
 
-			return &T::componentData.at(T::componentData.size()-1);
+				return &T::componentData.at(T::componentData.size() - 1);
+			}
+			return alreadyHasComponent;
 		}
 		/**
 		*Adds a component of the type to the Entity.
@@ -37,11 +42,16 @@ namespace NobleCore
 		template <typename T, typename ... Args>
 		T* AddComponent(Args&&... _args)
 		{
-			T comp(std::forward<Args>(_args)...);
-			comp.entityID = entityID;
-			T::componentData.push_back(comp);
+			T* alreadyHasComponent = GetComponent<T>();
+			if (!alreadyHasComponent)
+			{
+				T comp(std::forward<Args>(_args)...);
+				comp.entityID = entityID;
+				T::componentData.push_back(comp);
 
-			return &T::componentData.at(T::componentData.size()-1);
+				return &T::componentData.at(T::componentData.size() - 1);
+			}
+			return alreadyHasComponent;
 		}
 		/**
 		*Gets a component of the type from the Entity.

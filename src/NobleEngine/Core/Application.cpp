@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 
-#include "../Components/TransformSystem.hpp"
+#include "../Systems/TransformSystem.hpp"
 
 namespace NobleCore
 {

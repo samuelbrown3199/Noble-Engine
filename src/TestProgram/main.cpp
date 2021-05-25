@@ -2,6 +2,7 @@
 #include <NobleEngine/Components/Transform.hpp>
 
 using namespace NobleCore;
+using namespace NobleComponents;
 int main()
 {
 	std::shared_ptr<Application> app = Application::InitializeEngine("Test Program", 500, 500);

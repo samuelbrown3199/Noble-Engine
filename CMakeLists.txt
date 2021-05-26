@@ -51,6 +51,12 @@ add_library(NobleEngine
 )
 target_link_libraries(NobleEngine SDL2 openal32)
 
+find_package(Vulkan)
+if(Vulkan_FOUND)
+	target_include_directories(NobleEngine PRIVATE Vulkan::Vulkan)
+	target_link_libraries(NobleEngine Vulkan::Vulkan)
+endif()
+
 add_executable(TestProgram
 	src/TestProgram/main.cpp
 )

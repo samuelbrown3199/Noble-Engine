@@ -15,7 +15,7 @@ namespace NobleCore
 
 	void Application::BindCoreSystems()
 	{
-		BindSystem<TransformSystem>();
+		BindSystem<TransformSystem>(true, false);
 	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
@@ -39,6 +39,8 @@ namespace NobleCore
 	{
 		while (loop)
 		{
+			float frameStart = SDL_GetTicks();
+
 			//frame start
 			InputManager::HandleGeneralInput();
 			Screen::UpdateScreenSize();
@@ -55,6 +57,9 @@ namespace NobleCore
 			}
 			//frame cleanup
 			InputManager::ClearFrameInputs();
+
+			float frameEnd = SDL_GetTicks() - frameStart;
+			std::cout << "Frame Time " << frameEnd << std::endl;
 		}
 	}
 

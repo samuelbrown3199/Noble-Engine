@@ -76,7 +76,7 @@ namespace NobleCore
 		*Creates and binds the system of type T.
 		*/
 		template<typename T>
-		static std::shared_ptr<T> BindSystem()
+		static std::shared_ptr<T> BindSystem(bool _useUpdate, bool _useRender)
 		{
 			std::shared_ptr<T> temp;
 			for (size_t sys = 0; sys < componentSystems.size(); sys++)
@@ -91,6 +91,8 @@ namespace NobleCore
 
 			std::shared_ptr<T> system = std::make_shared<T>();
 			system->self = system;
+			system->useUpdate = _useUpdate;
+			system->useRender = _useRender;
 			system->InitializeSystem();
 			componentSystems.push_back(system);
 			return system;

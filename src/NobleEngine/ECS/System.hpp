@@ -15,6 +15,7 @@ namespace NobleCore
 	struct SystemBase
 	{
 		static std::weak_ptr<SystemBase> self;
+		bool useUpdate = true, useRender = true;
 
 		virtual void Update() = 0;
 		virtual void Render() = 0;
@@ -39,9 +40,12 @@ namespace NobleCore
 		*/
 		void Update()
 		{
-			for (int i = 0; i < T::componentData.size(); i++)
+			if (useUpdate)
 			{
-				OnUpdate(&T::componentData.at(i));
+				for (int i = 0; i < T::componentData.size(); i++)
+				{
+					OnUpdate(&T::componentData.at(i));
+				}
 			}
 		}
 		/**
@@ -49,9 +53,12 @@ namespace NobleCore
 		*/
 		void Render()
 		{
-			for (int i = 0; i < T::componentData.size(); i++)
+			if (useRender)
 			{
-				OnRender(&T::componentData.at(i));
+				for (int i = 0; i < T::componentData.size(); i++)
+				{
+					OnRender(&T::componentData.at(i));
+				}
 			}
 		}
 

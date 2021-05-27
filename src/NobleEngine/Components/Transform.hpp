@@ -14,9 +14,11 @@ namespace NobleComponents
 	struct Transform : public NobleCore::ComponentData<Transform>
 	{
 	public:
+		glm::vec3 oldPosition;
+		glm::vec3 oldRotation;
+		glm::vec3 oldScale;
 
 		glm::mat4 modelMat;
-
 		/**
 		*Stores the position of the transform.
 		*/

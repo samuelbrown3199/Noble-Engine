@@ -42,6 +42,9 @@ add_library(NobleEngine
 
 #Noble Components
 
+	src/NobleEngine/Components/StaticTransform.hpp
+	src/NobleEngine/Systems/StaticTransformSystem.hpp
+
 	src/NobleEngine/Components/Transform.hpp
 	src/NobleEngine/Systems/TransformSystem.hpp
 )

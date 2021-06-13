@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 
+#include "../Systems/StaticTransformSystem.hpp"
 #include "../Systems/TransformSystem.hpp"
 
 namespace NobleCore
@@ -15,7 +16,8 @@ namespace NobleCore
 
 	void Application::BindCoreSystems()
 	{
-		BindSystem<TransformSystem>();
+		BindSystem<StaticTransformSystem>(true, false);
+		BindSystem<TransformSystem>(true, false);
 	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight)
@@ -39,6 +41,8 @@ namespace NobleCore
 	{
 		while (loop)
 		{
+			float frameStart = SDL_GetTicks();
+
 			//frame start
 			InputManager::HandleGeneralInput();
 			Screen::UpdateScreenSize();
@@ -55,6 +59,9 @@ namespace NobleCore
 			}
 			//frame cleanup
 			InputManager::ClearFrameInputs();
+
+			float frameEnd = SDL_GetTicks() - frameStart;
+			std::cout << "Frame Time " << frameEnd << std::endl;
 		}
 	}
 
@@ -62,5 +69,18 @@ namespace NobleCore
 	{
 		entities.push_back(entities.size());
 		return &entities.at(entities.size() - 1);
+	}
+
+	Entity* Application::GetEntity(unsigned int _ID)
+	{
+		for (int i = 0; i < entities.size(); i++)
+		{
+			if (entities.at(i).entityID == _ID)
+			{
+				return &entities.at(i);
+			}
+		}
+
+		return nullptr;
 	}
 }

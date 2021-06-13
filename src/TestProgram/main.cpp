@@ -1,5 +1,6 @@
 #include <NobleEngine/Core/Application.h>
 #include <NobleEngine/Components/Transform.hpp>
+#include <NobleEngine/Components/StaticTransform.hpp>
 
 using namespace NobleCore;
 using namespace NobleComponents;
@@ -7,8 +8,16 @@ int main()
 {
 	std::shared_ptr<Application> app = Application::InitializeEngine("Test Program", 500, 500);
 
-	Entity* test = Application::CreateEntity();
-	test->AddComponent<Transform>(glm::vec3(500, 5, 20), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	for (int i = 0; i < 10; i++)
+	{
+		Entity* temp = Application::CreateEntity();
+		temp->AddComponent<StaticTransform>();
+	}
+	for (int i = 0; i < 100; i++)
+	{
+		Entity* temp = Application::CreateEntity();
+		temp->AddComponent<Transform>();
+	}
 
 	app->MainEngineLoop();
 

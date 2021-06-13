@@ -1,7 +1,7 @@
 #include "Screen.h"
 #include "AudioManager.h"
-#include "../ECS/Entity.h"
-#include "../ECS/System.h"
+#include "../ECS/Entity.hpp"
+#include "../ECS/System.hpp"
 
 #include <iostream>
 #include <memory>
@@ -67,12 +67,16 @@ namespace NobleCore
 		/**
 		*Creates and returns an entity.
 		*/
-		static 	Entity* CreateEntity();
+		static Entity* CreateEntity();
+		/**
+		*Finds and returns the entity with entityID of parameter _ID.
+		*/
+		static Entity* GetEntity(unsigned int _ID);
 		/**
 		*Creates and binds the system of type T.
 		*/
 		template<typename T>
-		static std::shared_ptr<T> BindSystem()
+		static std::shared_ptr<T> BindSystem(bool _useUpdate, bool _useRender)
 		{
 			std::shared_ptr<T> temp;
 			for (size_t sys = 0; sys < componentSystems.size(); sys++)
@@ -87,6 +91,8 @@ namespace NobleCore
 
 			std::shared_ptr<T> system = std::make_shared<T>();
 			system->self = system;
+			system->useUpdate = _useUpdate;
+			system->useRender = _useRender;
 			system->InitializeSystem();
 			componentSystems.push_back(system);
 			return system;

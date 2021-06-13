@@ -36,15 +36,14 @@ add_library(NobleEngine
 
 #Noble ECS
 
-	src/NobleEngine/ECS/Entity.h
-	src/NobleEngine/ECS/Entity.cpp
-
-	src/NobleEngine/ECS/Component.h
-
-	src/NobleEngine/ECS/System.h
-	src/NobleEngine/ECS/System.cpp
+	src/NobleEngine/ECS/Entity.hpp
+	src/NobleEngine/ECS/Component.hpp
+	src/NobleEngine/ECS/System.hpp
 
 #Noble Components
+
+	src/NobleEngine/Components/StaticTransform.hpp
+	src/NobleEngine/Systems/StaticTransformSystem.hpp
 
 	src/NobleEngine/Components/Transform.hpp
 	src/NobleEngine/Systems/TransformSystem.hpp

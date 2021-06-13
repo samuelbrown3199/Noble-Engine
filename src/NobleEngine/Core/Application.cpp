@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 
+#include "../Systems/StaticTransformSystem.hpp"
 #include "../Systems/TransformSystem.hpp"
 
 namespace NobleCore
@@ -15,6 +16,7 @@ namespace NobleCore
 
 	void Application::BindCoreSystems()
 	{
+		BindSystem<StaticTransformSystem>(true, false);
 		BindSystem<TransformSystem>(true, false);
 	}
 

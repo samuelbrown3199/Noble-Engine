@@ -11,9 +11,13 @@ namespace NobleComponents
 	struct StaticTransform : public NobleCore::ComponentData<StaticTransform>
 	{
 		/**
+		*Used to determine whether the matrix has been generated.
+		*/
+		bool dirty = false;
+		/**
 		* Stores the model matrix of the transform component.
 		*/
-		glm::mat4 modelMat = glm::mat4(1.0f);
+		glm::mat4 modelMat;
 		/**
 		*Stores the position of the transform.
 		*/
@@ -26,6 +30,25 @@ namespace NobleComponents
 		*Stores the scale of the transform.
 		*/
 		glm::vec3 scale;
+
+		/**
+		*Default constructor for static transform. Initializes position and rotation to 0, and scale to 1.
+		*/
+		StaticTransform()
+		{
+			position = glm::vec3(0, 0, 0);
+			rotation = glm::vec3(0, 0, 0);
+			scale = glm::vec3(1, 1, 1);
+		}
+		/**
+		*Main constructor for static transform.
+		*/
+		StaticTransform(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
+		{
+			position = _position;
+			rotation = _rotation;
+			scale = _scale;
+		}
 	};
 }
 

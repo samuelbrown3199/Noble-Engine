@@ -14,7 +14,6 @@ namespace NobleCore
 {
 	struct SystemBase
 	{
-		static std::weak_ptr<SystemBase> self;
 		bool useUpdate = true, useRender = true;
 
 		virtual void Update() = 0;
@@ -27,7 +26,10 @@ namespace NobleCore
 		friend class Application;
 
 	private:
-
+		/**
+		*Keeps a weak pointer to itself.
+		*/
+		static std::weak_ptr<SystemBase> self;
 		/**
 		*Sets up the system.
 		*/

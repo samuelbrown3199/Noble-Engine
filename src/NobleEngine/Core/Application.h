@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "Renderer.hpp"
 #include "AudioManager.h"
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
@@ -37,6 +38,10 @@ namespace NobleCore
 		*/
 		static std::shared_ptr<Screen> screen;
 		/**
+		* Stores the engines rendering information.
+		*/
+		static std::shared_ptr<Renderer> renderer;
+		/**
 		*Stores the applications audio systems.
 		*/
 		static std::shared_ptr<AudioManager> audioManager;
@@ -59,7 +64,7 @@ namespace NobleCore
 		/**
 		*Initializes the engine.
 		*/
-		static std::shared_ptr<Application> InitializeEngine(std::string _windowName, int _windowWidth, int _windowHeight);
+		static std::shared_ptr<Application> InitializeEngine(std::string _windowName, GraphicsAPI _graphicsAPI, int _windowWidth, int _windowHeightt);
 		/**
 		*The main engine loop.
 		*/

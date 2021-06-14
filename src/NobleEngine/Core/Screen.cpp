@@ -5,21 +5,16 @@
 
 namespace NobleCore
 {
+	std::string Screen::windowName;
 	int Screen::screenWidth = 0;
 	int Screen::screenHeight = 0;
 	SDL_Window* Screen::window;
 
 	Screen::Screen(std::string _windowName, int _width, int _height)
 	{
+		windowName = _windowName;
 		screenWidth = _width;
 		screenHeight = _height;
-
-		window = SDL_CreateWindow(_windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
-		if (!window)
-		{
-			std::cout << "Failed to create window " << SDL_GetError() << std::endl;
-			throw std::exception();
-		}
 	}
 
 	void Screen::UpdateScreenSize()
@@ -34,6 +29,11 @@ namespace NobleCore
 	void Screen::SetWindowFullScreen(Uint32 _flags)
 	{
 		SDL_SetWindowFullscreen(window, _flags);
+	}
+
+	std::string Screen::GetWindowName()
+	{
+		return windowName;
 	}
 
 	int Screen::GetScreenWidth()

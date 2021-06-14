@@ -1,3 +1,5 @@
+#ifndef SCREEN_H_
+#define SCREEN_H_
 
 #include <string>
 
@@ -10,7 +12,13 @@ namespace NobleCore
 	*/
 	class Screen
 	{
+		friend class Renderer;
+
 	private:
+		/**
+		* Stores the window name.
+		*/
+		static std::string windowName;
 		/**
 		*Stores the screen Width.
 		*/
@@ -39,6 +47,10 @@ namespace NobleCore
 		*/
 		static void SetWindowFullScreen(Uint32 _flags);
 		/**
+		* Returns the window name.
+		*/
+		static std::string GetWindowName();
+		/**
 		*Returns the screen width.
 		*/
 		static int GetScreenWidth();
@@ -52,3 +64,5 @@ namespace NobleCore
 		static SDL_Window* GetWindow();
 	};
 }
+
+#endif

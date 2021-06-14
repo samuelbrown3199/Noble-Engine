@@ -28,6 +28,8 @@ add_library(NobleEngine
 	src/NobleEngine/Core/Screen.h
 	src/NobleEngine/Core/Screen.cpp
 
+	src/NobleEngine/Core/Renderer.hpp
+
 	src/NobleEngine/Core/AudioManager.h
 	src/NobleEngine/Core/AudioManager.cpp
 
@@ -48,7 +50,7 @@ add_library(NobleEngine
 	src/NobleEngine/Components/Transform.hpp
 	src/NobleEngine/Systems/TransformSystem.hpp
 )
-target_link_libraries(NobleEngine SDL2 openal32)
+target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32)
 
 find_package(Vulkan)
 if(Vulkan_FOUND)

@@ -24,6 +24,8 @@ namespace NobleCore
 
 		virtual void Update() = 0;
 		virtual void Render() = 0;
+
+		virtual void RemoveComponent(unsigned int _ID) = 0;
 	};
 
 	template<typename T>
@@ -92,6 +94,18 @@ namespace NobleCore
 				for (int i = 0; i < T::componentData.size(); i++)
 				{
 					OnRender(&T::componentData.at(i));
+				}
+			}
+		}
+
+		void RemoveComponent(unsigned int _ID)
+		{
+			for (int i = 0; i < T::componentData.size(); i++)
+			{
+				if (T::componentData.at(i).entityID == _ID)
+				{
+					T::componentData.erase(T::componentData.begin() + i);
+					break;
 				}
 			}
 		}

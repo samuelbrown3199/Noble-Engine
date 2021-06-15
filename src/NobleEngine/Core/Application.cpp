@@ -68,14 +68,34 @@ namespace NobleCore
 			ThreadingManager::WaitForTasksToClear();
 
 			float frameEnd = SDL_GetTicks() - frameStart;
-			std::cout << "Frame Time " << frameEnd << std::endl;
+			//std::cout << "Frame Time " << frameEnd << std::endl;
 		}
 	}
 
-	Entity* Application::CreateEntity()
+	Entity* Application::CreateEntity() //this will need optimisation
 	{
+		for (int i = 0; i < entities.size(); i++)
+		{
+			if (entities.at(i).availableForUse)
+			{
+				entities.at(i).availableForUse = false;
+				return &entities.at(i);
+			}
+		}
 		entities.push_back(entities.size());
 		return &entities.at(entities.size() - 1);
+	}
+
+	void Application::DeleteEntity(unsigned int _ID)
+	{
+		if (_ID <= entities.size())
+		{
+			for (int i = 0; i < componentSystems.size(); i++)
+			{
+				componentSystems.at(i)->RemoveComponent(_ID);
+			}
+			entities.at(_ID).availableForUse = true;
+		}
 	}
 
 	Entity* Application::GetEntity(unsigned int _ID)

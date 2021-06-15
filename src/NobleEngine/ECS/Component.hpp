@@ -43,6 +43,18 @@ namespace NobleCore
 
 			return nullptr;
 		}
+
+		static void RemoveComponent(int _ID)
+		{
+			for (int i = 0; i < T::componentData.size(); i++)
+			{
+				if (T::componentData.at(i).entityID == _ID)
+				{
+					T::componentData.erase(T::componentData.begin() + i);
+					break;
+				}
+			}
+		}
 	};
 }
 

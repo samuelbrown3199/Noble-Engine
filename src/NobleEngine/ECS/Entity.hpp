@@ -13,6 +13,10 @@ namespace NobleCore
 		*The unique ID for the entity.
 		*/
 		unsigned int entityID;
+		/**
+		* Used to detemine whether the entity can be reused after being deleted.
+		*/
+		bool availableForUse = false;
 
 		/**
 		*Constructor for the Entity.
@@ -64,6 +68,14 @@ namespace NobleCore
 		{
 			T* temp = T::GetComponent(entityID);
 			return temp;
+		}
+		template<typename T>
+		/**
+		* Removes the component from the entity
+		*/
+		void RemoveComponent()
+		{
+			T::RemoveComponent(entityID);
 		}
 	};
 }

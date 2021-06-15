@@ -79,6 +79,10 @@ namespace NobleCore
 		*/
 		static Entity* CreateEntity();
 		/**
+		* Finds the entity with the entityID of parameter _ID and clears the entity and component data.
+		*/
+		static void DeleteEntity(unsigned int _ID);
+		/**
 		*Finds and returns the entity with entityID of parameter _ID.
 		*/
 		static Entity* GetEntity(unsigned int _ID);

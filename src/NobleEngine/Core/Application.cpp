@@ -8,6 +8,7 @@ namespace NobleCore
 {
 	bool Application::loop = true;
 	std::weak_ptr<Application> Application::self;
+	std::shared_ptr<ThreadingManager> Application::threadingManager;
 	std::shared_ptr<Screen> Application::screen; 
 	std::shared_ptr<Renderer> Application::renderer;
 	std::shared_ptr<AudioManager> Application::audioManager;
@@ -18,13 +19,14 @@ namespace NobleCore
 	void Application::BindCoreSystems()
 	{
 		BindSystem<StaticTransformSystem>(true, false);
-		BindSystem<TransformSystem>(true, false);
+		BindSystem<TransformSystem>(true, false, 10000);
 	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, GraphicsAPI _graphicsAPI, int _windowWidth, int _windowHeight)
 	{
 		std::shared_ptr<Application> app = std::make_shared<Application>();
 		Application::self = app;
+		Application::threadingManager = std::make_shared<ThreadingManager>();
 
 		if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 		{
@@ -61,6 +63,7 @@ namespace NobleCore
 			}
 			//frame cleanup
 			InputManager::ClearFrameInputs();
+			ThreadingManager::WaitForTasksToClear();
 
 			float frameEnd = SDL_GetTicks() - frameStart;
 			std::cout << "Frame Time " << frameEnd << std::endl;

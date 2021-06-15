@@ -1,0 +1,7 @@
+﻿  main.cpp
+  Generating code
+  157 of 520 functions (30.2%) were compiled, the rest were copied from previous compilation.
+    155 functions were new in current compilation
+    19 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Threading.vcxproj -> C:\Users\samue\Desktop\GamesDevelopment\Projects\Noble-Engine\TestingGround\x64\Release\Threading.exe

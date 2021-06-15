@@ -13,7 +13,7 @@ int main()
 		Entity* temp = Application::CreateEntity();
 		temp->AddComponent<StaticTransform>();
 	}
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 200000; i++)
 	{
 		Entity* temp = Application::CreateEntity();
 		temp->AddComponent<Transform>();

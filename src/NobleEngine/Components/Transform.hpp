@@ -31,6 +31,10 @@ namespace NobleComponents
 		*/
 		glm::vec3 scale;
 
+		glm::vec3 oldPosition;
+		glm::vec3 oldRotation;
+		glm::vec3 oldScale;
+
 		/**
 		*Default constructor for transform. Initializes position and rotation to 0, and scale to 1.
 		*/

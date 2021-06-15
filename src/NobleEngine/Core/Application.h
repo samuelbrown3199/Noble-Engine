@@ -1,3 +1,4 @@
+#include "ThreadingManager.h"
 #include "Screen.h"
 #include "Renderer.hpp"
 #include "AudioManager.h"
@@ -33,6 +34,10 @@ namespace NobleCore
 		*Stores a weak pointer to the application.
 		*/
 		static std::weak_ptr<Application> self;
+		/**
+		* Stores relevant information for threading.
+		*/
+		static std::shared_ptr<ThreadingManager> threadingManager;
 		/**
 		*Stores the application screen information.
 		*/
@@ -98,6 +103,34 @@ namespace NobleCore
 			system->self = system;
 			system->useUpdate = _useUpdate;
 			system->useRender = _useRender;
+			system->useThreads = false;
+			system->InitializeSystem();
+			componentSystems.push_back(system);
+			return system;
+		}
+		/**
+		*Creates and binds the system of type T, but the system will be threaded with components being split up into groups.
+		*/
+		template<typename T>
+		static std::shared_ptr<T> BindSystem(bool _useUpdate, bool _useRender, int _componentsPerThread)
+		{
+			std::shared_ptr<T> temp;
+			for (size_t sys = 0; sys < componentSystems.size(); sys++)
+			{
+				temp = std::dynamic_pointer_cast<T>(componentSystems.at(sys));
+				if (temp)
+				{
+					std::cout << "System is already bound!!" << std::endl;
+					return temp;
+				}
+			}
+
+			std::shared_ptr<T> system = std::make_shared<T>();
+			system->self = system;
+			system->useUpdate = _useUpdate;
+			system->useRender = _useRender;
+			system->useThreads = true;
+			system->maxComponentsPerThread = _componentsPerThread;
 			system->InitializeSystem();
 			componentSystems.push_back(system);
 			return system;

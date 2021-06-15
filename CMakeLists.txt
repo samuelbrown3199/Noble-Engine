@@ -39,6 +39,16 @@ add_library(NobleEngine
 	src/NobleEngine/Core/InputManager.h
 	src/NobleEngine/Core/InputManager.cpp
 
+	src/NobleEngine/Core/Resource.h
+	src/NobleEngine/Core/ResourceManager.h
+	src/NobleEngine/Core/ResourceManager.cpp
+
+#Noble Resources
+
+	src/NobleEngine/ResourceManagement/AudioClip.hpp
+	src/NobleEngine/ResourceManagement/Model.hpp
+	src/NobleEngine/ResourceManagement/Texture.hpp
+
 #Noble ECS
 
 	src/NobleEngine/ECS/Entity.hpp

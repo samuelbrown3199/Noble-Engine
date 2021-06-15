@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 
+#include "ResourceManager.h"
 #include "../Systems/StaticTransformSystem.hpp"
 #include "../Systems/TransformSystem.hpp"
 
@@ -63,6 +64,7 @@ namespace NobleCore
 			}
 			//frame cleanup
 			InputManager::ClearFrameInputs();
+			ResourceManager::UnloadUnusedResources();
 			ThreadingManager::WaitForTasksToClear();
 
 			float frameEnd = SDL_GetTicks() - frameStart;

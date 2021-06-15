@@ -31,7 +31,8 @@ add_library(NobleEngine
 	src/NobleEngine/Core/Screen.h
 	src/NobleEngine/Core/Screen.cpp
 
-	src/NobleEngine/Core/Renderer.hpp
+	src/NobleEngine/Core/Renderer.h
+	src/NobleEngine/Core/Renderer.cpp
 
 	src/NobleEngine/Core/AudioManager.h
 	src/NobleEngine/Core/AudioManager.cpp

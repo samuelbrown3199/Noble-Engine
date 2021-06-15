@@ -13,6 +13,7 @@ namespace NobleCore
 	std::shared_ptr<Screen> Application::screen; 
 	std::shared_ptr<Renderer> Application::renderer;
 	std::shared_ptr<AudioManager> Application::audioManager;
+	std::vector<Entity*> Application::deletionEntities;
 
 	std::vector<Entity> Application::entities;
 	std::vector<std::shared_ptr<SystemBase>> Application::componentSystems;
@@ -21,6 +22,24 @@ namespace NobleCore
 	{
 		BindSystem<StaticTransformSystem>(true, false);
 		BindSystem<TransformSystem>(true, false, 10000);
+	}
+
+	void Application::CleanupDeletionEntities()
+	{
+		for(int i = deletionEntities.size() - 1; i >= 0; i--)
+		{
+			for (int o = 0; o < componentSystems.size(); o++)
+			{
+				componentSystems.at(o)->RemoveComponent(deletionEntities.at(i)->entityID);
+			}
+			deletionEntities.at(i)->availableForUse = true;
+			deletionEntities.pop_back();
+		}
+	}
+
+	void Application::CleanupEngine()
+	{
+		ThreadingManager::StopThreads();
 	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, GraphicsAPI _graphicsAPI, int _windowWidth, int _windowHeight)
@@ -58,18 +77,24 @@ namespace NobleCore
 				componentSystems.at(i)->Update();
 			}
 			//render
+			Renderer::ClearBuffer();
 			for (int i = 0; i < componentSystems.size(); i++)
 			{
 				componentSystems.at(i)->Render();
 			}
+			Renderer::SwapGraphicsBuffer();
 			//frame cleanup
 			InputManager::ClearFrameInputs();
 			ResourceManager::UnloadUnusedResources();
 			ThreadingManager::WaitForTasksToClear();
+			CleanupDeletionEntities();
 
 			float frameEnd = SDL_GetTicks() - frameStart;
-			//std::cout << "Frame Time " << frameEnd << std::endl;
+			std::cout << "Frame Time " << frameEnd << std::endl;
 		}
+
+		//Program cleanup before exit
+		CleanupEngine();
 	}
 
 	Entity* Application::CreateEntity() //this will need optimisation
@@ -90,11 +115,7 @@ namespace NobleCore
 	{
 		if (_ID <= entities.size())
 		{
-			for (int i = 0; i < componentSystems.size(); i++)
-			{
-				componentSystems.at(i)->RemoveComponent(_ID);
-			}
-			entities.at(_ID).availableForUse = true;
+			deletionEntities.push_back(&entities.at(_ID));
 		}
 	}
 

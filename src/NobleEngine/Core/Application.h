@@ -1,6 +1,6 @@
 #include "ThreadingManager.h"
 #include "Screen.h"
-#include "Renderer.hpp"
+#include "Renderer.h"
 #include "AudioManager.h"
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
@@ -51,14 +51,17 @@ namespace NobleCore
 		*/
 		static std::shared_ptr<AudioManager> audioManager;
 		/**
+		*Stores the entities marked for deletion.
+		*/
+		static std::vector<Entity*> deletionEntities;
+		/**
 		*Stores the engines component systems.
 		*/
 		static std::vector<std::shared_ptr<SystemBase>> componentSystems;
 
-		/**
-		*Binds the core engine systems.
-		*/
 		static void BindCoreSystems();
+		static void CleanupDeletionEntities();
+		static void CleanupEngine();
 	public:
 
 		/**

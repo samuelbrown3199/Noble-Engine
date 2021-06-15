@@ -16,10 +16,6 @@ namespace NobleCore
 		numberOfThreads = ceil(std::thread::hardware_concurrency() / 2);
 		InitializeThreads();
 	}
-	ThreadingManager::~ThreadingManager()
-	{
-		StopThreads();
-	}
 
 	void ThreadingManager::InitializeThreads()
 	{

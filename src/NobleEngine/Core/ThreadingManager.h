@@ -17,11 +17,10 @@ namespace NobleCore
 	*/
 	class ThreadingManager
 	{
-
+		friend class Application;
 	public:
 
 		ThreadingManager();
-		~ThreadingManager();
 
 		template<class T>
 		/**
@@ -60,7 +59,7 @@ namespace NobleCore
 		static std::queue<Task> mTasks;
 
 		void InitializeThreads();
-		void StopThreads() noexcept;
+		static void StopThreads() noexcept;
 		static bool AreAllThreadsFinished();
 	};
 }

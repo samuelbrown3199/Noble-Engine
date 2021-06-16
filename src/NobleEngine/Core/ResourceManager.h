@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Resource.h"
+#include "../ResourceManagement/ShaderProgram.hpp"
 
 namespace NobleCore
 {
@@ -19,6 +20,7 @@ namespace NobleCore
 		*Stores all loaded resources.
 		*/
 		static std::vector<std::shared_ptr<Resource>> resources;
+		static std::vector<std::shared_ptr<NobleResources::ShaderProgram>> shaderPrograms;
 
 		/**
 		*Loads a resource of the passed type with the file directory.
@@ -43,6 +45,16 @@ namespace NobleCore
 			newResource->OnLoad();
 			resources.push_back(newResource);
 			return newResource;
+		}
+		/**
+		* Creates a shader program and stores it in the shader program list.
+		*/
+		static std::shared_ptr<NobleResources::ShaderProgram> CreateShaderProgram()
+		{
+			std::shared_ptr<NobleResources::ShaderProgram> rtn = std::make_shared<NobleResources::ShaderProgram>();
+			shaderPrograms.push_back(rtn);
+
+			return rtn;
 		}
 		/**
 		*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.

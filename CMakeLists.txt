@@ -49,6 +49,7 @@ add_library(NobleEngine
 	src/NobleEngine/ResourceManagement/AudioClip.hpp
 	src/NobleEngine/ResourceManagement/Model.hpp
 	src/NobleEngine/ResourceManagement/Texture.hpp
+	src/NobleEngine/ResourceManagement/ShaderProgram.hpp
 
 #Noble ECS
 
@@ -63,6 +64,12 @@ add_library(NobleEngine
 
 	src/NobleEngine/Components/Transform.hpp
 	src/NobleEngine/Systems/TransformSystem.hpp
+
+	src/NobleEngine/Components/Camera.hpp
+	src/NobleEngine/Systems/CameraSystem.hpp
+
+	src/NobleEngine/Components/Mesh.hpp
+	src/NobleEngine/Systems/MeshSystem.hpp
 )
 target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32)
 

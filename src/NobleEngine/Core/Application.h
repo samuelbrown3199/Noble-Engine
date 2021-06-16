@@ -1,9 +1,13 @@
+#ifndef APPLICATION_H_
+#define APPLICATION_H_
+
 #include "ThreadingManager.h"
 #include "Screen.h"
 #include "Renderer.h"
 #include "AudioManager.h"
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
+#include "../Components/Camera.hpp"
 
 #include <iostream>
 #include <memory>
@@ -68,7 +72,7 @@ namespace NobleCore
 		*Stores the current entities from the loaded scene.
 		*/
 		static std::vector<Entity> entities;
-
+		static NobleComponents::Camera* mainCam;
 		/**
 		*Initializes the engine.
 		*/
@@ -142,5 +146,11 @@ namespace NobleCore
 			componentSystems.push_back(system);
 			return system;
 		}
+		/**
+		* Used to set the main camera for the application.
+		*/
+		static void SetMainCamera(NobleComponents::Camera* _mainCam);
 	};
 }
+
+#endif

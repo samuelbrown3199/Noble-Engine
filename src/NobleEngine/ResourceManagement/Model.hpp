@@ -4,7 +4,7 @@
 
 #include "../Core/Resource.h"
 
-#include "bugl.h"
+#include <Other/bugl.h>
 
 namespace NobleResources
 {

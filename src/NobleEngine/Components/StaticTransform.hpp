@@ -8,6 +8,9 @@
 
 namespace NobleComponents
 {
+	/**
+	*Static Transform component, stores position rotation and scale, but is not allowed to move.
+	*/
 	struct StaticTransform : public NobleCore::ComponentData<StaticTransform>
 	{
 		/**

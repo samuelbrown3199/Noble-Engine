@@ -3,6 +3,7 @@
 namespace NobleCore
 {
 	std::vector<std::shared_ptr<Resource>> ResourceManager::resources;
+	std::vector<std::shared_ptr<NobleResources::ShaderProgram>> ResourceManager::shaderPrograms;
 
 	void ResourceManager::UnloadUnusedResources()
 	{

@@ -4,6 +4,8 @@
 #include "ResourceManager.h"
 #include "../Systems/StaticTransformSystem.hpp"
 #include "../Systems/TransformSystem.hpp"
+#include "../Systems/CameraSystem.hpp"
+#include "../Systems/MeshSystem.hpp"
 
 namespace NobleCore
 {
@@ -17,11 +19,14 @@ namespace NobleCore
 
 	std::vector<Entity> Application::entities;
 	std::vector<std::shared_ptr<SystemBase>> Application::componentSystems;
+	NobleComponents::Camera* Application::mainCam;
 
 	void Application::BindCoreSystems()
 	{
 		BindSystem<StaticTransformSystem>(true, false);
 		BindSystem<TransformSystem>(true, false, 10000);
+		BindSystem<CameraSystem>(true, false);
+		BindSystem<MeshSystem>(false, true);
 	}
 
 	void Application::CleanupDeletionEntities()
@@ -130,5 +135,10 @@ namespace NobleCore
 		}
 
 		return nullptr;
+	}
+
+	void Application::SetMainCamera(NobleComponents::Camera* _mainCam)
+	{
+		mainCam = _mainCam;
 	}
 }

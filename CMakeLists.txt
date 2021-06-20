@@ -60,16 +60,20 @@ add_library(NobleEngine
 #Noble Components
 
 	src/NobleEngine/Components/StaticTransform.hpp
-	src/NobleEngine/Systems/StaticTransformSystem.hpp
+	src/NobleEngine/Systems/StaticTransformSystem.h
+	src/NobleEngine/Systems/StaticTransformSystem.cpp
 
 	src/NobleEngine/Components/Transform.hpp
-	src/NobleEngine/Systems/TransformSystem.hpp
+	src/NobleEngine/Systems/TransformSystem.h
+	src/NobleEngine/Systems/TransformSystem.cpp
 
 	src/NobleEngine/Components/Camera.hpp
-	src/NobleEngine/Systems/CameraSystem.hpp
+	src/NobleEngine/Systems/CameraSystem.h
+	src/NobleEngine/Systems/CameraSystem.cpp
 
 	src/NobleEngine/Components/Mesh.hpp
-	src/NobleEngine/Systems/MeshSystem.hpp
+	src/NobleEngine/Systems/MeshSystem.h
+	src/NobleEngine/Systems/MeshSystem.cpp
 )
 target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32)
 

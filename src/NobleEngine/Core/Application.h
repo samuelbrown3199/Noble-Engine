@@ -72,6 +72,9 @@ namespace NobleCore
 		*Stores the current entities from the loaded scene.
 		*/
 		static std::vector<Entity> entities;
+		/**
+		* Stores the applications current main camera.
+		*/
 		static NobleComponents::Camera* mainCam;
 		/**
 		*Initializes the engine.
@@ -97,7 +100,7 @@ namespace NobleCore
 		*Creates and binds the system of type T.
 		*/
 		template<typename T>
-		static std::shared_ptr<T> BindSystem(bool _useUpdate, bool _useRender)
+		static std::shared_ptr<T> BindSystem(SystemUsage _usage)
 		{
 			std::shared_ptr<T> temp;
 			for (size_t sys = 0; sys < componentSystems.size(); sys++)
@@ -112,8 +115,7 @@ namespace NobleCore
 
 			std::shared_ptr<T> system = std::make_shared<T>();
 			system->self = system;
-			system->useUpdate = _useUpdate;
-			system->useRender = _useRender;
+			system->systemUsage = _usage;
 			system->useThreads = false;
 			system->InitializeSystem();
 			componentSystems.push_back(system);
@@ -123,7 +125,7 @@ namespace NobleCore
 		*Creates and binds the system of type T, but the system will be threaded with components being split up into groups.
 		*/
 		template<typename T>
-		static std::shared_ptr<T> BindSystem(bool _useUpdate, bool _useRender, int _componentsPerThread)
+		static std::shared_ptr<T> BindSystem(SystemUsage _usage, int _componentsPerThread)
 		{
 			std::shared_ptr<T> temp;
 			for (size_t sys = 0; sys < componentSystems.size(); sys++)
@@ -138,8 +140,7 @@ namespace NobleCore
 
 			std::shared_ptr<T> system = std::make_shared<T>();
 			system->self = system;
-			system->useUpdate = _useUpdate;
-			system->useRender = _useRender;
+			system->systemUsage = _usage;
 			system->useThreads = true;
 			system->maxComponentsPerThread = _componentsPerThread;
 			system->InitializeSystem();

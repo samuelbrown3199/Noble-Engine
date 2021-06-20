@@ -12,7 +12,7 @@ using namespace NobleComponents;
 using namespace NobleResources;
 int main()
 {
-	std::shared_ptr<Application> app = Application::InitializeEngine("Test Program", GraphicsAPI::OpenGL, 500, 500);
+	std::shared_ptr<Application> app = Application::InitializeEngine("Test Program", GraphicsAPI::OpenGL, 1366, 768);
 
 	std::shared_ptr<Shader> vertexShader = ResourceManager::LoadResource<Shader>("Resources\\Shaders\\standard.vs");
 	std::shared_ptr<Shader> fragmentShader = ResourceManager::LoadResource<Shader>("Resources\\Shaders\\standard.fs");
@@ -26,9 +26,10 @@ int main()
 	test->AddComponent<Transform>();
 	test->AddComponent<Camera>(true, CameraMode::projection);
 
-	test = Application::CreateEntity();
-	test->AddComponent<Transform>(glm::vec3(-10, 0, 0));
-	test->AddComponent<Mesh>(ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp);
+
+	Entity* renderTest = Application::CreateEntity();
+	renderTest->AddComponent<Transform>(glm::vec3(0, 0 , -10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	renderTest->AddComponent<Mesh>(ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp);
 
 	app->MainEngineLoop();
 

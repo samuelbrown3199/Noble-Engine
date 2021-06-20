@@ -41,19 +41,23 @@ namespace NobleComponents
 		*/
 		float fieldOfView = 90;
 		/**
-		* Stores the matrix of the camera.
+		* Stores the projection matrix of the camera.
 		*/
-		glm::mat4 cameraMatrix;
+		glm::mat4 projectionMatrix;
+		/**
+		* Stores the view matrix of the camera.
+		*/
+		glm::mat4 viewMatrix;
 
-		Camera(bool _mainCam, CameraMode _camMode)
+		void OnInitialize(bool _mainCam, CameraMode _camMode)
 		{
 			mainCamera = _mainCam;
 			camMode = _camMode;
 			nearPlane = 0.1f;
-			farPlane = 100.0f;
+			farPlane = 1000.0f;
 			fieldOfView = 90.0f;
 		}
-		Camera(bool _mainCam, CameraMode _camMode, float _nearPlane, float _farPlane, float _fov)
+		void OnInitialize(bool _mainCam, CameraMode _camMode, float _nearPlane, float _farPlane, float _fov)
 		{
 			mainCamera = _mainCam;
 			camMode = _camMode;

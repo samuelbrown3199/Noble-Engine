@@ -2,20 +2,21 @@
 #ifndef AUDIOCLIP_H_
 #define AUDIOCLIP_H_
 
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include <AL/al.h>
-#include <Other/stb_vorbis>
+#include <Other/stb_vorbis.h>
 
 #include "../Core/Resource.h"
 
-namespace NobleCore
+namespace NobleResources
 {
 	/**
 	*Stores an audio file for use in OpenAL.
 	*/
-	struct AudioClip : public Resource
+	struct AudioClip : public NobleCore::Resource
 	{
 		ALuint audioClipID;
 		/**
@@ -39,28 +40,28 @@ namespace NobleCore
             int channels = 0;
             int sampleRate = 0;
             short* output = NULL;
-            int samples = stb_vorbis_decode_filename(fileDirectory.c_str(), &channels, &sampleRate, &output);
+            int samples = stb_vorbis_decode_filename(resourcePath.c_str(), &channels, &sampleRate, &output);
             int amountOfBytesPerSample = 0;
             if (samples == -1)
             {
-                std::cout << "Failed to open file " << fileDirectory << std::endl;
+                std::cout << "Failed to open file " << resourcePath << std::endl;
                 throw std::exception();
             }
             // Record the format required by OpenAL
             if (channels == 1)
             {
-                format = AL_FORMAT_MONO16;
+                _format = AL_FORMAT_MONO16;
                 amountOfBytesPerSample = 2;
             }
             else
             {
-                format = AL_FORMAT_STEREO16;
+                _format = AL_FORMAT_STEREO16;
                 amountOfBytesPerSample = 4;
             }
             // Record the sample rate required by OpenAL
-            freq = sampleRate;
-            buffer.resize(samples * amountOfBytesPerSample);
-            memcpy(&buffer.at(0), output, buffer.size());
+            _freq = sampleRate;
+            _buffer.resize(samples * amountOfBytesPerSample);
+            memcpy(&_buffer.at(0), output, _buffer.size());
             // Clean up the read data
             free(output);
         }

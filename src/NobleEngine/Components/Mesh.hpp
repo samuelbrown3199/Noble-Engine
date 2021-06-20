@@ -10,11 +10,11 @@ namespace NobleComponents
 {
 	struct Mesh : public NobleCore::ComponentData<Mesh>
 	{
-		Transform* transform;
+		Transform* transform = nullptr;
 		std::shared_ptr<NobleResources::Model> model;
 		std::shared_ptr<NobleResources::ShaderProgram> shader;
 
-		Mesh(std::shared_ptr<NobleResources::Model> _model, std::shared_ptr<NobleResources::ShaderProgram> _shader)
+		void OnInitialize(std::shared_ptr<NobleResources::Model> _model, std::shared_ptr<NobleResources::ShaderProgram> _shader)
 		{
 			model = _model;
 			shader = _shader;

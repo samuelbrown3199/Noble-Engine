@@ -14,15 +14,24 @@ std::vector<T> T::componentData; \
 
 namespace NobleCore
 {
+	enum SystemUsage
+	{
+		useUpdate,
+		useRender,
+		useBoth
+	};
 	struct SystemBase
 	{
-		bool useUpdate = true, useRender = true, useThreads = false;
+		SystemUsage systemUsage;
+		bool useThreads = false;
 		/**
 		*Determines how many components a thread should handle.
 		*/
 		int maxComponentsPerThread = 1024;
 
+		virtual void PreUpdate() {};
 		virtual void Update() = 0;
+		virtual void PreRender() {};
 		virtual void Render() = 0;
 
 		virtual void RemoveComponent(unsigned int _ID) = 0;
@@ -53,7 +62,7 @@ namespace NobleCore
 		*/
 		void Update()
 		{
-			if (useUpdate)
+			if (systemUsage == useUpdate || systemUsage == useBoth)
 			{
 				if (!useThreads)
 				{
@@ -89,7 +98,7 @@ namespace NobleCore
 		*/
 		void Render()
 		{
-			if (useRender)
+			if (systemUsage == useRender || systemUsage == useBoth)
 			{
 				for (int i = 0; i < T::componentData.size(); i++)
 				{

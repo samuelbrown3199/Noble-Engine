@@ -29,6 +29,8 @@ namespace NobleCore
 		*/
 		static std::weak_ptr<SystemBase> componentSystem;
 
+		virtual void OnInitialize() {};
+
 	private:
 
 		static T* GetComponent(int _ID)

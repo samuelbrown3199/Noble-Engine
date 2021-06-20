@@ -2,10 +2,10 @@
 #include "InputManager.h"
 
 #include "ResourceManager.h"
-#include "../Systems/StaticTransformSystem.hpp"
-#include "../Systems/TransformSystem.hpp"
-#include "../Systems/CameraSystem.hpp"
-#include "../Systems/MeshSystem.hpp"
+#include "../Systems/StaticTransformSystem.h"
+#include "../Systems/TransformSystem.h"
+#include "../Systems/CameraSystem.h"
+#include "../Systems/MeshSystem.h"
 
 namespace NobleCore
 {
@@ -23,10 +23,10 @@ namespace NobleCore
 
 	void Application::BindCoreSystems()
 	{
-		BindSystem<StaticTransformSystem>(true, false);
-		BindSystem<TransformSystem>(true, false, 10000);
-		BindSystem<CameraSystem>(true, false);
-		BindSystem<MeshSystem>(false, true);
+		BindSystem<StaticTransformSystem>(SystemUsage::useUpdate);
+		BindSystem<TransformSystem>(SystemUsage::useUpdate, 10000);
+		BindSystem<CameraSystem>(SystemUsage::useUpdate);
+		BindSystem<MeshSystem>(SystemUsage::useRender);
 	}
 
 	void Application::CleanupDeletionEntities()
@@ -79,12 +79,14 @@ namespace NobleCore
 			//update
 			for (int i = 0; i < componentSystems.size(); i++)
 			{
+				componentSystems.at(i)->PreUpdate();
 				componentSystems.at(i)->Update();
 			}
 			//render
 			Renderer::ClearBuffer();
 			for (int i = 0; i < componentSystems.size(); i++)
 			{
+				componentSystems.at(i)->PreRender();
 				componentSystems.at(i)->Render();
 			}
 			Renderer::SwapGraphicsBuffer();
@@ -126,14 +128,10 @@ namespace NobleCore
 
 	Entity* Application::GetEntity(unsigned int _ID)
 	{
-		for (int i = 0; i < entities.size(); i++)
+		if (_ID <= entities.size() - 1)
 		{
-			if (entities.at(i).entityID == _ID)
-			{
-				return &entities.at(i);
-			}
+			return &entities.at(_ID);
 		}
-
 		return nullptr;
 	}
 

@@ -72,8 +72,6 @@ namespace NobleResources
 	{
 		GLuint programID;
 
-		GLint modelMatrixLoc, viewMatrixLoc;
-
 		std::weak_ptr<ShaderProgram> self;
 		std::vector<std::shared_ptr<ShaderLocation>> shaderLocations;
 
@@ -196,20 +194,6 @@ namespace NobleResources
 			glUniform3f(vectorLocation, _vector.x, _vector.y, _vector.z);
 		}
 		/**
-		*Binds the model matrix.
-		*/
-		void BindModelMat(glm::mat4 _matrix)
-		{
-			glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, glm::value_ptr(_matrix));
-		}
-		/**
-		*Binds the view matrix.
-		*/
-		void BindViewMat(glm::mat4 _matrix)
-		{
-			glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, glm::value_ptr(_matrix));
-		}
-		/**
 		*Links the program for use in the engine. Also responsible for setting up the uniform variables in the shader code. If this function isn't called then the shader program cannot be used.
 		*/
 		void LinkShaderProgram(std::shared_ptr<ShaderProgram> _selfPtr)
@@ -236,16 +220,6 @@ namespace NobleResources
 				glDeleteProgram(programID);
 				throw std::exception();
 			}
-
-			glUseProgram(programID);
-
-			modelMatrixLoc = glGetUniformLocation(programID, "u_Model");
-			viewMatrixLoc = glGetUniformLocation(programID, "u_View");
-
-			BindInt("material.diffuseTexture", 0);
-			BindInt("material.specularTexture", 1);
-
-			glUseProgram(0);
 		}
 		/**
 		*Sets the currently used shader program to this.

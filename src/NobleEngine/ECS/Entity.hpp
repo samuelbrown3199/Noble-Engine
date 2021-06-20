@@ -36,6 +36,7 @@ namespace NobleCore
 			if (!alreadyHasComponent)
 			{
 				T comp;
+				comp.OnInitialize();
 				comp.entityID = entityID;
 				T::componentData.push_back(comp);
 
@@ -52,7 +53,8 @@ namespace NobleCore
 			T* alreadyHasComponent = GetComponent<T>();
 			if (!alreadyHasComponent)
 			{
-				T comp(std::forward<Args>(_args)...);
+				T comp;
+				comp.OnInitialize(std::forward<Args>(_args)...);
 				comp.entityID = entityID;
 				T::componentData.push_back(comp);
 

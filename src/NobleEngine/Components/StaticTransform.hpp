@@ -37,7 +37,7 @@ namespace NobleComponents
 		/**
 		*Default constructor for static transform. Initializes position and rotation to 0, and scale to 1.
 		*/
-		StaticTransform()
+		void OnInitialize()
 		{
 			position = glm::vec3(0, 0, 0);
 			rotation = glm::vec3(0, 0, 0);
@@ -46,7 +46,7 @@ namespace NobleComponents
 		/**
 		*Main constructor for static transform.
 		*/
-		StaticTransform(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
+		void OnInitialize(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
 		{
 			position = _position;
 			rotation = _rotation;

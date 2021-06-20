@@ -36,40 +36,37 @@ namespace NobleComponents
 		glm::vec3 oldScale;
 
 		/**
-		*Default constructor for transform. Initializes position and rotation to 0, and scale to 1.
+		*Default initializer for transform. Initializes position and rotation to 0, and scale to 1.
 		*/
-		Transform()
+		void OnInitialize()
 		{
 			position = glm::vec3(0, 0, 0);
 			rotation = glm::vec3(0, 0, 0);
 			scale = glm::vec3(1, 1, 1);
 		}
 		/**
-		*Main constructor for transform.
+		*Main initializer for transform.
 		*/
-		Transform(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
+		void OnInitialize(const glm::vec3& _pos, const glm::vec3& _rot, const glm::vec3& _sca)
 		{
-			position = _position;
-			rotation = _rotation;
-			scale = _scale;
+			position = _pos;
+			rotation = _rot;
+			scale = _sca;
 		}
 		/**
-		*Main constructor for transform. Initializes scale to 1.
+		*Main initializer for transform. Initializes scale to 1.
 		*/
-		Transform(glm::vec3 _position, glm::vec3 _rotation)
+		void OnInitialize(const glm::vec3& _pos, const glm::vec3& _rot)
 		{
-			position = _position;
-			rotation = _rotation;
-			scale = glm::vec3(1,1,1);
+			position = _pos;
+			rotation = _rot;
 		}
 		/**
-		*Main constructor for transform. Initializes rotation to 0, scale to 1.
+		*Main initializer for transform. Initializes rotation to 0, scale to 1.
 		*/
-		Transform(glm::vec3 _position)
+		void OnInitialize(const glm::vec3& _pos)
 		{
-			position = _position;
-			rotation = glm::vec3(0, 0, 0);
-			scale = glm::vec3(1, 1, 1);
+			position = _pos;
 		}
 	};
 }

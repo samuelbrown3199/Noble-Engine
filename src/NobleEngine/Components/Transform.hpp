@@ -17,7 +17,7 @@ namespace NobleComponents
 		/**
 		* Stores the model matrix of the transform component.
 		*/
-		glm::mat4 modelMat = glm::mat4(1.0f);
+		glm::mat4 model;
 		/**
 		*Stores the position of the transform.
 		*/
@@ -60,6 +60,7 @@ namespace NobleComponents
 		{
 			position = _pos;
 			rotation = _rot;
+			scale = glm::vec3(1, 1, 1);
 		}
 		/**
 		*Main initializer for transform. Initializes rotation to 0, scale to 1.
@@ -67,6 +68,8 @@ namespace NobleComponents
 		void OnInitialize(const glm::vec3& _pos)
 		{
 			position = _pos;
+			rotation = glm::vec3(0, 0, 0);
+			scale = glm::vec3(1, 1, 1);
 		}
 	};
 }

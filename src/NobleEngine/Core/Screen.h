@@ -3,7 +3,10 @@
 
 #include <string>
 
+#include<glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <SDL/SDL.h>
+#include <GL/glew.h>
 
 namespace NobleCore
 {

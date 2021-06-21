@@ -10,7 +10,7 @@ namespace NobleComponents
 {
 	struct Mesh : public NobleCore::ComponentData<Mesh>
 	{
-		Transform* transform = nullptr;
+		glm::mat4* modelMatrix;
 		std::shared_ptr<NobleResources::Model> model;
 		std::shared_ptr<NobleResources::ShaderProgram> shader;
 

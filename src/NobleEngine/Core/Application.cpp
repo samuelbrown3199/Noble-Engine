@@ -24,7 +24,7 @@ namespace NobleCore
 	void Application::BindCoreSystems()
 	{
 		BindSystem<StaticTransformSystem>(SystemUsage::useUpdate);
-		BindSystem<TransformSystem>(SystemUsage::useUpdate, 10000);
+		BindSystem<TransformSystem>(SystemUsage::useUpdate);
 		BindSystem<CameraSystem>(SystemUsage::useUpdate);
 		BindSystem<MeshSystem>(SystemUsage::useRender);
 	}
@@ -82,6 +82,7 @@ namespace NobleCore
 				componentSystems.at(i)->PreUpdate();
 				componentSystems.at(i)->Update();
 			}
+			ThreadingManager::WaitForTasksToClear();
 			//render
 			Renderer::ClearBuffer();
 			for (int i = 0; i < componentSystems.size(); i++)
@@ -89,15 +90,15 @@ namespace NobleCore
 				componentSystems.at(i)->PreRender();
 				componentSystems.at(i)->Render();
 			}
+			ThreadingManager::WaitForTasksToClear();
 			Renderer::SwapGraphicsBuffer();
 			//frame cleanup
 			InputManager::ClearFrameInputs();
 			ResourceManager::UnloadUnusedResources();
-			ThreadingManager::WaitForTasksToClear();
 			CleanupDeletionEntities();
 
 			float frameEnd = SDL_GetTicks() - frameStart;
-			std::cout << "Frame Time " << frameEnd << std::endl;
+			//std::cout << "Frame Time " << frameEnd << std::endl;
 		}
 
 		//Program cleanup before exit

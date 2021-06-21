@@ -27,7 +27,7 @@ namespace NobleCore
 		* 
 		* OpenGL values: -1 Adaptive Vsync, 0 No Vsync, 1 Vsync On.
 		*/
-		int vsync = 0;
+		int vsync = 1;
 	};
 
 	class Renderer

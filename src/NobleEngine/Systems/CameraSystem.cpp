@@ -1,6 +1,8 @@
 #include "CameraSystem.h"
 #include "../Core/Application.h"
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace NobleCore
 {
 	SetupComponent(NobleComponents::Camera, CameraSystem);
@@ -18,8 +20,15 @@ namespace NobleCore
 			if (!comp->cameraTransform)
 			{
 				comp->cameraTransform = camEntity->AddComponent<NobleComponents::Transform>();
+				comp->cameraTransform = camEntity->GetComponent<NobleComponents::Transform>();
 			}
 		}
+		GenerateProjectionMatrix(comp);
+		GenerateViewMatrix(comp);
+	}
+
+	void CameraSystem::GenerateProjectionMatrix(NobleComponents::Camera* comp)
+	{
 		comp->projectionMatrix = glm::mat4(1.0f);
 		switch (comp->camMode)
 		{
@@ -30,9 +39,12 @@ namespace NobleCore
 			comp->projectionMatrix = glm::ortho(0.0f, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight(), 0.0f, 0.0f, comp->farPlane);
 			break;
 		}
+	}
+
+	void CameraSystem::GenerateViewMatrix(NobleComponents::Camera* comp)
+	{
 		comp->viewMatrix = glm::mat4(1.0f);
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		comp->cameraTransform->rotation = glm::normalize(comp->cameraTransform->rotation);
 		comp->viewMatrix = glm::lookAt(comp->cameraTransform->position, comp->cameraTransform->position + comp->cameraTransform->rotation, up);
 	}
 }

@@ -19,11 +19,8 @@ namespace NobleCore
 
 	void Screen::UpdateScreenSize()
 	{
-		int w, h;
-		SDL_GetWindowSize(window, &w, &h);
-
-		screenWidth = w;
-		screenHeight = h;
+		SDL_GetWindowSize(window, &screenWidth, &screenHeight);
+		glViewport(0, 0, screenWidth, screenHeight);
 	}
 
 	void Screen::SetWindowFullScreen(Uint32 _flags)

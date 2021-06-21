@@ -12,12 +12,27 @@
 namespace NobleCore
 {
 	using Task = std::function<void()>;
+
+	struct NobleThread
+	{
+		std::thread t;
+		bool busy = false;
+
+		NobleThread()
+		{
+			t = std::thread(&NobleThread::ThreadFunction, this);
+		}
+
+		void ThreadFunction();
+	};
+
 	/**
 	* Responsible for handling threads.
 	*/
 	class ThreadingManager
 	{
 		friend class Application;
+		friend struct NobleThread;
 	public:
 
 		ThreadingManager();
@@ -50,7 +65,7 @@ namespace NobleCore
 	private:
 
 		static int numberOfThreads;
-		static std::vector<std::thread> mThreads;
+		static std::vector<NobleThread> mThreads;
 
 		static std::condition_variable mEventVar;
 		static std::mutex mEventMutex;

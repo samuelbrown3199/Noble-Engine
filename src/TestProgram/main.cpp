@@ -7,6 +7,8 @@
 
 #include <NobleEngine/ResourceManagement/ShaderProgram.hpp>
 
+#include "FlyingCamSystem.h"
+
 using namespace NobleCore;
 using namespace NobleComponents;
 using namespace NobleResources;
@@ -23,14 +25,16 @@ int main()
 	temp->LinkShaderProgram(temp);
 
 	Entity* test = Application::CreateEntity();
-	test->AddComponent<Transform>();
+	test->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0,0,0));
 	test->AddComponent<Camera>(true, CameraMode::projection);
+	test->AddComponent<FlyingCam>();
 
 
 	Entity* renderTest = Application::CreateEntity();
-	renderTest->AddComponent<Transform>(glm::vec3(0, 0 , -10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	renderTest->AddComponent<Transform>(glm::vec3(0, 0, -10), glm::vec3(40, 25, 73), glm::vec3(1, 1, 1));
 	renderTest->AddComponent<Mesh>(ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp);
 
+	app->BindSystem<FlyingCamSystem>(SystemUsage::useUpdate);
 	app->MainEngineLoop();
 
 	return 0;

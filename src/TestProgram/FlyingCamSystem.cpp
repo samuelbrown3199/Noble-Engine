@@ -6,6 +6,8 @@
 #include <NobleEngine/ECS/Entity.hpp>
 #include <NobleEngine/Components/Camera.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
 SetupComponent(FlyingCam, FlyingCamSystem)
 
 using namespace NobleComponents;

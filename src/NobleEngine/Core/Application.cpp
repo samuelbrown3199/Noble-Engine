@@ -24,7 +24,7 @@ namespace NobleCore
 	void Application::BindCoreSystems()
 	{
 		BindSystem<StaticTransformSystem>(SystemUsage::useUpdate);
-		BindSystem<TransformSystem>(SystemUsage::useUpdate);
+		BindSystem<TransformSystem>(SystemUsage::useUpdate, 20000);
 		BindSystem<CameraSystem>(SystemUsage::useUpdate);
 		BindSystem<MeshSystem>(SystemUsage::useRender);
 	}
@@ -98,7 +98,7 @@ namespace NobleCore
 			CleanupDeletionEntities();
 
 			float frameEnd = SDL_GetTicks() - frameStart;
-			//std::cout << "Frame Time " << frameEnd << std::endl;
+			std::cout << "Frame Time " << frameEnd << std::endl;
 		}
 
 		//Program cleanup before exit

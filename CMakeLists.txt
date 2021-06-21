@@ -48,8 +48,10 @@ add_library(NobleEngine
 
 	src/NobleEngine/ResourceManagement/AudioClip.hpp
 	src/NobleEngine/ResourceManagement/Model.hpp
-	src/NobleEngine/ResourceManagement/Texture.hpp
 	src/NobleEngine/ResourceManagement/ShaderProgram.hpp
+
+	src/NobleEngine/ResourceManagement/Texture.h
+	src/NobleEngine/ResourceManagement/Texture.cpp
 
 #Noble ECS
 

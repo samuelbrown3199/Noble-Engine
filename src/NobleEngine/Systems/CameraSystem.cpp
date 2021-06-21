@@ -1,8 +1,6 @@
 #include "CameraSystem.h"
 #include "../Core/Application.h"
 
-#include <glm/gtx/string_cast.hpp>
-
 namespace NobleCore
 {
 	SetupComponent(NobleComponents::Camera, CameraSystem);
@@ -13,16 +11,9 @@ namespace NobleCore
 		{
 			Application::SetMainCamera(comp);
 		}
-		if (!comp->cameraTransform)
-		{
-			Entity* camEntity = Application::GetEntity(comp->entityID);
-			comp->cameraTransform = camEntity->GetComponent<NobleComponents::Transform>();
-			if (!comp->cameraTransform)
-			{
-				comp->cameraTransform = camEntity->AddComponent<NobleComponents::Transform>();
-				comp->cameraTransform = camEntity->GetComponent<NobleComponents::Transform>();
-			}
-		}
+		Entity* camEntity = Application::GetEntity(comp->entityID);
+		comp->cameraTransform = camEntity->GetComponent<NobleComponents::Transform>();
+
 		GenerateProjectionMatrix(comp);
 		GenerateViewMatrix(comp);
 	}

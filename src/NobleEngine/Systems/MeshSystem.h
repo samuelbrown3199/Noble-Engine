@@ -9,6 +9,7 @@ namespace NobleCore
 	{
 		glm::mat4 projectionViewMatrix;
 
+		void GetTransformInformation(NobleComponents::Mesh* comp);
 		void PreRender();
 		void OnRender(NobleComponents::Mesh* comp);
 	};

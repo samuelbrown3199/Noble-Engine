@@ -8,10 +8,6 @@ namespace NobleCore
 
 	void TransformSystem::OnUpdate(NobleComponents::Transform* comp)
 	{
-		comp->rotation.x += 0.75f;
-		comp->rotation.y += 1.0f;
-		comp->rotation.z += 0.33f;
-
 		if (comp->position != comp->oldPosition || comp->rotation != comp->oldRotation || comp->scale != comp->oldScale)
 		{
 			comp->model = glm::mat4(1.0f);

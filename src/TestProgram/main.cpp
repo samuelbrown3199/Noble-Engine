@@ -24,16 +24,26 @@ int main()
 	temp->BindShader(fragmentShader, GL_FRAGMENT_SHADER);
 	temp->LinkShaderProgram(temp);
 
+	std::shared_ptr<Texture> testTex = ResourceManager::LoadResource<Texture>("Resources\\Textures\\test.png");
+
 	Entity* test = Application::CreateEntity();
-	test->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0,0,0));
+	test->AddComponent<Transform>(glm::vec3(0, 0, 5), glm::vec3(0,0,-1));
 	test->AddComponent<Camera>(true, CameraMode::projection);
 	test->AddComponent<FlyingCam>();
 
-
-	Entity* renderTest = Application::CreateEntity();
-	renderTest->AddComponent<Transform>(glm::vec3(0, 0, -10), glm::vec3(40, 25, 73), glm::vec3(1, 1, 1));
-	renderTest->AddComponent<Mesh>(ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp);
-
+	int amount = 22;
+	for (int x = 0; x < amount; x++)
+	{
+		for (int y = 0; y < amount; y++)
+		{
+			for (int z = 0; z < amount; z++)
+			{
+				Entity* renderTest = Application::CreateEntity();
+				renderTest->AddComponent<StaticTransform>(glm::vec3(0 + (x * 10), 0 + (y * 10), -10 +(z*10)), glm::vec3(40, 25, 73), glm::vec3(1, 1, 1));
+				renderTest->AddComponent<Mesh>(MeshTransformMode::Static, ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp, testTex);
+			}
+		}
+	}
 	app->BindSystem<FlyingCamSystem>(SystemUsage::useUpdate);
 	app->MainEngineLoop();
 

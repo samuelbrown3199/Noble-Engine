@@ -16,11 +16,11 @@ namespace NobleComponents
 		/**
 		*Used to determine whether the matrix has been generated.
 		*/
-		bool dirty = false;
+		bool dirty = true;
 		/**
 		* Stores the model matrix of the transform component.
 		*/
-		glm::mat4 modelMat;
+		glm::mat4 model;
 		/**
 		*Stores the position of the transform.
 		*/
@@ -46,7 +46,7 @@ namespace NobleComponents
 		/**
 		*Main constructor for static transform.
 		*/
-		void OnInitialize(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
+		void OnInitialize(const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
 		{
 			position = _position;
 			rotation = _rotation;

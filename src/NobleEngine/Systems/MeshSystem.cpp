@@ -5,6 +5,34 @@ namespace NobleCore
 {
 	SetupComponent(NobleComponents::Mesh, MeshSystem);
 
+	void MeshSystem::GetTransformInformation(NobleComponents::Mesh* comp)
+	{
+		switch (comp->transformMode)
+		{
+		case NobleComponents::MeshTransformMode::Static:
+			if (comp->meshStaticTransform == NULL)
+			{
+				comp->meshStaticTransform = Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::StaticTransform>();
+			}
+			break;
+		case NobleComponents::MeshTransformMode::NonStatic:
+			if (comp->meshTransform == NULL)
+			{
+				comp->meshTransform = Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::Transform>();
+			}
+			break;
+		}
+
+		if (comp->meshTransform)
+		{
+			comp->modelMatrix = &comp->meshTransform->model;
+		}
+		if (comp->meshStaticTransform)
+		{
+			comp->modelMatrix = &comp->meshStaticTransform->model;
+		}
+	}
+
 	void MeshSystem::PreRender()
 	{
 		projectionViewMatrix = glm::mat4(1.0f);
@@ -13,7 +41,7 @@ namespace NobleCore
 
 	void MeshSystem::OnRender(NobleComponents::Mesh* comp)
 	{
-		comp->modelMatrix = &Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::Transform>()->model; //doesnt work for static transform.
+		GetTransformInformation(comp);
 
 		if (comp->model)
 		{
@@ -21,12 +49,16 @@ namespace NobleCore
 			projectionViewModel = projectionViewMatrix * *comp->modelMatrix;
 
 			comp->shader->UseProgram();
-			comp->shader->BindVector3("colour", glm::vec3(1.0, 0.0, 1.0));
+			comp->shader->BindInt("diffuseTexture", 0);
 			comp->shader->BindMat4("u_ProjectionViewModel", projectionViewModel);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, comp->texture->textureID);
 
 			glBindVertexArray(comp->model->vaoID);
 			glDrawArrays(GL_TRIANGLES, 0, comp->model->drawCount);
 			glBindVertexArray(0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glUseProgram(0);
 
 		}

@@ -88,7 +88,7 @@ namespace NobleCore
 			for (size_t co = _buffer; co < maxCap; co++)
 			{
 				if (co >= T::componentData.size())
-					return;
+					break;
 				
 				OnUpdate(&T::componentData.at(co));
 			}

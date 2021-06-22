@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include "../Systems/StaticTransformSystem.h"
 #include "../Systems/TransformSystem.h"
+#include "../Systems/PhysicsBodySystem.h"
 #include "../Systems/CameraSystem.h"
 #include "../Systems/MeshSystem.h"
 
@@ -11,10 +12,12 @@ namespace NobleCore
 {
 	bool Application::loop = true;
 	std::weak_ptr<Application> Application::self;
+	PerformanceStats Application::performanceStats;
 	std::shared_ptr<ThreadingManager> Application::threadingManager;
 	std::shared_ptr<Screen> Application::screen; 
 	std::shared_ptr<Renderer> Application::renderer;
 	std::shared_ptr<AudioManager> Application::audioManager;
+	std::shared_ptr<PhysicsWorld> Application::physicsWorld;
 	std::vector<Entity*> Application::deletionEntities;
 
 	std::vector<Entity> Application::entities;
@@ -25,6 +28,7 @@ namespace NobleCore
 	{
 		BindSystem<StaticTransformSystem>(SystemUsage::useUpdate);
 		BindSystem<TransformSystem>(SystemUsage::useUpdate, 20000);
+		BindSystem<PhysicsBodySystem>(SystemUsage::useUpdate);
 		BindSystem<CameraSystem>(SystemUsage::useUpdate);
 		BindSystem<MeshSystem>(SystemUsage::useRender);
 	}
@@ -44,6 +48,7 @@ namespace NobleCore
 
 	void Application::CleanupEngine()
 	{
+		physicsWorld->CleanupPhysicsWorld();
 		ThreadingManager::StopThreads();
 	}
 
@@ -61,6 +66,7 @@ namespace NobleCore
 		Application::screen = std::make_shared<Screen>(_windowName, _windowWidth, _windowHeight);
 		Application::renderer = std::make_shared<Renderer>(_graphicsAPI);
 		Application::audioManager = std::make_shared<AudioManager>();
+		Application::physicsWorld = PhysicsWorld::CreatePhysicsWorld();
 		Application::BindCoreSystems();
 
 		return app;
@@ -70,12 +76,16 @@ namespace NobleCore
 	{
 		while (loop)
 		{
-			float frameStart = SDL_GetTicks();
+			performanceStats.ResetPerformanceStats();
+			performanceStats.preUpdateStart = SDL_GetTicks();
 
 			//frame start
 			InputManager::HandleGeneralInput();
 			Screen::UpdateScreenSize();
+			performanceStats.preUpdateTime = SDL_GetTicks() - performanceStats.preUpdateStart;
 
+			performanceStats.updateStart = SDL_GetTicks();
+			ThreadingManager::EnqueueTask([&] {physicsWorld->StepSimulation(PerformanceStats::deltaT); });
 			//update
 			for (int i = 0; i < componentSystems.size(); i++)
 			{
@@ -83,7 +93,10 @@ namespace NobleCore
 				componentSystems.at(i)->Update();
 			}
 			ThreadingManager::WaitForTasksToClear();
+			performanceStats.updateTime = SDL_GetTicks() - performanceStats.updateStart;
+
 			//render
+			performanceStats.renderStart = SDL_GetTicks();
 			Renderer::ClearBuffer();
 			for (int i = 0; i < componentSystems.size(); i++)
 			{
@@ -92,13 +105,17 @@ namespace NobleCore
 			}
 			ThreadingManager::WaitForTasksToClear();
 			Renderer::SwapGraphicsBuffer();
+			performanceStats.renderTime = SDL_GetTicks() - performanceStats.renderStart;
+
 			//frame cleanup
+			performanceStats.cleanupStart = SDL_GetTicks();
 			InputManager::ClearFrameInputs();
 			ResourceManager::UnloadUnusedResources();
 			CleanupDeletionEntities();
+			performanceStats.cleanupTime = SDL_GetTicks() - performanceStats.cleanupStart;
 
-			float frameEnd = SDL_GetTicks() - frameStart;
-			std::cout << "Frame Time " << frameEnd << std::endl;
+			performanceStats.UpdatePerformanceStats();
+			performanceStats.PrintOutPerformanceStats();
 		}
 
 		//Program cleanup before exit

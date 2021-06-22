@@ -2,9 +2,11 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include "PerformanceStats.h"
 #include "ThreadingManager.h"
 #include "Screen.h"
 #include "Renderer.h"
+#include "PhysicsWorld.h"
 #include "AudioManager.h"
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
@@ -39,6 +41,10 @@ namespace NobleCore
 		*Stores a weak pointer to the application.
 		*/
 		static std::weak_ptr<Application> self;
+		/**
+		* Stores the performance information of the game engine.
+		*/
+		static PerformanceStats performanceStats;
 		/**
 		* Stores relevant information for threading.
 		*/
@@ -77,6 +83,10 @@ namespace NobleCore
 		* Stores the applications current main camera.
 		*/
 		static NobleComponents::Camera* mainCam;
+		/**
+		* Stores the physics world object.
+		*/
+		static std::shared_ptr<PhysicsWorld> physicsWorld;
 		/**
 		*Initializes the engine.
 		*/

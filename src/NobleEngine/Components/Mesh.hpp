@@ -8,13 +8,15 @@
 
 #include "StaticTransform.hpp"
 #include "Transform.hpp"
+#include "PhysicsBody.hpp"
 
 namespace NobleComponents
 {
 	enum MeshTransformMode
 	{
 		Static,
-		NonStatic
+		NonStatic,
+		Physics
 	};
 
 	struct Mesh : public NobleCore::ComponentData<Mesh>
@@ -27,6 +29,7 @@ namespace NobleComponents
 		MeshTransformMode transformMode;
 		Transform* meshTransform = nullptr;
 		StaticTransform* meshStaticTransform = nullptr;
+		PhysicsBody* physicsTransform = nullptr;
 
 		void OnInitialize(MeshTransformMode _transformMode, std::shared_ptr<NobleResources::Model> _model, std::shared_ptr<NobleResources::ShaderProgram> _shader, std::shared_ptr<NobleResources::Texture> _texture)
 		{

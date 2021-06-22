@@ -24,6 +24,9 @@ add_library(NobleEngine
 #Noble Core
 	src/NobleEngine/Core/Application.h
 	src/NobleEngine/Core/Application.cpp
+
+	src/NobleEngine/Core/PerformanceStats.h
+	src/NobleEngine/Core/PerformanceStats.cpp
 	
 	src/NobleEngine/Core/ThreadingManager.h
 	src/NobleEngine/Core/ThreadingManager.cpp
@@ -39,6 +42,9 @@ add_library(NobleEngine
 
 	src/NobleEngine/Core/InputManager.h
 	src/NobleEngine/Core/InputManager.cpp
+
+	src/NobleEngine/Core/PhysicsWorld.h
+	src/NobleEngine/Core/PhysicsWorld.cpp
 
 	src/NobleEngine/Core/Resource.h
 	src/NobleEngine/Core/ResourceManager.h
@@ -69,6 +75,10 @@ add_library(NobleEngine
 	src/NobleEngine/Systems/TransformSystem.h
 	src/NobleEngine/Systems/TransformSystem.cpp
 
+	src/NobleEngine/Components/PhysicsBody.hpp
+	src/NobleEngine/Systems/PhysicsBodySystem.h
+	src/NobleEngine/Systems/PhysicsBodySystem.cpp
+
 	src/NobleEngine/Components/Camera.hpp
 	src/NobleEngine/Systems/CameraSystem.h
 	src/NobleEngine/Systems/CameraSystem.cpp
@@ -77,7 +87,7 @@ add_library(NobleEngine
 	src/NobleEngine/Systems/MeshSystem.h
 	src/NobleEngine/Systems/MeshSystem.cpp
 )
-target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32)
+target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32 Bullet3Collision Bullet3Common Bullet3Dynamics Bullet3Geometry BulletCollision BulletDynamics LinearMath)
 
 find_package(Vulkan)
 if(Vulkan_FOUND)

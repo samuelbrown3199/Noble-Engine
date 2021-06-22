@@ -29,7 +29,14 @@ namespace NobleCore
 		*/
 		static std::weak_ptr<SystemBase> componentSystem;
 
+		/**
+		* This can be used to create initialisation functions for components.
+		*/
 		virtual void OnInitialize() {};
+		/**
+		* This is used when deleting component data. Useful for cleaning up memory etc.
+		*/
+		virtual void OnRemove() {};
 
 	private:
 
@@ -52,6 +59,7 @@ namespace NobleCore
 			{
 				if (T::componentData.at(i).entityID == _ID)
 				{
+					T::componentData.at(i)->OnRemove();
 					T::componentData.erase(T::componentData.begin() + i);
 					break;
 				}

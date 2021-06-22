@@ -14,22 +14,22 @@ namespace NobleCore
 			{
 				comp->meshStaticTransform = Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::StaticTransform>();
 			}
+			comp->modelMatrix = &comp->meshStaticTransform->model;
 			break;
 		case NobleComponents::MeshTransformMode::NonStatic:
 			if (comp->meshTransform == NULL)
 			{
 				comp->meshTransform = Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::Transform>();
 			}
-			break;
-		}
-
-		if (comp->meshTransform)
-		{
 			comp->modelMatrix = &comp->meshTransform->model;
-		}
-		if (comp->meshStaticTransform)
-		{
-			comp->modelMatrix = &comp->meshStaticTransform->model;
+			break;
+		case NobleComponents::MeshTransformMode::Physics:
+			if (comp->physicsTransform == NULL)
+			{
+				comp->physicsTransform = Application::GetEntity(comp->entityID)->GetComponent<NobleComponents::PhysicsBody>();
+			}
+			comp->modelMatrix = &comp->physicsTransform->model;
+			break;
 		}
 	}
 

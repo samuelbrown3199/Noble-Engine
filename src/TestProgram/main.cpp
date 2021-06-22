@@ -4,6 +4,7 @@
 #include <NobleEngine/Components/Camera.hpp>
 #include <NobleEngine/Components/Mesh.hpp>
 #include <NobleEngine/Components/StaticTransform.hpp>
+#include <NobleEngine/Components/PhysicsBody.hpp>
 
 #include <NobleEngine/ResourceManagement/ShaderProgram.hpp>
 
@@ -31,7 +32,7 @@ int main()
 	test->AddComponent<Camera>(true, CameraMode::projection);
 	test->AddComponent<FlyingCam>();
 
-	int amount = 22;
+	int amount = 5;
 	for (int x = 0; x < amount; x++)
 	{
 		for (int y = 0; y < amount; y++)
@@ -39,11 +40,15 @@ int main()
 			for (int z = 0; z < amount; z++)
 			{
 				Entity* renderTest = Application::CreateEntity();
-				renderTest->AddComponent<StaticTransform>(glm::vec3(0 + (x * 10), 0 + (y * 10), -10 +(z*10)), glm::vec3(40, 25, 73), glm::vec3(1, 1, 1));
-				renderTest->AddComponent<Mesh>(MeshTransformMode::Static, ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp, testTex);
+				renderTest->AddComponent<PhysicsBody>(box, 10, glm::vec3(0 + (x * 10), 5 + (y * 10), -10 +(z*10)), glm::vec3(40, 25, 73), glm::vec3(1, 1, 1));
+				renderTest->AddComponent<Mesh>(Physics, ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp, testTex);
 			}
 		}
 	}
+	Entity* floor = Application::CreateEntity();
+	floor->AddComponent<PhysicsBody>(box, 0, glm::vec3(0 , 0 , 0), glm::vec3(0, 0, 0), glm::vec3(100, 1, 100));
+	floor->AddComponent<Mesh>(Physics, ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp, testTex);
+
 	app->BindSystem<FlyingCamSystem>(SystemUsage::useUpdate);
 	app->MainEngineLoop();
 

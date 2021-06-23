@@ -35,6 +35,7 @@ namespace NobleCore
 		virtual void Render() = 0;
 
 		virtual void RemoveComponent(unsigned int _ID) = 0;
+		virtual void RemoveAllComponents() = 0;
 	};
 
 	template<typename T>
@@ -117,6 +118,16 @@ namespace NobleCore
 					break;
 				}
 			}
+		}
+
+		void RemoveAllComponents()
+		{
+			for (int i = 0; i < T::componentData.size(); i++)
+			{
+				T::componentData.at(i).OnRemove();
+			}
+
+			T::componentData.clear();
 		}
 
 	protected:

@@ -23,31 +23,33 @@ void FlyingCamSystem::UpdateControls(FlyingCam* cam)
 	Camera* ca = Application::GetEntity(cam->entityID)->GetComponent<Camera>();
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+	float movementSpeed = cam->movementSpeed * PerformanceStats::deltaT;
+
 	if (InputManager::GetKey(SDLK_w))
 	{
-		tr->position += cam->movementSpeed * ca->cameraTransform->rotation;
+		tr->position += movementSpeed * ca->cameraTransform->rotation;
 	}
 	if (InputManager::GetKey(SDLK_s))
 	{
-		tr->position -= cam->movementSpeed * ca->cameraTransform->rotation;
+		tr->position -= movementSpeed * ca->cameraTransform->rotation;
 	}
 	if (InputManager::GetKey(SDLK_a))
 	{
 		glm::vec3 direction = glm::cross(ca->cameraTransform->rotation, up);
-		tr->position -= cam->movementSpeed * direction;
+		tr->position -= movementSpeed * direction;
 	}
 	if (InputManager::GetKey(SDLK_d))
 	{
 		glm::vec3 direction = glm::cross(ca->cameraTransform->rotation, up);
-		tr->position += cam->movementSpeed * direction;
+		tr->position += movementSpeed * direction;
 	}
 	if (InputManager::GetKey(SDLK_SPACE))
 	{
-		tr->position += cam->movementSpeed * up;
+		tr->position += movementSpeed * up;
 	}
 	if (InputManager::GetKey(SDLK_x))
 	{
-		tr->position -= cam->movementSpeed * up;
+		tr->position -= movementSpeed * up;
 	}
 }
 

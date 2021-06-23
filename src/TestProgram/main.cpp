@@ -46,7 +46,7 @@ int main()
 		}
 	}
 	Entity* floor = Application::CreateEntity();
-	floor->AddComponent<PhysicsBody>(box, 0, glm::vec3(0 , 0 , 0), glm::vec3(0, 0, 0), glm::vec3(100, 1, 100));
+	floor->AddComponent<PhysicsBody>(box, 0, glm::vec3(0 , 0 , 0), glm::vec3(0, 0, 0), glm::vec3(1000, 1, 1000));
 	floor->AddComponent<Mesh>(Physics, ResourceManager::LoadResource<Model>("Resources\\Models\\cube.obj"), temp, testTex);
 
 	app->BindSystem<FlyingCamSystem>(SystemUsage::useUpdate);

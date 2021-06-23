@@ -59,7 +59,7 @@ namespace NobleCore
 
 		static void WaitForTasksToClear()
 		{
-			while (!mTasks.empty() && AreAllThreadsFinished()) {}
+			while (!mTasks.empty() /* && !AreAllThreadsFinished()*/) {}
 		}
 
 	private:

@@ -48,8 +48,8 @@ namespace NobleCore
 
 	void Application::CleanupEngine()
 	{
-		physicsWorld->CleanupPhysicsWorld();
 		ThreadingManager::StopThreads();
+		physicsWorld->CleanupPhysicsWorld();
 	}
 
 	std::shared_ptr<Application> Application::InitializeEngine(std::string _windowName, GraphicsAPI _graphicsAPI, int _windowWidth, int _windowHeight)
@@ -115,7 +115,7 @@ namespace NobleCore
 			performanceStats.cleanupTime = SDL_GetTicks() - performanceStats.cleanupStart;
 
 			performanceStats.UpdatePerformanceStats();
-			performanceStats.PrintOutPerformanceStats();
+			//performanceStats.PrintOutPerformanceStats();
 		}
 
 		//Program cleanup before exit

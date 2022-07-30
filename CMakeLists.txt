@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
-project(Noble)
+project(NobleEngine)
 
 include_directories(
-	src
+        src
 )
 
 if(MSVC)
@@ -19,87 +19,110 @@ if(MSVC)
 endif()
 
 add_definitions(-DSDL_MAIN_HANDLED)
-add_library(NobleEngine
 
-#Noble Core
-	src/NobleEngine/Core/Application.h
-	src/NobleEngine/Core/Application.cpp
+add_library(Engine
 
-	src/NobleEngine/Core/PerformanceStats.h
-	src/NobleEngine/Core/PerformanceStats.cpp
+	src/Engine/Useful.h
+	src/Engine/Useful.cpp
+
+	#Networking
+	src/Engine/Networking/NetworkManager.h
+	src/Engine/Networking/NetworkManager.cpp
+
+	src/Engine/Networking/Packet.hpp
+	src/Engine/Networking/PacketParser.h
+
+	#System
+
+	#Core
+	src/Engine/Core/Application.h
+	src/Engine/Core/Application.cpp
+
+	src/Engine/Core/AudioManager.h
+	src/Engine/Core/AudioManager.cpp
+
+	src/Engine/Core/PerformanceStats.h
+	src/Engine/Core/PerformanceStats.cpp
+
+	src/Engine/Core/ThreadingManager.h
+	src/Engine/Core/ThreadingManager.cpp
+
+	src/Engine/Core/Logger.h
+	src/Engine/Core/Logger.cpp
+
+	src/Engine/Core/Renderer.h
+	src/Engine/Core/Renderer.cpp
+
+	src/Engine/Core/InputManager.h
+	src/Engine/Core/InputManager.cpp
+
+	src/Engine/Core/ResourceManager.h
+	src/Engine/Core/ResourceManager.cpp
+
+	src/Engine/Core/UI.h
+	src/Engine/Core/UI.cpp
+
+	#ECS
+
+	src/Engine/ECS/Entity.hpp
+	src/Engine/ECS/Component.hpp
+	src/Engine/ECS/System.hpp
+	src/Engine/ECS/Behaviour.hpp
+
+	#Resource Handling
 	
-	src/NobleEngine/Core/ThreadingManager.h
-	src/NobleEngine/Core/ThreadingManager.cpp
+	src/Engine/Resource/Resource.h
 
-	src/NobleEngine/Core/Screen.h
-	src/NobleEngine/Core/Screen.cpp
+	src/Engine/Resource/ShaderProgram.hpp
 
-	src/NobleEngine/Core/Renderer.h
-	src/NobleEngine/Core/Renderer.cpp
+	src/Engine/Resource/Texture.h
+	src/Engine/Resource/Texture.cpp
 
-	src/NobleEngine/Core/AudioManager.h
-	src/NobleEngine/Core/AudioManager.cpp
+	src/Engine/Resource/IniFile.h
+	src/Engine/Resource/IniFile.cpp
 
-	src/NobleEngine/Core/InputManager.h
-	src/NobleEngine/Core/InputManager.cpp
+	src/Engine/Resource/AudioClip.h
+	src/Engine/Resource/AudioClip.cpp
 
-	src/NobleEngine/Core/PhysicsWorld.h
-	src/NobleEngine/Core/PhysicsWorld.cpp
+	src/Engine/Resource/Font.h
+	src/Engine/Resource/Font.cpp
 
-	src/NobleEngine/Core/Resource.h
-	src/NobleEngine/Core/ResourceManager.h
-	src/NobleEngine/Core/ResourceManager.cpp
+	src/Engine/Resource/UILayout.h
+	src/Engine/Resource/UILayout.cpp
 
-#Noble Resources
+	#Systems & components
 
-	src/NobleEngine/ResourceManagement/AudioClip.hpp
-	src/NobleEngine/ResourceManagement/Model.hpp
-	src/NobleEngine/ResourceManagement/ShaderProgram.hpp
+	src/Engine/Systems/AudioSource.h
+	src/Engine/Systems/AudioSourceSystem.h
+	src/Engine/Systems/AudioSourceSystem.cpp
 
-	src/NobleEngine/ResourceManagement/Texture.h
-	src/NobleEngine/ResourceManagement/Texture.cpp
+	src/Engine/Systems/Transform.h
+	src/Engine/Systems/TransformSystem.h
+	src/Engine/Systems/TransformSystem.cpp
 
-#Noble ECS
+	src/Engine/Systems/Sprite.h
+	src/Engine/Systems/SpriteSystem.h
+	src/Engine/Systems/SpriteSystem.cpp
 
-	src/NobleEngine/ECS/Entity.hpp
-	src/NobleEngine/ECS/Component.hpp
-	src/NobleEngine/ECS/System.hpp
-
-#Noble Components
-
-	src/NobleEngine/Components/StaticTransform.hpp
-	src/NobleEngine/Systems/StaticTransformSystem.h
-	src/NobleEngine/Systems/StaticTransformSystem.cpp
-
-	src/NobleEngine/Components/Transform.hpp
-	src/NobleEngine/Systems/TransformSystem.h
-	src/NobleEngine/Systems/TransformSystem.cpp
-
-	src/NobleEngine/Components/PhysicsBody.hpp
-	src/NobleEngine/Systems/PhysicsBodySystem.h
-	src/NobleEngine/Systems/PhysicsBodySystem.cpp
-
-	src/NobleEngine/Components/Camera.hpp
-	src/NobleEngine/Systems/CameraSystem.h
-	src/NobleEngine/Systems/CameraSystem.cpp
-
-	src/NobleEngine/Components/Mesh.hpp
-	src/NobleEngine/Systems/MeshSystem.h
-	src/NobleEngine/Systems/MeshSystem.cpp
+	src/Engine/Systems/TileChunk.h
+	src/Engine/Systems/TileChunkSystem.h
+	src/Engine/Systems/TileChunkSystem.cpp
 )
-target_link_libraries(NobleEngine SDL2 openal32 glew32 opengl32 Bullet3Collision Bullet3Common Bullet3Dynamics Bullet3Geometry BulletCollision BulletDynamics LinearMath)
+target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm freetype)
 
-find_package(Vulkan)
-if(Vulkan_FOUND)
-	target_include_directories(NobleEngine PRIVATE Vulkan::Vulkan)
-	target_link_libraries(NobleEngine Vulkan::Vulkan)
-endif()
-
-add_executable(TestProgram
-	src/TestProgram/main.cpp
-
-	src/TestProgram/FlyingCam.h
-	src/TestProgram/FlyingCamSystem.h
-	src/TestProgram/FlyingCamSystem.cpp
+add_executable(Editor
+	src/Editor/main.cpp
 )
-target_link_libraries(TestProgram NobleEngine)
+target_link_libraries(Editor Engine)
+
+add_executable(TechDemo1
+    src/Game/main.cpp
+
+	src/Game/Interface/MainMenu.h
+	src/Game/Interface/MainMenu.cpp
+
+	src/Game/World/World.hpp
+)
+target_link_libraries(TechDemo1 Engine)
+set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")

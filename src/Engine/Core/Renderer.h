@@ -31,7 +31,7 @@ private:
 
 public:
 
-	Renderer();
+	Renderer(const std::string _windowName);
 
 	void ClearBuffer();
 	void SwapGraphicsBuffer();

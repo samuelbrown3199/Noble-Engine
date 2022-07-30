@@ -13,7 +13,7 @@
 int main()
 {
     srand(time(NULL));
-    std::shared_ptr<Application> app = Application::StartApplication();
+    std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
 
     //app->BindUISystem<MainMenu>("GameData\\UI\\MainMenu.UIL")->m_bActive = true;
@@ -28,7 +28,7 @@ int main()
 #else
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    std::shared_ptr<Application> app = Application::StartApplication();
+    std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
 
     app->MainLoop();

@@ -57,7 +57,7 @@ public:
 	static std::shared_ptr<ShaderProgram> m_uiShaderProgram;
 	static std::shared_ptr<ShaderProgram> m_uiTextProgram;
 
-    static std::shared_ptr<Application> StartApplication();
+    static std::shared_ptr<Application> StartApplication(const std::string _windowName);
     void LoadSettings();
     void MainLoop();
     void CleanupApplication();

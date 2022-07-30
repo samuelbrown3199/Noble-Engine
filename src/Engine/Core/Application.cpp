@@ -25,11 +25,11 @@ std::shared_ptr<ShaderProgram> Application::m_uiTextProgram;
 
 //----------------- Public Functions -----------------------
 
-std::shared_ptr<Application> Application::StartApplication()
+std::shared_ptr<Application> Application::StartApplication(const std::string _windowName)
 {
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
 	rtn->m_logger = new Logger();
-	rtn->m_gameRenderer = new Renderer();
+	rtn->m_gameRenderer = new Renderer(_windowName);
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_resourceManager = new ResourceManager();

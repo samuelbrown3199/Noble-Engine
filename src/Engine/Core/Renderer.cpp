@@ -18,11 +18,11 @@ Camera* Renderer::m_camera;
 
 //---------- public functions ---------
 
-Renderer::Renderer()
+Renderer::Renderer(const std::string _windowName)
 {
 	Logger::LogInformation("Creating engine renderer.");
 
-	m_gameWindow = SDL_CreateWindow("Station Engineer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 	if (!m_gameWindow)
 	{
 		Logger::LogInformation("Failed to create game window");

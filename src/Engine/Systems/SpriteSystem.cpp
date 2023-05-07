@@ -70,7 +70,7 @@ void SpriteSystem::OnRender(Sprite* comp)
 		return;
 
 	Application::m_mainShaderProgram->UseProgram();
-	glm::mat4 finalMat = Renderer::GenerateOrthographicMatrix() * Renderer::GenerateViewMatrix(); 
+	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix(); 
 	glBindTexture(GL_TEXTURE_2D, comp->m_spriteTexture->m_iTextureID);
 
 	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);

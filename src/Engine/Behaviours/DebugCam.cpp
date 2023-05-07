@@ -36,11 +36,11 @@ void DebugCam::UpdateControls()
 	}
 	if (InputManager::GetKey(SDLK_SPACE))
 	{
-		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		ca->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 	if (InputManager::GetKey(SDLK_x))
 	{
-		ca->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 }
 
@@ -58,7 +58,7 @@ void DebugCam::UpdateCameraRotation()
 		}
 
 		float xoffset = newMousePos.x - oldMousePos.x;
-		float yoffset = newMousePos.y - oldMousePos.y; // reversed since y-coordinates go from bottom to top
+		float yoffset = oldMousePos.y - newMousePos.y; // reversed since y-coordinates go from bottom to top
 		oldMousePos = newMousePos;
 
 		xoffset *= sensitivity;

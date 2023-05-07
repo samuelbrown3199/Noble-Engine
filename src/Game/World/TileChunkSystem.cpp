@@ -135,7 +135,7 @@ void TileChunkSystem::OnRender(TileChunk* comp)
 {
 	Application::m_mainShaderProgram->UseProgram();
 
-	glm::mat4 finalMat = Renderer::GenerateViewMatrix() * Renderer::GenerateProjectionMatrix();
+	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
 	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);
 	Application::m_mainShaderProgram->BindVector4("colour", glm::vec4(1.0f));
 

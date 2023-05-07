@@ -30,6 +30,11 @@ private:
 
 	static const float m_fMaxScale, m_fMinScale;
 
+	static bool m_bProjectionRendering;
+
+	static glm::mat4 GenerateProjectionMatrix();
+	static glm::mat4 GenerateOrthographicMatrix();
+
 public:
 
 	Renderer(const std::string _windowName);
@@ -51,8 +56,7 @@ public:
 	static float GetScale() { return m_fScale; };
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
-	static glm::mat4 GenerateProjectionMatrix();
-	static glm::mat4 GenerateOrthographicMatrix();
+	static glm::mat4 GenerateProjMatrix();
 	static glm::mat4 GenerateUIOrthographicMatrix();
 	static glm::mat4 GenerateViewMatrix();
 

@@ -16,6 +16,8 @@ const float Renderer::m_fMinScale = 3;
 
 Camera* Renderer::m_camera;
 
+bool Renderer::m_bProjectionRendering = true;
+
 //---------- public functions ---------
 
 Renderer::Renderer(const std::string _windowName)
@@ -136,6 +138,14 @@ void Renderer::SetVSyncMode(const int& _mode)
 {
 	Logger::LogInformation(FormatString("Changing VSync mode to %d", _mode));
 	SDL_GL_SetSwapInterval(_mode);
+}
+
+glm::mat4 Renderer::GenerateProjMatrix()
+{
+	if (m_bProjectionRendering)
+		return GenerateProjectionMatrix();
+
+	return GenerateOrthographicMatrix();
 }
 
 glm::mat4 Renderer::GenerateProjectionMatrix()

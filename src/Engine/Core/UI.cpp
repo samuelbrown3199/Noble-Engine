@@ -65,7 +65,7 @@ void TexturedUIElement::TextureSwap()
 {
 	Application::m_uiShaderProgram->UseProgram();
 	Application::m_uiShaderProgram->BindMat4("u_UIPos", m_elementRect->GetUIMatrix());
-	Application::m_uiShaderProgram->BindMat4("u_Ortho", Renderer::GenerateOrthographicMatrix());
+	Application::m_uiShaderProgram->BindMat4("u_Ortho", Renderer::GenerateUIOrthographicMatrix());
 
 	glActiveTexture(GL_TEXTURE0);
 	if (m_baseTexture)

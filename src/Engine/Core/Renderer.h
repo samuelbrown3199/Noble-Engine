@@ -12,7 +12,8 @@
 
 struct Camera
 {
-	glm::vec3 m_position = glm::vec3(0,0,0);
+	glm::vec3 m_position = glm::vec3(0,0,5);
+	glm::vec3 m_rotation = glm::vec3(0, 0, 0);
 };
 
 class Renderer
@@ -32,6 +33,7 @@ private:
 public:
 
 	Renderer(const std::string _windowName);
+	~Renderer();
 
 	void ClearBuffer();
 	void SwapGraphicsBuffer();
@@ -49,6 +51,7 @@ public:
 	static float GetScale() { return m_fScale; };
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
+	static glm::mat4 GenerateProjectionMatrix();
 	static glm::mat4 GenerateOrthographicMatrix();
 	static glm::mat4 GenerateUIOrthographicMatrix();
 	static glm::mat4 GenerateViewMatrix();

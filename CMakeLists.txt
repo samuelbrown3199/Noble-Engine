@@ -32,7 +32,9 @@ add_library(Engine
 	src/Engine/Networking/Packet.hpp
 	src/Engine/Networking/PacketParser.h
 
-	#System
+	#Behaviours
+	src/Engine/Behaviours/DebugCam.h
+	src/Engine/Behaviours/DebugCam.cpp
 
 	#Core
 	src/Engine/Core/Application.h

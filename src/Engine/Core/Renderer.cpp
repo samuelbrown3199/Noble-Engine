@@ -8,8 +8,8 @@ SDL_GLContext Renderer::m_glContext;
 
 int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
-float Renderer::m_fNearPlane = 0.0f;
-float Renderer::m_fFarPlane = 100.0f;
+float Renderer::m_fNearPlane = 0.1f;
+float Renderer::m_fFarPlane = 1000.0f;
 float Renderer::m_fScale = 20;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
@@ -61,6 +61,12 @@ Renderer::Renderer(const std::string _windowName)
 	Logger::LogInformation("Setup default settings for OpenGL.");
 
 	m_camera = new Camera();
+}
+
+Renderer::~Renderer()
+{
+	delete m_camera;
+	SDL_DestroyWindow(m_gameWindow);
 }
 
 void Renderer::AdjustScale(const float& _amount)
@@ -132,6 +138,12 @@ void Renderer::SetVSyncMode(const int& _mode)
 	SDL_GL_SetSwapInterval(_mode);
 }
 
+glm::mat4 Renderer::GenerateProjectionMatrix()
+{
+	glm::mat4 projMatrix = glm::perspective(glm::radians(90.0f), (float)m_iScreenWidth / (float)m_iScreenHeight, m_fNearPlane, m_fFarPlane); //hardcoded FoV to 90 for now.
+	return projMatrix;
+}
+
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
 	glm::mat4 orthoMatrix = glm::ortho(0.0f, (float)m_iScreenWidth / m_fScale, (float)m_iScreenHeight / m_fScale, 0.0f, 0.0f, m_fFarPlane);
@@ -146,6 +158,8 @@ glm::mat4 Renderer::GenerateUIOrthographicMatrix()
 
 glm::mat4 Renderer::GenerateViewMatrix()
 {
-	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_position, glm::vec3(m_camera->m_position.x, m_camera->m_position.y, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_camera->m_rotation = glm::normalize(m_camera->m_rotation);
+
+	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_position, m_camera->m_position + m_camera->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
 }

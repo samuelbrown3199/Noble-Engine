@@ -57,15 +57,15 @@ struct World : public Behaviour
 
 		Entity* planetSpawner;
 
-		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y*4, 1));
+		/*planetSpawner = Application::CreateEntity();
+		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\SpaceBackground1.png", glm::vec4(1,1,1, 0.35f));
 
 		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x * 4, m_planetScale.y * 4, 1));
+		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Stars1.png");
 
-		/*planetSpawner = Application::CreateEntity();
+		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -11), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.t, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\AtmosphereBase.png", glm::vec4(1, 1, 1, 0.1f));*/
 
@@ -89,7 +89,7 @@ struct World : public Behaviour
 			for (int y = 0; y < 2; y++)
 			{
 				Entity* newChunk = Application::CreateEntity();
-				newChunk->AddComponent<Transform>(glm::ivec3(-16 + (x * 16), -16 + (y * 16), -10), glm::ivec3(0, 0, 0), glm::ivec3(1, 1, 1));
+				newChunk->AddComponent<Transform>(glm::ivec3(-16 + (x * 16), -16 + (y * 16), 0), glm::ivec3(0, 0, 0), glm::ivec3(1, 1, 1));
 				m_vWorldChunks.push_back(newChunk->AddComponent<TileChunk>());
 			}
 		}

@@ -65,10 +65,6 @@ struct World : public Behaviour
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x * 4, m_planetScale.y * 4, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Stars1.png");
 
-		/*planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -11), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\AtmosphereBase.png", glm::vec4(1, 1, 1, 0.1f));*/
-
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\PlanetBase.png", glm::vec4(0, 0, 1, 1));

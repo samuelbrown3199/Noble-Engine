@@ -4,7 +4,6 @@
 #include "../Systems/AudioSourceSystem.h"
 #include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
-#include "../Systems/TileChunkSystem.h"
 
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
@@ -56,7 +55,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
-	rtn->BindSystem<TileChunkSystem>(SystemUsage::useBoth, "TileChunk");
 
 	Logger::LogInformation("Engine started successfully");
 

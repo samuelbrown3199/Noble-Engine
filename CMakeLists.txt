@@ -103,10 +103,6 @@ add_library(Engine
 	src/Engine/Systems/Sprite.h
 	src/Engine/Systems/SpriteSystem.h
 	src/Engine/Systems/SpriteSystem.cpp
-
-	src/Engine/Systems/TileChunk.h
-	src/Engine/Systems/TileChunkSystem.h
-	src/Engine/Systems/TileChunkSystem.cpp
 )
 target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm freetype)
 
@@ -122,6 +118,10 @@ add_executable(TechDemo1
 	src/Game/Interface/MainMenu.cpp
 
 	src/Game/World/World.hpp
+	
+	src/Game/World/TileChunk.h
+	src/Game/World/TileChunkSystem.h
+	src/Game/World/TileChunkSystem.cpp
 )
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

@@ -2,10 +2,10 @@
 #ifndef TILECHUNK_H
 #define TILECHUNK_H
 
-#include "../ECS/Component.hpp"
-#include "../Resource/Texture.h"
-#include "../Core/ResourceManager.h"
-#include "Transform.h"
+#include "Engine/ECS/Component.hpp"
+#include "Engine/Resource/Texture.h"
+#include "Engine/Core/ResourceManager.h"
+#include "Engine/Systems/Transform.h"
 
 #include <GL/glew.h>
 #include<cmath>

@@ -1,0 +1,34 @@
+[21:59:02] - Initializing World!
+[21:59:02] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\SpaceBackground1.png
+[21:59:02] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Stars1.png
+[21:59:02] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\PlanetBase.png
+[21:59:02] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Continents1.png
+[21:59:02] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Models\IronMan.obj
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\SpaceBackground1.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\WallTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\CableTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\PipeTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\GasLiquidTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\WallTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\CableTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\PipeTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\GasLiquidTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\WallTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\CableTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\PipeTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\GasLiquidTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\WallTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\CableTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\PipeTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\GasLiquidTiles.png
+[21:59:03] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Tiles\FloorTiles.png
+[21:59:08] - Starting cleanup and closing engine!
+[21:59:08] - Stopping threads.
+[21:59:08] - Stopped threads.

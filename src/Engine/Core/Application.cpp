@@ -4,6 +4,7 @@
 #include "../Systems/AudioSourceSystem.h"
 #include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
+#include "../Systems/MeshRendererSystem.h"
 #include "../Behaviours/DebugCam.h"
 
 #include "../imgui/imgui.h"
@@ -19,6 +20,7 @@ std::vector<Entity> Application::m_vEntities;
 std::vector<std::shared_ptr<UISystem>> Application::m_vUiSystems;
 std::vector<std::shared_ptr<Behaviour>> Application::m_vBehaviours;
 std::vector<std::shared_ptr<SystemBase>> Application::m_vComponentSystems;
+std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
 
 std::shared_ptr<ShaderProgram> Application::m_mainShaderProgram;
 std::shared_ptr<ShaderProgram> Application::m_uiShaderProgram;
@@ -47,11 +49,12 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
 	ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
+
+	rtn->BindDebugUI<EditorUI>()->m_uiOpen = true;
 
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
 	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram();
@@ -74,6 +77,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
+	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
 
 	rtn->BindBehaviour<DebugCam>();
 
@@ -116,26 +120,6 @@ void Application::MainLoop()
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-		{
-			static float f = 0.0f;
-			static int counter = 0;
-
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-			ImGui::End();
-		}
-
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
 		AudioManager::UpdateListenerPos();
@@ -162,6 +146,15 @@ void Application::MainLoop()
 
 		//Render Start
 		m_pStats->renderStart = SDL_GetTicks();
+
+		for (int i = 0; i < m_vDebugUIs.size(); i++)
+		{
+			if (m_vDebugUIs.at(i)->m_uiOpen)
+			{
+				m_vDebugUIs.at(i)->DoInterface();
+			}
+		}
+
 		ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->ClearBuffer();

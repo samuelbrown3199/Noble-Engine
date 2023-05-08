@@ -6,6 +6,7 @@
 #include <Engine/Core/Logger.h>
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
+#include <Engine/Systems/MeshRenderer.h>
 
 #include <vector>
 
@@ -72,6 +73,14 @@ struct World : public Behaviour
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -11.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Continents1.png", glm::vec4(0, 1, 0, 1));
+
+		planetSpawner = Application::CreateEntity();
+		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
+		MeshRenderer* mr = planetSpawner->AddComponent<MeshRenderer>();
+
+		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\Cube.obj");
+		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\SpaceBackground1.png");
+		mr->m_colour = glm::vec4(1, 1, 1, 1);
 	}
 
 	void Start()

@@ -20,7 +20,7 @@ endif()
 
 add_definitions(-DSDL_MAIN_HANDLED)
 
-add_library(Engine
+add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Useful.h
 	src/Engine/Useful.cpp
@@ -42,6 +42,8 @@ add_library(Engine
 
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
+
+	src/Engine/Core/DebugUI.hpp
 
 	#Networking
 	src/Engine/Networking/NetworkManager.h
@@ -110,6 +112,10 @@ add_library(Engine
 	src/Engine/Resource/UILayout.h
 	src/Engine/Resource/UILayout.cpp
 
+	src/Engine/Resource/ModelLoader.hpp
+	src/Engine/Resource/Model.h
+	src/Engine/Resource/Model.cpp
+
 	#Systems & components
 
 	src/Engine/Systems/AudioSource.h
@@ -123,6 +129,10 @@ add_library(Engine
 	src/Engine/Systems/Sprite.h
 	src/Engine/Systems/SpriteSystem.h
 	src/Engine/Systems/SpriteSystem.cpp
+
+	src/Engine/Systems/MeshRenderer.h
+	src/Engine/Systems/MeshRendererSystem.h
+	src/Engine/Systems/MeshRendererSystem.cpp
 )
 target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm freetype)
 

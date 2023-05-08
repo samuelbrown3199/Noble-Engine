@@ -21,6 +21,7 @@
 #include "../ECS/System.hpp"
 #include "../ECS/Behaviour.hpp"
 
+#include "DebugUI.hpp"
 #include "UI.h"
 
 class Application
@@ -50,6 +51,7 @@ private:
 
 	static std::vector<std::shared_ptr<UISystem>> m_vUiSystems;
 	static std::vector<std::shared_ptr<Behaviour>> m_vBehaviours;
+	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 public:
 
@@ -122,6 +124,15 @@ public:
 		sys->InitializeSpecificElements();
 
 		m_vUiSystems.push_back(sys);
+		return sys;
+	}
+
+	template<typename T>
+	static std::shared_ptr<T> BindDebugUI()
+	{
+		std::shared_ptr<T> sys = std::make_shared<T>();
+		sys->InitializeInterface();
+		m_vDebugUIs.push_back(sys);
 		return sys;
 	}
 

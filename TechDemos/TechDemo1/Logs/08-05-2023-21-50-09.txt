@@ -1,0 +1,6 @@
+[21:50:09] - Initializing World!
+[21:50:09] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\SpaceBackground1.png
+[21:50:09] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Stars1.png
+[21:50:09] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\PlanetBase.png
+[21:50:09] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Textures\Continents1.png
+[21:50:09] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Models\IronMan.obj

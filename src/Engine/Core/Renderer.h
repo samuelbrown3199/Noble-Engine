@@ -22,6 +22,9 @@ private:
 	static SDL_Window* m_gameWindow;
 	static SDL_GLContext m_glContext;
 
+	// GL 3.0 + GLSL 130
+	const char* glsl_version = "#version 130";
+
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
 	static float m_fScale;
@@ -46,6 +49,9 @@ public:
 	void SwapGraphicsBuffer();
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
+	static SDL_Window* GetWindow() { return m_gameWindow; }
+	static SDL_GLContext* GetGLContext() { return &m_glContext; }
+	const char* GetGLSLVersion() { return glsl_version; }
 
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
 	static void SetWindowFullScreen(const int& _mode);

@@ -6,6 +6,10 @@
 #include "../Systems/TransformSystem.h"
 #include "../Behaviours/DebugCam.h"
 
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_sdl2.h"
+#include "../imgui/backends/imgui_impl_opengl3.h"
+
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
 
@@ -34,6 +38,20 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_pStats = new PerformanceStats();
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsLight();
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
+	ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
 
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
 	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram();
@@ -85,12 +103,38 @@ void Application::MainLoop()
 {
 	Camera* cam = Renderer::GetCamera();
 
+	ImGuiIO& io = ImGui::GetIO();
+
 	while (m_bLoop)
 	{
 		m_pStats->ResetPerformanceStats();
 		m_pStats->preUpdateStart = SDL_GetTicks();
 		InputManager::HandleGeneralInput();
 		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+
+		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+
+			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+			ImGui::End();
+		}
 
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
@@ -118,6 +162,7 @@ void Application::MainLoop()
 
 		//Render Start
 		m_pStats->renderStart = SDL_GetTicks();
+		ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->ClearBuffer();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
@@ -132,6 +177,7 @@ void Application::MainLoop()
 				m_vUiSystems.at(i)->Render();
 			}
 		}
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->SwapGraphicsBuffer();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;

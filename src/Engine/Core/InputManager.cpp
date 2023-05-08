@@ -5,6 +5,10 @@
 #include "Application.h"
 #include "Renderer.h"
 
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_sdl2.h"
+#include "../imgui/backends/imgui_impl_opengl3.h"
+
 bool InputManager::m_bCurrentlyInputtingText;
 
 int InputManager::m_iMouseX = 0;
@@ -23,6 +27,8 @@ void InputManager::HandleGeneralInput()
 
 	while (SDL_PollEvent(&e) != 0)
 	{
+		ImGui_ImplSDL2_ProcessEvent(&e);
+
 		GetMousePosition();
 
 		if (e.type == SDL_QUIT)

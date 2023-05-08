@@ -25,6 +25,24 @@ add_library(Engine
 	src/Engine/Useful.h
 	src/Engine/Useful.cpp
 
+	src/Engine/imgui/imconfig.h
+	src/Engine/imgui/imgui.h
+	src/Engine/imgui/imgui.cpp
+	src/Engine/imgui/imgui_demo.cpp
+	src/Engine/imgui/imgui_draw.cpp
+	src/Engine/imgui/imgui_internal.h
+	src/Engine/imgui/imgui_tables.cpp
+	src/Engine/imgui/imgui_widgets.cpp
+	src/Engine/imgui/imstb_rectpack.h
+	src/Engine/imgui/imstb_textedit.h
+	src/Engine/imgui/imstb_truetype.h
+
+	src/Engine/imgui/backends/imgui_impl_opengl3.h
+	src/Engine/imgui/backends/imgui_impl_opengl3.cpp
+
+	src/Engine/imgui/backends/imgui_impl_sdl2.h
+	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
+
 	#Networking
 	src/Engine/Networking/NetworkManager.h
 	src/Engine/Networking/NetworkManager.cpp

@@ -147,7 +147,7 @@ void TileChunkSystem::OnRender(TileChunk* comp)
 		Application::m_mainShaderProgram->BindMat4("transMat", comp->m_vTileChunkLayers.at(i).m_layerTransformMat);
 		glBindVertexArray(comp->m_vTileChunkLayers.at(i).m_iChunkVAO);
 		glBindTexture(GL_TEXTURE_2D, comp->m_vTileChunkLayers.at(i).m_tileMapTexture->m_iTextureID);
-		glDrawArrays(GL_TRIANGLES, 0, 6 * (comp->m_iChunkWidth * comp->m_iChunkWidth));
+		glDrawArrays(Renderer::GetRenderMode(), 0, 6 * (comp->m_iChunkWidth * comp->m_iChunkWidth));
 		glBindVertexArray(0);
 	}
 }

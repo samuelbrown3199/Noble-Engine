@@ -35,6 +35,8 @@ private:
 	static glm::mat4 GenerateProjectionMatrix();
 	static glm::mat4 GenerateOrthographicMatrix();
 
+	static GLenum m_renderMode;
+
 public:
 
 	Renderer(const std::string _windowName);
@@ -61,6 +63,9 @@ public:
 	static glm::mat4 GenerateViewMatrix();
 
 	static void UpdateWindowTitle(const std::string& _windowTitle) { SDL_SetWindowTitle(m_gameWindow, _windowTitle.c_str()); };
+
+	static void SetRenderMode(GLenum renderMode);
+	static GLenum GetRenderMode() { return m_renderMode; }
 
 };
 

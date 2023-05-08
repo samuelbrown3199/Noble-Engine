@@ -77,5 +77,5 @@ void SpriteSystem::OnRender(Sprite* comp)
 	Application::m_mainShaderProgram->BindMat4("transMat", comp->m_spriteTransform->m_transformMat);
 	Application::m_mainShaderProgram->BindVector4("colour", comp->m_colour);
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);
 }

@@ -17,6 +17,7 @@ const float Renderer::m_fMinScale = 3;
 Camera* Renderer::m_camera;
 
 bool Renderer::m_bProjectionRendering = true;
+GLuint Renderer::m_renderMode = GL_TRIANGLES;
 
 //---------- public functions ---------
 
@@ -172,4 +173,12 @@ glm::mat4 Renderer::GenerateViewMatrix()
 
 	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_position, m_camera->m_position + m_camera->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
+}
+
+void Renderer::SetRenderMode(GLenum renderMode)
+{
+	if (renderMode != GL_TRIANGLES && renderMode != GL_LINES)
+		return;
+
+	m_renderMode = renderMode;
 }

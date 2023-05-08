@@ -13,7 +13,7 @@
 struct Camera
 {
 	glm::vec3 m_position = glm::vec3(0,0,5);
-	glm::vec3 m_rotation = glm::vec3(0, 0, 0);
+	glm::vec3 m_rotation = glm::vec3(0, 0, -1);
 };
 
 class Renderer

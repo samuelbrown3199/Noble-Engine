@@ -75,11 +75,11 @@ struct World : public Behaviour
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Continents1.png", glm::vec4(0, 1, 0, 1));
 
 		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
+		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 15), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
 		MeshRenderer* mr = planetSpawner->AddComponent<MeshRenderer>();
 
-		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\Cube.obj");
-		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\SpaceBackground1.png");
+		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
+		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");
 		mr->m_colour = glm::vec4(1, 1, 1, 1);
 	}
 

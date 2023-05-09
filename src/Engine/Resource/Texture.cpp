@@ -23,7 +23,19 @@ void Texture::OnLoad()
     }
     glBindTexture(GL_TEXTURE_2D, m_iTextureID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    GLuint filterMode = 0;
+    switch (m_filterMode)
+    {
+    case Point:
+        filterMode = GL_NEAREST;
+        break;
+    case Linear:
+        filterMode = GL_LINEAR;
+        break;
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     //upload the image daya to the bound texture unit in the GPU

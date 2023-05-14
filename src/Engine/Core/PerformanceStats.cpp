@@ -12,6 +12,9 @@ double PerformanceStats::renderTime = 0;
 double PerformanceStats::cleanupTime = 0;
 bool PerformanceStats::printPerformance = false;
 
+std::vector< std::pair<std::string, Uint32>> PerformanceStats::m_mSystemUpdateTimes;
+std::vector< std::pair<std::string, Uint32>> PerformanceStats::m_mSystemRenderTimes;
+
 void PerformanceStats::ResetPerformanceStats()
 {
 	frameStart = SDL_GetTicks();
@@ -49,5 +52,12 @@ void PerformanceStats::PrintOutPerformanceStats()
 
 	std::string performanceStatsString = FormatString("AVG FPS: %2f | Frame Time: %2f | Pre Update Time: %2f | Update Time: %2f | Render Time: %2f | Cleanup Time: %2f", 
 		avgFPS, frameTime, preUpdateTime, updateTime, renderTime, cleanupTime);
+
+	for (int i = 0; i < m_mSystemUpdateTimes.size(); i++)
+	{
+		std::string sysInfo = FormatString("%s Update Time: %2f | Render Time: %2f", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second, m_mSystemRenderTimes.at(i).second);
+		std::cout << sysInfo << std::endl;
+	}
+
 	std::cout << performanceStatsString << std::endl;
 }

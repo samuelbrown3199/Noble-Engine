@@ -125,8 +125,13 @@ void Application::MainLoop()
 		AudioManager::UpdateListenerPos();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
+			Uint32 updateStart = SDL_GetTicks();
 			m_vComponentSystems.at(i)->PreUpdate();
 			m_vComponentSystems.at(i)->Update();
+			Uint32 updateEnd = SDL_GetTicks() - updateStart;
+
+			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, updateEnd);
+			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
 		for (int i = 0; i < m_vBehaviours.size(); i++)
 		{
@@ -160,8 +165,13 @@ void Application::MainLoop()
 		m_gameRenderer->ClearBuffer();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
+			Uint32 renderStart = SDL_GetTicks();
 			m_vComponentSystems.at(i)->PreRender();
 			m_vComponentSystems.at(i)->Render();
+			Uint32 renderEnd = SDL_GetTicks() - renderStart;
+
+			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, renderEnd);
+			m_pStats->m_mSystemRenderTimes.push_back(pair);
 		}
 		for (int i = 0; i < m_vUiSystems.size(); i++)
 		{
@@ -184,6 +194,8 @@ void Application::MainLoop()
 
 		m_pStats->UpdatePerformanceStats();
 		m_pStats->PrintOutPerformanceStats();
+		m_pStats->m_mSystemUpdateTimes.clear();
+		m_pStats->m_mSystemRenderTimes.clear();
 	}
 
 	CleanupApplication();

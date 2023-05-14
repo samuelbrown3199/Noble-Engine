@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include <SDL/SDL.h>
 
@@ -21,6 +22,9 @@ private:
 	const int avgFrameRateCount = 60;
 	std::vector<int> framerateList;
 	int currentFrameCount = 0;
+
+	static std::vector< std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
+	static std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;
 
 	/**
 	*Resets the performance stats. Done every frame by the engine.

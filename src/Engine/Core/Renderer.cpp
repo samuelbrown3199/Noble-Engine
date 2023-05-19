@@ -11,6 +11,8 @@ int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
 float Renderer::m_fFarPlane = 1000.0f;
 float Renderer::m_fScale = 20;
+
+float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
 
@@ -151,7 +153,7 @@ glm::mat4 Renderer::GenerateProjMatrix()
 
 glm::mat4 Renderer::GenerateProjectionMatrix()
 {
-	glm::mat4 projMatrix = glm::perspective(glm::radians(90.0f), (float)m_iScreenWidth / (float)m_iScreenHeight, m_fNearPlane, m_fFarPlane); //hardcoded FoV to 90 for now.
+	glm::mat4 projMatrix = glm::perspective(glm::radians(m_fFov), (float)m_iScreenWidth / (float)m_iScreenHeight, m_fNearPlane, m_fFarPlane);
 	return projMatrix;
 }
 
@@ -181,4 +183,17 @@ void Renderer::SetRenderMode(GLenum renderMode)
 		return;
 
 	m_renderMode = renderMode;
+}
+
+void Renderer::SetClearColour(glm::vec3 colour)
+{
+	glClearColor(colour.x, colour.y, colour.z, 1.0f);
+}
+
+void Renderer::SetCullFace(bool value)
+{
+	if (value)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
 }

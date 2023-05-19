@@ -31,6 +31,7 @@ private:
 
 	static Camera* m_camera;
 
+	static float m_fFov;
 	static const float m_fMaxScale, m_fMinScale;
 
 	static bool m_bProjectionRendering;
@@ -73,6 +74,11 @@ public:
 	static void SetRenderMode(GLenum renderMode);
 	static GLenum GetRenderMode() { return m_renderMode; }
 
+	static void SetFov(float value) { m_fFov = value; }
+	static float GetFov() { return m_fFov; }
+
+	static void SetClearColour(glm::vec3 colour);
+	static void SetCullFace(bool value);
 };
 
 #endif

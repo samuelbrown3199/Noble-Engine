@@ -2,6 +2,7 @@
 #ifndef DEBUGUI_H_
 #define DEBUGUI_H_
 
+#include "../Useful.h"
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
@@ -72,6 +73,15 @@ public:
 		static int item_current = 0;
 		ImGui::Combo("Draw Mode", &item_current, items, IM_ARRAYSIZE(items));
 		Renderer::SetRenderMode(m_mRenderModes[item_current]);
+
+		float fov = Renderer::GetFov();
+		ImGui::SliderFloat("FoV", &fov, 10.0f, 150.0f, FormatString("%2f", fov).c_str());
+		Renderer::SetFov(fov);
+
+		float clearColour[3];
+		ImGui::ColorEdit3("Clear Buffer Colour", clearColour);
+		if (ImGui::Button("Apply"))
+			Renderer::SetClearColour(glm::vec3(clearColour[0], clearColour[1], clearColour[2]));
 
 		ImGui::End();
 

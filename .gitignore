@@ -35,3 +35,4 @@
 *.db-shm
 *.db-wal
 *.db
+/TechDemos/TechDemo1/Logs

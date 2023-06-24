@@ -12,7 +12,7 @@ void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
 	if (comp->m_transform == nullptr)
 	{
-		comp->m_transform = Application::GetEntity(comp->entityID)->GetComponent<Transform>();
+		comp->m_transform = Application::GetEntity(comp->m_sEntityID)->GetComponent<Transform>();
 		return;
 	}
 	if (comp->m_texture == nullptr)

@@ -10,18 +10,18 @@ struct Entity
 	/**
 	*The unique ID for the entity.
 	*/
-	unsigned int entityID;
+	std::string m_sEntityID;
 	/**
 	* Used to detemine whether the entity can be reused after being deleted.
 	*/
-	bool availableForUse = false;
+	bool m_bAvailableForUse = false;
 
 	/**
 	*Constructor for the Entity.
 	*/
-	Entity(unsigned int _ID)
+	Entity(std::string _ID)
 	{
-		entityID = _ID;
+		m_sEntityID = _ID;
 	}
 
 	/**
@@ -34,7 +34,7 @@ struct Entity
 		if (!alreadyHasComponent)
 		{
 			T comp;
-			comp.entityID = entityID;
+			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize();
 			T::componentData.push_back(comp);
 
@@ -52,7 +52,7 @@ struct Entity
 		if (!alreadyHasComponent)
 		{
 			T comp;
-			comp.entityID = entityID;
+			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize(std::forward<Args>(_args)...);
 			T::componentData.push_back(comp);
 
@@ -66,7 +66,7 @@ struct Entity
 	template<typename T>
 	T* GetComponent()
 	{
-		T* temp = T::GetComponent(entityID);
+		T* temp = T::GetComponent(m_sEntityID);
 		return temp;
 	}
 	template<typename T>
@@ -75,7 +75,7 @@ struct Entity
 	*/
 	void RemoveComponent()
 	{
-		T::RemoveComponent(entityID);
+		T::RemoveComponent(m_sEntityID);
 	}
 };
 

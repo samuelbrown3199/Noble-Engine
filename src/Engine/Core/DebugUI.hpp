@@ -7,6 +7,9 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
+#include "..\Core\Application.h"
+#include "..\Core\SceneManager.h"
+
 class DebugUI
 {
 public:
@@ -82,6 +85,15 @@ public:
 		ImGui::ColorEdit3("Clear Buffer Colour", clearColour);
 		if (ImGui::Button("Apply"))
 			Renderer::SetClearColour(glm::vec3(clearColour[0], clearColour[1], clearColour[2]));
+
+		if (ImGui::Button("Delete Scene"))
+			SceneManager::ClearLoadedScene();
+
+		if (ImGui::Button("Switch Scene"))
+			SceneManager::LoadScene("GameData\\Scenes\\TestSaveScene.json");
+
+		if (ImGui::Button("Save Scene"))
+			SceneManager::SaveScene("GameData\\Scenes\\TestSaveScene.json");
 
 		ImGui::End();
 

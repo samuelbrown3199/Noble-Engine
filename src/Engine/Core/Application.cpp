@@ -33,6 +33,8 @@ std::shared_ptr<ShaderProgram> Application::m_uiTextProgram;
 
 std::shared_ptr<Application> Application::StartApplication(const std::string _windowName)
 {
+	srand(time(NULL));
+
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
 	rtn->m_logger = new Logger();
 	rtn->m_gameRenderer = new Renderer(_windowName);
@@ -216,38 +218,91 @@ void Application::CleanupApplication()
 	delete m_pStats;
 }
 
+std::string Application::GetUniqueEntityID()
+{
+	std::string id = GenerateRandomString(25);
+	while (GetEntity(id) != nullptr)
+	{
+		id = GenerateRandomString(25);
+	}
+
+	return id;
+}
+
 Entity* Application::CreateEntity() //this will need optimisation
 {
 	if(!m_vDeletionEntities.empty())
 	{
 		Entity* targetEntity = m_vDeletionEntities.front();
 
-		if (targetEntity->availableForUse)
+		if (targetEntity->m_bAvailableForUse)
 		{
-			targetEntity->availableForUse = false;
+			targetEntity->m_bAvailableForUse = false;
 			m_vDeletionEntities.pop_front();
 			return targetEntity;
 		}
 	}
-	m_vEntities.push_back(m_vEntities.size());
+
+	//generate entity ID here.
+	std::string id = m_self.lock()->GetUniqueEntityID();
+	m_vEntities.push_back(id);
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
-void Application::DeleteEntity(unsigned int _ID)
+Entity* Application::CreateEntity(std::string _desiredID)
 {
-	if (_ID <= m_vEntities.size())
+	if (!m_vDeletionEntities.empty())
 	{
-		m_vDeletionEntities.push_back(&m_vEntities.at(_ID));
+		Entity* targetEntity = m_vDeletionEntities.front();
+
+		if (targetEntity->m_bAvailableForUse && targetEntity->m_sEntityID == _desiredID)
+		{
+			targetEntity->m_bAvailableForUse = false;
+			m_vDeletionEntities.pop_front();
+			return targetEntity;
+		}
+	}
+
+	for (int i = 0; i < m_vEntities.size(); i++)
+	{
+		if (m_vEntities.at(i).m_sEntityID == _desiredID)
+		{
+			return nullptr;
+		}
+	}
+
+	m_vEntities.push_back(_desiredID);
+	return &m_vEntities.at(m_vEntities.size() - 1);
+}
+
+void Application::DeleteEntity(std::string _ID)
+{
+	for(int i = 0; i < m_vEntities.size(); i++)
+	{
+		if(m_vEntities.at(i).m_sEntityID == _ID)
+			m_vDeletionEntities.push_back(&m_vEntities.at(i));
 	}
 }
 
-Entity* Application::GetEntity(unsigned int _ID)
+Entity* Application::GetEntity(std::string _ID)
 {
-	if (_ID <= m_vEntities.size() - 1)
+	for (int i = 0; i < m_vEntities.size(); i++)
 	{
-		return &m_vEntities.at(_ID);
+		if (m_vEntities.at(i).m_sEntityID == _ID)
+			return &m_vEntities.at(i);
 	}
 	return nullptr;
+}
+
+void Application::ClearLoadedScene()
+{
+	m_vEntities.clear();
+	m_vDeletionEntities.clear();
+
+	for (int i = 0; i < m_vComponentSystems.size(); i++)
+	{
+		m_vComponentSystems.at(i)->RemoveAllComponents();
+	}
 }
 
 void Application::CleanupDeletionEntities()
@@ -257,10 +312,23 @@ void Application::CleanupDeletionEntities()
 		Entity* currentEntity = m_vDeletionEntities.front();
 		for (int o = 0; o < m_vComponentSystems.size(); o++)
 		{
-			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->entityID);
+			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->m_sEntityID);
 		}
-		currentEntity->availableForUse = true;
+		currentEntity->m_bAvailableForUse = true;
 	}
+}
+
+std::shared_ptr<SystemBase> Application::GetSystemFromID(std::string _ID)
+{
+	for (int i = 0; i < m_vComponentSystems.size(); i++)
+	{
+		if (m_vComponentSystems.at(i)->m_systemID == _ID)
+		{
+			return m_vComponentSystems.at(i);
+		}
+	}
+
+	return nullptr;
 }
 
 void Application::CreateNetworkManager(const int& _mode)

@@ -56,7 +56,7 @@ struct World : public Behaviour
 		m_fWorldAmbientStrength = 1.0f;
 		m_planetScale = glm::vec2(500, 500);
 
-		Entity* planetSpawner;
+		/*Entity* planetSpawner;
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
@@ -78,9 +78,11 @@ struct World : public Behaviour
 		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 15), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
 		MeshRenderer* mr = planetSpawner->AddComponent<MeshRenderer>();
 
+		planetSpawner->AddComponent<AudioSource>("GameData\\Sounds\\glass_smash.ogg", "Master")->m_bPlay = false;
+
 		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
 		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");
-		mr->m_colour = glm::vec4(1, 1, 1, 1);
+		mr->m_colour = glm::vec4(1, 1, 1, 1);*/
 	}
 
 	void Start()
@@ -88,16 +90,6 @@ struct World : public Behaviour
 		Logger::LogInformation("Initializing World!");
 
 		GenerateBackgroundPlanet();
-
-		for (int x = 0; x < 2; x++)
-		{
-			for (int y = 0; y < 2; y++)
-			{
-				Entity* newChunk = Application::CreateEntity();
-				newChunk->AddComponent<Transform>(glm::ivec3(-16 + (x * 16), -16 + (y * 16), 0), glm::ivec3(0, 0, 0), glm::ivec3(1, 1, 1));
-				m_vWorldChunks.push_back(newChunk->AddComponent<TileChunk>());
-			}
-		}
 	}
 
 	void Update()

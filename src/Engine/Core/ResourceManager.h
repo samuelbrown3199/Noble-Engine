@@ -61,6 +61,7 @@ struct ResourceManager
 
 		std::shared_ptr<T> newResource = std::make_shared<T>();
 		newResource->m_sResourcePath = searchPath;
+		newResource->m_sLocalPath = _fileDirectory;
 		newResource->OnLoad();
 		m_vResources.push_back(newResource);
 		return newResource;

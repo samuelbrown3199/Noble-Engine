@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include <nlohmann/json.hpp>
+
 #include "../Core/ThreadingManager.h"
 
 //avoid using this in actual engine library compile so intel compiler can be used. Seems like its something to do with some inheritance
@@ -33,8 +35,11 @@ struct SystemBase
 	virtual void PreRender() {};
 	virtual void Render() = 0;
 
-	virtual void RemoveComponent(unsigned int _ID) = 0;
+	virtual void RemoveComponent(std::string _ID) = 0;
 	virtual void RemoveAllComponents() = 0;
+
+	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
+	virtual nlohmann::json WriteComponentDataToJson() = 0;
 };
 
 	template<typename T>
@@ -108,11 +113,11 @@ private:
 		}
 	}
 
-	void RemoveComponent(unsigned int _ID)
+	void RemoveComponent(std::string _ID)
 	{
 		for (int i = 0; i < T::componentData.size(); i++)
 		{
-			if (T::componentData.at(i).entityID == _ID)
+			if (T::componentData.at(i).m_sEntityID == _ID)
 			{
 				T::componentData.erase(T::componentData.begin() + i);
 				break;
@@ -139,6 +144,33 @@ protected:
 	* Overwrite this to create functionality on a component every rendering process.
 	*/
 	virtual void OnRender(T* comp) {};
+
+public:
+
+	void LoadComponentDataFromJson(nlohmann::json& j)
+	{
+		for (auto it : j.items())
+		{
+			T component;
+			component.m_sEntityID = it.key();
+			component.FromJson(j[it.key()]);
+
+			T::componentData.push_back(component);
+		}
+	}
+
+	nlohmann::json WriteComponentDataToJson()
+	{
+		nlohmann::json data;
+
+		for (int i = 0; i < T::componentData.size(); i++)
+		{
+			data[T::componentData.at(i).m_sEntityID] = T::componentData.at(i).WriteJson();
+		}
+
+		return data;
+	}
+
 };
 
 #endif

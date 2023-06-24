@@ -50,6 +50,23 @@ std::string GetTimeString()
     return dateString.str();
 }
 
+std::string GenerateRandomString(size_t _length)
+{
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+
+    std::string tmp_s;
+    tmp_s.reserve(_length);
+    for (int i = 0; i < _length; ++i)
+    {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    return tmp_s;
+}
+
 //--------------------FILES AND DIRECTORIES----------------------------
 
 bool PathExists(const std::string& _filePath)

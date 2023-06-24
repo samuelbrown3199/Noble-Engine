@@ -1,0 +1,16 @@
+{
+	"Entities" : {
+		"fdsafdsa" : 0,
+		"bcdsbczby" : 0,
+		"tewqtewqt" : 0
+	},
+	"ComponentData" : {
+		"Transform" : {},
+		"AudioSource" : {},
+		"Sprite" : {},
+		"Mesh" : {}
+	},
+	"Behaviours" : {
+		
+	}
+}

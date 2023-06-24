@@ -81,6 +81,9 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/ResourceManager.h
 	src/Engine/Core/ResourceManager.cpp
 
+	src/Engine/Core/SceneManager.h
+	src/Engine/Core/SceneManager.cpp
+
 	src/Engine/Core/UI.h
 	src/Engine/Core/UI.cpp
 
@@ -115,6 +118,9 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Resource/ModelLoader.hpp
 	src/Engine/Resource/Model.h
 	src/Engine/Resource/Model.cpp
+
+	src/Engine/Resource/Scene.h
+	src/Engine/Resource/Scene.cpp
 
 	#Systems & components
 

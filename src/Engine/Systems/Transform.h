@@ -18,6 +18,19 @@ struct Transform : ComponentData<Transform>
 
 	glm::mat4 m_transformMat;
 
+	nlohmann::json WriteJson() override
+	{
+		nlohmann::json data = { {"position",{m_position.x, m_position.y, m_position.z}}, {"rotation",{m_rotation.x, m_rotation.y, m_rotation.z}}, {"scale",{m_scale.x, m_scale.y, m_scale.z}} };
+		return data;
+	}
+
+	void FromJson(const nlohmann::json& j) override
+	{
+		m_position = glm::vec3(j.at("position")[0], j.at("position")[1], j.at("position")[2]);
+		m_rotation = glm::vec3(j.at("rotation")[0], j.at("rotation")[1], j.at("rotation")[2]);
+		m_scale= glm::vec3(j.at("scale")[0], j.at("scale")[1], j.at("scale")[2]);
+	}
+
 	void OnInitialize()
 	{
 		m_position = glm::vec3(0, 0, 0);

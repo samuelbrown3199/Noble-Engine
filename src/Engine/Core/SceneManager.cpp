@@ -24,6 +24,9 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	nlohmann::json data;
 
+	data["LightingSettings"]["AmbientColour"] = { 1,1,1 };
+	data["LightingSettings"]["AmbientStrength"] = 1.0f;
+
 	for (int i = 0; i < entities.size(); i++)
 	{
 		data["Entities"][entities.at(i).m_sEntityID] = 0;

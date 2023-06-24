@@ -15,9 +15,6 @@
 struct World : public Behaviour
 {
 	std::string m_sWorldName;
-
-	glm::vec3 m_worldAmbientColor;
-	float m_fWorldAmbientStrength;
 	std::vector<TileChunk*> m_vWorldChunks;
 
 	glm::vec2 m_planetScale;
@@ -52,11 +49,9 @@ struct World : public Behaviour
 
 	void GenerateBackgroundPlanet()
 	{
-		m_worldAmbientColor = glm::vec3(1, 1, 1);
-		m_fWorldAmbientStrength = 1.0f;
 		m_planetScale = glm::vec2(500, 500);
 
-		/*Entity* planetSpawner;
+		Entity* planetSpawner;
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
@@ -82,7 +77,7 @@ struct World : public Behaviour
 
 		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
 		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");
-		mr->m_colour = glm::vec4(1, 1, 1, 1);*/
+		mr->m_colour = glm::vec4(1, 1, 1, 1);
 	}
 
 	void Start()
@@ -90,12 +85,6 @@ struct World : public Behaviour
 		Logger::LogInformation("Initializing World!");
 
 		GenerateBackgroundPlanet();
-	}
-
-	void Update()
-	{
-		Application::m_mainShaderProgram->BindFloat("ambientStrength", m_fWorldAmbientStrength);
-		Application::m_mainShaderProgram->BindVector3("ambientColour", m_worldAmbientColor);
 	}
 };
 

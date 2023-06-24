@@ -12,6 +12,20 @@ struct Sprite : public ComponentData<Sprite>
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour;
 
+	nlohmann::json WriteJson()
+	{ 
+		nlohmann::json data;
+		data = { {"spritePath", m_spriteTexture->m_sLocalPath }, {"colour", {m_colour.x, m_colour.y, m_colour.z, m_colour.w}} };
+
+		return data;
+	}
+
+	void FromJson(const nlohmann::json& j)
+	{
+		m_spriteTexture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
+		m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
+	}
+
 	void OnInitialize()
 	{
 		m_colour = glm::vec4(1.0f);

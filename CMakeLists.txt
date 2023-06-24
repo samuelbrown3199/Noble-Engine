@@ -59,9 +59,6 @@ add_library(Engine ${SRC_IMGUI}
 	#Core
 	src/Engine/Core/Application.h
 	src/Engine/Core/Application.cpp
-	
-	src/Engine/Core/Scene.h
-	src/Engine/Core/Scene.cpp
 
 	src/Engine/Core/AudioManager.h
 	src/Engine/Core/AudioManager.cpp
@@ -83,6 +80,9 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Core/ResourceManager.h
 	src/Engine/Core/ResourceManager.cpp
+
+	src/Engine/Core/SceneManager.h
+	src/Engine/Core/SceneManager.cpp
 
 	src/Engine/Core/UI.h
 	src/Engine/Core/UI.cpp
@@ -118,6 +118,9 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Resource/ModelLoader.hpp
 	src/Engine/Resource/Model.h
 	src/Engine/Resource/Model.cpp
+
+	src/Engine/Resource/Scene.h
+	src/Engine/Resource/Scene.cpp
 
 	#Systems & components
 

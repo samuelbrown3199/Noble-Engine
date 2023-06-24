@@ -30,6 +30,8 @@ std::string RemoveCharacterFromString(const std::string& _input, const char _tar
 std::string GetDateTimeString();
 std::string GetTimeString();
 
+std::string GenerateRandomString(size_t _length);
+
 //--------------------FILES AND DIRECTORIES----------------------------
 
 bool PathExists(const std::string& _path);

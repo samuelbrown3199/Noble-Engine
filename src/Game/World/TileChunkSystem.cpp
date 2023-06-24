@@ -13,7 +13,7 @@ void TileChunkSystem::CreateChunkMeshData(TileChunk* comp)
 {
 	if (comp->m_chunkTransform == nullptr)
 	{
-		comp->m_chunkTransform = Application::GetEntity(comp->entityID)->AddComponent<Transform>();
+		comp->m_chunkTransform = Application::GetEntity(comp->m_sEntityID)->AddComponent<Transform>();
 	}
 
 	for (int chunk = 0; chunk < comp->m_vTileChunkLayers.size(); chunk++)

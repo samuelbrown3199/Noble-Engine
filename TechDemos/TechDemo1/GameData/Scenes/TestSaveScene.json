@@ -1,0 +1,164 @@
+{
+    "ComponentData": {
+        "AudioSource": {
+            "kFwGc6Alz6Pfyeayksx5g0dqk": {
+                "clipPath": "GameData\\Sounds\\glass_smash.ogg",
+                "gain": 1.0,
+                "loop": false,
+                "mixerOption": "Master",
+                "pitch": 1.0,
+                "play": false,
+                "velocity": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        },
+        "Mesh": {
+            "kFwGc6Alz6Pfyeayksx5g0dqk": {
+                "colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "modelPath": "GameData\\Models\\cottage_obj.obj",
+                "texturePath": "GameData\\Textures\\cottage_diffuse.png"
+            }
+        },
+        "Sprite": {
+            "3uqfResM3pAf5jbCDLBBNp3Tv": {
+                "colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    0.349999994039536
+                ],
+                "spritePath": "GameData\\Textures\\SpaceBackground1.png"
+            },
+            "49aZrwsmAlLCAdQFtsXQJRrwD": {
+                "colour": [
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0
+                ],
+                "spritePath": "GameData\\Textures\\PlanetBase.png"
+            },
+            "G6ZMm0On2pafO8hQShxR8P7RW": {
+                "colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "spritePath": "GameData\\Textures\\Stars1.png"
+            },
+            "RHYbBMsaPVzlUhmYg8F9Dddnp": {
+                "colour": [
+                    0.0,
+                    1.0,
+                    0.0,
+                    1.0
+                ],
+                "spritePath": "GameData\\Textures\\Continents1.png"
+            }
+        },
+        "TileChunk": null,
+        "Transform": {
+            "3uqfResM3pAf5jbCDLBBNp3Tv": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -13.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1414.21313476563,
+                    1414.21313476563,
+                    0.00069053377956152
+                ]
+            },
+            "49aZrwsmAlLCAdQFtsXQJRrwD": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -12.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    353.552032470703,
+                    353.552032470703,
+                    0.00276212533935905
+                ]
+            },
+            "G6ZMm0On2pafO8hQShxR8P7RW": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -12.8999996185303
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1414.21313476563,
+                    1414.21313476563,
+                    0.00069053377956152
+                ]
+            },
+            "kFwGc6Alz6Pfyeayksx5g0dqk": {
+                "position": [
+                    5.0,
+                    0.0,
+                    15.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "RHYbBMsaPVzlUhmYg8F9Dddnp": {
+                "position": [
+                    0.0,
+                    0.0,
+                    -11.8999996185303
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    353.552032470703,
+                    353.552032470703,
+                    0.00276212533935905
+                ]
+            }
+        }
+    },
+    "Entities": {
+        "3uqfResM3pAf5jbCDLBBNp3Tv": 0,
+        "49aZrwsmAlLCAdQFtsXQJRrwD": 0,
+        "G6ZMm0On2pafO8hQShxR8P7RW": 0,
+        "kFwGc6Alz6Pfyeayksx5g0dqk": 0,
+        "RHYbBMsaPVzlUhmYg8F9Dddnp": 0
+    }
+}

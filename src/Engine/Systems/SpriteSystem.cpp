@@ -55,7 +55,7 @@ void SpriteSystem::OnRender(Sprite* comp)
 {
 	if (comp->m_spriteTransform == nullptr)
 	{
-		comp->m_spriteTransform = Application::GetEntity(comp->entityID)->GetComponent<Transform>();
+		comp->m_spriteTransform = Application::GetEntity(comp->m_sEntityID)->GetComponent<Transform>();
 
 		glm::vec3 scale = comp->m_spriteTransform->m_scale;
 		float heightRat = (float)comp->m_spriteTexture->m_iWidth / (float)comp->m_spriteTexture->m_iHeight;

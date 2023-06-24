@@ -10,6 +10,9 @@
 */
 struct Resource
 {
+public:
+
+	std::string m_sLocalPath;
 	/**
 	*Stores the path of the resource. This is used to checkForPhysicsBody if the resource is already loaded.
 	*/
@@ -19,5 +22,10 @@ struct Resource
 	*Loads the resource.
 	*/
 	virtual void OnLoad() = 0;
+
+	/**
+	*Saves the resource.
+	*/
+	virtual void OnSave() {};
 };
 #endif

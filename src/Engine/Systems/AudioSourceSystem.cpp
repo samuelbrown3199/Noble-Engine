@@ -11,9 +11,9 @@ std::vector<AudioSource> AudioSource::componentData;
 void AudioSourceSystem::OnUpdate(AudioSource* comp)
 {
 	if (!comp->m_sourceTransform)
-		comp->m_sourceTransform = Application::GetEntity(comp->entityID)->GetComponent<Transform>();
+		comp->m_sourceTransform = Application::GetEntity(comp->m_sEntityID)->GetComponent<Transform>();
 
-	ALenum state;
+	ALenum state = 0;
 	if (comp->m_bPlay)
 	{
 		if (!comp->m_bHasSourceID)
@@ -48,7 +48,7 @@ void AudioSourceSystem::OnUpdate(AudioSource* comp)
 	}
 	else
 	{
-		if (state != AL_PLAYING)
+		if (state != AL_PLAYING && comp->m_bHasSourceID)
 		{
 			alSourceStop(comp->m_iSourceID);
 			alDeleteSources(1, &comp->m_iSourceID);

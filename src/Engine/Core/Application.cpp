@@ -56,8 +56,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
 	ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
 
-	rtn->BindDebugUI<EditorUI>()->m_uiOpen = true;
-
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
 	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram();
 	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.vs"), GL_VERTEX_SHADER);

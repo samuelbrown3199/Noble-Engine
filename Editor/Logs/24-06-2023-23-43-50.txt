@@ -1,0 +1,2 @@
+[23:43:58] - Resized game window to 2560x1377.
+[23:44:00] - Resized game window to 1000x800.

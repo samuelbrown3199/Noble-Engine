@@ -144,6 +144,8 @@ target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm f
 
 add_executable(Editor
 	src/Editor/main.cpp
+
+	src/Editor/EditorUI.hpp
 )
 target_link_libraries(Editor Engine)
 

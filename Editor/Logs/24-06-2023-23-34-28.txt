@@ -1,3 +1,0 @@
-[23:34:32] - Starting cleanup and closing engine!
-[23:34:32] - Stopping threads.
-[23:34:32] - Stopped threads.

@@ -35,9 +35,12 @@ std::string GenerateRandomString(size_t _length);
 //--------------------FILES AND DIRECTORIES----------------------------
 
 bool PathExists(const std::string& _path);
-bool CreateDirectory(const std::string& _path);
+bool CreateNewDirectory(const std::string& _path);
 bool DeleteDirectory(const std::string& _path);
 std::string GetWorkingDirectory();
+std::string OpenFileSelectDialog();
+
+std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
 
 
 //--------------------NUMBERS----------------------------

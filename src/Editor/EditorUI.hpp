@@ -35,7 +35,11 @@ public:
 	void DoInterface() override
 	{
 		DoMainMenuBar();
-		SelectSceneWindow();
+		if(m_bShowSceneSelection)
+			SelectSceneWindow();
+
+		ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(300, Renderer::GetScreenSize().y));
 
 		ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
@@ -54,6 +58,8 @@ public:
 			Renderer::SetClearColour(glm::vec3(clearColour[0], clearColour[1], clearColour[2]));
 
 		ImGui::End();
+
+
 
 
 		if (show_demo_window)
@@ -109,6 +115,8 @@ public:
 		std::string cwd = GetWorkingDirectory();
 		std::vector<std::string> sceneFiles = GetAllFilesOfType(cwd + "\\GameData", ".json");
 
+		ImGui::SetNextWindowPos(ImVec2(300, 20), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(500, 500));
 		ImGui::Begin("Editor", &m_bShowSceneSelection, m_windowFlags);
 
 

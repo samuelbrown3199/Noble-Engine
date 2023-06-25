@@ -26,6 +26,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	data["LightingSettings"]["AmbientColour"] = { 1,1,1 };
 	data["LightingSettings"]["AmbientStrength"] = 1.0f;
+	data["LightingSettings"]["ClearColour"] = { 0.0f, 0.0f, 0.0f };
 
 	for (int i = 0; i < entities.size(); i++)
 	{

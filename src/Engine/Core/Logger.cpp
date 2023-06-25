@@ -21,7 +21,7 @@ void Logger::LogInformation(const std::string& _logString)
 	std::cout << writtenLine;
 	std::string logFolder = GetWorkingDirectory() + "\\Logs\\";
 	if (!PathExists(logFolder))
-		CreateDirectory(logFolder);
+		CreateNewDirectory(logFolder);
 
 	std::string fileName = logFolder + m_sSessionFileName+".txt";
 	m_logFile.open(fileName, std::ios::app);

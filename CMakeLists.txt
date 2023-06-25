@@ -141,11 +141,17 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/MeshRendererSystem.cpp
 )
 target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm freetype)
+target_compile_features(Engine PRIVATE cxx_std_17)
 
 add_executable(Editor
 	src/Editor/main.cpp
+
+	src/Editor/EditorUI.hpp
 )
 target_link_libraries(Editor Engine)
+set_target_properties(Editor PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+set_target_properties(Editor PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+target_compile_features(Editor PRIVATE cxx_std_17)
 
 add_executable(TechDemo1
     src/Game/main.cpp
@@ -162,3 +168,4 @@ add_executable(TechDemo1
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+target_compile_features(TechDemo1 PRIVATE cxx_std_17)

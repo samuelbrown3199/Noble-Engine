@@ -63,7 +63,7 @@ struct World : public Behaviour
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\PlanetBase.png", glm::vec4(0, 0, 1, 1));
+		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\PlanetBase.png", glm::vec4(1, 1, 1, 1));
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -11.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
@@ -85,6 +85,12 @@ struct World : public Behaviour
 		Logger::LogInformation("Initializing World!");
 
 		GenerateBackgroundPlanet();
+	}
+
+	void Update()
+	{
+		Application::m_mainShaderProgram->BindFloat("ambientStrength", 1.0f);
+		Application::m_mainShaderProgram->BindVector3("ambientColour", glm::vec3(1, 1, 1));
 	}
 };
 

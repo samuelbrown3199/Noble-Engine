@@ -55,7 +55,6 @@ private:
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
-	static void ClearLoadedScene();
 
 	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
 	static std::vector<std::shared_ptr<SystemBase>> GetSystemList() { return m_vComponentSystems; }
@@ -76,6 +75,8 @@ public:
 	static void DeleteEntity(std::string _ID);
 	static Entity* GetEntity(std::string _ID);
 	void CleanupDeletionEntities();
+
+	static void ClearLoadedScene();
 
 	static std::shared_ptr<SystemBase> GetSystemFromID(std::string _ID);
 

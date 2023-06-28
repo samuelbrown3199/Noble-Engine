@@ -244,10 +244,11 @@ Entity* Application::CreateEntity() //this will need optimisation
 	//generate entity ID here.
 	std::string id = m_self.lock()->GetUniqueEntityID();
 	m_vEntities.push_back(id);
+	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = "New Entity";
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
-Entity* Application::CreateEntity(std::string _desiredID)
+Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
 {
 	if (!m_vDeletionEntities.empty())
 	{
@@ -270,6 +271,7 @@ Entity* Application::CreateEntity(std::string _desiredID)
 	}
 
 	m_vEntities.push_back(_desiredID);
+	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = _name;
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 

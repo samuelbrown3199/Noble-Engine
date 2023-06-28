@@ -43,6 +43,12 @@ std::string OpenFileSelectDialog();
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
 
 
+
+//--------------------ENGINE FILES AND DIRECTORIES----------------------------
+
+std::string GetGameDataFolder();
+std::string GetFolderLocationRelativeToGameData(std::string path);
+
 //--------------------NUMBERS----------------------------
 
 float GenerateNumberBetween01();

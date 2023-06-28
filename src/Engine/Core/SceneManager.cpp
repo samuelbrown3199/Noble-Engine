@@ -30,7 +30,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	for (int i = 0; i < entities.size(); i++)
 	{
-		data["Entities"][entities.at(i).m_sEntityID] = 0;
+		data["Entities"][entities.at(i).m_sEntityID] = entities.at(i).m_sEntityName;
 	}
 
 	for (int i = 0; i < systems.size(); i++)

@@ -24,7 +24,7 @@ void Scene::OnLoad()
 
 		for (auto it : entities.items())
 		{
-			Application::CreateEntity(it.key());
+			Application::CreateEntity(it.key(), it.value());
 		}
 	}
 	if (data.find("ComponentData") != data.end())

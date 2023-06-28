@@ -56,9 +56,6 @@ private:
 
 	std::string GetUniqueEntityID();
 
-	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
-	static std::vector<std::shared_ptr<SystemBase>> GetSystemList() { return m_vComponentSystems; }
-
 public:
 
 	static std::shared_ptr<ShaderProgram> m_mainShaderProgram;
@@ -71,10 +68,13 @@ public:
     void CleanupApplication();
 
 	static Entity* CreateEntity();
-	static Entity* CreateEntity(std::string _desiredID);
+	static Entity* CreateEntity(std::string _desiredID, std::string _name);
 	static void DeleteEntity(std::string _ID);
 	static Entity* GetEntity(std::string _ID);
 	void CleanupDeletionEntities();
+
+	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
+	static std::vector<std::shared_ptr<SystemBase>> GetSystemList() { return m_vComponentSystems; }
 
 	static void ClearLoadedScene();
 

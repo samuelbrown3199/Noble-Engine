@@ -12,6 +12,11 @@ struct Entity
 	*/
 	std::string m_sEntityID;
 	/**
+	*The name for the entity. This does not necessarily need to be unique.
+	*/
+	std::string m_sEntityName;
+
+	/**
 	* Used to detemine whether the entity can be reused after being deleted.
 	*/
 	bool m_bAvailableForUse = false;

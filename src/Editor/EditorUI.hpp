@@ -18,8 +18,6 @@ class EditorUI : public DebugUI
 	bool show_demo_window = false;
 	std::map<int, GLenum> m_mRenderModes;
 
-	bool m_bShowSceneSelection = false;
-
 public:
 
 	void InitializeInterface() override
@@ -35,32 +33,36 @@ public:
 	void DoInterface() override
 	{
 		DoMainMenuBar();
-		if(m_bShowSceneSelection)
-			SelectSceneWindow();
 
 		ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 		ImGui::SetNextWindowSize(ImVec2(300, Renderer::GetScreenSize().y));
 
 		ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
-		const char* items[] = { "GL Triangles", "GL Lines" };
-		static int item_current = 0;
-		ImGui::Combo("Draw Mode", &item_current, items, IM_ARRAYSIZE(items));
-		Renderer::SetRenderMode(m_mRenderModes[item_current]);
+		if(ImGui::Button("Create Entity"))
+		{
+			Application::CreateEntity();
+		}
 
-		float fov = Renderer::GetFov();
-		ImGui::SliderFloat("FoV", &fov, 10.0f, 150.0f, FormatString("%2f", fov).c_str());
-		Renderer::SetFov(fov);
+		std::vector<Entity>& entities = Application::GetEntityList();
+		if (ImGui::BeginListBox("Entities"))
+		{
+			static int selItem;
+			for (int i = 0; i < entities.size(); i++)
+			{
+				const bool is_selected = (selItem == i);
+				if (ImGui::Selectable(entities.at(i).m_sEntityName.c_str(), is_selected))
+					selItem = i;
 
-		float clearColour[3];
-		ImGui::ColorEdit3("Clear Buffer Colour", clearColour);
-		if (ImGui::Button("Apply"))
-			Renderer::SetClearColour(glm::vec3(clearColour[0], clearColour[1], clearColour[2]));
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndListBox();
+		}
 
 		ImGui::End();
-
-
-
 
 		if (show_demo_window)
 			ImGui::ShowDemoWindow();
@@ -95,33 +97,28 @@ public:
 		{
 			Application::ClearLoadedScene();
 		}
-		if (ImGui::MenuItem("Open Scene"))
+		if (ImGui::BeginMenu("Open Scene"))
 		{
-			m_bShowSceneSelection = true;
+			std::vector<std::string> scenes = GetAllFilesOfType(GetGameDataFolder(), ".nsc");
+			for (int n = 0; n < scenes.size(); n++)
+			{
+				if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
+				{
+					SceneManager::LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
+				}
+			}
+
+			ImGui::EndMenu();
 		}
 		if (ImGui::MenuItem("Save Scene"))
 		{
-			SceneManager::SaveScene("GameData\\Scenes\\TestScene.json");
+			SceneManager::SaveScene("GameData\\Scenes\\TestScene.nsc");
 		}
 	}
 
 	void DoDebugMenu()
 	{
 		ImGui::Checkbox("Demo Window", &show_demo_window);
-	}
-	
-	void SelectSceneWindow()
-	{
-		std::string cwd = GetWorkingDirectory();
-		std::vector<std::string> sceneFiles = GetAllFilesOfType(cwd + "\\GameData", ".json");
-
-		ImGui::SetNextWindowPos(ImVec2(300, 20), ImGuiCond_Once);
-		ImGui::SetNextWindowSize(ImVec2(500, 500));
-		ImGui::Begin("Editor", &m_bShowSceneSelection, m_windowFlags);
-
-
-
-		ImGui::End();
 	}
 };
 

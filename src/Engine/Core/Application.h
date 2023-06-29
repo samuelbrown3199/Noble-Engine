@@ -63,6 +63,8 @@ public:
 	static std::shared_ptr<ShaderProgram> m_uiTextProgram;
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
+	static void StopApplication() { m_bLoop = false; }
+
     void LoadSettings();
     void MainLoop();
     void CleanupApplication();

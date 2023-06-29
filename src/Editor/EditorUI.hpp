@@ -110,6 +110,12 @@ public:
 		{
 			SceneManager::SaveLoadedScene();
 		}
+
+		ImGui::MenuItem("Settings", NULL, false, false);
+		if (ImGui::MenuItem("Quit Editor"))
+		{
+			Application::StopApplication();
+		}
 	}
 
 	void DoDebugMenu()

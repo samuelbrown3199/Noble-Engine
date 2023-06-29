@@ -155,19 +155,10 @@
         }
     },
     "Entities": {
-        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Hut",
+        "NWCIsHAcA0vTSrhQYmU6G8GBa": "New Entity",
         "q2LK72Hwz5OShwyYBVl9PPAL0": "New Entity",
         "rheHsgDpxtCdMymfxzgXQROxF": "New Entity",
         "VxeX0YZYDaHteeeh187ISAOOq": "New Entity",
         "XVBRb0MX9xw38jVT6x314J56m": "New Entity"
-    },
-    "LightingSettings": {
-        "AmbientColour": [
-            1,
-            1,
-            1
-        ],
-        "AmbientStrength": 1.0,
-		"ClearColour": [0,0,0]
     }
 }

@@ -16,15 +16,11 @@
 class EditorUI : public DebugUI
 {
 	bool show_demo_window = false;
-	std::map<int, GLenum> m_mRenderModes;
 
 public:
 
 	void InitializeInterface() override
 	{
-		m_mRenderModes[0] = GL_TRIANGLES;
-		m_mRenderModes[1] = GL_LINES;
-
 		m_windowFlags |= ImGuiWindowFlags_NoMove;
 		m_windowFlags |= ImGuiWindowFlags_NoTitleBar;
 		m_windowFlags |= ImGuiWindowFlags_NoResize;
@@ -45,16 +41,16 @@ public:
 		}
 
 		std::vector<Entity>& entities = Application::GetEntityList();
-		if (ImGui::BeginListBox("Entities"))
+		ImGui::Text("Entities");
+		if (ImGui::BeginListBox("Entities", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
 		{
-			static int selItem;
+			static int selEntity = 0;
 			for (int i = 0; i < entities.size(); i++)
 			{
-				const bool is_selected = (selItem == i);
+				const bool is_selected = (selEntity == i);
 				if (ImGui::Selectable(entities.at(i).m_sEntityName.c_str(), is_selected))
-					selItem = i;
+					selEntity = i;
 
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 				if (is_selected)
 					ImGui::SetItemDefaultFocus();
 			}
@@ -112,7 +108,7 @@ public:
 		}
 		if (ImGui::MenuItem("Save Scene"))
 		{
-			SceneManager::SaveScene("GameData\\Scenes\\TestScene.nsc");
+			SceneManager::SaveLoadedScene();
 		}
 	}
 

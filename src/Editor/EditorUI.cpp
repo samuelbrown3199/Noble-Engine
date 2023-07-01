@@ -13,6 +13,8 @@ void EditorUI::InitializeInterface()
 	m_windowFlags |= ImGuiWindowFlags_NoMove;
 	m_windowFlags |= ImGuiWindowFlags_NoTitleBar;
 	m_windowFlags |= ImGuiWindowFlags_NoResize;
+
+	m_sWindowName = Renderer::GetWindowTitle();
 }
 
 void EditorUI::DoInterface()
@@ -97,6 +99,7 @@ void EditorUI::DoFileMenu()
 			if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
 			{
 				SceneManager::LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
+				Renderer::UpdateWindowTitle(m_sWindowName + " (" + SceneManager::GetCurrentSceneLocalPath() + ")");
 			}
 		}
 
@@ -105,6 +108,10 @@ void EditorUI::DoFileMenu()
 	if (ImGui::MenuItem("Save Scene"))
 	{
 		SceneManager::SaveLoadedScene();
+	}
+	if (ImGui::MenuItem("Save Scene As..."))
+	{
+		SceneManager::SaveScene("\\GameData\\Scenes\\SceneSaveAs.nsc");
 	}
 
 	ImGui::MenuItem("Settings", NULL, false, false);

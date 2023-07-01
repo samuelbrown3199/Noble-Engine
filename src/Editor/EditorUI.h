@@ -9,6 +9,8 @@ class EditorUI : public DebugUI
 	bool show_demo_window = false;
 	static int selEntity;
 
+	std::string m_sWindowName;
+
 public:
 
 	void InitializeInterface();

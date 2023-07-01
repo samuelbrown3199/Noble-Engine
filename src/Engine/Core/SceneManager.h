@@ -21,6 +21,8 @@ public:
 	static void SaveLoadedScene();
 	static void LoadScene(std::string scenePath);
 	static void SaveScene(std::string scenePath);
+
+	static std::string GetCurrentSceneLocalPath();
 };
 
 #endif

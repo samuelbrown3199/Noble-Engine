@@ -46,6 +46,9 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	for (int i = 0; i < entities.size(); i++)
 	{
+		if (entities.at(i).m_bAvailableForUse)
+			continue;
+
 		data["Entities"][entities.at(i).m_sEntityID] = entities.at(i).m_sEntityName;
 	}
 
@@ -59,4 +62,9 @@ void SceneManager::SaveScene(std::string scenePath)
 	sceneFile.close();
 
 	Logger::LogInformation("Saved Scene " + scenePath);
+}
+
+std::string SceneManager::GetCurrentSceneLocalPath()
+{
+	return m_currentScene->m_sLocalPath;
 }

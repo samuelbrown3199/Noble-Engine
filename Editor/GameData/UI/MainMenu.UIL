@@ -1,0 +1,2 @@
+UIBOX 0 BackgroundBox 0,0,100,50 GameData\\Textures\\test.png
+UIBUTTON 0 StartServerButton 0,55,250,50 GameData\\Textures\\test.png GameData\\Textures\\testDark.png GameData\\Textures\\testLight.png

@@ -69,6 +69,7 @@ public:
 	static glm::mat4 GenerateUIOrthographicMatrix();
 	static glm::mat4 GenerateViewMatrix();
 
+	static std::string GetWindowTitle();
 	static void UpdateWindowTitle(const std::string& _windowTitle) { SDL_SetWindowTitle(m_gameWindow, _windowTitle.c_str()); };
 
 	static void SetRenderMode(GLenum renderMode);

@@ -158,6 +158,19 @@ std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fi
     return files;
 }
 
+//--------------------ENGINE FILES AND DIRECTORIES----------------------------
+
+std::string GetGameDataFolder()
+{
+    return GetWorkingDirectory() + "\\GameData";
+}
+
+std::string GetFolderLocationRelativeToGameData(std::string path)
+{
+    path.erase(0, GetWorkingDirectory().length());
+    return path;
+}
+
 //--------------------NUMBERS----------------------------
 
 float GenerateNumberBetween01()

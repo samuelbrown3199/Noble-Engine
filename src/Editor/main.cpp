@@ -1,12 +1,12 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
 
-#include "EditorUI.hpp"
+#include "EditorUI.h"
 
 #ifndef NDEBUG
 int main()
 {
-    std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
+    std::shared_ptr<Application> app = Application::StartApplication("Noble Editor Debug");
 
     std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     ui->m_uiOpen = true;

@@ -136,6 +136,12 @@ void Renderer::SetWindowFullScreen(const int& _mode)
 	Renderer::UpdateScreenSize();
 }
 
+std::string Renderer::GetWindowTitle()
+{
+	std::string name(SDL_GetWindowTitle(m_gameWindow));
+	return name;
+}
+
 // 0 No VSync, 1 VSync, 2 Adaptive VSync
 void Renderer::SetVSyncMode(const int& _mode)
 {

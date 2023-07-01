@@ -244,10 +244,11 @@ Entity* Application::CreateEntity() //this will need optimisation
 	//generate entity ID here.
 	std::string id = m_self.lock()->GetUniqueEntityID();
 	m_vEntities.push_back(id);
+	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = "New Entity";
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
-Entity* Application::CreateEntity(std::string _desiredID)
+Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
 {
 	if (!m_vDeletionEntities.empty())
 	{
@@ -270,6 +271,7 @@ Entity* Application::CreateEntity(std::string _desiredID)
 	}
 
 	m_vEntities.push_back(_desiredID);
+	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = _name;
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
@@ -277,8 +279,11 @@ void Application::DeleteEntity(std::string _ID)
 {
 	for(int i = 0; i < m_vEntities.size(); i++)
 	{
-		if(m_vEntities.at(i).m_sEntityID == _ID)
+		if (m_vEntities.at(i).m_sEntityID == _ID)
+		{
 			m_vDeletionEntities.push_back(&m_vEntities.at(i));
+			break;
+		}
 	}
 }
 
@@ -308,6 +313,7 @@ void Application::CleanupDeletionEntities()
 	while (!m_vDeletionEntities.empty())
 	{
 		Entity* currentEntity = m_vDeletionEntities.front();
+		m_vDeletionEntities.pop_front();
 		for (int o = 0; o < m_vComponentSystems.size(); o++)
 		{
 			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->m_sEntityID);

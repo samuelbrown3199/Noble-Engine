@@ -7,7 +7,7 @@
 class EditorUI : public DebugUI
 {
 	bool show_demo_window = false;
-	static int selEntity;
+	static int m_iSelEntity;
 
 	std::string m_sWindowName;
 

@@ -6,7 +6,7 @@
 #include <Engine\Core\SceneManager.h>
 
 
-int EditorUI::selEntity = 0;
+int EditorUI::m_iSelEntity = -1;
 
 void EditorUI::InitializeInterface()
 {
@@ -34,26 +34,46 @@ void EditorUI::DoInterface()
 	ImGui::SameLine();
 	if (ImGui::Button("Delete Entity"))
 	{
-		Application::DeleteEntity(entities.at(selEntity).m_sEntityID);
+		Application::DeleteEntity(entities.at(m_iSelEntity).m_sEntityID);
 	}
 
-	ImGui::Text("Entities");
-	if (ImGui::BeginListBox("Entities", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+	if (ImGui::TreeNode("Entities"))
 	{
+		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+		static int selection_mask = (1 << 2);
 		for (int i = 0; i < entities.size(); i++)
 		{
 			if (entities.at(i).m_bAvailableForUse)
 				continue;
 
-			const bool is_selected = (selEntity == i);
-			if (ImGui::Selectable(entities.at(i).m_sEntityName.c_str(), is_selected))
-				selEntity = i;
-
+			// Disable the default "open on single-click behavior" + set Selected flag according to our selection.
+			// To alter selection we use IsItemClicked() && !IsItemToggledOpen(), so clicking on an arrow doesn't alter selection.
+			ImGuiTreeNodeFlags node_flags = base_flags;
+			const bool is_selected = i == m_iSelEntity;
 			if (is_selected)
-				ImGui::SetItemDefaultFocus();
-		}
+				node_flags |= ImGuiTreeNodeFlags_Selected;
 
-		ImGui::EndListBox();
+			bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, entities.at(i).m_sEntityName.c_str());
+			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+				m_iSelEntity = i;
+
+			if (node_open)
+			{
+				std::vector<std::shared_ptr<SystemBase>> systemList = Application::GetSystemList();
+				for (int o = 0; o < systemList.size(); o++)
+				{
+					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
+					{
+						ImGui::Indent();
+						ImGui::Selectable(systemList.at(o)->m_systemID.c_str());
+						ImGui::Unindent();
+					}
+				}
+
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
 	}
 
 	ImGui::End();

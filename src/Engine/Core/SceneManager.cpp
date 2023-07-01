@@ -33,8 +33,6 @@ void SceneManager::SaveScene(std::string scenePath)
 {
 	Logger::LogInformation("Saving Scene " + scenePath);
 
-	std::string path = GetWorkingDirectory() + scenePath;
-
 	std::vector<Entity>& entities = Application::GetEntityList();
 	std::vector<std::shared_ptr<SystemBase>> systems = Application::GetSystemList();
 
@@ -57,7 +55,7 @@ void SceneManager::SaveScene(std::string scenePath)
 		data["ComponentData"][systems.at(i)->m_systemID] = systems.at(i)->WriteComponentDataToJson();
 	}
 
-	std::fstream sceneFile(path, 'w');
+	std::fstream sceneFile(scenePath, 'w');
 	sceneFile << data.dump();
 	sceneFile.close();
 

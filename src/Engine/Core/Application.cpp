@@ -5,7 +5,6 @@
 #include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
 #include "../Systems/MeshRendererSystem.h"
-#include "../Behaviours/DebugCam.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
@@ -78,8 +77,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
-
-	rtn->BindBehaviour<DebugCam>();
 
 	Logger::LogInformation("Engine started successfully");
 

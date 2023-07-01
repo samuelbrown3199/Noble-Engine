@@ -4,10 +4,13 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+
+struct Scene;
 
 class SceneManager
 {
-	static std::string m_sLoadedScene;
+	static std::shared_ptr<Scene> m_currentScene;
 
 public:
 

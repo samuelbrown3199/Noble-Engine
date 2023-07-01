@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "..\Resource\Scene.h"
 
-std::string SceneManager::m_sLoadedScene = "";
+std::shared_ptr<Scene> SceneManager::m_currentScene;
 std::vector<std::string> SceneManager::m_vKeysToCheck;
 
 void SceneManager::ClearLoadedScene()
@@ -20,18 +20,20 @@ void SceneManager::LoadScene(std::string scenePath)
 	m_vKeysToCheck.push_back("ComponentData");
 
 	Application::ClearLoadedScene();
-	m_sLoadedScene = scenePath;
-	std::shared_ptr<Scene> newScene = ResourceManager::LoadResource<Scene>(m_sLoadedScene);
+	m_currentScene = ResourceManager::LoadResource<Scene>(scenePath);
+	m_currentScene->LoadSceneIntoApplication();
 }
 
 void SceneManager::SaveLoadedScene()
 {
-	SaveScene(m_sLoadedScene);
+	SaveScene(m_currentScene->m_sResourcePath);
 }
 
 void SceneManager::SaveScene(std::string scenePath)
 {
 	Logger::LogInformation("Saving Scene " + scenePath);
+
+	std::string path = GetWorkingDirectory() + scenePath;
 
 	std::vector<Entity>& entities = Application::GetEntityList();
 	std::vector<std::shared_ptr<SystemBase>> systems = Application::GetSystemList();
@@ -52,9 +54,9 @@ void SceneManager::SaveScene(std::string scenePath)
 		data["ComponentData"][systems.at(i)->m_systemID] = systems.at(i)->WriteComponentDataToJson();
 	}
 
-	std::fstream sceneFile(scenePath, 'w');
-	sceneFile << data;
-
+	std::fstream sceneFile(path, 'w');
+	sceneFile << data.dump();
 	sceneFile.close();
+
 	Logger::LogInformation("Saved Scene " + scenePath);
 }

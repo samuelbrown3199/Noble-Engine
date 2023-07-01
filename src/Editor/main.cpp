@@ -1,7 +1,7 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
 
-#include "EditorUI.hpp"
+#include "EditorUI.h"
 
 #ifndef NDEBUG
 int main()

@@ -146,7 +146,8 @@ target_compile_features(Engine PRIVATE cxx_std_17)
 add_executable(Editor
 	src/Editor/main.cpp
 
-	src/Editor/EditorUI.hpp
+	src/Editor/EditorUI.h
+	src/Editor/EditorUI.cpp
 )
 target_link_libraries(Editor Engine)
 set_target_properties(Editor PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

@@ -279,8 +279,11 @@ void Application::DeleteEntity(std::string _ID)
 {
 	for(int i = 0; i < m_vEntities.size(); i++)
 	{
-		if(m_vEntities.at(i).m_sEntityID == _ID)
+		if (m_vEntities.at(i).m_sEntityID == _ID)
+		{
 			m_vDeletionEntities.push_back(&m_vEntities.at(i));
+			break;
+		}
 	}
 }
 
@@ -310,6 +313,7 @@ void Application::CleanupDeletionEntities()
 	while (!m_vDeletionEntities.empty())
 	{
 		Entity* currentEntity = m_vDeletionEntities.front();
+		m_vDeletionEntities.pop_front();
 		for (int o = 0; o < m_vComponentSystems.size(); o++)
 		{
 			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->m_sEntityID);

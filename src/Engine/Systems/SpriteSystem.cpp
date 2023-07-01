@@ -53,21 +53,19 @@ void SpriteSystem::PreRender()
 
 void SpriteSystem::OnRender(Sprite* comp)
 {
-	if (comp->m_spriteTransform == nullptr)
+	if (comp->m_spriteTransform == nullptr || Application::GetEntitiesDeleted())
 	{
-		comp->m_spriteTransform = Application::GetEntity(comp->m_sEntityID)->GetComponent<Transform>();
-
-		glm::vec3 scale = comp->m_spriteTransform->m_scale;
-		float heightRat = (float)comp->m_spriteTexture->m_iWidth / (float)comp->m_spriteTexture->m_iHeight;
-
-		comp->m_spriteTransform->m_scale = glm::normalize(glm::vec3(comp->m_spriteTexture->m_iWidth * heightRat, comp->m_spriteTexture->m_iHeight * heightRat, scale.z));
-		comp->m_spriteTransform->m_scale.x *= scale.x;
-		comp->m_spriteTransform->m_scale.y *= scale.y;
-
+		comp->m_spriteTransform = Transform::GetComponent(comp->m_sEntityID);
 		return;
 	}
 	if (comp->m_spriteTexture == nullptr)
 		return;
+
+	glm::vec3 scale = comp->m_spriteTransform->m_scale;
+	float heightRat = (float)comp->m_spriteTexture->m_iWidth / (float)comp->m_spriteTexture->m_iHeight;
+	comp->m_spriteTransform->m_scale = glm::normalize(glm::vec3(comp->m_spriteTexture->m_iWidth * heightRat, comp->m_spriteTexture->m_iHeight * heightRat, scale.z));
+	comp->m_spriteTransform->m_scale.x = scale.x;
+	comp->m_spriteTransform->m_scale.y = scale.y;
 
 	Application::m_mainShaderProgram->UseProgram();
 	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix(); 

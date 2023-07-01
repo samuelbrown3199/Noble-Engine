@@ -10,6 +10,7 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
+bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
 
@@ -185,6 +186,7 @@ void Application::MainLoop()
 		//Render End
 
 		m_pStats->cleanupStart = SDL_GetTicks();
+		m_bEntitiesDeleted = false;
 		CleanupDeletionEntities();
 		InputManager::ClearFrameInputs();
 		ResourceManager::UnloadUnusedResources();
@@ -316,6 +318,8 @@ void Application::CleanupDeletionEntities()
 			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->m_sEntityID);
 		}
 		currentEntity->m_bAvailableForUse = true;
+
+		m_bEntitiesDeleted = true;
 	}
 }
 

@@ -1,5 +1,6 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
+#include <Engine\Behaviours\DebugCam.h>
 
 #include <Engine/Systems/Sprite.h>
 #include <Engine/Systems/AudioSource.h>
@@ -15,6 +16,7 @@ int main()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
+    app->BindBehaviour<DebugCam>();
 
     app->BindSystem<TileChunkSystem>(useBoth, "TileChunk");
 
@@ -26,6 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
+    app->BindBehaviour<DebugCam>();
 
     app->BindSystem<TileChunkSystem>(useBoth, "TileChunk");
 

@@ -10,9 +10,9 @@ std::vector<MeshRenderer> MeshRenderer::componentData;
 
 void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
-	if (comp->m_transform == nullptr)
+	if (comp->m_transform == nullptr || Application::GetEntitiesDeleted())
 	{
-		comp->m_transform = Application::GetEntity(comp->m_sEntityID)->GetComponent<Transform>();
+		comp->m_transform = Transform::GetComponent(comp->m_sEntityID);
 		return;
 	}
 	if (comp->m_texture == nullptr)

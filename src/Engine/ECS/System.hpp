@@ -38,6 +38,8 @@ struct SystemBase
 	virtual void RemoveComponent(std::string _ID) = 0;
 	virtual void RemoveAllComponents() = 0;
 
+	virtual int GetComponentIndex(std::string _ID) = 0;
+
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
 	virtual nlohmann::json WriteComponentDataToJson() = 0;
 };
@@ -146,6 +148,16 @@ protected:
 	virtual void OnRender(T* comp) {};
 
 public:
+
+	int GetComponentIndex(std::string _ID)
+	{
+		return T::GetComponentIndex(_ID);
+	}
+
+	T* GetComponent(std::string _ID)
+	{
+		return T::GetComponent(_ID);
+	}
 
 	void LoadComponentDataFromJson(nlohmann::json& j)
 	{

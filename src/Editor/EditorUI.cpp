@@ -7,6 +7,7 @@
 
 
 int EditorUI::m_iSelEntity = -1;
+int EditorUI::m_iSelSystem = -1;
 
 void EditorUI::InitializeInterface()
 {
@@ -27,6 +28,7 @@ void EditorUI::DoInterface()
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
 	std::vector<Entity>& entities = Application::GetEntityList();
+	std::vector<std::shared_ptr<SystemBase>> systemList = Application::GetSystemList();
 	if(ImGui::Button("Create Entity"))
 	{
 		Application::CreateEntity();
@@ -59,7 +61,6 @@ void EditorUI::DoInterface()
 
 			if (node_open)
 			{
-				std::vector<std::shared_ptr<SystemBase>> systemList = Application::GetSystemList();
 				for (int o = 0; o < systemList.size(); o++)
 				{
 					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
@@ -69,6 +70,44 @@ void EditorUI::DoInterface()
 						ImGui::Unindent();
 					}
 				}
+
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+	if (ImGui::TreeNode("Systems"))
+	{
+		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+		static int selection_mask = (1 << 2);
+		for (int i = 0; i < systemList.size(); i++)
+		{
+
+			// Disable the default "open on single-click behavior" + set Selected flag according to our selection.
+			// To alter selection we use IsItemClicked() && !IsItemToggledOpen(), so clicking on an arrow doesn't alter selection.
+			ImGuiTreeNodeFlags node_flags = base_flags;
+			const bool is_selected = i == m_iSelSystem;
+			if (is_selected)
+				node_flags |= ImGuiTreeNodeFlags_Selected;
+
+			bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, systemList.at(i)->m_systemID.c_str());
+			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+				m_iSelSystem = i;
+
+			if (node_open)
+			{
+				/*for (int o = 0; o < systemList.at(i); o++)
+				{
+					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
+					{
+						ImGui::Indent();
+						ImGui::Selectable(systemList.at(o)->m_systemID.c_str());
+						ImGui::Unindent();
+					}
+				}*/
 
 				ImGui::TreePop();
 			}

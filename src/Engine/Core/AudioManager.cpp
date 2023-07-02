@@ -2,39 +2,37 @@
 #include "Logger.h"
 #include "../Useful.h"
 
-ALCdevice* AudioManager::m_audioDevice;
-ALCcontext* AudioManager::m_audioContext;
 bool AudioManager::m_bUseAudio = true;
 std::map<std::string, float> AudioManager::m_mMixerOptions;
+
+FMOD_SYSTEM* AudioManager::m_fmodSystem;
 
 Camera* AudioManager::m_camera;
 
 AudioManager::AudioManager()
 {
-	m_audioDevice = alcOpenDevice(NULL);
-	if (!m_audioDevice)
+	FMOD_RESULT result = FMOD_System_Create(&m_fmodSystem, FMOD_VERSION);
+	if (result != FMOD_OK)
 	{
-		Logger::LogError("Application failed to initialize audio device!", 2);
-		m_bUseAudio = false;
+		Logger::LogError("Failed to create FMOD System!", 2);
 	}
-	m_audioContext = alcCreateContext(m_audioDevice, NULL);
-	if (!m_audioContext)
+	result = FMOD_System_Init(m_fmodSystem, m_iMaxChannels, FMOD_INIT_NORMAL, nullptr);
+	if (result != FMOD_OK)
 	{
-		Logger::LogError("Application failed to initialize audio context!", 2);
-		alcCloseDevice(m_audioDevice);
-		m_bUseAudio = false;
-	}
-	if (!alcMakeContextCurrent(m_audioContext))
-	{
-		Logger::LogError("Application failed to assign audio context!", 2);
-		alcDestroyContext(m_audioContext);
-		alcCloseDevice(m_audioDevice);
-		m_bUseAudio = false;
+		Logger::LogError("Failed to initialise FMOD System!", 2);
 	}
 
 	m_camera = Renderer::GetCamera();
 
-	Logger::LogInformation("Audio manager initialized");
+	Logger::LogInformation("Audio Manager initialized");
+}
+
+AudioManager::~AudioManager()
+{
+	FMOD_System_Close(m_fmodSystem);
+	FMOD_System_Release(m_fmodSystem);
+
+	Logger::LogInformation("Audio Manager cleaned up");
 }
 
 void AudioManager::AddMixerOption(std::string _optionName, float _initialValue)
@@ -72,14 +70,4 @@ void AudioManager::UpdateAudioMixerOption(std::string _optionName, float _newVal
 
 void AudioManager::UpdateListenerPos()
 {
-	alListener3f(AL_POSITION, m_camera->m_position.x, m_camera->m_position.y, m_camera->m_position.z);
-}
-
-void AudioManager::GetOpenALError()
-{
-	ALenum error = alGetError();
-	if (error != AL_NO_ERROR)
-	{
-		Logger::LogError(FormatString("OpenAL error %d", error), 1);
-	}
 }

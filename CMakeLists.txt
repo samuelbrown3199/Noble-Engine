@@ -140,7 +140,7 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp
 )
-target_link_libraries(Engine SDL2 OpenAL32 glew32 opengl32 enet64 ws2_32 winmm freetype)
+target_link_libraries(Engine SDL2 glew32 opengl32 enet64 ws2_32 winmm freetype fmod_vc)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
 add_executable(Editor

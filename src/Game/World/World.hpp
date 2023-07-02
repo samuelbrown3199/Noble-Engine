@@ -73,7 +73,7 @@ struct World : public Behaviour
 		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 15), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
 		MeshRenderer* mr = planetSpawner->AddComponent<MeshRenderer>();
 
-		planetSpawner->AddComponent<AudioSource>("GameData\\Sounds\\glass_smash.ogg", "Master")->m_bPlay = false;
+		planetSpawner->AddComponent<AudioSource>("GameData\\Sounds\\glass_smash.ogg", "Master")->m_bPaused = false;
 
 		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
 		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");

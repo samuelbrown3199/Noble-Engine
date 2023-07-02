@@ -4,24 +4,22 @@
 
 #include "Resource.h"
 
-#include <vector>
+#include <FMOD/fmod.h>
+#include <FMOD/fmod_common.h>
 
-#include <AL/al.h>
 
 /**
-*Stores an audio file for use in OpenAL.
+*Stores an audio file for use in FMOD.
 */
 struct AudioClip : public Resource
 {
-	ALuint m_iAudioClipID;
+	~AudioClip();
+
+	FMOD_SOUND* m_sound;
 	/**
 	*Loads a sound file and buffers it.
 	*/
 	void OnLoad();
-	/**
-	*Loads an OGG file.
-	*/
-	void LoadOgg(const std::string& _fileDirectory, std::vector<char>& _buffer, ALenum& _format, ALsizei& _freq);
 };
 
 #endif

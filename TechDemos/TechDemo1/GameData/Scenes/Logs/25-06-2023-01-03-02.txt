@@ -1,6 +1,0 @@
-[01:03:18] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\Editor\C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Scenes\TestSaveScene.json
-[01:03:18] - Major Error: C:\Users\samue\Desktop\Development\Projects\Noble-Engine\Editor\C:\Users\samue\Desktop\Development\Projects\Noble-Engine\TechDemos\TechDemo1\GameData\Scenes\TestSaveScene.json could not be found!
-
-[01:03:59] - Starting cleanup and closing engine!
-[01:03:59] - Stopping threads.
-[01:03:59] - Stopped threads.

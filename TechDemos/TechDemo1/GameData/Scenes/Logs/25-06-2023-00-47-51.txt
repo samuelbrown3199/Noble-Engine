@@ -1,1 +1,0 @@
-[00:48:26] - Loading asset file C:\Users\samue\Desktop\Development\Projects\Noble-Engine\Editor\GameData\Scenes\TestScene.json

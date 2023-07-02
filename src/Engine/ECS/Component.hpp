@@ -41,8 +41,18 @@ struct ComponentData
 	virtual nlohmann::json WriteJson() { nlohmann::json data; return data; };
 	virtual void FromJson(const nlohmann::json& j) {};
 
+	static int GetComponentIndex(std::string _ID)
+	{
+		for (int i = 0; i < componentData.size(); i++)
+		{
+			if (componentData.at(i).m_sEntityID == _ID)
+			{
+				return i;
+			}
+		}
 
-private:
+		return -1;
+	}
 
 	static T* GetComponent(std::string _ID)
 	{
@@ -56,6 +66,8 @@ private:
 
 		return nullptr;
 	}
+
+private:
 
 	static void RemoveComponent(std::string _ID)
 	{

@@ -32,24 +32,20 @@ struct ResourceManager
 
 	ResourceManager();
 
-	/**
-	*Loads a resource of the passed type with the file directory.
-	*/
 	template<typename T>
-	static std::shared_ptr<T> LoadResource(std::string _fileDirectory)
+	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory)
 	{
-		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
-		Logger::LogInformation(FormatString("Loading asset file %s", searchPath.c_str()));
+		Logger::LogInformation(FormatString("Loading asset file %s", _fileDirectory.c_str()));
 
-		if (!PathExists(searchPath))
+		if (!PathExists(_fileDirectory))
 		{
-			Logger::LogError(FormatString("%s could not be found!", searchPath.c_str()), 1);
+			Logger::LogError(FormatString("%s could not be found!", _fileDirectory.c_str()), 1);
 			return nullptr;
 		}
 
 		for (size_t re = 0; re < m_vResources.size(); re++)
 		{
-			if (m_vResources.at(re)->m_sResourcePath == searchPath)
+			if (m_vResources.at(re)->m_sResourcePath == _fileDirectory)
 			{
 				std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(m_vResources.at(re));
 				if (resource)
@@ -59,6 +55,21 @@ struct ResourceManager
 			}
 		}
 
+		return nullptr;
+	}
+
+	/**
+	*Loads a resource of the passed type with the file directory.
+	*/
+	template<typename T>
+	static std::shared_ptr<T> LoadResource(std::string _fileDirectory)
+	{
+		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
+		
+		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath);
+		if (oldResource != nullptr)
+			return oldResource;
+
 		std::shared_ptr<T> newResource = std::make_shared<T>();
 		newResource->m_sResourcePath = searchPath;
 		newResource->m_sLocalPath = _fileDirectory;
@@ -66,6 +77,27 @@ struct ResourceManager
 		m_vResources.push_back(newResource);
 		return newResource;
 	}
+
+	/**
+	*Loads a resource of the passed type with the file directory.
+	*/
+	template<typename T, typename ... Args>
+	static std::shared_ptr<T> LoadResource(std::string _fileDirectory, Args&&... _args)
+	{
+		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
+
+		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath);
+		if (oldResource != nullptr)
+			return oldResource;
+
+		std::shared_ptr<T> newResource = std::make_shared<T>(std::forward<Args>(_args)...);
+		newResource->m_sResourcePath = searchPath;
+		newResource->m_sLocalPath = _fileDirectory;
+		newResource->OnLoad();
+		m_vResources.push_back(newResource);
+		return newResource;
+	}
+
 	/**
 	* Creates a shader program and stores it in the shader program list.
 	*/

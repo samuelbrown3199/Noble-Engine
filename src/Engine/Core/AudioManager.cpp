@@ -22,6 +22,8 @@ AudioManager::AudioManager()
 		Logger::LogError("Failed to initialise FMOD System!", 2);
 	}
 
+	FMOD_System_Set3DSettings(m_fmodSystem, 1.0f, 1.0f, 1.0f);
+
 	m_camera = Renderer::GetCamera();
 
 	Logger::LogInformation("Audio Manager initialized");

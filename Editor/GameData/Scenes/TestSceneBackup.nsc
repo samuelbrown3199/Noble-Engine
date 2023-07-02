@@ -1,13 +1,29 @@
 {
     "ComponentData": {
+        "AudioListener": null,
         "AudioSource": {
             "NWCIsHAcA0vTSrhQYmU6G8GBa": {
-                "clipPath": "GameData\\Sounds\\glass_smash.ogg",
-                "gain": 0.5,
-                "loopCount": 4,
+                "3DSound": false,
+                "clipPath": "GameData\\Sounds\\nukes.mp3",
+                "volume": 0.5,
+                "loopCount": 1,
                 "mixerOption": "Master",
-                "pitch": 2.0,
                 "paused": false,
+                "pitch": 1.0,
+                "velocity": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+			"q2LK72Hwz5OShwyYBVl9PPAL0": {
+                "3DSound": false,
+                "clipPath": "GameData\\Sounds\\birds.ogg",
+                "volume": 1.0,
+                "loopCount": -1,
+                "mixerOption": "Master",
+                "paused": false,
+                "pitch": 1.0,
                 "velocity": [
                     0.0,
                     0.0,
@@ -97,7 +113,7 @@
                 "scale": [
                     999.999694824219,
                     999.999694824219,
-                    4.76837016094578E-07
+                    0.0
                 ]
             },
             "rheHsgDpxtCdMymfxzgXQROxF": {
@@ -114,7 +130,7 @@
                 "scale": [
                     249.999038696289,
                     249.999038696289,
-                    7.62936542741954E-06
+                    0.0
                 ]
             },
             "VxeX0YZYDaHteeeh187ISAOOq": {
@@ -131,7 +147,7 @@
                 "scale": [
                     249.999038696289,
                     249.999038696289,
-                    7.62936542741954E-06
+                    0.0
                 ]
             },
             "XVBRb0MX9xw38jVT6x314J56m": {
@@ -148,7 +164,7 @@
                 "scale": [
                     999.999694824219,
                     999.999694824219,
-                    4.76837016094578E-07
+                    0.0
                 ]
             }
         }

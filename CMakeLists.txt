@@ -124,6 +124,10 @@ add_library(Engine ${SRC_IMGUI}
 
 	#Systems & components
 
+	src/Engine/Systems/AudioListener.h
+	src/Engine/Systems/AudioListenerSystem.h
+	src/Engine/Systems/AudioListenerSystem.cpp
+
 	src/Engine/Systems/AudioSource.h
 	src/Engine/Systems/AudioSourceSystem.h
 	src/Engine/Systems/AudioSourceSystem.cpp

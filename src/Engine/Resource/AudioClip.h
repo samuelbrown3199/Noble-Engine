@@ -13,8 +13,12 @@
 */
 struct AudioClip : public Resource
 {
+	AudioClip();
+	AudioClip(FMOD_MODE _mode);
 	~AudioClip();
+	
 
+	FMOD_MODE m_mode;
 	FMOD_SOUND* m_sound;
 	/**
 	*Loads a sound file and buffers it.

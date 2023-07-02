@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 
+#include "../Systems/AudioListenerSystem.h"
 #include "../Systems/AudioSourceSystem.h"
 #include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
@@ -75,6 +76,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	UIQuads::SetupUIQuads();
 
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
+	rtn->BindSystem<AudioListenerSystem>(SystemUsage::useUpdate, "AudioListener");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
@@ -206,11 +208,11 @@ void Application::CleanupApplication()
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
 	ThreadingManager::StopThreads();
+	delete m_resourceManager;
 	delete m_gameRenderer;
 	delete m_audioManager;
 	delete m_networkManager;
 	delete m_threadManager;
-	delete m_resourceManager;
 	delete m_logger;
 	delete m_pStats;
 }

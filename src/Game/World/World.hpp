@@ -7,6 +7,7 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
 #include <Engine/Systems/MeshRenderer.h>
+#include <Engine/Systems/AudioListener.h>
 
 #include <vector>
 
@@ -54,8 +55,9 @@ struct World : public Behaviour
 		Entity* planetSpawner;
 
 		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
+		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 90, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\SpaceBackground1.png", glm::vec4(1,1,1, 0.35f));
+		planetSpawner->AddComponent<AudioListener>();
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x * 4, m_planetScale.y * 4, 1));

@@ -16,15 +16,36 @@ void AudioSourceSystem::OnUpdate(AudioSource* comp)
 {
 	if (!comp->m_bPaused)
 	{
+		if (comp->m_sourceTransform == nullptr || Application::GetEntitiesDeleted())
+		{
+			comp->m_sourceTransform = Transform::GetComponent(comp->m_sEntityID);
+			return;
+		}
+
 		if (comp->channel == nullptr)
 		{
 			FMOD_System_PlaySound(AudioManager::GetFMODSystem(), comp->m_clip->m_sound, nullptr, true, &comp->channel);
-			FMOD_Channel_SetLoopCount(comp->channel, comp->m_iLoopCount);
+
+			int loopCount = comp->m_iLoopCount > 0 ? comp->m_iLoopCount - 1 : comp->m_iLoopCount;
+			FMOD_Channel_SetLoopCount(comp->channel, loopCount);
 		}
 
-		FMOD_Channel_SetVolume(comp->channel, comp->m_fGain);
+		FMOD_Channel_SetVolume(comp->channel, comp->m_fVolume);
 		FMOD_Channel_SetPitch(comp->channel, comp->m_fPitch);
-		//Further functions like above for 3d pos and stuff.
+		if (comp->m_b3DSound)
+		{
+			FMOD_VECTOR pos;
+			pos.x = comp->m_sourceTransform->m_position.x;
+			pos.y = comp->m_sourceTransform->m_position.y;
+			pos.z = comp->m_sourceTransform->m_position.z;
+
+			FMOD_VECTOR vel;
+			vel.x = comp->m_vVelocity.x;
+			vel.y = comp->m_vVelocity.y;
+			vel.z = comp->m_vVelocity.z;
+
+			FMOD_Channel_Set3DAttributes(comp->channel, &pos, &vel);
+		}
 
 
 		FMOD_Channel_SetPaused(comp->channel, comp->m_bPaused);
@@ -34,6 +55,7 @@ void AudioSourceSystem::OnUpdate(AudioSource* comp)
 		if (comp->channel != nullptr)
 		{
 			//clean up stuff here to allow for other channels to be created.
+			FMOD_Channel_Stop(comp->channel);
 		}
 	}
 }

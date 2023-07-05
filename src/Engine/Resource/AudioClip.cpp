@@ -6,7 +6,8 @@
 
 AudioClip::AudioClip()
 {
-	m_mode = FMOD_DEFAULT;
+	//want to be default in the end, but this is useful for testing before I do the asset management rework.
+	m_mode = FMOD_DEFAULT | FMOD_3D | FMOD_LOOP_NORMAL;
 	m_sound = nullptr;
 }
 

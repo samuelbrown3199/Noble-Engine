@@ -42,7 +42,7 @@ struct AudioSource : public ComponentData<AudioSource>
 
 	void FromJson(const nlohmann::json& j) override
 	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(j["clipPath"], FMOD_LOOP_NORMAL);
+		m_clip = ResourceManager::LoadResource<AudioClip>(j["clipPath"]);
 		m_iLoopCount = j["loopCount"];
 		m_fPitch = j["pitch"];
 		m_fVolume = j["volume"];
@@ -54,7 +54,7 @@ struct AudioSource : public ComponentData<AudioSource>
 
 	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption)
 	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation, FMOD_3D);
+		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation);
 		m_sMixerOption = _mixerOption;
 	}
 	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption, bool _paused)

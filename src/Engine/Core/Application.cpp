@@ -123,7 +123,7 @@ void Application::MainLoop()
 
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
-		AudioManager::UpdateListenerPos();
+		AudioManager::UpdateSystem();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
 			Uint32 updateStart = SDL_GetTicks();

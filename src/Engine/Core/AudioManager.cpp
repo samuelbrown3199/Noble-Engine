@@ -16,7 +16,7 @@ AudioManager::AudioManager()
 	{
 		Logger::LogError("Failed to create FMOD System!", 2);
 	}
-	result = FMOD_System_Init(m_fmodSystem, m_iMaxChannels, FMOD_INIT_NORMAL, nullptr);
+	result = FMOD_System_Init(m_fmodSystem, m_iMaxChannels, FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED, nullptr);
 	if (result != FMOD_OK)
 	{
 		Logger::LogError("Failed to initialise FMOD System!", 2);
@@ -68,8 +68,4 @@ void AudioManager::UpdateAudioMixerOption(std::string _optionName, float _newVal
 			itr->second = _newValue;
 		}
 	}
-}
-
-void AudioManager::UpdateListenerPos()
-{
 }

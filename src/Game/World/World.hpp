@@ -55,7 +55,7 @@ struct World : public Behaviour
 		Entity* planetSpawner;
 
 		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 90, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
+		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
 		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\SpaceBackground1.png", glm::vec4(1,1,1, 0.35f));
 		planetSpawner->AddComponent<AudioListener>();
 
@@ -75,7 +75,9 @@ struct World : public Behaviour
 		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 15), glm::vec3(0, 0, 0), glm::vec3(1,1,1));
 		MeshRenderer* mr = planetSpawner->AddComponent<MeshRenderer>();
 
-		planetSpawner->AddComponent<AudioSource>("GameData\\Sounds\\glass_smash.ogg", "Master")->m_bPaused = false;
+		AudioSource* aSource = planetSpawner->AddComponent<AudioSource>("GameData\\Sounds\\glass_smash.ogg", "Master", false);
+		aSource->m_b3DSound = true;
+		aSource->m_iLoopCount = -1;
 
 		mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
 		mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");

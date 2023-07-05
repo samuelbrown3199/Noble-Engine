@@ -42,16 +42,6 @@ void DebugCam::UpdateControls()
 	{
 		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
-
-	if (InputManager::GetKey(SDLK_p))
-	{
-		Renderer::SetRenderMode(GL_TRIANGLES);
-	}
-
-	if (InputManager::GetKey(SDLK_l))
-	{
-		Renderer::SetRenderMode(GL_LINES);
-	}
 }
 
 void DebugCam::UpdateCameraRotation()

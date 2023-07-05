@@ -1,12 +1,18 @@
 {
     "ComponentData": {
-        "AudioListener": null,
+        "AudioListener": 
+		{
+			"q2LK72Hwz5OShwyYBVl9PPAL0": {
+				"velocity": [0,0,0],
+				"up": [0,1,0]
+			}
+		},
         "AudioSource": {
             "NWCIsHAcA0vTSrhQYmU6G8GBa": {
-                "3DSound": false,
+                "3DSound": true,
                 "clipPath": "GameData\\Sounds\\nukes.mp3",
                 "volume": 0.5,
-                "loopCount": 1,
+                "loopCount": -1,
                 "mixerOption": "Master",
                 "paused": false,
                 "pitch": 1.0,
@@ -17,12 +23,12 @@
                 ]
             },
 			"q2LK72Hwz5OShwyYBVl9PPAL0": {
-                "3DSound": false,
+                "3DSound": true,
                 "clipPath": "GameData\\Sounds\\birds.ogg",
                 "volume": 1.0,
                 "loopCount": -1,
                 "mixerOption": "Master",
-                "paused": false,
+                "paused": true,
                 "pitch": 1.0,
                 "velocity": [
                     0.0,

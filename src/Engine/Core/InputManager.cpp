@@ -29,7 +29,7 @@ void InputManager::HandleGeneralInput()
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
 
-		GetMousePosition();
+		//GetMousePosition();
 
 		if (e.type == SDL_QUIT)
 		{
@@ -183,7 +183,10 @@ bool InputManager::GetMouseButtonUp(int _button)
 void InputManager::GetMousePosition()
 {
 	SDL_GetMouseState(&m_iMouseX, &m_iMouseY);
-	m_iWorldMousePos = glm::vec2((m_iMouseX / Renderer::GetScale()) + Renderer::GetCamera()->m_position.x, (m_iMouseY / Renderer::GetScale()) + Renderer::GetCamera()->m_position.y);
+	Camera* cam = Renderer::GetCamera();
+
+	if(cam != nullptr)
+		m_iWorldMousePos = glm::vec2((m_iMouseX / Renderer::GetScale()) + cam->m_camTransform->m_position.x, (m_iMouseY / Renderer::GetScale()) + cam->m_camTransform->m_position.y);
 }
 
 void InputManager::ClearFrameInputs()

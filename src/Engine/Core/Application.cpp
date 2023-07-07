@@ -3,6 +3,7 @@
 
 #include "../Systems/AudioListenerSystem.h"
 #include "../Systems/AudioSourceSystem.h"
+#include "../Systems/CameraSystem.h"
 #include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
 #include "../Systems/MeshRendererSystem.h"
@@ -76,6 +77,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	UIQuads::SetupUIQuads();
 
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
+	rtn->BindSystem<CameraSystem>(SystemUsage::useUpdate, "Camera");
 	rtn->BindSystem<AudioListenerSystem>(SystemUsage::useUpdate, "AudioListener");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");

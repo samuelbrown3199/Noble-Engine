@@ -14,6 +14,7 @@ struct DebugCam : public Behaviour
 	bool firstMouse = false;
 	float pitch = 0.0f, yaw = -90.0f;
 
+	void Start();
 	void Update();
 	void UpdateControls();
 	void UpdateCameraRotation();

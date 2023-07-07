@@ -1,7 +1,6 @@
 #include "..\Core\Application.h"
 #include "..\Core\AudioManager.h"
 #include "AudioListenerSystem.h"
-#include "..\Core\Renderer.h"
 
 std::weak_ptr<SystemBase> AudioListenerSystem::self;
 std::weak_ptr<SystemBase> AudioListener::componentSystem;
@@ -20,26 +19,18 @@ void AudioListenerSystem::OnUpdate(AudioListener* comp)
 		comp->m_listenerTransform = Transform::GetComponent(comp->m_sEntityID);
 	}
 
-	Camera* cam = Renderer::GetCamera();
-
-	/*pos.x = comp->m_listenerTransform->m_position.x;
+	pos.x = comp->m_listenerTransform->m_position.x;
 	pos.y = comp->m_listenerTransform->m_position.y;
-	pos.z = comp->m_listenerTransform->m_position.z;*/
-	pos.x = cam->m_position.x;
-	pos.y = cam->m_position.y;
-	pos.z = cam->m_position.z;
+	pos.z = comp->m_listenerTransform->m_position.z;
 
 	vel.x = comp->m_velocity.x;
 	vel.y = comp->m_velocity.y;
 	vel.z = comp->m_velocity.z;
 
 	glm::vec3 normFor = glm::normalize(comp->m_listenerTransform->m_rotation);
-	/*forward.x = normFor.x;
+	forward.x = normFor.x;
 	forward.y = 0;
-	forward.z = normFor.z;*/
-	forward.x = cam->m_rotation.x;
-	forward.y = 0;
-	forward.z = cam->m_rotation.z;
+	forward.z = normFor.z;
 
 	up.x = 0;
 	up.y = 1;

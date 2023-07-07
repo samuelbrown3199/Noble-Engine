@@ -15,6 +15,9 @@ void MeshRendererSystem::OnRender(MeshRenderer* comp)
 		comp->m_transform = Transform::GetComponent(comp->m_sEntityID);
 		return;
 	}
+
+	if (comp->m_model == nullptr)
+		return;
 	if (comp->m_texture == nullptr)
 		return;
 

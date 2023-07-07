@@ -1,9 +1,21 @@
 #include "DebugCam.h"
 
+#include "../Core/Application.h"
 #include "../Core/InputManager.h"
 #include "../Systems/Transform.h"
 #include "../Core/Renderer.h"
 #include "../Core/PerformanceStats.h"
+#include "../Systems/Camera.h"
+#include "../Systems/AudioListener.h"
+
+void DebugCam::Start()
+{
+	Entity* hackCam = Application::CreateEntity();
+	hackCam->m_sEntityName = "Hack Cam";
+	hackCam->AddComponent<Transform>();
+	hackCam->AddComponent<Camera>()->m_bIsMainCam = true;
+	hackCam->AddComponent<AudioListener>();
+}
 
 void DebugCam::Update()
 {
@@ -18,29 +30,29 @@ void DebugCam::UpdateControls()
 
 	if (InputManager::GetKey(SDLK_w))
 	{
-		ca->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_rotation;
+		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
 	}
 	if (InputManager::GetKey(SDLK_s))
 	{
-		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_rotation;
+		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
 	}
 	if (InputManager::GetKey(SDLK_a))
 	{
-		glm::vec3 direction = glm::cross(ca->m_rotation, up);
-		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
+		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
 	}
 	if (InputManager::GetKey(SDLK_d))
 	{
-		glm::vec3 direction = glm::cross(ca->m_rotation, up);
-		ca->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
+		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
 	}
 	if (InputManager::GetKey(SDLK_SPACE))
 	{
-		ca->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 	if (InputManager::GetKey(SDLK_x))
 	{
-		ca->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 }
 
@@ -77,7 +89,7 @@ void DebugCam::UpdateCameraRotation()
 		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		ca->m_rotation = glm::normalize(front);
+		ca->m_camTransform->m_rotation = glm::normalize(front);
 	}
 	else
 	{

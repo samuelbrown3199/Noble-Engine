@@ -1,10 +1,17 @@
 {
     "ComponentData": {
-        "AudioListener": 
-		{
-			"q2LK72Hwz5OShwyYBVl9PPAL0": {
-				"velocity": [0,0,0],
-				"up": [0,1,0]
+        "AudioListener": {
+			"cdsagdsagdsagdsagdsaggdsa": {
+				"velocity": [
+					0.0,
+					0.0,
+					0.0
+				]
+			}
+		},
+		"Camera": {
+			"cdsagdsagdsagdsagdsaggdsa": {
+				"MainCam": true
 			}
 		},
         "AudioSource": {
@@ -105,6 +112,23 @@
                     1.0
                 ]
             },
+			"cdsagdsagdsagdsagdsaggdsa": {
+				"position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    -1.0
+                ],
+                "scale": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+			},
             "q2LK72Hwz5OShwyYBVl9PPAL0": {
                 "position": [
                     0.0,
@@ -180,7 +204,8 @@
         "q2LK72Hwz5OShwyYBVl9PPAL0": "SpaceBackground1",
         "rheHsgDpxtCdMymfxzgXQROxF": "Continents1",
         "VxeX0YZYDaHteeeh187ISAOOq": "PlanetBase",
-        "XVBRb0MX9xw38jVT6x314J56m": "Stars1"
+        "XVBRb0MX9xw38jVT6x314J56m": "Stars1",
+		"cdsagdsagdsagdsagdsaggdsa": "Camera"
     },
     "LightingSettings": {
         "AmbientColour": [

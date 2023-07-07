@@ -132,6 +132,10 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/AudioSourceSystem.h
 	src/Engine/Systems/AudioSourceSystem.cpp
 
+	src/Engine/Systems/Camera.h
+	src/Engine/Systems/CameraSystem.h
+	src/Engine/Systems/CameraSystem.cpp
+
 	src/Engine/Systems/Transform.h
 	src/Engine/Systems/TransformSystem.h
 	src/Engine/Systems/TransformSystem.cpp

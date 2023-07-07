@@ -16,7 +16,7 @@ float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
 
-Camera* Renderer::m_camera;
+Camera* Renderer::m_camera = nullptr;
 
 bool Renderer::m_bProjectionRendering = true;
 GLuint Renderer::m_renderMode = GL_TRIANGLES;
@@ -177,9 +177,7 @@ glm::mat4 Renderer::GenerateUIOrthographicMatrix()
 
 glm::mat4 Renderer::GenerateViewMatrix()
 {
-	m_camera->m_rotation = glm::normalize(m_camera->m_rotation);
-
-	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_position, m_camera->m_position + m_camera->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_camTransform->m_position, m_camera->m_camTransform->m_position + m_camera->m_camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
 }
 

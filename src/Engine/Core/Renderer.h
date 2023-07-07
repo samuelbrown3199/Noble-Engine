@@ -10,11 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-struct Camera
-{
-	glm::vec3 m_position = glm::vec3(0,0,5);
-	glm::vec3 m_rotation = glm::vec3(0, 0, -1);
-};
+#include "..\Systems\Camera.h"
 
 class Renderer
 {
@@ -61,6 +57,7 @@ public:
 	//Adds the amount onto scale. The larger the scale the larger the world.
 	static void AdjustScale(const float& _amount);
 
+	static void SetCamera(Camera* cam) { m_camera = cam; }
 	static Camera* GetCamera() { return m_camera; };
 	static float GetScale() { return m_fScale; };
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };

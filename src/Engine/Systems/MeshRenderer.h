@@ -12,10 +12,10 @@
 
 struct MeshRenderer : public ComponentData<MeshRenderer>
 {
-	std::shared_ptr<Model> m_model;
-	std::shared_ptr<Texture> m_texture;
+	std::shared_ptr<Model> m_model = nullptr;
+	std::shared_ptr<Texture> m_texture = nullptr;
 
-	glm::vec4 m_colour;
+	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	Transform* m_transform = nullptr;
 

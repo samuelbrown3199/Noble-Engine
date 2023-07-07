@@ -10,26 +10,5 @@ std::vector<MeshRenderer> MeshRenderer::componentData;
 
 void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
-	if (comp->m_transform == nullptr || Application::GetEntitiesDeleted())
-	{
-		comp->m_transform = Transform::GetComponent(comp->m_sEntityID);
-		return;
-	}
 
-	if (comp->m_model == nullptr)
-		return;
-	if (comp->m_texture == nullptr)
-		return;
-
-	Application::m_mainShaderProgram->UseProgram();
-	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
-	glBindTexture(GL_TEXTURE_2D, comp->m_texture->m_iTextureID);
-	glBindVertexArray(comp->m_model->m_vaoID);
-
-	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);
-	Application::m_mainShaderProgram->BindMat4("transMat", comp->m_transform->m_transformMat);
-	Application::m_mainShaderProgram->BindVector4("colour", comp->m_colour);
-
-	glDrawArrays(Renderer::GetRenderMode(), 0, comp->m_model->m_drawCount);
-	glBindVertexArray(0);
 }

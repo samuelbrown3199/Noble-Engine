@@ -11,42 +11,11 @@
 
 #include <vector>
 
-#include "TileChunk.h"
-
 struct World : public Behaviour
 {
 	std::string m_sWorldName;
-	std::vector<TileChunk*> m_vWorldChunks;
 
 	glm::vec2 m_planetScale;
-
-	TileChunk* GetChunkFromWorldPos(const glm::vec2& _worldPos)
-	{
-		int chunkWidth = TileChunk::m_iChunkWidth * 10;
-		int xPos = _worldPos.x;
-		int yPos = _worldPos.y;
-		int roundedX = ((xPos % chunkWidth) > chunkWidth / 2) ? xPos + chunkWidth - (xPos % chunkWidth) : xPos - (xPos % chunkWidth);
-		int roundedY = ((yPos % chunkWidth) > chunkWidth / 2) ? yPos + chunkWidth - (yPos % chunkWidth) : yPos - (yPos % chunkWidth);
-		glm::ivec2 roundedPosition = glm::vec2(roundedX, roundedY);
-
-
-		std::string formattedString = FormatString("From world pos (%d,%d) we looked for chunk pos (%d,%d)", xPos, yPos, roundedPosition.x, roundedPosition.y);
-		std::cout << formattedString << std::endl;
-
-		for (int i = 0; i < m_vWorldChunks.size(); i++)
-		{
-			TileChunk* targetChunk = m_vWorldChunks.at(i);
-			if (!targetChunk->m_chunkTransform)
-				continue;
-			if (targetChunk->m_chunkTransform->m_position.x == roundedPosition.x && targetChunk->m_chunkTransform->m_position.y == roundedPosition.y)
-			{
-				std::cout << "Found chunk!" << std::endl;
-				return targetChunk;
-			}
-		}
-
-		return nullptr;
-	}
 
 	void GenerateBackgroundPlanet()
 	{
@@ -93,8 +62,7 @@ struct World : public Behaviour
 
 	void Update()
 	{
-		Application::m_mainShaderProgram->BindFloat("ambientStrength", 1.0f);
-		Application::m_mainShaderProgram->BindVector3("ambientColour", glm::vec3(1, 1, 1));
+
 	}
 };
 

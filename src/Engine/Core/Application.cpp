@@ -19,14 +19,9 @@ std::weak_ptr<Application> Application::m_self;
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
 
-std::vector<std::shared_ptr<UISystem>> Application::m_vUiSystems;
 std::vector<std::shared_ptr<Behaviour>> Application::m_vBehaviours;
 std::vector<std::shared_ptr<SystemBase>> Application::m_vComponentSystems;
 std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
-
-std::shared_ptr<ShaderProgram> Application::m_mainShaderProgram;
-std::shared_ptr<ShaderProgram> Application::m_uiShaderProgram;
-std::shared_ptr<ShaderProgram> Application::m_uiTextProgram;
 
 //----------------- Private Functions ----------------------
 
@@ -55,26 +50,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	ImGui::StyleColorsDark();
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
-	ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
+	//ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
+	//ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
 
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
-	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.vs"), GL_VERTEX_SHADER);
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_mainShaderProgram->LinkShaderProgram(rtn->m_mainShaderProgram);
-
-	rtn->m_uiShaderProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_uiShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardUI.vs"), GL_VERTEX_SHADER);
-	rtn->m_uiShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardUI.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_uiShaderProgram->LinkShaderProgram(rtn->m_uiShaderProgram);
-
-	rtn->m_uiTextProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_uiTextProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardText.vs"), GL_VERTEX_SHADER);
-	rtn->m_uiTextProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardText.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_uiTextProgram->LinkShaderProgram(rtn->m_uiTextProgram);
-
-	UIQuads::SetupUIQuads();
 
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
 	rtn->BindSystem<CameraSystem>(SystemUsage::useUpdate, "Camera");
@@ -108,9 +87,7 @@ void Application::LoadSettings()
 
 void Application::MainLoop()
 {
-	Camera* cam = Renderer::GetCamera();
-
-	ImGuiIO& io = ImGui::GetIO();
+	//ImGuiIO& io = ImGui::GetIO();
 
 	while (m_bLoop)
 	{
@@ -119,9 +96,9 @@ void Application::MainLoop()
 		InputManager::HandleGeneralInput();
 		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
-		ImGui::NewFrame();
+		//ImGui_ImplOpenGL3_NewFrame();
+		//ImGui_ImplSDL2_NewFrame();
+		//ImGui::NewFrame();
 
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
@@ -140,14 +117,6 @@ void Application::MainLoop()
 		{
 			m_vBehaviours.at(i)->Update();
 		}
-		for (int i = 0; i < m_vUiSystems.size(); i++)
-		{
-			if (m_vUiSystems.at(i)->m_bActive)
-			{
-				m_vUiSystems.at(i)->Update();
-				m_vUiSystems.at(i)->HandleEvents();
-			}
-		}
 		ThreadingManager::WaitForTasksToClear();
 		m_pStats->updateTime = SDL_GetTicks() - m_pStats->updateStart;
 		//update end
@@ -163,7 +132,7 @@ void Application::MainLoop()
 			}
 		}
 
-		ImGui::Render();
+		//ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->ClearBuffer();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
@@ -176,14 +145,7 @@ void Application::MainLoop()
 			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, renderEnd);
 			m_pStats->m_mSystemRenderTimes.push_back(pair);
 		}
-		for (int i = 0; i < m_vUiSystems.size(); i++)
-		{
-			if (m_vUiSystems.at(i)->m_bActive)
-			{
-				m_vUiSystems.at(i)->Render();
-			}
-		}
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->SwapGraphicsBuffer();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;

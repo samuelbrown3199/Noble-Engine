@@ -7,9 +7,7 @@
 #include <Engine/Systems/Transform.h>
 #include <Engine/Resource/Scene.h>
 
-#include "Interface/MainMenu.h"
 #include "World/World.hpp"
-#include "World/TileChunkSystem.h"
 
 #ifndef NDEBUG
 int main()
@@ -17,8 +15,6 @@ int main()
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
     app->BindBehaviour<DebugCam>();
-
-    app->BindSystem<TileChunkSystem>(useBoth, "TileChunk");
 
     app->MainLoop();
     return 0;
@@ -29,8 +25,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
     app->BindBehaviour<World>();
     app->BindBehaviour<DebugCam>();
-
-    app->BindSystem<TileChunkSystem>(useBoth, "TileChunk");
 
     app->MainLoop();
     return 0;

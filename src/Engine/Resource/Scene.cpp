@@ -32,10 +32,6 @@ void Scene::LoadSceneIntoApplication()
 	if (m_bSceneReady == false)
 		return;
 
-	Application::m_mainShaderProgram->BindFloat("ambientStrength", m_sceneData["LightingSettings"]["AmbientStrength"]);
-	Application::m_mainShaderProgram->BindVector3("ambientColour", glm::vec3(m_sceneData["LightingSettings"]["AmbientColour"][0], m_sceneData["LightingSettings"]["AmbientColour"][1], m_sceneData["LightingSettings"]["AmbientColour"][2]));
-	Renderer::SetClearColour(glm::vec3(m_sceneData["LightingSettings"]["ClearColour"][0], m_sceneData["LightingSettings"]["ClearColour"][1], m_sceneData["LightingSettings"]["ClearColour"][2]));
-
 	//parse out JSON here. Should probably check that the file isnt malformed in some way as well.
 	if (m_sceneData.find("Entities") != m_sceneData.end())
 	{

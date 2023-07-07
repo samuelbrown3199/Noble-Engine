@@ -4,7 +4,6 @@
 #include "../Useful.h"
 
 SDL_Window* Renderer::m_gameWindow;
-SDL_GLContext Renderer::m_glContext;
 
 int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
@@ -19,7 +18,6 @@ const float Renderer::m_fMinScale = 3;
 Camera* Renderer::m_camera = nullptr;
 
 bool Renderer::m_bProjectionRendering = true;
-GLuint Renderer::m_renderMode = GL_TRIANGLES;
 
 //---------- public functions ---------
 
@@ -27,7 +25,7 @@ Renderer::Renderer(const std::string _windowName)
 {
 	Logger::LogInformation("Creating engine renderer.");
 
-	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
 	if (!m_gameWindow)
 	{
 		Logger::LogInformation("Failed to create game window");
@@ -35,37 +33,6 @@ Renderer::Renderer(const std::string _windowName)
 		throw std::exception();
 	}
 	Logger::LogInformation("Created game window.");
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
-	m_glContext = SDL_GL_CreateContext(m_gameWindow);
-	if (!m_glContext)
-	{
-		Logger::LogInformation("Failed to create OpenGL context!");
-		std::cout << "Failed to create OpenGL context!" << std::endl;
-		throw std::exception();
-	}
-	Logger::LogInformation("Created OpenGL context.");
-
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		Logger::LogInformation("Application failed to initialize GLEW!");
-		std::cout << "Application failed to initialize GLEW! " << glewGetString(err) << std::endl;
-		throw std::exception();
-	}
-	Logger::LogInformation("Initialized GLEW.");
-	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	Logger::LogInformation("Setup default settings for OpenGL.");
-
-	m_camera = new Camera();
 }
 
 Renderer::~Renderer()
@@ -85,11 +52,11 @@ void Renderer::AdjustScale(const float& _amount)
 
 void Renderer::ClearBuffer()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 void Renderer::SwapGraphicsBuffer()
 {
-	SDL_GL_SwapWindow(m_gameWindow);
+
 }
 void Renderer::UpdateScreenSize()
 {
@@ -99,7 +66,7 @@ void Renderer::UpdateScreenSize()
 	{
 		m_iScreenWidth = newWidth;
 		m_iScreenHeight = newHeight;
-		glViewport(0, 0, m_iScreenWidth, m_iScreenHeight);
+
 		Logger::LogInformation(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
 	}
 }
@@ -111,7 +78,6 @@ void Renderer::UpdateScreenSize(const int& _height, const int& _width)
 	{
 		m_iScreenWidth = newWidth;
 		m_iScreenHeight = newHeight;
-		glViewport(0, 0, m_iScreenWidth, m_iScreenHeight);
 		SDL_SetWindowSize(m_gameWindow, m_iScreenWidth, m_iScreenHeight);
 		Logger::LogInformation(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
 	}
@@ -146,7 +112,6 @@ std::string Renderer::GetWindowTitle()
 void Renderer::SetVSyncMode(const int& _mode)
 {
 	Logger::LogInformation(FormatString("Changing VSync mode to %d", _mode));
-	SDL_GL_SetSwapInterval(_mode);
 }
 
 glm::mat4 Renderer::GenerateProjMatrix()
@@ -179,25 +144,4 @@ glm::mat4 Renderer::GenerateViewMatrix()
 {
 	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_camTransform->m_position, m_camera->m_camTransform->m_position + m_camera->m_camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
-}
-
-void Renderer::SetRenderMode(GLenum renderMode)
-{
-	if (renderMode != GL_TRIANGLES && renderMode != GL_LINES)
-		return;
-
-	m_renderMode = renderMode;
-}
-
-void Renderer::SetClearColour(glm::vec3 colour)
-{
-	glClearColor(colour.x, colour.y, colour.z, 1.0f);
-}
-
-void Renderer::SetCullFace(bool value)
-{
-	if (value)
-		glEnable(GL_CULL_FACE);
-	else
-		glDisable(GL_CULL_FACE);
 }

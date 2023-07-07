@@ -15,14 +15,12 @@
 
 #include "ResourceManager.h"
 #include "../Resource/IniFile.h"
-#include "../Resource/ShaderProgram.hpp"
 
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
 #include "../ECS/Behaviour.hpp"
 
 #include "DebugUI.hpp"
-#include "UI.h"
 
 class Application
 {
@@ -51,17 +49,12 @@ private:
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
 
-	static std::vector<std::shared_ptr<UISystem>> m_vUiSystems;
 	static std::vector<std::shared_ptr<Behaviour>> m_vBehaviours;
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
 
 public:
-
-	static std::shared_ptr<ShaderProgram> m_mainShaderProgram;
-	static std::shared_ptr<ShaderProgram> m_uiShaderProgram;
-	static std::shared_ptr<ShaderProgram> m_uiTextProgram;
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }
@@ -130,17 +123,6 @@ public:
 		system->InitializeSystem();
 		m_vComponentSystems.push_back(system);
 		return system;
-	}
-
-	template<typename T>
-	static std::shared_ptr<T> BindUISystem(const std::string _UILayout)
-	{
-		std::shared_ptr<T> sys = std::make_shared<T>(_UILayout);
-		sys->InitializeUI();
-		sys->InitializeSpecificElements();
-
-		m_vUiSystems.push_back(sys);
-		return sys;
 	}
 
 	template<typename T>

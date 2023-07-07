@@ -84,9 +84,6 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 
-	src/Engine/Core/UI.h
-	src/Engine/Core/UI.cpp
-
 	#ECS
 
 	src/Engine/ECS/Entity.hpp
@@ -98,8 +95,6 @@ add_library(Engine ${SRC_IMGUI}
 	
 	src/Engine/Resource/Resource.h
 
-	src/Engine/Resource/ShaderProgram.hpp
-
 	src/Engine/Resource/Texture.h
 	src/Engine/Resource/Texture.cpp
 
@@ -109,13 +104,9 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Resource/AudioClip.h
 	src/Engine/Resource/AudioClip.cpp
 
-	src/Engine/Resource/Font.h
-	src/Engine/Resource/Font.cpp
-
 	src/Engine/Resource/UILayout.h
 	src/Engine/Resource/UILayout.cpp
 
-	src/Engine/Resource/ModelLoader.hpp
 	src/Engine/Resource/Model.h
 	src/Engine/Resource/Model.cpp
 
@@ -148,7 +139,7 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp
 )
-target_link_libraries(Engine SDL2 glew32 opengl32 enet64 ws2_32 winmm freetype fmod_vc)
+target_link_libraries(Engine SDL2 enet64 ws2_32 winmm freetype fmod_vc vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
 add_executable(Editor
@@ -165,14 +156,7 @@ target_compile_features(Editor PRIVATE cxx_std_17)
 add_executable(TechDemo1
     src/Game/main.cpp
 
-	src/Game/Interface/MainMenu.h
-	src/Game/Interface/MainMenu.cpp
-
 	src/Game/World/World.hpp
-	
-	src/Game/World/TileChunk.h
-	src/Game/World/TileChunkSystem.h
-	src/Game/World/TileChunkSystem.cpp
 )
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

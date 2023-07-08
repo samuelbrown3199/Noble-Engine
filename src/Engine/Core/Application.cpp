@@ -34,6 +34,12 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
 	rtn->m_logger = new Logger();
+
+#ifndef NDEBUG
+	//We want to log initialization at least in debug mode.
+	rtn->m_logger->m_bUseLogging = true;
+#endif
+
 	rtn->m_gameRenderer = new Renderer(_windowName);
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
@@ -62,10 +68,11 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
 
-	Logger::LogInformation("Engine started successfully");
-
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
+
+	Logger::LogInformation("Engine started successfully");
+
 	return rtn;
 }
 
@@ -179,6 +186,8 @@ void Application::CleanupApplication()
 	delete m_threadManager;
 	delete m_logger;
 	delete m_pStats;
+
+	SDL_Quit();
 }
 
 std::string Application::GetUniqueEntityID()

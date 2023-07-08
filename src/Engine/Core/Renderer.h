@@ -4,20 +4,56 @@
 
 #include <iostream>
 #include <exception>
+#include <optional>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_vulkan.h>
+#include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include "GraphicsPipeline.h"
 #include "..\Systems\Camera.h"
+
+struct QueueFamilyIndices
+{
+	std::optional<uint32_t> graphicsFamily;
+	std::optional<uint32_t> presentFamily;
+
+	bool IsComplete()
+	{
+		return graphicsFamily.has_value() && presentFamily.has_value();
+	}
+};
+
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
+};
 
 class Renderer
 {
 private:
 	static SDL_Window* m_gameWindow;
 
-	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 130";
+	VkInstance m_vulkanInstance;
+	VkDebugUtilsMessengerEXT m_debugMessenger;
+	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+	static VkDevice m_device;
+	VkSurfaceKHR m_surface;
+	VkSwapchainKHR m_swapChain;
+	VkFormat m_swapChainImageFormat;
+	VkExtent2D m_swapChainExtent;
+	std::vector<VkImageView> m_vSwapChainImageViews;
+
+	VkQueue m_graphicsQueue;
+	VkQueue m_presentQueue;
+
+	std::vector<VkImage> m_vSwapChainImages;
+
+	GraphicsPipeline* m_graphicsPipeline;
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
@@ -30,8 +66,56 @@ private:
 
 	static bool m_bProjectionRendering;
 
+	const std::vector<const char*> m_vValidationLayers = {
+		"VK_LAYER_KHRONOS_validation"
+	};
+
+	const std::vector<const char*> m_vDeviceExtensions = 
+	{
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+
+#ifdef NDEBUG
+	const bool m_bEnableValidationLayers = false;
+#else
+	const bool m_bEnableValidationLayers = true;
+#endif
+
 	static glm::mat4 GenerateProjectionMatrix();
 	static glm::mat4 GenerateOrthographicMatrix();
+
+	void InitializeVulkan();
+	void CleanupVulkan();
+	void CreateInstance();
+	bool CheckValidationLayerSupport();
+	std::vector<const char*> GetRequiredExtensions();
+
+	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+	void SetupDebugMessenger();
+
+	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData);
+
+	void CreateSurface();
+
+	bool IsDeviceSuitable(VkPhysicalDevice device);
+	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+	void PickPhysicalDevice();
+	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+	void CreateLogicalDevice();
+
+	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+	void CreateSwapChain();
+
+	void CreateImageViews();
+
+	void CreateGraphicsPipeline();
 
 public:
 
@@ -43,7 +127,6 @@ public:
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
 	static SDL_Window* GetWindow() { return m_gameWindow; }
-	const char* GetGLSLVersion() { return glsl_version; }
 
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
 	static void SetWindowFullScreen(const int& _mode);
@@ -66,6 +149,9 @@ public:
 
 	static void SetFov(float value) { m_fFov = value; }
 	static float GetFov() { return m_fFov; }
+
+
+	static VkDevice* GetLogicalDevice() { return &m_device; }
 };
 
 #endif

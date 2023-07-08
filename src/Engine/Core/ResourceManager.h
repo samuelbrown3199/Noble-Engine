@@ -10,9 +10,6 @@
 #include "../Resource/Resource.h"
 #include "Logger.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 /**
 *Handles resource management. Stores, loads and unloads resources.
 */
@@ -23,8 +20,6 @@ struct ResourceManager
 	*/
 	static std::vector<std::shared_ptr<Resource>> m_vResources;
 	static std::string m_sWorkingDirectory;
-
-	static FT_Library m_fontLibrary;
 
 	ResourceManager();
 

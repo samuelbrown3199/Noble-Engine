@@ -74,6 +74,9 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Core/Renderer.h
 	src/Engine/Core/Renderer.cpp
+	
+	src/Engine/Core/GraphicsPipeline.h
+	src/Engine/Core/GraphicsPipeline.cpp
 
 	src/Engine/Core/InputManager.h
 	src/Engine/Core/InputManager.cpp
@@ -139,7 +142,7 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp
 )
-target_link_libraries(Engine SDL2 enet64 ws2_32 winmm freetype fmod_vc vulkan-1)
+target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
 add_executable(Editor

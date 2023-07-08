@@ -44,8 +44,8 @@ private:
 	static VkDevice m_device;
 	VkSurfaceKHR m_surface;
 	VkSwapchainKHR m_swapChain;
-	VkFormat m_swapChainImageFormat;
-	VkExtent2D m_swapChainExtent;
+	static VkFormat m_swapChainImageFormat;
+	static VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_vSwapChainImageViews;
 
 	VkQueue m_graphicsQueue;
@@ -152,6 +152,8 @@ public:
 
 
 	static VkDevice* GetLogicalDevice() { return &m_device; }
+	static VkFormat* GetSwapchainImageFormat() { return &m_swapChainImageFormat; }
+	static VkExtent2D* GetSwapchainExtent() { return &m_swapChainExtent; }
 };
 
 #endif

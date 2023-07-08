@@ -22,6 +22,8 @@ Camera* Renderer::m_camera = nullptr;
 bool Renderer::m_bProjectionRendering = true;
 
 VkDevice Renderer::m_device;
+VkFormat Renderer::m_swapChainImageFormat;
+VkExtent2D Renderer::m_swapChainExtent;
 
 //---------- public functions ---------
 
@@ -74,6 +76,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 void Renderer::CleanupVulkan()
 {
+	delete m_graphicsPipeline;
 	for (auto imageView : m_vSwapChainImageViews)
 	{
 		vkDestroyImageView(m_device, imageView, nullptr);
@@ -533,7 +536,6 @@ void Renderer::CreateImageViews()
 void Renderer::CreateGraphicsPipeline()
 {
 	m_graphicsPipeline = new GraphicsPipeline();
-	m_graphicsPipeline->CreatePipeline();
 }
 
 void Renderer::AdjustScale(const float& _amount)

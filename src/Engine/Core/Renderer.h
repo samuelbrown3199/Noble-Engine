@@ -15,6 +15,41 @@
 #include "GraphicsPipeline.h"
 #include "..\Systems\Camera.h"
 
+struct Vertex
+{
+	glm::vec2 pos;
+	glm::vec3 color;
+
+	static VkVertexInputBindingDescription GetBindingDescription()
+	{
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
+	{
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+		//Vertex info here.
+		attributeDescriptions[0].binding = 0; //Realted to Binding in GetBindingDescription
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+		//Color info here.
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+		return attributeDescriptions;
+	}
+};
+
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
@@ -55,6 +90,10 @@ private:
 	VkCommandPool m_commandPool;
 	static VkCommandBuffer m_currentCommandBuffer;
 	std::vector<VkCommandBuffer> m_vCommandBuffers;
+
+	//Consider how these can be put into seperate objects, maybe one for model loading later..
+	VkBuffer m_vertexBuffer;
+	VkDeviceMemory m_vertexBufferMemory;
 
 	VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
@@ -134,6 +173,9 @@ private:
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void CreateSyncObjects();
+	
+	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	void CreateVertexBuffer();
 
 	void CleanupSwapchain();
 	void RecreateSwapchain();

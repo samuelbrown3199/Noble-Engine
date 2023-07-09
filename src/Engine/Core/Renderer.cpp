@@ -28,6 +28,13 @@ VkFormat Renderer::m_swapChainImageFormat;
 VkExtent2D Renderer::m_swapChainExtent;
 VkCommandBuffer Renderer::m_currentCommandBuffer;
 
+const std::vector<Vertex> vertices =
+{
+	{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+	{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
 //---------- public functions ---------
 
 Renderer::Renderer(const std::string _windowName)
@@ -68,6 +75,7 @@ void Renderer::InitializeVulkan()
 	CreateGraphicsPipeline();
 	CreateFrameBuffers();
 	CreateCommandPool();
+	CreateVertexBuffer();
 	CreateCommandBuffer();
 	CreateSyncObjects();
 
@@ -93,6 +101,8 @@ void Renderer::CleanupVulkan()
 	vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 	delete m_graphicsPipeline;
 	CleanupSwapchain();
+	vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
+	vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
 	vkDestroyDevice(m_device, nullptr);
 	if (m_bEnableValidationLayers)
 	{
@@ -703,8 +713,11 @@ void Renderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 	scissor.extent = m_swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	//Command to draw our triangle. Parameters as follows, CommandBuffer, VertexCount, InstanceCount, firstVertex, firstInstance
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	VkBuffer vertexBuffers[] = { m_vertexBuffer };
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+	vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
 	vkCmdEndRenderPass(commandBuffer);
 
@@ -736,6 +749,58 @@ void Renderer::CreateSyncObjects()
 			Logger::LogError("Failed to create semaphores.", 2);
 		}
 	}
+}
+
+uint32_t Renderer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+{
+	VkPhysicalDeviceMemoryProperties memProperties;
+	vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) 
+	{
+		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+		{
+			return i;
+		}
+	}
+
+	Logger::LogError("Failed to find suitable memory type.", 2);
+}
+
+void Renderer::CreateVertexBuffer()
+{
+	//Should maybe be a class that can be reused
+
+	VkBufferCreateInfo bufferInfo{};
+	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	if (vkCreateBuffer(m_device, &bufferInfo, nullptr, &m_vertexBuffer) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to create vertex buffer.", 2);
+	}
+
+	VkMemoryRequirements memRequirements;
+	vkGetBufferMemoryRequirements(m_device, m_vertexBuffer, &memRequirements);
+
+	VkMemoryAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.allocationSize = memRequirements.size;
+	allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	if (vkAllocateMemory(m_device, &allocInfo, nullptr, &m_vertexBufferMemory) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to allocate vertex buffer memory!", 2);
+	}
+
+	vkBindBufferMemory(m_device, m_vertexBuffer, m_vertexBufferMemory, 0);
+
+	void* data;
+	vkMapMemory(m_device, m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+		memcpy(data, vertices.data(), (size_t)bufferInfo.size);
+	vkUnmapMemory(m_device, m_vertexBufferMemory);
 }
 
 void Renderer::CleanupSwapchain()

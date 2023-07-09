@@ -130,8 +130,8 @@ void Application::MainLoop()
 
 		//ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
-		m_gameRenderer->StartDrawFrame();
-		//m_gameRenderer->DrawFrame();
+		//m_gameRenderer->StartDrawFrame();
+		m_gameRenderer->DrawFrame();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
 			Uint32 renderStart = SDL_GetTicks();
@@ -144,7 +144,7 @@ void Application::MainLoop()
 		}
 		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
-		m_gameRenderer->EndDrawFrame();
+		//m_gameRenderer->EndDrawFrame();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
 		//Render End
 

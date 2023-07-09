@@ -37,8 +37,10 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/imgui/imstb_textedit.h
 	src/Engine/imgui/imstb_truetype.h
 
-	src/Engine/imgui/backends/imgui_impl_opengl3.h
-	src/Engine/imgui/backends/imgui_impl_opengl3.cpp
+	src/Engine/imgui/imgui.h
+	src/Engine/imgui/imgui.cpp
+	src/Engine/imgui/backends/imgui_impl_vulkan.h
+	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
 
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp

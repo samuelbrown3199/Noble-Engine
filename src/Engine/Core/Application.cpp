@@ -10,7 +10,7 @@
 
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
-#include "../imgui/backends/imgui_impl_opengl3.h"
+#include "../imgui/backends/imgui_impl_vulkan.h"
 
 bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
@@ -46,18 +46,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_pStats = new PerformanceStats();
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	//ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
-	//ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
+	rtn->InitializeImGui();
 
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
 
@@ -141,7 +130,8 @@ void Application::MainLoop()
 
 		//ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
-		m_gameRenderer->ClearBuffer();
+		m_gameRenderer->StartDrawFrame();
+		//m_gameRenderer->DrawFrame();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
 			Uint32 renderStart = SDL_GetTicks();
@@ -154,7 +144,7 @@ void Application::MainLoop()
 		}
 		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
-		m_gameRenderer->SwapGraphicsBuffer();
+		m_gameRenderer->EndDrawFrame();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
 		//Render End
 
@@ -171,6 +161,7 @@ void Application::MainLoop()
 		m_pStats->m_mSystemRenderTimes.clear();
 	}
 
+	vkDeviceWaitIdle(Renderer::GetLogicalDevice());
 	CleanupApplication();
 }
 
@@ -188,6 +179,43 @@ void Application::CleanupApplication()
 	delete m_pStats;
 
 	SDL_Quit();
+}
+
+void Application::InitializeImGui()
+{
+	//Not quite in a position to use this yet.
+
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	/*// Setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
+	ImGui_ImplVulkan_InitInfo init_info = {};
+	init_info.Instance = Renderer::GetVulkanInstance();
+	init_info.PhysicalDevice = Renderer::GetPhysicalDevice();
+	init_info.Device = Renderer::GetLogicalDevice();
+	init_info.QueueFamily = YOUR_QUEUE_FAMILY;
+	init_info.Queue = YOUR_QUEUE;
+	init_info.PipelineCache = YOUR_PIPELINE_CACHE;
+	init_info.DescriptorPool = YOUR_DESCRIPTOR_POOL;
+	init_info.Subpass = 0;
+	init_info.MinImageCount = 2;
+	init_info.ImageCount = 2;
+	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+	init_info.Allocator = YOUR_ALLOCATOR;
+	init_info.CheckVkResultFn = check_vk_result;
+	ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+	// (this gets a bit more complicated, see example app for full reference)
+	ImGui_ImplVulkan_CreateFontsTexture(YOUR_COMMAND_BUFFER);
+	// (your code submit a queue)
+	ImGui_ImplVulkan_DestroyFontUploadObjects();*/
 }
 
 std::string Application::GetUniqueEntityID()

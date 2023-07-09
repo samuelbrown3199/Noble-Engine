@@ -21,9 +21,12 @@ Camera* Renderer::m_camera = nullptr;
 
 bool Renderer::m_bProjectionRendering = true;
 
+VkInstance Renderer::m_vulkanInstance;
+VkPhysicalDevice Renderer::m_physicalDevice = VK_NULL_HANDLE;
 VkDevice Renderer::m_device;
 VkFormat Renderer::m_swapChainImageFormat;
 VkExtent2D Renderer::m_swapChainExtent;
+VkCommandBuffer Renderer::m_currentCommandBuffer;
 
 //---------- public functions ---------
 
@@ -63,11 +66,16 @@ void Renderer::InitializeVulkan()
 	CreateSwapChain();
 	CreateImageViews();
 	CreateGraphicsPipeline();
+	CreateFrameBuffers();
+	CreateCommandPool();
+	CreateCommandBuffer();
+	CreateSyncObjects();
 
 	Logger::LogInformation("Initialized Vulkan");
 }
 
-void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+{
 	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != nullptr) {
 		func(instance, debugMessenger, pAllocator);
@@ -76,12 +84,15 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 void Renderer::CleanupVulkan()
 {
-	delete m_graphicsPipeline;
-	for (auto imageView : m_vSwapChainImageViews)
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroyImageView(m_device, imageView, nullptr);
+		vkDestroySemaphore(m_device, m_vRenderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(m_device, m_vImageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(m_device, m_vInFlightFences[i], nullptr);
 	}
-	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+	vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+	delete m_graphicsPipeline;
+	CleanupSwapchain();
 	vkDestroyDevice(m_device, nullptr);
 	if (m_bEnableValidationLayers)
 	{
@@ -538,6 +549,368 @@ void Renderer::CreateGraphicsPipeline()
 	m_graphicsPipeline = new GraphicsPipeline();
 }
 
+void Renderer::CreateFrameBuffers()
+{
+	m_vSwapchainFramebuffers.resize(m_vSwapChainImages.size());
+
+	for (size_t i = 0; i < m_vSwapChainImageViews.size(); i++)
+	{
+		VkImageView attachments[] = {
+			m_vSwapChainImageViews[i]
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = m_graphicsPipeline->GetRenderPass();
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = m_swapChainExtent.width;
+		framebufferInfo.height = m_swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_vSwapchainFramebuffers[i]) != VK_SUCCESS)
+		{
+			Logger::LogError("Failed to create framebuffer.", 2);
+		}
+	}
+}
+
+void Renderer::CreateCommandPool()
+{
+	QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+
+	VkCommandPoolCreateInfo poolInfo{};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+	if (vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to create command pool.", 2);
+	}
+}
+
+void Renderer::CreateCommandBuffer()
+{
+	m_vCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = m_commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = (uint32_t)m_vCommandBuffers.size();
+
+	if (vkAllocateCommandBuffers(m_device, &allocInfo, m_vCommandBuffers.data()) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to allocate command buffers.", 2);
+	}
+}
+
+void Renderer::StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+{
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0; // Optional
+	beginInfo.pInheritanceInfo = nullptr; // Optional
+
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to begin recording command buffer.", 2);
+	}
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = m_graphicsPipeline->GetRenderPass();
+	renderPassInfo.framebuffer = m_vSwapchainFramebuffers[imageIndex];
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = m_swapChainExtent;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	//Render pass is now beginnning.
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	//Bind our graphics pipeline
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetGraphicsPipeline());
+
+	//Dynamic setting of viewport and scissor, as setup in the pipeline.
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(m_swapChainExtent.width);
+	viewport.height = static_cast<float>(m_swapChainExtent.height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0, 0 };
+	scissor.extent = m_swapChainExtent;
+	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+}
+
+void Renderer::EndRecordingCommandBuffer(VkCommandBuffer commandBuffer)
+{
+	vkCmdEndRenderPass(commandBuffer);
+
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to record command buffer.", 2);
+	}
+}
+
+void Renderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+{
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0; // Optional
+	beginInfo.pInheritanceInfo = nullptr; // Optional
+
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to begin recording command buffer.", 2);
+	}
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = m_graphicsPipeline->GetRenderPass();
+	renderPassInfo.framebuffer = m_vSwapchainFramebuffers[imageIndex];
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = m_swapChainExtent;
+
+	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	//Render pass is now beginnning.
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	//Bind our graphics pipeline
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetGraphicsPipeline());
+
+	//Dynamic setting of viewport and scissor, as setup in the pipeline.
+	VkViewport viewport{};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(m_swapChainExtent.width);
+	viewport.height = static_cast<float>(m_swapChainExtent.height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+	VkRect2D scissor{};
+	scissor.offset = { 0, 0 };
+	scissor.extent = m_swapChainExtent;
+	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+	//Command to draw our triangle. Parameters as follows, CommandBuffer, VertexCount, InstanceCount, firstVertex, firstInstance
+	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+	vkCmdEndRenderPass(commandBuffer);
+
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) 
+	{
+		Logger::LogError("Failed to record command buffer.", 2);
+	}
+}
+
+void Renderer::CreateSyncObjects()
+{
+	m_vImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+	m_vRenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+	m_vInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+	VkSemaphoreCreateInfo semaphoreInfo{};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	VkFenceCreateInfo fenceInfo{};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		if (vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_vImageAvailableSemaphores[i]) != VK_SUCCESS ||
+			vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_vRenderFinishedSemaphores[i]) != VK_SUCCESS ||
+			vkCreateFence(m_device, &fenceInfo, nullptr, &m_vInFlightFences[i]) != VK_SUCCESS)
+		{
+			Logger::LogError("Failed to create semaphores.", 2);
+		}
+	}
+}
+
+void Renderer::CleanupSwapchain()
+{
+	for (auto framebuffer : m_vSwapchainFramebuffers)
+	{
+		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	}
+	for (auto imageView : m_vSwapChainImageViews)
+	{
+		vkDestroyImageView(m_device, imageView, nullptr);
+	}
+	vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+}
+
+void Renderer::RecreateSwapchain()
+{
+	vkDeviceWaitIdle(m_device);
+
+	CleanupSwapchain();
+
+	CreateSwapChain();
+	CreateImageViews();
+	CreateFrameBuffers();
+}
+
+void Renderer::StartDrawFrame()
+{
+	vkWaitForFences(m_device, 1, &m_vInFlightFences[m_iCurrentFrame], VK_TRUE, UINT64_MAX);
+
+	m_currentCommandBuffer = m_vCommandBuffers[m_iCurrentFrame];
+
+	VkResult result = vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_vImageAvailableSemaphores[m_iCurrentFrame], VK_NULL_HANDLE, &imageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		RecreateSwapchain();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		Logger::LogError("Failed to acquire swap chain image.", 2);
+	}
+
+	vkResetFences(m_device, 1, &m_vInFlightFences[m_iCurrentFrame]);
+
+	//Frame rendering wants to start with this stuff.
+	vkResetCommandBuffer(m_currentCommandBuffer, 0);
+	StartRecordingCommandBuffer(m_currentCommandBuffer, imageIndex);
+}
+
+void Renderer::EndDrawFrame()
+{
+	EndRecordingCommandBuffer(m_currentCommandBuffer);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[] = { m_vImageAvailableSemaphores[m_iCurrentFrame] };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &m_currentCommandBuffer;
+
+	VkSemaphore signalSemaphores[] = { m_vRenderFinishedSemaphores[m_iCurrentFrame] };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	//Submit command buffer to queue.
+	if (vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, m_vInFlightFences[m_iCurrentFrame]) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to submit draw command buffer.", 2);
+	}
+
+	//Present the rendered stuff to screen.
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapChains[] = { m_swapChain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = nullptr; // Optional
+
+	VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result != VK_SUBOPTIMAL_KHR)
+	{
+		RecreateSwapchain();
+	}
+	else if (result != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to present swap chain image.", 2);
+	}
+
+	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+//This will probably want to be split up and better integrated into the main loop of the engine.
+void Renderer::DrawFrame()
+{
+	vkWaitForFences(m_device, 1, &m_vInFlightFences[m_iCurrentFrame], VK_TRUE, UINT64_MAX);
+
+	uint32_t imageIndex;
+	VkResult result = vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_vImageAvailableSemaphores[m_iCurrentFrame], VK_NULL_HANDLE, &imageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		RecreateSwapchain();
+		return;
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		Logger::LogError("Failed to acquire swap chain image.", 2);
+	}
+
+	vkResetFences(m_device, 1, &m_vInFlightFences[m_iCurrentFrame]);
+
+	//Frame rendering wants to start with this stuff.
+	vkResetCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], 0);
+
+	//Record our command buffer
+	RecordCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], imageIndex);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	VkSemaphore waitSemaphores[] = { m_vImageAvailableSemaphores[m_iCurrentFrame] };
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &m_vCommandBuffers[m_iCurrentFrame];
+
+	VkSemaphore signalSemaphores[] = { m_vRenderFinishedSemaphores[m_iCurrentFrame] };
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	//Submit command buffer to queue.
+	if (vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, m_vInFlightFences[m_iCurrentFrame]) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to submit draw command buffer.", 2);
+	}
+
+	//Present the rendered stuff to screen.
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	VkSwapchainKHR swapChains[] = { m_swapChain };
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapChains;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = nullptr; // Optional
+
+	result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result != VK_SUBOPTIMAL_KHR)
+	{
+		RecreateSwapchain();
+	}
+	else if (result != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to present swap chain image.", 2);
+	}
+
+	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+
+
 void Renderer::AdjustScale(const float& _amount)
 { 
 	m_fScale += _amount;
@@ -547,14 +920,6 @@ void Renderer::AdjustScale(const float& _amount)
 		m_fScale = m_fMinScale;
 }
 
-void Renderer::ClearBuffer()
-{
-
-}
-void Renderer::SwapGraphicsBuffer()
-{
-
-}
 void Renderer::UpdateScreenSize()
 {
 	int newWidth, newHeight;

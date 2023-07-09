@@ -19,6 +19,10 @@ int main()
     //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     //ui->m_uiOpen = true;
 
+    Entity* entity = Application::CreateEntity();
+    entity->AddComponent<Transform>();
+    entity->AddComponent<MeshRenderer>();
+
     app->MainLoop();
     return 0;
 }
@@ -27,6 +31,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
     //app->BindBehaviour<DebugCam>();
+
+    Entity* entity = Application::CreateEntity();
+    entity->AddComponent<Transform>();
+    entity->AddComponent<MeshRenderer>();
 
     //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     //ui->m_uiOpen = true;

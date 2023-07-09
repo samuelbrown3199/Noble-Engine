@@ -38,22 +38,33 @@ class Renderer
 private:
 	static SDL_Window* m_gameWindow;
 
-	VkInstance m_vulkanInstance;
+	uint32_t imageIndex;
+	uint32_t m_iCurrentFrame = 0;
+	const int MAX_FRAMES_IN_FLIGHT = 2;
+
+	static VkInstance m_vulkanInstance;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
-	VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+	static VkPhysicalDevice m_physicalDevice;
 	static VkDevice m_device;
 	VkSurfaceKHR m_surface;
 	VkSwapchainKHR m_swapChain;
 	static VkFormat m_swapChainImageFormat;
 	static VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_vSwapChainImageViews;
+	std::vector<VkFramebuffer> m_vSwapchainFramebuffers;
+	VkCommandPool m_commandPool;
+	static VkCommandBuffer m_currentCommandBuffer;
+	std::vector<VkCommandBuffer> m_vCommandBuffers;
 
 	VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
 
 	std::vector<VkImage> m_vSwapChainImages;
-
 	GraphicsPipeline* m_graphicsPipeline;
+
+	std::vector <VkSemaphore> m_vImageAvailableSemaphores;
+	std::vector <VkSemaphore> m_vRenderFinishedSemaphores;
+	std::vector<VkFence> m_vInFlightFences;
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
@@ -114,16 +125,24 @@ private:
 	void CreateSwapChain();
 
 	void CreateImageViews();
-
 	void CreateGraphicsPipeline();
+	void CreateFrameBuffers();
+	void CreateCommandPool();
+	void CreateCommandBuffer();
+	void StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+	void EndRecordingCommandBuffer(VkCommandBuffer commandBuffer);
+	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+	void CreateSyncObjects();
+
+	void CleanupSwapchain();
+	void RecreateSwapchain();
 
 public:
 
 	Renderer(const std::string _windowName);
 	~Renderer();
 
-	void ClearBuffer();
-	void SwapGraphicsBuffer();
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
 	static SDL_Window* GetWindow() { return m_gameWindow; }
@@ -151,9 +170,17 @@ public:
 	static float GetFov() { return m_fFov; }
 
 
-	static VkDevice* GetLogicalDevice() { return &m_device; }
-	static VkFormat* GetSwapchainImageFormat() { return &m_swapChainImageFormat; }
-	static VkExtent2D* GetSwapchainExtent() { return &m_swapChainExtent; }
+	static VkInstance GetVulkanInstance() { return m_vulkanInstance; }
+	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
+	static VkDevice GetLogicalDevice() { return m_device; }
+	static VkFormat GetSwapchainImageFormat() { return m_swapChainImageFormat; }
+	static VkExtent2D GetSwapchainExtent() { return m_swapChainExtent; }
+	static VkCommandBuffer GetCurrentCommandBuffer() { return m_currentCommandBuffer; }
+
+	void StartDrawFrame();
+	void EndDrawFrame();
+
+	void DrawFrame();
 };
 
 #endif

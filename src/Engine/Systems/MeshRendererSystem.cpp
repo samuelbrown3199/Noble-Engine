@@ -10,5 +10,6 @@ std::vector<MeshRenderer> MeshRenderer::componentData;
 
 void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
-
+	//Command to draw our triangle. Parameters as follows, CommandBuffer, VertexCount, InstanceCount, firstVertex, firstInstance
+	vkCmdDraw(Renderer::GetCurrentCommandBuffer(), 3, 1, 0, 0);
 }

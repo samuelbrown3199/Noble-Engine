@@ -23,6 +23,9 @@ class GraphicsPipeline
 
 public:
 
+	VkRenderPass GetRenderPass() { return m_renderPass; }
+	VkPipeline GetGraphicsPipeline() { return m_graphicsPipeline; }
+
 	GraphicsPipeline();
 	~GraphicsPipeline();
 };

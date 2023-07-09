@@ -53,6 +53,7 @@ private:
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
+	void InitializeImGui();
 
 public:
 

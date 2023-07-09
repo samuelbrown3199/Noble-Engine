@@ -30,7 +30,7 @@ VkShaderModule GraphicsPipeline::CreateShaderModule(const std::vector<char>& cod
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(*Renderer::GetLogicalDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	if (vkCreateShaderModule(Renderer::GetLogicalDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	{
 		Logger::LogError("Failed to create shader module.", 2);
 	}
@@ -40,15 +40,15 @@ VkShaderModule GraphicsPipeline::CreateShaderModule(const std::vector<char>& cod
 
 void GraphicsPipeline::CleanupPipeline()
 {
-	vkDestroyPipeline(*Renderer::GetLogicalDevice(), m_graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(*Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
-	vkDestroyRenderPass(*Renderer::GetLogicalDevice(), m_renderPass, nullptr);
+	vkDestroyPipeline(Renderer::GetLogicalDevice(), m_graphicsPipeline, nullptr);
+	vkDestroyPipelineLayout(Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
+	vkDestroyRenderPass(Renderer::GetLogicalDevice(), m_renderPass, nullptr);
 }
 
 void GraphicsPipeline::CreateRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = *Renderer::GetSwapchainImageFormat();
+	colorAttachment.format = Renderer::GetSwapchainImageFormat();
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -73,7 +73,18 @@ void GraphicsPipeline::CreateRenderPass()
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
 
-	if (vkCreateRenderPass(*Renderer::GetLogicalDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+	VkSubpassDependency dependency{};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
+
+	if (vkCreateRenderPass(Renderer::GetLogicalDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
 	{
 		Logger::LogError("Failed to create render pass.", 2);
 	}
@@ -161,7 +172,7 @@ void GraphicsPipeline::CreatePipeline()
 	pipelineLayoutInfo.setLayoutCount = 0;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-	if (vkCreatePipelineLayout(*Renderer::GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(Renderer::GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
 	{
 		Logger::LogError("Failed to create pipeline layout.", 2);
 	}
@@ -184,13 +195,13 @@ void GraphicsPipeline::CreatePipeline()
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
-	if (vkCreateGraphicsPipelines(*Renderer::GetLogicalDevice() , VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS)
+	if (vkCreateGraphicsPipelines(Renderer::GetLogicalDevice() , VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS)
 	{
 		Logger::LogError("Failed to create graphics pipeline.", 2);
 	}
 
-	vkDestroyShaderModule(*Renderer::GetLogicalDevice(), fragShaderModule, nullptr);
-	vkDestroyShaderModule(*Renderer::GetLogicalDevice(), vertShaderModule, nullptr);
+	vkDestroyShaderModule(Renderer::GetLogicalDevice(), fragShaderModule, nullptr);
+	vkDestroyShaderModule(Renderer::GetLogicalDevice(), vertShaderModule, nullptr);
 }
 
 GraphicsPipeline::GraphicsPipeline()

@@ -3,7 +3,7 @@
 #include <fstream>
 
 #include "Renderer.h"
-#include "Logger.h"
+#include "..\Logger.h"
 
 std::vector<char> GraphicsPipeline::ReadShader(const std::string& filename)
 {
@@ -40,9 +40,39 @@ VkShaderModule GraphicsPipeline::CreateShaderModule(const std::vector<char>& cod
 
 void GraphicsPipeline::CleanupPipeline()
 {
+	vkDestroyDescriptorSetLayout(Renderer::GetLogicalDevice(), m_descriptorSetLayout, nullptr);
 	vkDestroyPipeline(Renderer::GetLogicalDevice(), m_graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
 	vkDestroyRenderPass(Renderer::GetLogicalDevice(), m_renderPass, nullptr);
+}
+
+void GraphicsPipeline::CreateDescriptorSetLayout()
+{
+	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+	uboLayoutBinding.binding = 0; //Matches whats in the shader code.
+	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; //Standard Uniform buffer
+	uboLayoutBinding.descriptorCount = 1; //Single object, therefore we use 1
+	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; //Its in the vertex shader.
+	uboLayoutBinding.pImmutableSamplers = nullptr; // Relevant for image smapling descriptors.
+
+	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+	samplerLayoutBinding.binding = 1;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //Image uniform buffer.
+	samplerLayoutBinding.pImmutableSamplers = nullptr;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	layoutInfo.pBindings = bindings.data();
+
+	if (vkCreateDescriptorSetLayout(Renderer::GetLogicalDevice(), &layoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS) 
+	{
+		Logger::LogError("Failed to create descriptor set layout.", 2);
+	}
 }
 
 void GraphicsPipeline::CreateRenderPass()
@@ -142,7 +172,7 @@ void GraphicsPipeline::CreatePipeline()
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	VkPipelineMultisampleStateCreateInfo multisampling{};
@@ -176,7 +206,8 @@ void GraphicsPipeline::CreatePipeline()
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 0;
+	pipelineLayoutInfo.setLayoutCount = 1; //The count of descriptors
+	pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout; //Tell Vulkan which descriptors we are using.
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	if (vkCreatePipelineLayout(Renderer::GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
@@ -214,6 +245,7 @@ void GraphicsPipeline::CreatePipeline()
 GraphicsPipeline::GraphicsPipeline()
 {
 	CreateRenderPass();
+	CreateDescriptorSetLayout();
 	CreatePipeline();
 }
 GraphicsPipeline::~GraphicsPipeline()

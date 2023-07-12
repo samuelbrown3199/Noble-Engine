@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Resource.h"
-#include "..\Core\Renderer.h"
+#include "..\Core\Graphics\Renderer.h"
 
 struct Model : public Resource
 {

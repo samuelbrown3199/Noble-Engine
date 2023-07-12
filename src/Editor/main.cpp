@@ -20,8 +20,7 @@ int main()
     //ui->m_uiOpen = true;
 
     Entity* entity = Application::CreateEntity();
-    entity->AddComponent<Transform>();
-    entity->AddComponent<MeshRenderer>();
+    entity->AddBehaviour<DebugCam>();
 
     app->MainLoop();
     return 0;

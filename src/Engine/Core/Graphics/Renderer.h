@@ -9,16 +9,20 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
+
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext.hpp>
 
 #include "GraphicsPipeline.h"
-#include "..\Systems\Camera.h"
+#include "..\..\Systems\Camera.h"
 
 struct Vertex
 {
 	glm::vec2 pos;
 	glm::vec3 color;
+	glm::vec2 texCoord;
 
 	static VkVertexInputBindingDescription GetBindingDescription()
 	{
@@ -30,9 +34,9 @@ struct Vertex
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
+	static std::array<VkVertexInputAttributeDescription, 3> GetAttributeDescriptions()
 	{
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 
 		//Vertex info here.
 		attributeDescriptions[0].binding = 0; //Realted to Binding in GetBindingDescription
@@ -46,8 +50,33 @@ struct Vertex
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[1].offset = offsetof(Vertex, color);
 
+		attributeDescriptions[2].binding = 0;
+		attributeDescriptions[2].location = 2;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
 		return attributeDescriptions;
 	}
+};
+
+const std::vector<Vertex> vertices = 
+{
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+};
+
+const std::vector<uint16_t> indices =
+{
+	0, 1, 2, 2, 3, 0
+};
+
+struct UniformBufferObject
+{
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 proj;
 };
 
 struct QueueFamilyIndices
@@ -68,6 +97,8 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
+struct Texture;
+
 class Renderer
 {
 private:
@@ -87,15 +118,25 @@ private:
 	static VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_vSwapChainImageViews;
 	std::vector<VkFramebuffer> m_vSwapchainFramebuffers;
-	VkCommandPool m_commandPool;
+	static VkCommandPool m_commandPool;
 	static VkCommandBuffer m_currentCommandBuffer;
 	std::vector<VkCommandBuffer> m_vCommandBuffers;
 
 	//Consider how these can be put into seperate objects, maybe one for model loading later..
-	VkBuffer m_vertexBuffer;
+	static VkBuffer m_vertexBuffer;
 	VkDeviceMemory m_vertexBufferMemory;
 
-	VkQueue m_graphicsQueue;
+	static VkBuffer m_indexBuffer;
+	VkDeviceMemory m_indexBufferMemory;
+
+	std::vector<VkBuffer> m_uniformBuffers;
+	std::vector<VkDeviceMemory> m_uniformBuffersMemory;
+	std::vector<void*> m_uniformBuffersMapped;
+
+	VkDescriptorPool m_descriptorPool;
+	std::vector<VkDescriptorSet> m_descriptorSets;
+
+	static VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
 
 	std::vector<VkImage> m_vSwapChainImages;
@@ -104,6 +145,9 @@ private:
 	std::vector <VkSemaphore> m_vImageAvailableSemaphores;
 	std::vector <VkSemaphore> m_vRenderFinishedSemaphores;
 	std::vector<VkFence> m_vInFlightFences;
+
+	std::shared_ptr<Texture> m_texture;
+
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
@@ -173,9 +217,6 @@ private:
 	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void CreateSyncObjects();
-	
-	uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-	void CreateVertexBuffer();
 
 	void CleanupSwapchain();
 	void RecreateSwapchain();
@@ -222,7 +263,38 @@ public:
 	void StartDrawFrame();
 	void EndDrawFrame();
 
+
+
+
+	//-------------------------------BUFFER STUFFS-------------------------------------
+
+	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
+	void CreateUniformBuffers();
+
+	static VkCommandBuffer BeginSingleTimeCommand();
+	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+	static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+
+	void UpdateUniformBuffer(uint32_t currentImage);
+
+	void CreateDescriptorPool();
+	void CreateDescriptorSets();
+
+	//---------------------------------------------------------------------------------
+
+	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
+
 	void DrawFrame();
+
+	void CreateTextureImage();
+
+	static VkImageView CreateImageView(VkImage image, VkFormat format);
+
+	static VkBuffer GetIndexBuffer() { return m_indexBuffer; }
+	static VkBuffer GetVertexBuffer() { return m_vertexBuffer; }
 };
 
 #endif

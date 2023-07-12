@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(NobleEngine)
 
 include_directories(
@@ -74,11 +75,11 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/Logger.h
 	src/Engine/Core/Logger.cpp
 
-	src/Engine/Core/Renderer.h
-	src/Engine/Core/Renderer.cpp
+	src/Engine/Core/Graphics/Renderer.h
+	src/Engine/Core/Graphics/Renderer.cpp
 	
-	src/Engine/Core/GraphicsPipeline.h
-	src/Engine/Core/GraphicsPipeline.cpp
+	src/Engine/Core/Graphics/GraphicsPipeline.h
+	src/Engine/Core/Graphics/GraphicsPipeline.cpp
 
 	src/Engine/Core/InputManager.h
 	src/Engine/Core/InputManager.cpp

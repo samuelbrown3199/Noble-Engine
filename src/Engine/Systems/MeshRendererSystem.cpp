@@ -1,6 +1,6 @@
 #include "MeshRendererSystem.h"
 #include "../Core/Application.h"
-#include "../Core/Renderer.h"
+#include "../Core/Graphics/Renderer.h"
 
 #include <iostream>
 
@@ -10,11 +10,18 @@ std::vector<MeshRenderer> MeshRenderer::componentData;
 
 void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
-	//Bind vertex memory buffer to our command buffer, then draw it.
-	//VkBuffer vertexBuffers[] = { m_vertexBuffer };
-	//VkDeviceSize offsets[] = { 0 };
-	//vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+	if (comp->m_transform == nullptr || Application::GetEntitiesDeleted())
+	{
+		comp->m_transform = Transform::GetComponent(comp->m_sEntityID);
+	}
 
-	//Command to draw our triangle. Parameters as follows, CommandBuffer, VertexCount, InstanceCount, firstVertex, firstInstance
-	//vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+	//Bind vertex memory buffer to our command buffer, then draw it.
+	/*VkBuffer vertexBuffers[] = {Renderer::GetVertexBuffer()};
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(Renderer::GetCurrentCommandBuffer(), 0, 1, vertexBuffers, offsets);
+
+	vkCmdBindIndexBuffer(Renderer::GetCurrentCommandBuffer(), Renderer::GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT16);
+
+	//Command to draw our triangle. Parameters as follows, CommandBuffer, IndexCount, InstanceCount, firstIndex, vertexOffset, firstInstance
+	vkCmdDrawIndexed(Renderer::GetCurrentCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);*/
 }

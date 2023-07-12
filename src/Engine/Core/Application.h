@@ -6,7 +6,7 @@
 
 #include <SDL/SDL.h>
 
-#include "Renderer.h"
+#include "Graphics/Renderer.h"
 #include "../Networking/NetworkManager.h"
 #include "AudioManager.h"
 #include "ThreadingManager.h"
@@ -49,7 +49,6 @@ private:
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
 
-	static std::vector<std::shared_ptr<Behaviour>> m_vBehaviours;
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
@@ -133,15 +132,6 @@ public:
 		sys->InitializeInterface();
 		m_vDebugUIs.push_back(sys);
 		return sys;
-	}
-
-	template<typename T>
-	static std::shared_ptr<T> BindBehaviour()
-	{
-		std::shared_ptr<T> beh = std::make_shared<T>();
-		beh->Start();
-		m_vBehaviours.push_back(beh);
-		return beh;
 	}
 
 	static void CreateNetworkManager(const int& _mode);

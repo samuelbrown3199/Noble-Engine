@@ -9,6 +9,11 @@ ResourceManager::ResourceManager()
 	m_sWorkingDirectory = GetWorkingDirectory();
 }
 
+ResourceManager::~ResourceManager()
+{
+	m_vResources.clear();
+}
+
 void ResourceManager::UnloadUnusedResources()
 {
 	for (size_t re = 0; re < m_vResources.size(); re++)

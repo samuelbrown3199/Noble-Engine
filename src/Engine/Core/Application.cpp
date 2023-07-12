@@ -19,7 +19,6 @@ std::weak_ptr<Application> Application::m_self;
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
 
-std::vector<std::shared_ptr<Behaviour>> Application::m_vBehaviours;
 std::vector<std::shared_ptr<SystemBase>> Application::m_vComponentSystems;
 std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
 
@@ -40,10 +39,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_logger->m_bUseLogging = true;
 #endif
 
+	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_gameRenderer = new Renderer(_windowName);
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
-	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_pStats = new PerformanceStats();
 
 	rtn->InitializeImGui();
@@ -109,9 +108,12 @@ void Application::MainLoop()
 			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, updateEnd);
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
-		for (int i = 0; i < m_vBehaviours.size(); i++)
+		for (int i = 0; i < m_vEntities.size(); i++)
 		{
-			m_vBehaviours.at(i)->Update();
+			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
+			{
+				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
+			}
 		}
 		ThreadingManager::WaitForTasksToClear();
 		m_pStats->updateTime = SDL_GetTicks() - m_pStats->updateStart;

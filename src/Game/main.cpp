@@ -13,8 +13,6 @@
 int main()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
-    app->BindBehaviour<World>();
-    app->BindBehaviour<DebugCam>();
 
     app->MainLoop();
     return 0;
@@ -23,8 +21,6 @@ int main()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
-    app->BindBehaviour<World>();
-    app->BindBehaviour<DebugCam>();
 
     app->MainLoop();
     return 0;

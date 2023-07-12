@@ -7,8 +7,6 @@ std::map<std::string, float> AudioManager::m_mMixerOptions;
 
 FMOD_SYSTEM* AudioManager::m_fmodSystem;
 
-Camera* AudioManager::m_camera;
-
 AudioManager::AudioManager()
 {
 	FMOD_RESULT result = FMOD_System_Create(&m_fmodSystem, FMOD_VERSION);
@@ -23,8 +21,6 @@ AudioManager::AudioManager()
 	}
 
 	FMOD_System_Set3DSettings(m_fmodSystem, 1.0f, 1.0f, 1.0f);
-
-	m_camera = Renderer::GetCamera();
 
 	Logger::LogInformation("Audio Manager initialized");
 }

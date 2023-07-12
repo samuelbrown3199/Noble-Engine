@@ -22,6 +22,7 @@ struct ResourceManager
 	static std::string m_sWorkingDirectory;
 
 	ResourceManager();
+	~ResourceManager();
 
 	template<typename T>
 	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory)

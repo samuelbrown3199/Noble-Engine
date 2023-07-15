@@ -10,7 +10,13 @@
 
 struct Model : public Resource
 {
-	size_t m_drawCount;
+	std::vector<Vertex> m_vertices;
+	std::vector<uint32_t> m_indices;
+
+	VkBuffer m_vertexBuffer;
+	VkDeviceMemory m_vertexBufferMemory;
+	VkBuffer m_indexBuffer;
+	VkDeviceMemory m_indexBufferMemory;
 
 	void OnLoad();
 };

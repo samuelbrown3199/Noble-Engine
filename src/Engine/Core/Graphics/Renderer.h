@@ -15,6 +15,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include "GraphicsPipeline.h"
 #include "..\..\Systems\Camera.h"
@@ -24,6 +25,11 @@ struct Vertex
 	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
+
+	bool operator==(const Vertex& other) const 
+	{
+		return pos == other.pos && color == other.color && texCoord == other.texCoord;
+	}
 
 	static VkVertexInputBindingDescription GetBindingDescription()
 	{
@@ -60,24 +66,18 @@ struct Vertex
 	}
 };
 
-const std::vector<Vertex> vertices =
+namespace std
 {
-	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices =
-{
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4
-};
+	template<> struct hash<Vertex>
+	{
+		size_t operator()(Vertex const& vertex) const
+		{
+			return ((hash<glm::vec3>()(vertex.pos) ^
+				(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
+				(hash<glm::vec2>()(vertex.texCoord) << 1);
+		}
+	};
+}
 
 struct UniformBufferObject
 {
@@ -105,6 +105,7 @@ struct SwapChainSupportDetails
 };
 
 struct Texture;
+struct Model;
 
 class Renderer
 {
@@ -154,6 +155,7 @@ private:
 	std::vector<VkFence> m_vInFlightFences;
 
 	std::shared_ptr<Texture> m_texture;
+	std::shared_ptr<Model> m_model;
 
 	VkImage m_depthImage;
 	VkDeviceMemory m_depthImageMemory;
@@ -283,8 +285,8 @@ public:
 
 	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-	void CreateVertexBuffer();
-	void CreateIndexBuffer();
+	static void CreateVertexBuffer();
+	static void CreateIndexBuffer();
 	void CreateUniformBuffers();
 
 	static VkCommandBuffer BeginSingleTimeCommand();
@@ -302,6 +304,7 @@ public:
 
 	void DrawFrame();
 
+	void LoadModel();
 	void CreateTextureImage();
 
 	static VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);

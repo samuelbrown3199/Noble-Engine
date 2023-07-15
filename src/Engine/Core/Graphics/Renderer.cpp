@@ -9,6 +9,7 @@
 //temp includes
 #include "../ResourceManager.h"
 #include "../../Resource/Texture.h"
+#include "../../Resource/Model.h"
 
 SDL_Window* Renderer::m_gameWindow;
 
@@ -81,6 +82,7 @@ void Renderer::InitializeVulkan()
 	CreateFrameBuffers();
 	
 	CreateTextureImage();
+	LoadModel();
 
 	CreateVertexBuffer();
 	CreateIndexBuffer();
@@ -732,10 +734,10 @@ void Renderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-	vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+	vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetPipelineLayout(), 0, 1, &m_descriptorSets[m_iCurrentFrame], 0, nullptr);
 	//Command to draw our triangle. Parameters as follows, CommandBuffer, IndexCount, InstanceCount, firstIndex, vertexOffset, firstInstance
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_model->m_indices.size()), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(commandBuffer);
 
@@ -821,7 +823,7 @@ void Renderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemor
 
 void Renderer::CreateVertexBuffer()
 {
-	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+	VkDeviceSize bufferSize = sizeof(m_model->m_vertices[0]) * m_model->m_vertices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -829,7 +831,7 @@ void Renderer::CreateVertexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, vertices.data(), (size_t)bufferSize);
+		memcpy(data, m_model->m_vertices.data(), (size_t)bufferSize);
 	vkUnmapMemory(m_device, stagingBufferMemory);
 
 	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertexBuffer, m_vertexBufferMemory);
@@ -841,7 +843,7 @@ void Renderer::CreateVertexBuffer()
 
 void Renderer::CreateIndexBuffer()
 {
-	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+	VkDeviceSize bufferSize = sizeof(m_model->m_indices[0]) * m_model->m_indices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -849,7 +851,7 @@ void Renderer::CreateIndexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, indices.data(), (size_t)bufferSize);
+		memcpy(data, m_model->m_indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(m_device, stagingBufferMemory);
 
 	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory); //Uses VK_BUFFER_USAGE_INDEX_BUFFER_BIT instead of VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
@@ -1231,9 +1233,14 @@ void Renderer::DrawFrame()
 	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void Renderer::LoadModel()
+{
+	m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
+}
+
 void Renderer::CreateTextureImage()
 {
-	m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\SpaceBackground1.png");
+	m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
 }
 
 

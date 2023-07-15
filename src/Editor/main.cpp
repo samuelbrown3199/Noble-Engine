@@ -32,8 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //app->BindBehaviour<DebugCam>();
 
     Entity* entity = Application::CreateEntity();
-    entity->AddComponent<Transform>();
-    entity->AddComponent<MeshRenderer>();
+    entity->AddBehaviour<DebugCam>();
 
     //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     //ui->m_uiOpen = true;

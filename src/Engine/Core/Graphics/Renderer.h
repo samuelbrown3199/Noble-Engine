@@ -113,8 +113,9 @@ private:
 	static SDL_Window* m_gameWindow;
 
 	uint32_t imageIndex;
-	uint32_t m_iCurrentFrame = 0;
+	static uint32_t m_iCurrentFrame;
 	const int MAX_FRAMES_IN_FLIGHT = 2;
+	static VkSampleCountFlagBits m_msaaSamples;
 
 	static VkInstance m_vulkanInstance;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
@@ -130,25 +131,22 @@ private:
 	static VkCommandBuffer m_currentCommandBuffer;
 	std::vector<VkCommandBuffer> m_vCommandBuffers;
 
-	//Consider how these can be put into seperate objects, maybe one for model loading later..
-	static VkBuffer m_vertexBuffer;
-	VkDeviceMemory m_vertexBufferMemory;
-
-	static VkBuffer m_indexBuffer;
-	VkDeviceMemory m_indexBufferMemory;
-
 	std::vector<VkBuffer> m_uniformBuffers;
 	std::vector<VkDeviceMemory> m_uniformBuffersMemory;
-	std::vector<void*> m_uniformBuffersMapped;
+	static std::vector<void*> m_uniformBuffersMapped;
 
 	VkDescriptorPool m_descriptorPool;
-	std::vector<VkDescriptorSet> m_descriptorSets;
+	static std::vector<VkDescriptorSet> m_descriptorSets; //one of these for transforms I think
 
 	static VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
 
+	VkImage m_colorImage;
+	VkDeviceMemory m_colorImageMemory;
+	VkImageView m_colorImageView;
+
 	std::vector<VkImage> m_vSwapChainImages;
-	GraphicsPipeline* m_graphicsPipeline;
+	static GraphicsPipeline* m_graphicsPipeline;
 
 	std::vector <VkSemaphore> m_vImageAvailableSemaphores;
 	std::vector <VkSemaphore> m_vRenderFinishedSemaphores;
@@ -210,6 +208,7 @@ private:
 	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 	void PickPhysicalDevice();
 	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+	VkSampleCountFlagBits GetMaxUsableSampleCount();
 
 	void CreateLogicalDevice();
 
@@ -234,6 +233,8 @@ private:
 	void RecreateSwapchain();
 
 	static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+	void CreateColourResources();
 	void CreateDepthResources();
 
 public:
@@ -281,16 +282,22 @@ public:
 	static VkFormat FindDepthFormat();
 	static bool HasStencilComponent(VkFormat format);
 
+	static GraphicsPipeline* GetGraphicsPipeline() { return m_graphicsPipeline; }
+	static VkDescriptorSet GetCurrentDescriptorSet() { return m_descriptorSets[m_iCurrentFrame]; }
+	static void* GetCurrentUniformBuffer() { return m_uniformBuffersMapped[m_iCurrentFrame]; }
+
+	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
+
 	//-------------------------------BUFFER STUFFS-------------------------------------
 
 	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-	void CreateVertexBuffer();
-	void CreateIndexBuffer();
+	static void CreateVertexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<Vertex> vertices);
+	static void CreateIndexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<uint32_t> indices);
 	void CreateUniformBuffers();
 
 	static VkCommandBuffer BeginSingleTimeCommand();
-	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+	static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 	void UpdateUniformBuffer(uint32_t currentImage);
@@ -307,10 +314,7 @@ public:
 	void LoadModel();
 	void CreateTextureImage();
 
-	static VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-
-	static VkBuffer GetIndexBuffer() { return m_indexBuffer; }
-	static VkBuffer GetVertexBuffer() { return m_vertexBuffer; }
+	static VkImageView CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags);
 };
 
 #endif

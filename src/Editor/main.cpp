@@ -22,6 +22,12 @@ int main()
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();
 
+    entity = Application::CreateEntity();
+    entity->AddComponent<Transform>(glm::vec3(0, 0, 0));
+    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
+    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
+    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
+
     app->MainLoop();
     return 0;
 }
@@ -33,6 +39,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();
+
+    entity = Application::CreateEntity();
+    entity->AddComponent<Transform>(glm::vec3(0, 0, 0));
+    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
+    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
+    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
 
     //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     //ui->m_uiOpen = true;

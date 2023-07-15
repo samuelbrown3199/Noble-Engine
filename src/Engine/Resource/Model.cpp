@@ -6,6 +6,14 @@
 
 #include <unordered_map>
 
+Model::~Model()
+{
+    vkDestroyBuffer(Renderer::GetLogicalDevice(), m_indexBuffer, nullptr);
+    vkFreeMemory(Renderer::GetLogicalDevice(), m_indexBufferMemory, nullptr);
+    vkDestroyBuffer(Renderer::GetLogicalDevice(), m_vertexBuffer, nullptr);
+    vkFreeMemory(Renderer::GetLogicalDevice(), m_vertexBufferMemory, nullptr);
+}
+
 void Model::OnLoad()
 {
     tinyobj::attrib_t attrib;
@@ -46,4 +54,7 @@ void Model::OnLoad()
             m_indices.push_back(uniqueVertices[vertex]);
         }
     }
+
+    Renderer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_vertices);
+    Renderer::CreateIndexBuffer(m_indexBuffer, m_indexBufferMemory, m_indices);
 }

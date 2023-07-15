@@ -7,6 +7,7 @@
 
 struct MeshRendererSystem : public System<MeshRenderer>
 {
+	void CreateDescriptor(MeshRenderer* comp);
 	void OnRender(MeshRenderer* comp);
 };
 

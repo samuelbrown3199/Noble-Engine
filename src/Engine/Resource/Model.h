@@ -18,6 +18,8 @@ struct Model : public Resource
 	VkBuffer m_indexBuffer;
 	VkDeviceMemory m_indexBufferMemory;
 
+	~Model();
+
 	void OnLoad();
 };
 

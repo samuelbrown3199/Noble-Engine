@@ -11,6 +11,7 @@
 #include <vulkan/vulkan.h>
 
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext.hpp>
@@ -20,7 +21,7 @@
 
 struct Vertex
 {
-	glm::vec2 pos;
+	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
 
@@ -39,9 +40,9 @@ struct Vertex
 		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 
 		//Vertex info here.
-		attributeDescriptions[0].binding = 0; //Realted to Binding in GetBindingDescription
+		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
 		//Color info here.
@@ -59,17 +60,23 @@ struct Vertex
 	}
 };
 
-const std::vector<Vertex> vertices = 
+const std::vector<Vertex> vertices =
 {
-	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 };
 
 const std::vector<uint16_t> indices =
 {
-	0, 1, 2, 2, 3, 0
+	0, 1, 2, 2, 3, 0,
+	4, 5, 6, 6, 7, 4
 };
 
 struct UniformBufferObject
@@ -148,6 +155,9 @@ private:
 
 	std::shared_ptr<Texture> m_texture;
 
+	VkImage m_depthImage;
+	VkDeviceMemory m_depthImageMemory;
+	VkImageView m_depthImageView;
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
@@ -221,6 +231,9 @@ private:
 	void CleanupSwapchain();
 	void RecreateSwapchain();
 
+	static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	void CreateDepthResources();
+
 public:
 
 	Renderer(const std::string _windowName);
@@ -263,8 +276,8 @@ public:
 	void StartDrawFrame();
 	void EndDrawFrame();
 
-
-
+	static VkFormat FindDepthFormat();
+	static bool HasStencilComponent(VkFormat format);
 
 	//-------------------------------BUFFER STUFFS-------------------------------------
 
@@ -291,7 +304,7 @@ public:
 
 	void CreateTextureImage();
 
-	static VkImageView CreateImageView(VkImage image, VkFormat format);
+	static VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
 	static VkBuffer GetIndexBuffer() { return m_indexBuffer; }
 	static VkBuffer GetVertexBuffer() { return m_vertexBuffer; }

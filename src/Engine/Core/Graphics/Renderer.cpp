@@ -76,9 +76,10 @@ void Renderer::InitializeVulkan()
 	CreateSwapChain();
 	CreateImageViews();
 	CreateGraphicsPipeline();
-	CreateFrameBuffers();
 	CreateCommandPool();
-
+	CreateDepthResources();
+	CreateFrameBuffers();
+	
 	CreateTextureImage();
 
 	CreateVertexBuffer();
@@ -559,7 +560,7 @@ void Renderer::CreateImageViews()
 
 	for (size_t i = 0; i < m_vSwapChainImages.size(); i++)
 	{
-		m_vSwapChainImageViews[i] = CreateImageView(m_vSwapChainImages[i], m_swapChainImageFormat);
+		m_vSwapChainImageViews[i] = CreateImageView(m_vSwapChainImages[i], m_swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 }
 
@@ -574,15 +575,16 @@ void Renderer::CreateFrameBuffers()
 
 	for (size_t i = 0; i < m_vSwapChainImageViews.size(); i++)
 	{
-		VkImageView attachments[] = {
-			m_vSwapChainImageViews[i]
+		std::array<VkImageView, 2> attachments = {
+			m_vSwapChainImageViews[i],
+			m_depthImageView
 		};
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = m_graphicsPipeline->GetRenderPass();
-		framebufferInfo.attachmentCount = 1;
-		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
 		framebufferInfo.width = m_swapChainExtent.width;
 		framebufferInfo.height = m_swapChainExtent.height;
 		framebufferInfo.layers = 1;
@@ -698,9 +700,12 @@ void Renderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = m_swapChainExtent;
 
-	VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+	clearValues[1].depthStencil = { 1.0f, 0 };
+
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
 
 	//Render pass is now beginnning.
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -928,7 +933,6 @@ void Renderer::UpdateUniformBuffer(uint32_t currentImage)
 
 	UniformBufferObject ubo{};
 	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view = GenerateViewMatrix();
 	ubo.proj = GenerateProjMatrix();
 
@@ -1009,6 +1013,10 @@ void Renderer::CreateDescriptorSets()
 
 void Renderer::CleanupSwapchain()
 {
+	vkDestroyImageView(m_device, m_depthImageView, nullptr);
+	vkDestroyImage(m_device, m_depthImage, nullptr);
+	vkFreeMemory(m_device, m_depthImageMemory, nullptr);
+
 	for (auto framebuffer : m_vSwapchainFramebuffers)
 	{
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -1028,7 +1036,50 @@ void Renderer::RecreateSwapchain()
 
 	CreateSwapChain();
 	CreateImageViews();
+	CreateDepthResources();
 	CreateFrameBuffers();
+}
+
+bool Renderer::HasStencilComponent(VkFormat format)
+{
+	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+}
+
+VkFormat Renderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+	for (VkFormat format : candidates) 
+	{
+		VkFormatProperties props;
+		vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &props);
+
+		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+		{
+			return format;
+		}
+		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+		{
+			return format;
+		}
+	}
+
+	Logger::LogError("Failed to find supported format.", 2);
+}
+
+VkFormat Renderer::FindDepthFormat()
+{
+	return FindSupportedFormat(
+		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+	);
+}
+
+void Renderer::CreateDepthResources()
+{
+	VkFormat depthFormat = FindDepthFormat();
+	Texture::CreateImage(m_swapChainExtent.width, m_swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory);
+	m_depthImageView = CreateImageView(m_depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+	Texture::TransitionImageLayout(m_depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
 void Renderer::StartDrawFrame()
@@ -1127,11 +1178,11 @@ void Renderer::DrawFrame()
 
 	//Frame rendering wants to start with this stuff.
 	vkResetCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], 0);
+	
+	UpdateUniformBuffer(m_iCurrentFrame);
 
 	//Record our command buffer
 	RecordCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], imageIndex);
-
-	UpdateUniformBuffer(m_iCurrentFrame);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1186,14 +1237,14 @@ void Renderer::CreateTextureImage()
 }
 
 
-VkImageView Renderer::CreateImageView(VkImage image, VkFormat format)
+VkImageView Renderer::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
 {
 	VkImageViewCreateInfo viewInfo{};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image = image;
 	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.aspectMask = aspectFlags;
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	viewInfo.subresourceRange.levelCount = 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;

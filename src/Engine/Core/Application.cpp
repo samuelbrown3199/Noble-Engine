@@ -91,10 +91,6 @@ void Application::MainLoop()
 		InputManager::HandleGeneralInput();
 		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
 
-		//ImGui_ImplOpenGL3_NewFrame();
-		//ImGui_ImplSDL2_NewFrame();
-		//ImGui::NewFrame();
-
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
 		AudioManager::UpdateSystem();
@@ -133,7 +129,6 @@ void Application::MainLoop()
 		//ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();
-		//m_gameRenderer->DrawFrame();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
 			Uint32 renderStart = SDL_GetTicks();
@@ -172,6 +167,9 @@ void Application::CleanupApplication()
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
 	ThreadingManager::StopThreads();
+
+	ClearLoadedScene();
+
 	delete m_resourceManager;
 	delete m_gameRenderer;
 	delete m_audioManager;
@@ -197,8 +195,8 @@ void Application::InitializeImGui()
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
-	/*// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
+	// Setup Platform/Renderer backends
+	/*ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	init_info.Instance = Renderer::GetVulkanInstance();
 	init_info.PhysicalDevice = Renderer::GetPhysicalDevice();
@@ -213,9 +211,9 @@ void Application::InitializeImGui()
 	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 	init_info.Allocator = YOUR_ALLOCATOR;
 	init_info.CheckVkResultFn = check_vk_result;
-	ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+	ImGui_ImplVulkan_Init(&init_info, Renderer::GetGraphicsPipeline()->GetRenderPass());
 	// (this gets a bit more complicated, see example app for full reference)
-	ImGui_ImplVulkan_CreateFontsTexture(YOUR_COMMAND_BUFFER);
+	ImGui_ImplVulkan_CreateFontsTexture(Renderer::GetCurrentCommandBuffer());
 	// (your code submit a queue)
 	ImGui_ImplVulkan_DestroyFontUploadObjects();*/
 }

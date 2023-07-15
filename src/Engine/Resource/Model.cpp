@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "../Core/Logger.h"
+#include "../Core/Graphics/BufferHelper.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -8,10 +9,7 @@
 
 Model::~Model()
 {
-    vkDestroyBuffer(Renderer::GetLogicalDevice(), m_indexBuffer, nullptr);
-    vkFreeMemory(Renderer::GetLogicalDevice(), m_indexBufferMemory, nullptr);
-    vkDestroyBuffer(Renderer::GetLogicalDevice(), m_vertexBuffer, nullptr);
-    vkFreeMemory(Renderer::GetLogicalDevice(), m_vertexBufferMemory, nullptr);
+
 }
 
 void Model::OnLoad()
@@ -55,6 +53,6 @@ void Model::OnLoad()
         }
     }
 
-    Renderer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_vertices);
-    Renderer::CreateIndexBuffer(m_indexBuffer, m_indexBufferMemory, m_indices);
+    BufferHelper::CreateVertexBuffer(m_vertexBuffer, m_vertices);
+    BufferHelper::CreateIndexBuffer(m_indexBuffer, m_indices);
 }

@@ -18,6 +18,7 @@
 #include <glm/gtx/hash.hpp>
 
 #include "GraphicsPipeline.h"
+#include "GraphicsBuffer.h"
 #include "..\..\Systems\Camera.h"
 
 struct Vertex
@@ -114,7 +115,7 @@ private:
 
 	uint32_t imageIndex;
 	static uint32_t m_iCurrentFrame;
-	const int MAX_FRAMES_IN_FLIGHT = 2;
+	const static int MAX_FRAMES_IN_FLIGHT = 2;
 	static VkSampleCountFlagBits m_msaaSamples;
 
 	static VkInstance m_vulkanInstance;
@@ -131,12 +132,7 @@ private:
 	static VkCommandBuffer m_currentCommandBuffer;
 	std::vector<VkCommandBuffer> m_vCommandBuffers;
 
-	std::vector<VkBuffer> m_uniformBuffers;
-	std::vector<VkDeviceMemory> m_uniformBuffersMemory;
-	static std::vector<void*> m_uniformBuffersMapped;
-
-	VkDescriptorPool m_descriptorPool;
-	static std::vector<VkDescriptorSet> m_descriptorSets; //one of these for transforms I think
+	static VkDescriptorPool m_descriptorPool;
 
 	static VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
@@ -242,6 +238,9 @@ public:
 	Renderer(const std::string _windowName);
 	~Renderer();
 
+	static uint32_t GetCurrentFrame() { return m_iCurrentFrame; }
+	static int GetFrameCount() { return MAX_FRAMES_IN_FLIGHT; }
+
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
 	static SDL_Window* GetWindow() { return m_gameWindow; }
@@ -283,27 +282,17 @@ public:
 	static bool HasStencilComponent(VkFormat format);
 
 	static GraphicsPipeline* GetGraphicsPipeline() { return m_graphicsPipeline; }
-	static VkDescriptorSet GetCurrentDescriptorSet() { return m_descriptorSets[m_iCurrentFrame]; }
-	static void* GetCurrentUniformBuffer() { return m_uniformBuffersMapped[m_iCurrentFrame]; }
 
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 
+	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
+
 	//-------------------------------BUFFER STUFFS-------------------------------------
 
-	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-	static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-	static void CreateVertexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<Vertex> vertices);
-	static void CreateIndexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<uint32_t> indices);
-	void CreateUniformBuffers();
-
 	static VkCommandBuffer BeginSingleTimeCommand();
-	static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-	void UpdateUniformBuffer(uint32_t currentImage);
-
 	void CreateDescriptorPool();
-	void CreateDescriptorSets();
 
 	//---------------------------------------------------------------------------------
 

@@ -2,6 +2,7 @@
 #include "../Useful.h"
 #include "../Core/Logger.h"
 #include "../Core/Graphics/Renderer.h"
+#include "../Core/Graphics/BufferHelper.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -18,25 +19,20 @@ void Texture::OnLoad()
         Logger::LogError("Failed to load texture image.", 2);
     }
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
-
-    Renderer::CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    GraphicsBuffer stagingBuffer;
+    BufferHelper::CreateGraphicsBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 
     //Buffer texture memory into Vulkan staging buffer.
     void* data;
-    vkMapMemory(Renderer::GetLogicalDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(Renderer::GetLogicalDevice(), stagingBufferMemory);
+    vkUnmapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory);
 
     stbi_image_free(pixels);
 
     CreateImage(m_iWidth, m_iHeight, m_iMipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
     TransitionImageLayout(m_textureImage, m_iMipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    CopyBufferToImage(stagingBuffer, m_textureImage, static_cast<uint32_t>(m_iWidth), static_cast<uint32_t>(m_iHeight));
-
-    vkDestroyBuffer(Renderer::GetLogicalDevice(), stagingBuffer, nullptr);
-    vkFreeMemory(Renderer::GetLogicalDevice(), stagingBufferMemory, nullptr);
+    BufferHelper::CopyBufferToImage(stagingBuffer, m_textureImage, static_cast<uint32_t>(m_iWidth), static_cast<uint32_t>(m_iHeight));
 
     GenerateMipmaps(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, m_iWidth, m_iHeight, m_iMipLevels);
 
@@ -161,7 +157,7 @@ void Texture::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, V
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Renderer::FindMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = BufferHelper::FindMemoryType(memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(Renderer::GetLogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) 
     {
@@ -241,39 +237,6 @@ void Texture::TransitionImageLayout(VkImage image, uint32_t mipLevels, VkFormat 
         0, nullptr,
         0, nullptr,
         1, &barrier
-    );
-
-    Renderer::EndSingleTimeCommands(commandBuffer);
-}
-
-void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
-{
-    VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
-
-    VkBufferImageCopy region{};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = 1;
-
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = {
-        width,
-        height,
-        1
-    };
-
-    vkCmdCopyBufferToImage(
-        commandBuffer,
-        buffer,
-        image,
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        1,
-        &region
     );
 
     Renderer::EndSingleTimeCommands(commandBuffer);

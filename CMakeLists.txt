@@ -75,12 +75,6 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/Logger.h
 	src/Engine/Core/Logger.cpp
 
-	src/Engine/Core/Graphics/Renderer.h
-	src/Engine/Core/Graphics/Renderer.cpp
-	
-	src/Engine/Core/Graphics/GraphicsPipeline.h
-	src/Engine/Core/Graphics/GraphicsPipeline.cpp
-
 	src/Engine/Core/InputManager.h
 	src/Engine/Core/InputManager.cpp
 
@@ -89,6 +83,20 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
+
+	#Core Graphics
+
+	src/Engine/Core/Graphics/Renderer.h
+	src/Engine/Core/Graphics/Renderer.cpp
+	
+	src/Engine/Core/Graphics/GraphicsPipeline.h
+	src/Engine/Core/Graphics/GraphicsPipeline.cpp
+
+	src/Engine/Core/Graphics/BufferHelper.h
+	src/Engine/Core/Graphics/BufferHelper.cpp
+
+	src/Engine/Core/Graphics/GraphicsBuffer.h
+	src/Engine/Core/Graphics/GraphicsBuffer.cpp
 
 	#ECS
 

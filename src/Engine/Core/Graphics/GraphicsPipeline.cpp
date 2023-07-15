@@ -286,6 +286,57 @@ void GraphicsPipeline::CreatePipeline()
 	vkDestroyShaderModule(Renderer::GetLogicalDevice(), vertShaderModule, nullptr);
 }
 
+void GraphicsPipeline::CreateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSet, std::vector<GraphicsBuffer>& uniformBuffers, std::shared_ptr<Texture> texture)
+{
+	int frameCount = Renderer::GetFrameCount();
+
+	std::vector<VkDescriptorSetLayout> layouts(frameCount, m_descriptorSetLayout);
+	VkDescriptorSetAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.descriptorPool = Renderer::GetDescriptorPool();
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(frameCount);
+	allocInfo.pSetLayouts = layouts.data();
+
+	descriptorSet.resize(frameCount);
+	if (vkAllocateDescriptorSets(Renderer::GetLogicalDevice(), &allocInfo, descriptorSet.data()) != VK_SUCCESS)
+	{
+		Logger::LogError("Failed to allocate descriptor sets.", 2);
+	}
+
+	for (size_t i = 0; i < frameCount; i++)
+	{
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = uniformBuffers[i].m_buffer;
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(UniformBufferObject);
+
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = texture->m_textureImageView;
+		imageInfo.sampler = texture->m_textureSampler;
+
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = descriptorSet[i];
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = descriptorSet[i];
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pImageInfo = &imageInfo;
+
+		vkUpdateDescriptorSets(Renderer::GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
+}
+
 GraphicsPipeline::GraphicsPipeline()
 {
 	CreateRenderPass();

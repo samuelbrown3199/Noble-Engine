@@ -87,7 +87,7 @@ public:
 			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
 			if (temp)
 			{
-				std::cout << "System is already bound!!" << std::endl;
+				Logger::LogError("System is already bound.", 2);
 				return temp;
 			}
 		}
@@ -102,7 +102,7 @@ public:
 	}
 
 	template<typename T>
-	static std::shared_ptr<T> BindSystem(SystemUsage _usage, int _componentsPerThread)
+	static std::shared_ptr<T> BindSystem(SystemUsage _usage, std::string _ID, int _componentsPerThread)
 	{
 		std::shared_ptr<T> temp;
 		for (size_t sys = 0; sys < m_vComponentSystems.size(); sys++)
@@ -110,7 +110,7 @@ public:
 			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
 			if (temp)
 			{
-				std::cout << "System is already bound!!" << std::endl;
+				Logger::LogError("System is already bound.", 2);
 				return temp;
 			}
 		}
@@ -120,7 +120,7 @@ public:
 		system->systemUsage = _usage;
 		system->useThreads = true;
 		system->maxComponentsPerThread = _componentsPerThread;
-		system->InitializeSystem();
+		system->InitializeSystem(_ID);
 		m_vComponentSystems.push_back(system);
 		return system;
 	}

@@ -8,6 +8,7 @@
 
 //temp includes
 #include "../ResourceManager.h"
+#include "BufferHelper.h"
 #include "../../Resource/Texture.h"
 #include "../../Resource/Model.h"
 
@@ -38,12 +39,8 @@ VkExtent2D Renderer::m_swapChainExtent;
 VkCommandPool Renderer::m_commandPool;
 VkCommandBuffer Renderer::m_currentCommandBuffer;
 
-std::vector<void*> Renderer::m_uniformBuffersMapped;
-
+VkDescriptorPool Renderer::m_descriptorPool;
 VkQueue Renderer::m_graphicsQueue;
-
-std::vector<VkDescriptorSet> Renderer::m_descriptorSets;
-
 GraphicsPipeline* Renderer::m_graphicsPipeline;
 
 //---------- public functions ---------
@@ -92,9 +89,7 @@ void Renderer::InitializeVulkan()
 	CreateTextureImage();
 	LoadModel();
 
-	CreateUniformBuffers();
 	CreateDescriptorPool();
-	CreateDescriptorSets();
 
 	CreateCommandBuffer();
 	CreateSyncObjects();
@@ -117,9 +112,6 @@ void Renderer::CleanupVulkan()
 		vkDestroySemaphore(m_device, m_vRenderFinishedSemaphores[i], nullptr);
 		vkDestroySemaphore(m_device, m_vImageAvailableSemaphores[i], nullptr);
 		vkDestroyFence(m_device, m_vInFlightFences[i], nullptr);
-
-		vkDestroyBuffer(m_device, m_uniformBuffers[i], nullptr);
-		vkFreeMemory(m_device, m_uniformBuffersMemory[i], nullptr);
 	}
 
 	vkDestroyCommandPool(m_device, m_commandPool, nullptr);
@@ -752,12 +744,12 @@ void Renderer::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 	//Bind vertex memory buffer to our command buffer, then draw it.
-	VkBuffer vertexBuffers[] = { m_model->m_vertexBuffer };
+	VkBuffer vertexBuffers[] = { m_model->m_vertexBuffer.m_buffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-	vkCmdBindIndexBuffer(commandBuffer, m_model->m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetPipelineLayout(), 0, 1, &m_descriptorSets[m_iCurrentFrame], 0, nullptr);
+	vkCmdBindIndexBuffer(commandBuffer, m_model->m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
+	//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetPipelineLayout(), 0, 1, &m_descriptorSets[m_iCurrentFrame], 0, nullptr);
 	//Command to draw our triangle. Parameters as follows, CommandBuffer, IndexCount, InstanceCount, firstIndex, vertexOffset, firstInstance
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_model->m_indices.size()), 1, 0, 0, 0);
 
@@ -793,112 +785,6 @@ void Renderer::CreateSyncObjects()
 	}
 }
 
-//----------------------------------------------------BUFFER STUFF TO PUT IN CLASS-------------------------------------------------
-
-uint32_t Renderer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-{
-	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
-
-	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) 
-	{
-		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-		{
-			return i;
-		}
-	}
-
-	Logger::LogError("Failed to find suitable memory type.", 2);
-}
-
-
-void Renderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
-{
-	//Should maybe be a class that can be reused
-
-	VkBufferCreateInfo bufferInfo{};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = size;
-	bufferInfo.usage = usage;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	if (vkCreateBuffer(m_device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-	{
-		Logger::LogError("Failed to create vertex buffer.", 2);
-	}
-
-	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(m_device, buffer, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	if (vkAllocateMemory(m_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) //Refer back to the conclusion of https://vulkan-tutorial.com/Vertex_buffers/Staging_buffer, refers to limitations of allocating memory.
-	{
-		Logger::LogError("Failed to allocate vertex buffer memory!", 2);
-	}
-
-	vkBindBufferMemory(m_device, buffer, bufferMemory, 0);
-}
-
-void Renderer::CreateVertexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<Vertex> vertices)
-{
-	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, vertices.data(), (size_t)bufferSize);
-	vkUnmapMemory(m_device, stagingBufferMemory);
-
-	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, memory);
-	CopyBuffer(stagingBuffer, buffer, bufferSize);
-
-	vkDestroyBuffer(m_device, stagingBuffer, nullptr);
-	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
-}
-
-void Renderer::CreateIndexBuffer(VkBuffer& buffer, VkDeviceMemory& memory, std::vector<uint32_t> indices)
-{
-	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
-
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, indices.data(), (size_t)bufferSize);
-	vkUnmapMemory(m_device, stagingBufferMemory);
-
-	CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, memory); //Uses VK_BUFFER_USAGE_INDEX_BUFFER_BIT instead of VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
-	CopyBuffer(stagingBuffer, buffer, bufferSize);
-
-	vkDestroyBuffer(m_device, stagingBuffer, nullptr);
-	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
-}
-
-void Renderer::CreateUniformBuffers()
-{
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-	m_uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-	m_uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-	m_uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_uniformBuffers[i], m_uniformBuffersMemory[i]);
-
-		vkMapMemory(m_device, m_uniformBuffersMemory[i], 0, bufferSize, 0, &m_uniformBuffersMapped[i]);
-	}
-}
-
 VkCommandBuffer Renderer::BeginSingleTimeCommand()
 {
 	VkCommandBufferAllocateInfo allocInfo{};
@@ -919,19 +805,6 @@ VkCommandBuffer Renderer::BeginSingleTimeCommand()
 	return commandBuffer;
 }
 
-void Renderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-{
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommand();
-
-	VkBufferCopy copyRegion{};
-	copyRegion.srcOffset = 0; // Optional
-	copyRegion.dstOffset = 0; // Optional
-	copyRegion.size = size;
-	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-	EndSingleTimeCommands(commandBuffer);
-}
-
 void Renderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 {
 	vkEndCommandBuffer(commandBuffer);
@@ -948,21 +821,6 @@ void Renderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 	vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 }
 
-void Renderer::UpdateUniformBuffer(uint32_t currentImage)
-{
-	static auto startTime = std::chrono::high_resolution_clock::now();
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	UniformBufferObject ubo{};
-	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = GenerateViewMatrix();
-	ubo.proj = GenerateProjMatrix();
-
-	memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo)); //Not the most efficient way to do this, refer back to conclusion of https://vulkan-tutorial.com/Uniform_buffers/Descriptor_layout_and_buffer
-}
-
 void Renderer::CreateDescriptorPool()
 {
 	//Describes various descriptors.
@@ -976,60 +834,11 @@ void Renderer::CreateDescriptorPool()
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = 1;
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolInfo.maxSets = static_cast<uint32_t>(2 * MAX_FRAMES_IN_FLIGHT); //This size needs to change based on how many descriptors there are.
 
 	if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
 	{
 		Logger::LogError("Failed to create descriptor pool.", 2);
-	}
-}
-
-void Renderer::CreateDescriptorSets()
-{
-	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, m_graphicsPipeline->GetDescriptorSetLayout());
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = m_descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	allocInfo.pSetLayouts = layouts.data();
-
-	m_descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-	if (vkAllocateDescriptorSets(m_device, &allocInfo, m_descriptorSets.data()) != VK_SUCCESS)
-	{
-		Logger::LogError("Failed to allocate descriptor sets.", 2);
-	}
-
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_uniformBuffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
-
-		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = m_texture->m_textureImageView;
-		imageInfo.sampler = m_texture->m_textureSampler;
-
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_descriptorSets[i];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = m_descriptorSets[i];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
-
-		vkUpdateDescriptorSets(m_device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 }
 
@@ -1141,7 +950,6 @@ void Renderer::StartDrawFrame()
 	//Frame rendering wants to start with this stuff.
 	vkResetCommandBuffer(m_currentCommandBuffer, 0);
 
-	UpdateUniformBuffer(m_iCurrentFrame);
 	StartRecordingCommandBuffer(m_currentCommandBuffer, imageIndex);
 }
 
@@ -1217,8 +1025,6 @@ void Renderer::DrawFrame()
 
 	//Frame rendering wants to start with this stuff.
 	vkResetCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], 0);
-	
-	UpdateUniformBuffer(m_iCurrentFrame);
 
 	//Record our command buffer
 	RecordCommandBuffer(m_vCommandBuffers[m_iCurrentFrame], imageIndex);

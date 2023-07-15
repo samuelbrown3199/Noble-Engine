@@ -4,8 +4,12 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <vulkan/vulkan.h>
+
+#include "GraphicsBuffer.h"
+#include "../../Resource/Texture.h"
 
 class GraphicsPipeline
 {
@@ -30,6 +34,7 @@ public:
 	VkPipelineLayout GetPipelineLayout() { return m_pipelineLayout; }
 
 	VkDescriptorSetLayout GetDescriptorSetLayout() { return m_descriptorSetLayout; }
+	void CreateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSet, std::vector<GraphicsBuffer>& uniformBuffers, std::shared_ptr<Texture> texture);
 
 	GraphicsPipeline();
 	~GraphicsPipeline();

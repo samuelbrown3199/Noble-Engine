@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "../Useful.h"
 
+int PerformanceStats::currentFrameCount = 0;
 
 double PerformanceStats::deltaT = 0;
 double PerformanceStats::avgFPS = 0;
@@ -50,14 +51,16 @@ void PerformanceStats::PrintOutPerformanceStats()
 	if (!printPerformance)
 		return;
 
-	std::string performanceStatsString = FormatString("AVG FPS: %2f | Frame Time: %2f | Pre Update Time: %2f | Update Time: %2f | Render Time: %2f | Cleanup Time: %2f", 
+	if (currentFrameCount != 0)
+		return;
+
+	std::string performanceStatsString = FormatString("AVG FPS: %2f | Frame Time: %2f | Pre Update Time: %2f | Update Time: %2f | Render Time: %2f | Cleanup Time: %2f\n", 
 		avgFPS, frameTime, preUpdateTime, updateTime, renderTime, cleanupTime);
 
 	for (int i = 0; i < m_mSystemUpdateTimes.size(); i++)
 	{
-		std::string sysInfo = FormatString("%s Update Time: %2f | Render Time: %2f", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second, m_mSystemRenderTimes.at(i).second);
-		std::cout << sysInfo << std::endl;
+		performanceStatsString += FormatString("%s Update Time: %2f | Render Time: %2f\n", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second, m_mSystemRenderTimes.at(i).second);
 	}
 
-	std::cout << performanceStatsString << std::endl;
+	Logger::LogInformation(performanceStatsString);
 }

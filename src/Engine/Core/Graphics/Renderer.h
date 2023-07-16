@@ -58,6 +58,7 @@ struct Vertex
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[1].offset = offsetof(Vertex, color);
 
+		//UV info here.
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
@@ -105,6 +106,17 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
+struct FrameInformation
+{
+	VkSemaphore m_imageAvailable, m_renderFinished;
+	VkFence m_renderFence;
+
+	VkCommandPool m_commandPool;
+	VkCommandBuffer m_commandBuffer;
+
+	~FrameInformation();
+};
+
 struct Texture;
 struct Model;
 
@@ -128,9 +140,9 @@ private:
 	static VkExtent2D m_swapChainExtent;
 	std::vector<VkImageView> m_vSwapChainImageViews;
 	std::vector<VkFramebuffer> m_vSwapchainFramebuffers;
-	static VkCommandPool m_commandPool;
+
 	static VkCommandBuffer m_currentCommandBuffer;
-	std::vector<VkCommandBuffer> m_vCommandBuffers;
+	static std::vector<FrameInformation> m_vFrames;
 
 	static VkDescriptorPool m_descriptorPool;
 
@@ -143,10 +155,6 @@ private:
 
 	std::vector<VkImage> m_vSwapChainImages;
 	static GraphicsPipeline* m_graphicsPipeline;
-
-	std::vector <VkSemaphore> m_vImageAvailableSemaphores;
-	std::vector <VkSemaphore> m_vRenderFinishedSemaphores;
-	std::vector<VkFence> m_vInFlightFences;
 
 	std::shared_ptr<Texture> m_texture;
 	std::shared_ptr<Model> m_model;
@@ -217,13 +225,10 @@ private:
 	void CreateImageViews();
 	void CreateGraphicsPipeline();
 	void CreateFrameBuffers();
-	void CreateCommandPool();
-	void CreateCommandBuffer();
 	void StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 	void EndRecordingCommandBuffer(VkCommandBuffer commandBuffer);
-	void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-	void CreateSyncObjects();
+	void CreateFrameInformation();
 
 	void CleanupSwapchain();
 	void RecreateSwapchain();
@@ -273,6 +278,8 @@ public:
 	static VkDevice GetLogicalDevice() { return m_device; }
 	static VkFormat GetSwapchainImageFormat() { return m_swapChainImageFormat; }
 	static VkExtent2D GetSwapchainExtent() { return m_swapChainExtent; }
+
+	static VkCommandPool GetCurrentCommandPool() { return m_vFrames.at(m_iCurrentFrame).m_commandPool; }
 	static VkCommandBuffer GetCurrentCommandBuffer() { return m_currentCommandBuffer; }
 
 	void StartDrawFrame();
@@ -297,8 +304,6 @@ public:
 	//---------------------------------------------------------------------------------
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
-
-	void DrawFrame();
 
 	void LoadModel();
 	void CreateTextureImage();

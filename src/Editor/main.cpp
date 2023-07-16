@@ -28,12 +28,6 @@ int main()
     mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
     mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
 
-    entity = Application::CreateEntity();
-    entity->AddComponent<Transform>(glm::vec3(5, 5, 5), glm::vec3(90, 0, 0), glm::vec3(2,2,2));
-    mr = entity->AddComponent<MeshRenderer>();
-    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
-    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
-
     app->MainLoop();
     return 0;
 }

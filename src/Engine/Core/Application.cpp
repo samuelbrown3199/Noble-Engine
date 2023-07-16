@@ -170,7 +170,9 @@ void Application::CleanupApplication()
 
 	ClearLoadedScene();
 
+	m_resourceManager->UnloadAllResources();
 	delete m_resourceManager;
+
 	delete m_gameRenderer;
 	delete m_audioManager;
 	delete m_networkManager;

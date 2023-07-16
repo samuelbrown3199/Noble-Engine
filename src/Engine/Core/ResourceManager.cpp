@@ -24,3 +24,11 @@ void ResourceManager::UnloadUnusedResources()
 		}
 	}
 }
+
+void ResourceManager::UnloadAllResources()
+{
+	for (size_t re = 0; re < m_vResources.size(); re++)
+	{
+		m_vResources.erase(m_vResources.begin() + re);
+	}
+}

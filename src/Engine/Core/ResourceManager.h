@@ -94,6 +94,7 @@ struct ResourceManager
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
 	static void UnloadUnusedResources();
+	static void UnloadAllResources();
 };
 
 #endif

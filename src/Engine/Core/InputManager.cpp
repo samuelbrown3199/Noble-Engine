@@ -27,7 +27,7 @@ void InputManager::HandleGeneralInput()
 
 	while (SDL_PollEvent(&e) != 0)
 	{
-		//ImGui_ImplSDL2_ProcessEvent(&e);
+		ImGui_ImplSDL2_ProcessEvent(&e);
 
 		//GetMousePosition();
 

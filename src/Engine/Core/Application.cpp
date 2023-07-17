@@ -82,7 +82,7 @@ void Application::LoadSettings()
 
 void Application::MainLoop()
 {
-	//ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 
 	while (m_bLoop)
 	{
@@ -90,6 +90,11 @@ void Application::MainLoop()
 		m_pStats->preUpdateStart = SDL_GetTicks();
 		InputManager::HandleGeneralInput();
 		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
+
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
+
+		ImGui::NewFrame();
 
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
@@ -126,7 +131,6 @@ void Application::MainLoop()
 			}
 		}
 
-		//ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
@@ -166,6 +170,9 @@ void Application::CleanupApplication()
 {
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
+	vkDestroyDescriptorPool(Renderer::GetLogicalDevice(), m_imguiPool, nullptr);
+	ImGui_ImplVulkan_Shutdown();
+
 	ThreadingManager::StopThreads();
 
 	ClearLoadedScene();
@@ -185,39 +192,61 @@ void Application::CleanupApplication()
 
 void Application::InitializeImGui()
 {
-	//Not quite in a position to use this yet.
+	//1: create descriptor pool for IMGUI
+	// the size of the pool is very oversize, but it's copied from imgui demo itself.
+	VkDescriptorPoolSize pool_sizes[] =
+	{
+		{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+		{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+	};
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
+	VkDescriptorPoolCreateInfo pool_info = {};
+	pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	pool_info.maxSets = 1000;
+	pool_info.poolSizeCount = std::size(pool_sizes);
+	pool_info.pPoolSizes = pool_sizes;
+
+	vkCreateDescriptorPool(Renderer::GetLogicalDevice(), &pool_info, nullptr, &m_imguiPool);
+
+
+	// 2: initialize imgui library
+
+	//this initializes the core structures of imgui
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	//this initializes imgui for SDL
+	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
 
-	// Setup Platform/Renderer backends
-	/*ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
+	//this initializes imgui for Vulkan
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	init_info.Instance = Renderer::GetVulkanInstance();
 	init_info.PhysicalDevice = Renderer::GetPhysicalDevice();
 	init_info.Device = Renderer::GetLogicalDevice();
-	init_info.QueueFamily = YOUR_QUEUE_FAMILY;
-	init_info.Queue = YOUR_QUEUE;
-	init_info.PipelineCache = YOUR_PIPELINE_CACHE;
-	init_info.DescriptorPool = YOUR_DESCRIPTOR_POOL;
-	init_info.Subpass = 0;
-	init_info.MinImageCount = 2;
-	init_info.ImageCount = 2;
-	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-	init_info.Allocator = YOUR_ALLOCATOR;
-	init_info.CheckVkResultFn = check_vk_result;
+	init_info.Queue = Renderer::GetGraphicsQueue();
+	init_info.DescriptorPool = m_imguiPool;
+	init_info.MinImageCount = 3;
+	init_info.ImageCount = 3;
+	init_info.MSAASamples = Renderer::GetMSAALevel();
+
 	ImGui_ImplVulkan_Init(&init_info, Renderer::GetGraphicsPipeline()->GetRenderPass());
-	// (this gets a bit more complicated, see example app for full reference)
-	ImGui_ImplVulkan_CreateFontsTexture(Renderer::GetCurrentCommandBuffer());
-	// (your code submit a queue)
-	ImGui_ImplVulkan_DestroyFontUploadObjects();*/
+
+	//execute a gpu command to upload imgui font textures
+	VkCommandBuffer fontBuffer = Renderer::BeginSingleTimeCommand();
+		ImGui_ImplVulkan_CreateFontsTexture(fontBuffer);
+	Renderer::EndSingleTimeCommands(fontBuffer);
+
+	//clear font textures from cpu data
+	ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
 
 std::string Application::GetUniqueEntityID()

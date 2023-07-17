@@ -272,6 +272,7 @@ public:
 	static void SetFov(float value) { m_fFov = value; }
 	static float GetFov() { return m_fFov; }
 
+	static VkQueue GetGraphicsQueue() { return m_graphicsQueue; }
 
 	static VkInstance GetVulkanInstance() { return m_vulkanInstance; }
 	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
@@ -289,9 +290,7 @@ public:
 	static bool HasStencilComponent(VkFormat format);
 
 	static GraphicsPipeline* GetGraphicsPipeline() { return m_graphicsPipeline; }
-
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
-
 	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
 
 	//-------------------------------BUFFER STUFFS-------------------------------------

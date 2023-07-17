@@ -38,6 +38,8 @@ private:
     ResourceManager* m_resourceManager;
     Logger* m_logger;
 
+	VkDescriptorPool m_imguiPool;
+
     std::shared_ptr<IniFile> m_mainIniFile;
 
 	static bool m_bEntitiesDeleted;

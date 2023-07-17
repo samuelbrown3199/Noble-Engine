@@ -5,6 +5,8 @@
 #include "../Logger.h"
 #include "../../Useful.h"
 
+#include "../../imgui/imgui.h"
+#include "../../imgui/backends/imgui_impl_vulkan.h"
 
 //temp includes
 #include "../ResourceManager.h"
@@ -881,11 +883,14 @@ void Renderer::StartDrawFrame()
 	//Frame rendering wants to start with this stuff.
 	vkResetCommandBuffer(m_currentCommandBuffer, 0);
 
+	ImGui::Render();
+
 	StartRecordingCommandBuffer(m_currentCommandBuffer, imageIndex);
 }
 
 void Renderer::EndDrawFrame()
 {
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_currentCommandBuffer);
 	EndRecordingCommandBuffer(m_currentCommandBuffer);
 
 	VkSubmitInfo submitInfo{};

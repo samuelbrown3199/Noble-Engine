@@ -14,10 +14,9 @@
 int main()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor Debug");
-    //app->BindBehaviour<DebugCam>();
 
-    //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
-    //ui->m_uiOpen = true;
+    std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
+    ui->m_uiOpen = true;
 
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();
@@ -35,7 +34,6 @@ int main()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
-    //app->BindBehaviour<DebugCam>();
 
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();

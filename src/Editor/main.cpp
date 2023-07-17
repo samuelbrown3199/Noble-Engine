@@ -35,6 +35,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
 
+    std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
+    ui->m_uiOpen = true;
+
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();
 
@@ -43,9 +46,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
     mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
     mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
-
-    //std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
-    //ui->m_uiOpen = true;
 
     app->MainLoop();
     return 0;

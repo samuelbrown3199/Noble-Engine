@@ -21,6 +21,10 @@ public:
 	static void CopyGraphicsBuffer(GraphicsBuffer& srcBuffer, GraphicsBuffer& dstBuffer, VkDeviceSize size);
 	static void CopyBufferToImage(GraphicsBuffer& buffer, VkImage image, uint32_t width, uint32_t height);
 	static void CreateUniformBuffers(std::vector<GraphicsBuffer>& uniformBuffers, std::vector<void*>& uniformBuffersMapped);
+	static void CreateStorageBuffer(GraphicsBuffer& storageBuffer, size_t size);
+
+	static VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(VkDescriptorType type, VkShaderStageFlagBits stageFlag, uint32_t binding, uint32_t descriptorCount);
+	static VkWriteDescriptorSet WriteDescriptorBuffer(VkDescriptorType type, VkDescriptorSet dstSet, VkDescriptorBufferInfo* bufferInfo, uint32_t binding);
 
 private:
 

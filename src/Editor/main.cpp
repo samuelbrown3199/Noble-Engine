@@ -10,8 +10,7 @@
 
 #include "EditorUI.h"
 
-#ifndef NDEBUG
-int main()
+void StartupEditor()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor Debug");
 
@@ -28,26 +27,18 @@ int main()
     mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
 
     app->MainLoop();
+}
+
+#ifndef NDEBUG
+int main()
+{
+    StartupEditor();
     return 0;
 }
 #else
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
-
-    std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
-    ui->m_uiOpen = true;
-
-    Entity* entity = Application::CreateEntity();
-    entity->AddBehaviour<DebugCam>();
-
-    entity = Application::CreateEntity();
-    entity->AddComponent<Transform>(glm::vec3(0, 0, 0));
-    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
-    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
-    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
-
-    app->MainLoop();
+    StartupEditor();
     return 0;
 }
 #endif

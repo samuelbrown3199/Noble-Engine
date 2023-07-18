@@ -106,6 +106,38 @@ void BufferHelper::CreateUniformBuffers(std::vector<GraphicsBuffer>& uniformBuff
 	}
 }
 
+void BufferHelper::CreateStorageBuffer(GraphicsBuffer& storageBuffer, size_t size)
+{
+	CreateBuffer(size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, storageBuffer.m_buffer, storageBuffer.m_bufferMemory);
+}
+
+VkDescriptorSetLayoutBinding BufferHelper::CreateDescriptorSetLayoutBinding(VkDescriptorType type, VkShaderStageFlagBits stageFlag, uint32_t binding, uint32_t descriptorCount)
+{
+	VkDescriptorSetLayoutBinding layoutBinding{};
+	layoutBinding.binding = binding; //Matches whats in the shader code.
+	layoutBinding.descriptorType = type; //Standard Uniform buffer
+	layoutBinding.descriptorCount = descriptorCount; //Single object, therefore we use 1
+	layoutBinding.stageFlags = stageFlag; //Its in the vertex shader.
+	layoutBinding.pImmutableSamplers = nullptr; // Relevant for image smapling descriptors.
+
+	return layoutBinding;
+}
+
+VkWriteDescriptorSet BufferHelper::WriteDescriptorBuffer(VkDescriptorType type, VkDescriptorSet dstSet, VkDescriptorBufferInfo* bufferInfo, uint32_t binding)
+{
+	VkWriteDescriptorSet write = {};
+	write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	write.pNext = nullptr;
+
+	write.dstBinding = binding;
+	write.dstSet = dstSet;
+	write.descriptorCount = 1;
+	write.descriptorType = type;
+	write.pBufferInfo = bufferInfo;
+
+	return write;
+}
+
 void BufferHelper::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	//Should maybe be a class that can be reused

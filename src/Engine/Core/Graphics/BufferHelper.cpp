@@ -3,6 +3,7 @@
 void BufferHelper::CreateGraphicsBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, GraphicsBuffer& buffer)
 {
 	CreateBuffer(size, usage, properties, buffer.m_buffer, buffer.m_bufferMemory);
+	buffer.m_bufferSize = size;
 }
 
 uint32_t BufferHelper::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -28,10 +29,8 @@ void BufferHelper::CreateVertexBuffer(GraphicsBuffer& buffer, std::vector<Vertex
 	GraphicsBuffer stagingBuffer;
 	CreateGraphicsBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 
-	void* data;
-	vkMapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, vertices.data(), (size_t)bufferSize);
-	vkUnmapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory);
+	stagingBuffer.Map();
+	stagingBuffer.WriteToBuffer((void*)vertices.data());
 
 	CreateGraphicsBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer);
 	CopyGraphicsBuffer(stagingBuffer, buffer, bufferSize);
@@ -44,10 +43,8 @@ void BufferHelper::CreateIndexBuffer(GraphicsBuffer& buffer, std::vector<uint32_
 	GraphicsBuffer stagingBuffer;
 	CreateGraphicsBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 
-	void* data;
-	vkMapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, indices.data(), (size_t)bufferSize);
-	vkUnmapMemory(Renderer::GetLogicalDevice(), stagingBuffer.m_bufferMemory);
+	stagingBuffer.Map();
+	stagingBuffer.WriteToBuffer((void*)indices.data());
 
 	CreateGraphicsBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer); //Uses VK_BUFFER_USAGE_INDEX_BUFFER_BIT instead of VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 	CopyGraphicsBuffer(stagingBuffer, buffer, bufferSize);

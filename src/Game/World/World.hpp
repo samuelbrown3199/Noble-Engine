@@ -25,20 +25,7 @@ struct World : public Behaviour
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -13), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x*4, m_planetScale.y * 4, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\SpaceBackground1.png", glm::vec4(1,1,1, 0.35f));
 		planetSpawner->AddComponent<AudioListener>();
-
-		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x * 4, m_planetScale.y * 4, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Stars1.png");
-
-		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -12), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\PlanetBase.png", glm::vec4(1, 1, 1, 1));
-
-		planetSpawner = Application::CreateEntity();
-		planetSpawner->AddComponent<Transform>(glm::vec3(0, 0, -11.9), glm::vec3(0, 0, 0), glm::vec3(m_planetScale.x, m_planetScale.y, 1));
-		planetSpawner->AddComponent<Sprite>("GameData\\Textures\\Continents1.png", glm::vec4(0, 1, 0, 1));
 
 		planetSpawner = Application::CreateEntity();
 		planetSpawner->AddComponent<Transform>(glm::vec3(5, 0, 15), glm::vec3(0, 0, 0), glm::vec3(1,1,1));

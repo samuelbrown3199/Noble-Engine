@@ -759,15 +759,15 @@ void Renderer::CreateDescriptorPool()
 	//Describes various descriptors.
 	std::array<VkDescriptorPoolSize, 2> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_OBJECTS * MAX_FRAMES_IN_FLIGHT);
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_OBJECTS * MAX_FRAMES_IN_FLIGHT);
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = 1;
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); //This size needs to change based on how many descriptors there are.
+	poolInfo.maxSets = static_cast<uint32_t>(MAX_OBJECTS * MAX_FRAMES_IN_FLIGHT); //This size needs to change based on how many descriptors there are.
 
 	if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
 	{

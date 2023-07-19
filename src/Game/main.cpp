@@ -2,7 +2,6 @@
 #include <Engine/Useful.h>
 #include <Engine\Behaviours\DebugCam.h>
 
-#include <Engine/Systems/Sprite.h>
 #include <Engine/Systems/AudioSource.h>
 #include <Engine/Systems/Transform.h>
 #include <Engine/Resource/Scene.h>

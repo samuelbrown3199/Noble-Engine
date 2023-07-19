@@ -20,12 +20,23 @@ void StartupEditor()
     Entity* entity = Application::CreateEntity();
     entity->AddBehaviour<DebugCam>();
 
-    entity = Application::CreateEntity();
-    entity->AddComponent<Transform>(glm::vec3(0, 0, 0));
-    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
-    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
-    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
+    for (int i = 0; i < 2000; i++)
+    {
+        entity = Application::CreateEntity();
+        entity->AddComponent<Transform>(glm::vec3(i, i, i));
+        MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
 
+        if (i % 2 == 0)
+        {
+            mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
+            mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
+        }
+        else
+        {
+            mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cottage_obj.obj");
+            mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");
+        }
+    }
     app->MainLoop();
 }
 

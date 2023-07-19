@@ -145,10 +145,6 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/TransformSystem.h
 	src/Engine/Systems/TransformSystem.cpp
 
-	src/Engine/Systems/Sprite.h
-	src/Engine/Systems/SpriteSystem.h
-	src/Engine/Systems/SpriteSystem.cpp
-
 	src/Engine/Systems/MeshRenderer.h
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp

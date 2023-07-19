@@ -127,6 +127,7 @@ private:
 
 	uint32_t imageIndex;
 	static uint32_t m_iCurrentFrame;
+	const static int MAX_OBJECTS = 2048; //TEMPORARY
 	const static int MAX_FRAMES_IN_FLIGHT = 2;
 	static VkSampleCountFlagBits m_msaaSamples;
 

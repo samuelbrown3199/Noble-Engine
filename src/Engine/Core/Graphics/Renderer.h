@@ -157,9 +157,6 @@ private:
 	std::vector<VkImage> m_vSwapChainImages;
 	static GraphicsPipeline* m_graphicsPipeline;
 
-	std::shared_ptr<Texture> m_texture;
-	std::shared_ptr<Model> m_model;
-
 	VkImage m_depthImage;
 	VkDeviceMemory m_depthImageMemory;
 	VkImageView m_depthImageView;
@@ -304,9 +301,6 @@ public:
 	//---------------------------------------------------------------------------------
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
-
-	void LoadModel();
-	void CreateTextureImage();
 
 	static VkImageView CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags);
 };

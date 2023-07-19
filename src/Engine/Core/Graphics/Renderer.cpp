@@ -97,9 +97,6 @@ void Renderer::InitializeVulkan()
 	CreateColourResources();
 	CreateDepthResources();
 	CreateFrameBuffers();
-	
-	CreateTextureImage();
-	LoadModel();
 
 	CreateDescriptorPool();
 
@@ -121,7 +118,6 @@ void Renderer::CleanupVulkan()
 	vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
 
 	delete m_graphicsPipeline;
-	m_texture = nullptr;
 	CleanupSwapchain();
 
 	vkDestroyDevice(m_device, nullptr);
@@ -940,15 +936,6 @@ void Renderer::EndDrawFrame()
 	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void Renderer::LoadModel()
-{
-	m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
-}
-
-void Renderer::CreateTextureImage()
-{
-	m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
-}
 
 
 VkImageView Renderer::CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags)

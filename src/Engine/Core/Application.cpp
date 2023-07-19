@@ -4,13 +4,12 @@
 #include "../Systems/AudioListenerSystem.h"
 #include "../Systems/AudioSourceSystem.h"
 #include "../Systems/CameraSystem.h"
-#include "../Systems/SpriteSystem.h"
 #include "../Systems/TransformSystem.h"
 #include "../Systems/MeshRendererSystem.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
-#include "../imgui/backends/imgui_impl_opengl3.h"
+#include "../imgui/backends/imgui_impl_vulkan.h"
 
 bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
@@ -19,14 +18,8 @@ std::weak_ptr<Application> Application::m_self;
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
 
-std::vector<std::shared_ptr<UISystem>> Application::m_vUiSystems;
-std::vector<std::shared_ptr<Behaviour>> Application::m_vBehaviours;
 std::vector<std::shared_ptr<SystemBase>> Application::m_vComponentSystems;
 std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
-
-std::shared_ptr<ShaderProgram> Application::m_mainShaderProgram;
-std::shared_ptr<ShaderProgram> Application::m_uiShaderProgram;
-std::shared_ptr<ShaderProgram> Application::m_uiTextProgram;
 
 //----------------- Private Functions ----------------------
 
@@ -39,54 +32,33 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
 	rtn->m_logger = new Logger();
+
+#ifndef NDEBUG
+	//We want to log initialization at least in debug mode.
+	rtn->m_logger->m_bUseLogging = true;
+#endif
+
+	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_gameRenderer = new Renderer(_windowName);
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
-	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_pStats = new PerformanceStats();
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(Renderer::GetWindow(), Renderer::GetGLContext());
-	ImGui_ImplOpenGL3_Init(rtn->m_gameRenderer->GetGLSLVersion());
+	rtn->InitializeImGui();
 
 	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
-	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.vs"), GL_VERTEX_SHADER);
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_mainShaderProgram->LinkShaderProgram(rtn->m_mainShaderProgram);
-
-	rtn->m_uiShaderProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_uiShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardUI.vs"), GL_VERTEX_SHADER);
-	rtn->m_uiShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardUI.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_uiShaderProgram->LinkShaderProgram(rtn->m_uiShaderProgram);
-
-	rtn->m_uiTextProgram = ResourceManager::CreateShaderProgram();
-	rtn->m_uiTextProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardText.vs"), GL_VERTEX_SHADER);
-	rtn->m_uiTextProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standardText.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_uiTextProgram->LinkShaderProgram(rtn->m_uiTextProgram);
-
-	UIQuads::SetupUIQuads();
 
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
 	rtn->BindSystem<CameraSystem>(SystemUsage::useUpdate, "Camera");
 	rtn->BindSystem<AudioListenerSystem>(SystemUsage::useUpdate, "AudioListener");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
-	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
-
-	Logger::LogInformation("Engine started successfully");
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
+
+	Logger::LogInformation("Engine started successfully");
+
 	return rtn;
 }
 
@@ -108,8 +80,6 @@ void Application::LoadSettings()
 
 void Application::MainLoop()
 {
-	Camera* cam = Renderer::GetCamera();
-
 	ImGuiIO& io = ImGui::GetIO();
 
 	while (m_bLoop)
@@ -119,8 +89,9 @@ void Application::MainLoop()
 		InputManager::HandleGeneralInput();
 		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
+
 		ImGui::NewFrame();
 
 		//update start
@@ -136,16 +107,11 @@ void Application::MainLoop()
 			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, updateEnd);
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
-		for (int i = 0; i < m_vBehaviours.size(); i++)
+		for (int i = 0; i < m_vEntities.size(); i++)
 		{
-			m_vBehaviours.at(i)->Update();
-		}
-		for (int i = 0; i < m_vUiSystems.size(); i++)
-		{
-			if (m_vUiSystems.at(i)->m_bActive)
+			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
 			{
-				m_vUiSystems.at(i)->Update();
-				m_vUiSystems.at(i)->HandleEvents();
+				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
 			}
 		}
 		ThreadingManager::WaitForTasksToClear();
@@ -163,9 +129,8 @@ void Application::MainLoop()
 			}
 		}
 
-		ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
-		m_gameRenderer->ClearBuffer();
+		m_gameRenderer->StartDrawFrame();
 		for (int i = 0; i < m_vComponentSystems.size(); i++)
 		{
 			Uint32 renderStart = SDL_GetTicks();
@@ -176,16 +141,9 @@ void Application::MainLoop()
 			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, renderEnd);
 			m_pStats->m_mSystemRenderTimes.push_back(pair);
 		}
-		for (int i = 0; i < m_vUiSystems.size(); i++)
-		{
-			if (m_vUiSystems.at(i)->m_bActive)
-			{
-				m_vUiSystems.at(i)->Render();
-			}
-		}
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
-		m_gameRenderer->SwapGraphicsBuffer();
+		m_gameRenderer->EndDrawFrame();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
 		//Render End
 
@@ -202,6 +160,7 @@ void Application::MainLoop()
 		m_pStats->m_mSystemRenderTimes.clear();
 	}
 
+	vkDeviceWaitIdle(Renderer::GetLogicalDevice());
 	CleanupApplication();
 }
 
@@ -209,14 +168,83 @@ void Application::CleanupApplication()
 {
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
+	vkDestroyDescriptorPool(Renderer::GetLogicalDevice(), m_imguiPool, nullptr);
+	ImGui_ImplVulkan_Shutdown();
+
 	ThreadingManager::StopThreads();
+
+	ClearLoadedScene();
+
+	m_resourceManager->UnloadAllResources();
 	delete m_resourceManager;
+
 	delete m_gameRenderer;
 	delete m_audioManager;
 	delete m_networkManager;
 	delete m_threadManager;
 	delete m_logger;
 	delete m_pStats;
+
+	SDL_Quit();
+}
+
+void Application::InitializeImGui()
+{
+	//1: create descriptor pool for IMGUI
+	// the size of the pool is very oversize, but it's copied from imgui demo itself.
+	VkDescriptorPoolSize pool_sizes[] =
+	{
+		{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+		{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+		{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+		{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+	};
+
+	VkDescriptorPoolCreateInfo pool_info = {};
+	pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	pool_info.maxSets = 1000;
+	pool_info.poolSizeCount = std::size(pool_sizes);
+	pool_info.pPoolSizes = pool_sizes;
+
+	vkCreateDescriptorPool(Renderer::GetLogicalDevice(), &pool_info, nullptr, &m_imguiPool);
+
+
+	// 2: initialize imgui library
+
+	//this initializes the core structures of imgui
+	ImGui::CreateContext();
+
+	//this initializes imgui for SDL
+	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
+
+	//this initializes imgui for Vulkan
+	ImGui_ImplVulkan_InitInfo init_info = {};
+	init_info.Instance = Renderer::GetVulkanInstance();
+	init_info.PhysicalDevice = Renderer::GetPhysicalDevice();
+	init_info.Device = Renderer::GetLogicalDevice();
+	init_info.Queue = Renderer::GetGraphicsQueue();
+	init_info.DescriptorPool = m_imguiPool;
+	init_info.MinImageCount = 3;
+	init_info.ImageCount = 3;
+	init_info.MSAASamples = Renderer::GetMSAALevel();
+
+	ImGui_ImplVulkan_Init(&init_info, Renderer::GetGraphicsPipeline()->GetRenderPass());
+
+	//execute a gpu command to upload imgui font textures
+	VkCommandBuffer fontBuffer = Renderer::BeginSingleTimeCommand();
+		ImGui_ImplVulkan_CreateFontsTexture(fontBuffer);
+	Renderer::EndSingleTimeCommands(fontBuffer);
+
+	//clear font textures from cpu data
+	ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
 
 std::string Application::GetUniqueEntityID()

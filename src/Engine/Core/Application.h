@@ -6,7 +6,7 @@
 
 #include <SDL/SDL.h>
 
-#include "Renderer.h"
+#include "Graphics/Renderer.h"
 #include "../Networking/NetworkManager.h"
 #include "AudioManager.h"
 #include "ThreadingManager.h"
@@ -15,14 +15,12 @@
 
 #include "ResourceManager.h"
 #include "../Resource/IniFile.h"
-#include "../Resource/ShaderProgram.hpp"
 
 #include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
 #include "../ECS/Behaviour.hpp"
 
 #include "DebugUI.hpp"
-#include "UI.h"
 
 class Application
 {
@@ -40,6 +38,8 @@ private:
     ResourceManager* m_resourceManager;
     Logger* m_logger;
 
+	VkDescriptorPool m_imguiPool;
+
     std::shared_ptr<IniFile> m_mainIniFile;
 
 	static bool m_bEntitiesDeleted;
@@ -51,17 +51,12 @@ private:
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
 
-	static std::vector<std::shared_ptr<UISystem>> m_vUiSystems;
-	static std::vector<std::shared_ptr<Behaviour>> m_vBehaviours;
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
+	void InitializeImGui();
 
 public:
-
-	static std::shared_ptr<ShaderProgram> m_mainShaderProgram;
-	static std::shared_ptr<ShaderProgram> m_uiShaderProgram;
-	static std::shared_ptr<ShaderProgram> m_uiTextProgram;
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }
@@ -94,7 +89,7 @@ public:
 			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
 			if (temp)
 			{
-				std::cout << "System is already bound!!" << std::endl;
+				Logger::LogError("System is already bound.", 2);
 				return temp;
 			}
 		}
@@ -109,7 +104,7 @@ public:
 	}
 
 	template<typename T>
-	static std::shared_ptr<T> BindSystem(SystemUsage _usage, int _componentsPerThread)
+	static std::shared_ptr<T> BindSystem(SystemUsage _usage, std::string _ID, int _componentsPerThread)
 	{
 		std::shared_ptr<T> temp;
 		for (size_t sys = 0; sys < m_vComponentSystems.size(); sys++)
@@ -117,7 +112,7 @@ public:
 			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
 			if (temp)
 			{
-				std::cout << "System is already bound!!" << std::endl;
+				Logger::LogError("System is already bound.", 2);
 				return temp;
 			}
 		}
@@ -127,20 +122,9 @@ public:
 		system->systemUsage = _usage;
 		system->useThreads = true;
 		system->maxComponentsPerThread = _componentsPerThread;
-		system->InitializeSystem();
+		system->InitializeSystem(_ID);
 		m_vComponentSystems.push_back(system);
 		return system;
-	}
-
-	template<typename T>
-	static std::shared_ptr<T> BindUISystem(const std::string _UILayout)
-	{
-		std::shared_ptr<T> sys = std::make_shared<T>(_UILayout);
-		sys->InitializeUI();
-		sys->InitializeSpecificElements();
-
-		m_vUiSystems.push_back(sys);
-		return sys;
 	}
 
 	template<typename T>
@@ -150,15 +134,6 @@ public:
 		sys->InitializeInterface();
 		m_vDebugUIs.push_back(sys);
 		return sys;
-	}
-
-	template<typename T>
-	static std::shared_ptr<T> BindBehaviour()
-	{
-		std::shared_ptr<T> beh = std::make_shared<T>();
-		beh->Start();
-		m_vBehaviours.push_back(beh);
-		return beh;
 	}
 
 	static void CreateNetworkManager(const int& _mode);

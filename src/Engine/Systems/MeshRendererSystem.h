@@ -5,10 +5,9 @@
 #include "../ECS/System.hpp"
 #include "MeshRenderer.h"
 
-#include <GL/glew.h>
-
 struct MeshRendererSystem : public System<MeshRenderer>
 {
+	void CreateDescriptor(MeshRenderer* comp);
 	void OnRender(MeshRenderer* comp);
 };
 

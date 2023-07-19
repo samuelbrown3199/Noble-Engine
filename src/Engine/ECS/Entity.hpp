@@ -2,6 +2,8 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
+#include "Behaviour.hpp"
+
 /**
 *Entities act as containers of component data.
 */
@@ -20,6 +22,8 @@ struct Entity
 	* Used to detemine whether the entity can be reused after being deleted.
 	*/
 	bool m_bAvailableForUse = false;
+
+	std::vector<Behaviour*> m_vBehaviours;
 
 	/**
 	*Constructor for the Entity.
@@ -65,6 +69,18 @@ struct Entity
 		}
 		return alreadyHasComponent;
 	}
+
+	template <typename T, typename ... Args>
+	T* AddBehaviour(Args&&... _args)
+	{
+		T* comp = new T();
+		comp->m_sEntityID = m_sEntityID;
+		comp->Start();
+
+		m_vBehaviours.push_back(comp);
+		return comp;
+	}
+
 	/**
 	*Gets a component of the type from the Entity.
 	*/

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(NobleEngine)
 
 include_directories(
@@ -37,8 +38,10 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/imgui/imstb_textedit.h
 	src/Engine/imgui/imstb_truetype.h
 
-	src/Engine/imgui/backends/imgui_impl_opengl3.h
-	src/Engine/imgui/backends/imgui_impl_opengl3.cpp
+	src/Engine/imgui/imgui.h
+	src/Engine/imgui/imgui.cpp
+	src/Engine/imgui/backends/imgui_impl_vulkan.h
+	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
 
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
@@ -72,9 +75,6 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/Logger.h
 	src/Engine/Core/Logger.cpp
 
-	src/Engine/Core/Renderer.h
-	src/Engine/Core/Renderer.cpp
-
 	src/Engine/Core/InputManager.h
 	src/Engine/Core/InputManager.cpp
 
@@ -84,8 +84,19 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 
-	src/Engine/Core/UI.h
-	src/Engine/Core/UI.cpp
+	#Core Graphics
+
+	src/Engine/Core/Graphics/Renderer.h
+	src/Engine/Core/Graphics/Renderer.cpp
+	
+	src/Engine/Core/Graphics/GraphicsPipeline.h
+	src/Engine/Core/Graphics/GraphicsPipeline.cpp
+
+	src/Engine/Core/Graphics/BufferHelper.h
+	src/Engine/Core/Graphics/BufferHelper.cpp
+
+	src/Engine/Core/Graphics/GraphicsBuffer.h
+	src/Engine/Core/Graphics/GraphicsBuffer.cpp
 
 	#ECS
 
@@ -98,8 +109,6 @@ add_library(Engine ${SRC_IMGUI}
 	
 	src/Engine/Resource/Resource.h
 
-	src/Engine/Resource/ShaderProgram.hpp
-
 	src/Engine/Resource/Texture.h
 	src/Engine/Resource/Texture.cpp
 
@@ -109,13 +118,9 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Resource/AudioClip.h
 	src/Engine/Resource/AudioClip.cpp
 
-	src/Engine/Resource/Font.h
-	src/Engine/Resource/Font.cpp
-
 	src/Engine/Resource/UILayout.h
 	src/Engine/Resource/UILayout.cpp
 
-	src/Engine/Resource/ModelLoader.hpp
 	src/Engine/Resource/Model.h
 	src/Engine/Resource/Model.cpp
 
@@ -140,15 +145,11 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/TransformSystem.h
 	src/Engine/Systems/TransformSystem.cpp
 
-	src/Engine/Systems/Sprite.h
-	src/Engine/Systems/SpriteSystem.h
-	src/Engine/Systems/SpriteSystem.cpp
-
 	src/Engine/Systems/MeshRenderer.h
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp
 )
-target_link_libraries(Engine SDL2 glew32 opengl32 enet64 ws2_32 winmm freetype fmod_vc)
+target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
 add_executable(Editor
@@ -165,14 +166,7 @@ target_compile_features(Editor PRIVATE cxx_std_17)
 add_executable(TechDemo1
     src/Game/main.cpp
 
-	src/Game/Interface/MainMenu.h
-	src/Game/Interface/MainMenu.cpp
-
 	src/Game/World/World.hpp
-	
-	src/Game/World/TileChunk.h
-	src/Game/World/TileChunkSystem.h
-	src/Game/World/TileChunkSystem.cpp
 )
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

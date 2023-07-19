@@ -10,48 +10,35 @@
 
 #include "EditorUI.h"
 
-#ifndef NDEBUG
-int main()
+void StartupEditor()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Noble Editor Debug");
-    //app->BindBehaviour<DebugCam>();
 
     std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     ui->m_uiOpen = true;
 
+    Entity* entity = Application::CreateEntity();
+    entity->AddBehaviour<DebugCam>();
+
+    entity = Application::CreateEntity();
+    entity->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 39));
+    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
+    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
+    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
+
     app->MainLoop();
+}
+
+#ifndef NDEBUG
+int main()
+{
+    StartupEditor();
     return 0;
 }
 #else
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    std::shared_ptr<Application> app = Application::StartApplication("Noble Editor");
-    //app->BindBehaviour<DebugCam>();
-
-    /*int amount = 10;
-    for (int x = 0; x < amount; x++)
-    {
-        for (int y = 0; y < amount; y++)
-        {
-            for (int z = 0; z < amount; z++)
-            {
-                Entity* entity = Application::CreateEntity();
-                Transform* tr = entity->AddComponent<Transform>();
-
-                tr->m_position = glm::vec3(x, y, z);
-
-                MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
-                mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\cube.obj");
-                mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\cottage_diffuse.png");
-                mr->m_colour = glm::vec4(1, 1, 1, 1);
-            }
-        }
-    }*/
-
-    std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
-    ui->m_uiOpen = true;
-
-    app->MainLoop();
+    StartupEditor();
     return 0;
 }
 #endif

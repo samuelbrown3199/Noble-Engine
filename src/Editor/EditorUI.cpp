@@ -2,7 +2,7 @@
 
 #include <Engine\Useful.h>
 #include <Engine\Core\Application.h>
-#include <Engine\Core\Renderer.h>
+#include <Engine\Core\Graphics\Renderer.h>
 #include <Engine\Core\SceneManager.h>
 
 

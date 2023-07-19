@@ -8,8 +8,6 @@
 #include <FMOD/fmod.h>
 #include <FMOD/fmod_common.h>
 
-#include "Renderer.h"
-
 class AudioManager
 {
 private:
@@ -24,8 +22,6 @@ private:
 	*Stores the options for the audio mixer.
 	*/
 	static std::map<std::string, float> m_mMixerOptions;
-
-	static Camera* m_camera;
 
 public:
 	/**

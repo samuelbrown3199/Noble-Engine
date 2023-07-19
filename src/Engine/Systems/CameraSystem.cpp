@@ -1,5 +1,5 @@
 #include "CameraSystem.h"
-#include "..\Core\Renderer.h"
+#include "..\Core\Graphics\Renderer.h"
 
 std::weak_ptr<SystemBase> CameraSystem::self;
 std::weak_ptr<SystemBase> Camera::componentSystem;

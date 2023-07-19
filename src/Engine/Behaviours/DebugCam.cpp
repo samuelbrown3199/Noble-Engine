@@ -3,18 +3,17 @@
 #include "../Core/Application.h"
 #include "../Core/InputManager.h"
 #include "../Systems/Transform.h"
-#include "../Core/Renderer.h"
+#include "../Core/Graphics/Renderer.h"
 #include "../Core/PerformanceStats.h"
 #include "../Systems/Camera.h"
 #include "../Systems/AudioListener.h"
 
 void DebugCam::Start()
 {
-	Entity* hackCam = Application::CreateEntity();
+	Entity* hackCam = Application::GetEntity(m_sEntityID);
 	hackCam->m_sEntityName = "Hack Cam";
-	hackCam->AddComponent<Transform>();
+	hackCam->AddComponent<Transform>(glm::vec3(2,2,2));
 	hackCam->AddComponent<Camera>()->m_bIsMainCam = true;
-	hackCam->AddComponent<AudioListener>();
 }
 
 void DebugCam::Update()
@@ -26,7 +25,7 @@ void DebugCam::Update()
 void DebugCam::UpdateControls()
 {
 	Camera* ca = Renderer::GetCamera();
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	if (InputManager::GetKey(SDLK_w))
 	{
@@ -76,8 +75,11 @@ void DebugCam::UpdateCameraRotation()
 		xoffset *= sensitivity;
 		yoffset *= sensitivity;
 
-		yaw += xoffset;
+		yaw -= xoffset;
 		pitch += yoffset;
+
+		ca->m_camTransform->m_rotation.x += pitch;
+		ca->m_camTransform->m_rotation.y += yaw;
 
 		// make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (pitch > 89.0f)
@@ -86,9 +88,12 @@ void DebugCam::UpdateCameraRotation()
 			pitch = -89.0f;
 
 		glm::vec3 front;
-		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.x = -cos(glm::radians(ca->m_camTransform->m_rotation.x)) * sin(glm::radians(ca->m_camTransform->m_rotation.y));
+		front.y = cos(glm::radians(ca->m_camTransform->m_rotation.x)) * cos(glm::radians(ca->m_camTransform->m_rotation.y));
+		front.z = sin(glm::radians(ca->m_camTransform->m_rotation.x));
+		/*front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
-		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));*/
 		ca->m_camTransform->m_rotation = glm::normalize(front);
 	}
 	else

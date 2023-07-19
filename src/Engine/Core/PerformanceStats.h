@@ -19,9 +19,9 @@ private:
 	Uint32 frameStart, preUpdateStart, renderStart, updateStart, cleanupStart;
 	double fps = 0;
 
-	const int avgFrameRateCount = 60;
+	const static int avgFrameRateCount = 1440;
 	std::vector<int> framerateList;
-	int currentFrameCount = 0;
+	static int currentFrameCount;
 
 	static std::vector< std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
 	static std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;

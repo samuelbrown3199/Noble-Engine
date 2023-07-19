@@ -7,26 +7,22 @@ std::map<std::string, float> AudioManager::m_mMixerOptions;
 
 FMOD_SYSTEM* AudioManager::m_fmodSystem;
 
-Camera* AudioManager::m_camera;
-
 AudioManager::AudioManager()
 {
 	FMOD_RESULT result = FMOD_System_Create(&m_fmodSystem, FMOD_VERSION);
 	if (result != FMOD_OK)
 	{
-		Logger::LogError("Failed to create FMOD System!", 2);
+		Logger::LogError("Failed to create FMOD System.", 2);
 	}
 	result = FMOD_System_Init(m_fmodSystem, m_iMaxChannels, FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED, nullptr);
 	if (result != FMOD_OK)
 	{
-		Logger::LogError("Failed to initialise FMOD System!", 2);
+		Logger::LogError("Failed to initialise FMOD System.", 2);
 	}
 
 	FMOD_System_Set3DSettings(m_fmodSystem, 1.0f, 1.0f, 1.0f);
 
-	m_camera = Renderer::GetCamera();
-
-	Logger::LogInformation("Audio Manager initialized");
+	Logger::LogInformation("Audio Manager initialized.");
 }
 
 AudioManager::~AudioManager()

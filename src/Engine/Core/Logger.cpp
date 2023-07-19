@@ -36,7 +36,7 @@ void Logger::LogInformation(const std::string& _logString)
 
 void Logger::LogError(const std::string& _logString, const int& _errorLevel)
 {
-	if (!m_bUseLogging)
+	if (!m_bUseLogging && _errorLevel != 2)
 		return;
 
 	std::string passedString;

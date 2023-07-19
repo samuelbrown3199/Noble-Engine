@@ -19,6 +19,11 @@ struct MeshRenderer : public ComponentData<MeshRenderer>
 
 	Transform* m_transform = nullptr;
 
+	bool m_bCreatedDescriptorSets = false;
+	std::vector<GraphicsBuffer> m_uniformBuffers;
+	std::vector<void*> m_uniformBuffersMapped;
+	std::vector<VkDescriptorSet> m_descriptorSets;
+
 	nlohmann::json WriteJson()
 	{
 		nlohmann::json data;

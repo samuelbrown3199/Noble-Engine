@@ -8,13 +8,7 @@
 
 #include "../Useful.h"
 #include "../Resource/Resource.h"
-#include "../Resource/ShaderProgram.hpp"
 #include "Logger.h"
-
-#include "../Resource/Font.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 /**
 *Handles resource management. Stores, loads and unloads resources.
@@ -25,12 +19,10 @@ struct ResourceManager
 	*Stores all loaded resources.
 	*/
 	static std::vector<std::shared_ptr<Resource>> m_vResources;
-	static std::vector<std::shared_ptr<ShaderProgram>> m_vShaderPrograms;
 	static std::string m_sWorkingDirectory;
 
-	static FT_Library m_fontLibrary;
-
 	ResourceManager();
+	~ResourceManager();
 
 	template<typename T>
 	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory)
@@ -99,21 +91,10 @@ struct ResourceManager
 	}
 
 	/**
-	* Creates a shader program and stores it in the shader program list.
-	*/
-	static std::shared_ptr<ShaderProgram> CreateShaderProgram()
-	{
-		std::shared_ptr<ShaderProgram> rtn = std::make_shared<ShaderProgram>();
-		m_vShaderPrograms.push_back(rtn);
-		Logger::LogInformation("Created new shader program.");
-
-		return rtn;
-	}
-	static std::shared_ptr<Font> LoadFont(std::string fontPath, int fontPixelSize);
-	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
 	static void UnloadUnusedResources();
+	static void UnloadAllResources();
 };
 
 #endif

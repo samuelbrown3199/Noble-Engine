@@ -61,6 +61,7 @@ public:
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }
 
+	void RegisterCoreKeybinds();
     void LoadSettings();
     void MainLoop();
     void CleanupApplication();

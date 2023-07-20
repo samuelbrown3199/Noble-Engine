@@ -10,6 +10,9 @@
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
 bool InputManager::m_bCurrentlyInputtingText;
+Controller InputManager::m_controller;
+
+std::vector<Keybind> InputManager::m_vKeybinds;
 
 int InputManager::m_iMouseX = 0;
 int InputManager::m_iMouseY = 0;
@@ -29,7 +32,7 @@ void InputManager::HandleGeneralInput()
 	{
 		ImGui_ImplSDL2_ProcessEvent(&e);
 
-		//GetMousePosition();
+		GetMousePosition();
 
 		if (e.type == SDL_QUIT)
 		{
@@ -82,6 +85,121 @@ void InputManager::HandleGeneralInput()
 		}
 	}
 }
+
+void InputManager::AddKeybind(Keybind keybind)
+{
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		if (m_vKeybinds.at(i).m_keybindIdentifier == keybind.m_keybindIdentifier)
+		{
+			Logger::LogError(FormatString("Tried to add keybind %s but it already exists.", keybind.m_keybindIdentifier), 0);
+			return;
+		}
+	}
+
+	m_vKeybinds.push_back(keybind);
+}
+
+void InputManager::ChangeKeybind(std::string _keybind, int index, Input newInput)
+{
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
+		{
+			if (m_vKeybinds.at(i).m_vKeybindKeys.at(o) == newInput)
+			{
+				Logger::LogError(FormatString("Tried to rebind keybind %s to already bound input.", _keybind), 0);
+				return;
+			}
+		}
+	}
+
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
+		{
+			m_vKeybinds.at(i).m_vKeybindKeys.at(index) = newInput;
+			Logger::LogInformation(FormatString("Changed input %d for keybind %s.", index, _keybind));
+			break;
+		}
+	}
+}
+
+bool InputManager::GetKeybind(std::string _keybind)
+{
+	bool isKeybind = false;
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
+		{
+			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
+			{
+				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+					isKeybind = GetKey(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
+				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
+					isKeybind = GetMouseButton(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+
+				if (isKeybind)
+					return isKeybind;
+			}
+		}
+	}
+
+	return isKeybind;
+}
+
+bool InputManager::GetKeybindDown(std::string _keybind)
+{
+	bool isKeybind = false;
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
+		{
+			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
+			{
+				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+					isKeybind = GetKeyDown(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
+				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
+					isKeybind = GetMouseButtonDown(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+
+				if (isKeybind)
+					return isKeybind;
+			}
+
+			if (isKeybind)
+				break;
+		}
+	}
+
+	return isKeybind;
+}
+
+bool InputManager::GetKeybindUp(std::string _keybind)
+{
+	bool isKeybind = false;
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
+		{
+			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
+			{
+				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+					isKeybind = GetKeyUp(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
+				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
+					isKeybind = GetMouseButtonUp(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+
+				if (isKeybind)
+					return isKeybind;
+			}
+
+			if (isKeybind)
+				break;
+		}
+	}
+
+	return isKeybind;
+}
+
 bool InputManager::GetKey(SDL_Keycode _key)
 {
 	const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -185,7 +303,7 @@ void InputManager::GetMousePosition()
 	SDL_GetMouseState(&m_iMouseX, &m_iMouseY);
 	Camera* cam = Renderer::GetCamera();
 
-	if(cam != nullptr)
+	if(cam != nullptr && cam->m_camTransform != nullptr)
 		m_iWorldMousePos = glm::vec2((m_iMouseX / Renderer::GetScale()) + cam->m_camTransform->m_position.x, (m_iMouseY / Renderer::GetScale()) + cam->m_camTransform->m_position.y);
 }
 

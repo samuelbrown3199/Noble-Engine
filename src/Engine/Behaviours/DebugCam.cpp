@@ -12,8 +12,12 @@ void DebugCam::Start()
 {
 	Entity* hackCam = Application::GetEntity(m_sEntityID);
 	hackCam->m_sEntityName = "Hack Cam";
-	hackCam->AddComponent<Transform>(glm::vec3(2,2,2));
+	Transform* tr = hackCam->AddComponent<Transform>(glm::vec3(5,0,0));
 	hackCam->AddComponent<Camera>()->m_bIsMainCam = true;
+
+	tr->m_rotation.x = -1;
+	tr->m_rotation.y = 0;
+	tr->m_rotation.z = 0;
 }
 
 void DebugCam::Update()
@@ -27,20 +31,20 @@ void DebugCam::UpdateControls()
 	Camera* ca = Renderer::GetCamera();
 	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 
-	if (InputManager::GetKey(SDLK_w))
+	if (InputManager::GetKeybind("Forward"))
 	{
 		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
 	}
-	if (InputManager::GetKey(SDLK_s))
+	if (InputManager::GetKeybind("Back"))
 	{
 		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
 	}
-	if (InputManager::GetKey(SDLK_a))
+	if (InputManager::GetKeybind("Left"))
 	{
 		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
 		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
 	}
-	if (InputManager::GetKey(SDLK_d))
+	if (InputManager::GetKeybind("Right"))
 	{
 		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
 		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
@@ -57,7 +61,7 @@ void DebugCam::UpdateControls()
 
 void DebugCam::UpdateCameraRotation()
 {
-	if (InputManager::GetMouseButton(1))
+	if (InputManager::GetKeybind("RightMouse"))
 	{
 		Camera* ca = Renderer::GetCamera();
 		newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
@@ -91,9 +95,6 @@ void DebugCam::UpdateCameraRotation()
 		front.x = -cos(glm::radians(ca->m_camTransform->m_rotation.x)) * sin(glm::radians(ca->m_camTransform->m_rotation.y));
 		front.y = cos(glm::radians(ca->m_camTransform->m_rotation.x)) * cos(glm::radians(ca->m_camTransform->m_rotation.y));
 		front.z = sin(glm::radians(ca->m_camTransform->m_rotation.x));
-		/*front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		front.y = sin(glm::radians(pitch));
-		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));*/
 		ca->m_camTransform->m_rotation = glm::normalize(front);
 	}
 	else

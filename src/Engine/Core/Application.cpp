@@ -38,11 +38,15 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_logger->m_bUseLogging = true;
 #endif
 
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+
 	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_gameRenderer = new Renderer(_windowName);
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
+
+	rtn->RegisterCoreKeybinds();
 
 	rtn->InitializeImGui();
 
@@ -60,6 +64,17 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	Logger::LogInformation("Engine started successfully");
 
 	return rtn;
+}
+
+void Application::RegisterCoreKeybinds()
+{
+	InputManager::AddKeybind(Keybind("Forward", { Input(SDLK_w, -1), Input(SDLK_UP, -1) }));
+	InputManager::AddKeybind(Keybind("Back", { Input(SDLK_s, -1), Input(SDLK_DOWN, -1) }));
+	InputManager::AddKeybind(Keybind("Left", { Input(SDLK_a, -1), Input(SDLK_LEFT, -1) }));
+	InputManager::AddKeybind(Keybind("Right", { Input(SDLK_d, -1), Input(SDLK_RIGHT, -1) }));
+
+	InputManager::AddKeybind(Keybind("LeftMouse", { Input(SDLK_UNKNOWN, 0) }));
+	InputManager::AddKeybind(Keybind("RightMouse", { Input(SDLK_UNKNOWN, 1) }));
 }
 
 void Application::LoadSettings()

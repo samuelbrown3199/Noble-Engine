@@ -1,4 +1,5 @@
 #include <Engine/Core/Application.h>
+#include <Engine/Core/InputManager.h>
 #include <Engine/Useful.h>
 #include <Engine\Behaviours\DebugCam.h>
 #include <Engine/ECS/Entity.hpp>
@@ -21,7 +22,7 @@ void StartupEditor()
     entity->AddBehaviour<DebugCam>();
 
     entity = Application::CreateEntity();
-    entity->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 39));
+    entity->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
     MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
     mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
     mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");

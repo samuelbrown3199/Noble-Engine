@@ -4,7 +4,7 @@
 #include <Engine\Core\Application.h>
 #include <Engine\Core\Graphics\Renderer.h>
 #include <Engine\Core\SceneManager.h>
-
+#include <Engine\Behaviours\DebugCam.h>
 
 int EditorUI::m_iSelEntity = -1;
 int EditorUI::m_iSelSystem = -1;
@@ -159,6 +159,9 @@ void EditorUI::DoFileMenu()
 			{
 				SceneManager::LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
 				Renderer::UpdateWindowTitle(m_sWindowName + " (" + SceneManager::GetCurrentSceneLocalPath() + ")");
+
+				Entity* entity = Application::CreateEntity();
+				entity->AddBehaviour<DebugCam>();
 			}
 		}
 

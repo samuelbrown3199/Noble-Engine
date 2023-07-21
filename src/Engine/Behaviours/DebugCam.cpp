@@ -14,6 +14,7 @@ void DebugCam::Start()
 	hackCam->m_sEntityName = "Hack Cam";
 	Transform* tr = hackCam->AddComponent<Transform>(glm::vec3(5,0,0));
 	hackCam->AddComponent<Camera>()->m_bIsMainCam = true;
+	hackCam->AddComponent<AudioListener>();
 
 	tr->m_rotation.x = -1;
 	tr->m_rotation.y = 0;

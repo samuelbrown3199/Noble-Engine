@@ -24,16 +24,16 @@
                     1.0,
                     1.0
                 ],
-                "modelPath": "GameData\\Models\\cottage_obj.obj",
+                "modelPath": "GameData\\Models\\cube.obj",
                 "texturePath": "GameData\\Textures\\cottage_diffuse.png"
             }
         },
         "Transform": {
             "NWCIsHAcA0vTSrhQYmU6G8GBa": {
                 "position": [
-                    5.0,
                     0.0,
-                    15.0
+                    0.0,
+                    0.0
                 ],
                 "rotation": [
                     0.0,
@@ -49,7 +49,7 @@
         }
     },
     "Entities": {
-        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Hut"
+        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Cube"
     },
     "LightingSettings": {
         "AmbientColour": [

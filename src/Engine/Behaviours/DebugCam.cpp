@@ -19,6 +19,9 @@ void DebugCam::Start()
 	tr->m_rotation.x = -1;
 	tr->m_rotation.y = 0;
 	tr->m_rotation.z = 0;
+
+	oldMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
+	newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
 }
 
 void DebugCam::Update()

@@ -12,7 +12,7 @@ struct DebugCam : public Behaviour
 	float m_fMovementSpeed = 16.0f, sensitivity = 0.1f;
 	glm::vec2 newMousePos, oldMousePos;
 	bool firstMouse = false;
-	float pitch = 0.0f, yaw = -90.0f;
+	float pitch = 0.0f, yaw = 90.0f;
 
 	void Start();
 	void Update();

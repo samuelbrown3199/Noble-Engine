@@ -90,13 +90,24 @@ struct Entity
 		T* temp = T::GetComponent(m_sEntityID);
 		return temp;
 	}
-	template<typename T>
+
 	/**
 	* Removes the component from the entity
 	*/
+	template<typename T>
 	void RemoveComponent()
 	{
 		T::RemoveComponent(m_sEntityID);
+	}
+
+	void DeleteAllBehaviours()
+	{
+		for (int i = 0; i < m_vBehaviours.size(); i++)
+		{
+			delete m_vBehaviours.at(i);
+		}
+
+		m_vBehaviours.clear();
 	}
 };
 

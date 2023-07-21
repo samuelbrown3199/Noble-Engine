@@ -81,7 +81,7 @@ void Application::LoadSettings()
 {
 	Logger::LogInformation("Loading game.ini settings");
 	
-	m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 500), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 500));
+	m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 1000), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 2000));
 	m_gameRenderer->SetWindowFullScreen(m_mainIniFile->GetIntSetting("Video", "Fullscreen", 0));
 	m_gameRenderer->SetVSyncMode(m_mainIniFile->GetIntSetting("Video", "VSync", 1));
 	m_gameRenderer->SetFov(m_mainIniFile->GetFloatSetting("Video", "FOV", 90.0f));
@@ -345,6 +345,11 @@ Entity* Application::GetEntity(std::string _ID)
 
 void Application::ClearLoadedScene()
 {
+	for (int i = 0; i < m_vEntities.size(); i++)
+	{
+		m_vEntities.at(i).DeleteAllBehaviours();
+	}
+
 	m_vEntities.clear();
 	m_vDeletionEntities.clear();
 
@@ -359,6 +364,7 @@ void Application::CleanupDeletionEntities()
 	while (!m_vDeletionEntities.empty())
 	{
 		Entity* currentEntity = m_vDeletionEntities.front();
+		currentEntity->DeleteAllBehaviours();
 		m_vDeletionEntities.pop_front();
 		for (int o = 0; o < m_vComponentSystems.size(); o++)
 		{

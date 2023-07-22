@@ -25,6 +25,10 @@ std::string FormatString(const std::string& _format, Args ... _args)
     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
 }
 
+std::string& RightTrimString(std::string& s, const char* t);
+std::string& LeftTrimString(std::string& s, const char* t);
+std::string& TrimString(std::string& s, const char* t);
+
 std::vector<std::string> SplitString(const std::string& _input, const char _delimiter);
 std::string RemoveCharacterFromString(const std::string& _input, const char _targetCharacter);
 std::string GetDateTimeString();

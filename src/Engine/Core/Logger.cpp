@@ -3,11 +3,17 @@
 
 std::ofstream Logger::m_logFile;
 std::string Logger::m_sSessionFileName;
+std::string Logger::logFolder;
+
 bool Logger::m_bUseLogging;
 
 Logger::Logger()
 {
 	m_sSessionFileName = GetDateTimeString();
+
+	logFolder = GetWorkingDirectory() + "\\Logs\\";
+	if (!PathExists(logFolder))
+		CreateNewDirectory(logFolder);
 }
 
 void Logger::LogInformation(const std::string& _logString)
@@ -19,9 +25,6 @@ void Logger::LogInformation(const std::string& _logString)
 	writtenLine += _logString + "\n";
 	
 	std::cout << writtenLine;
-	std::string logFolder = GetWorkingDirectory() + "\\Logs\\";
-	if (!PathExists(logFolder))
-		CreateNewDirectory(logFolder);
 
 	std::string fileName = logFolder + m_sSessionFileName+".txt";
 	m_logFile.open(fileName, std::ios::app);
@@ -31,7 +34,8 @@ void Logger::LogInformation(const std::string& _logString)
 		m_logFile.close();
 		return;
 	}
-	std::cout << "Failed to open log file>: " << m_sSessionFileName << std::endl;
+
+	throw std::exception(FormatString("Failed to open log file>: %s", m_sSessionFileName).c_str());
 }
 
 void Logger::LogError(const std::string& _logString, const int& _errorLevel)

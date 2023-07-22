@@ -34,6 +34,9 @@ std::vector<std::string> IniFile::GetSettingLine(const std::string& _sectionName
 		splitSetting = SplitString(currentLine, '=');
 		if (splitSetting.size() == 2)
 		{
+			std::string trim = " ";
+			TrimString(splitSetting.at(0), trim.c_str());
+			TrimString(splitSetting.at(1), trim.c_str());
 			if (splitSetting.at(0) == _settingName)
 				break;
 		}

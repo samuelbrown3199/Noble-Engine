@@ -3,11 +3,32 @@
 
 #include <Windows.h>
 
+
 #include <iomanip>
 #include <ctime>
 #include <filesystem>
 
 //--------------------STRINGS----------------------------
+
+// trim from end of string (right)
+std::string& RightTrimString(std::string& s, const char* t)
+{
+    s.erase(s.find_last_not_of(t) + 1);
+    return s;
+}
+
+// trim from beginning of string (left)
+std::string& LeftTrimString(std::string& s, const char* t)
+{
+    s.erase(0, s.find_first_not_of(t));
+    return s;
+}
+
+// trim from both ends of string (right then left)
+std::string& TrimString(std::string& s, const char* t)
+{
+    return LeftTrimString(RightTrimString(s, t), t);
+}
 
 std::vector<std::string> SplitString(const std::string& _input, const char _delimiter)
 {

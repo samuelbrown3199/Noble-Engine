@@ -91,7 +91,7 @@ void Application::LoadSettings()
 	m_audioManager->AddMixerOption("ambience", m_mainIniFile->GetFloatSetting("Audio", "AmbientVolume", 1.0f));
 
 	m_pStats->printPerformance = m_mainIniFile->GetBooleanSetting("Debug", "PrintPerformance", false);
-	m_logger->m_bUseLogging = m_mainIniFile->GetBooleanSetting("Debug", "Log", false);
+	m_logger->m_bUseLogging = m_mainIniFile->GetBooleanSetting("Debug", "UseLogging", false);
 }
 
 void Application::MainLoop()

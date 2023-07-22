@@ -12,6 +12,7 @@ class Logger
 {
 static std::ofstream m_logFile;
 static std::string m_sSessionFileName;
+static std::string logFolder;
 
 public:
 	static bool m_bUseLogging;

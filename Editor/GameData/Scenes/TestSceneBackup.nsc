@@ -16,6 +16,11 @@
                 ]
             }
         },
+		"Camera":{
+			"CamTest": {
+				"CameraState": 1
+			}
+		},
         "Mesh": {
             "NWCIsHAcA0vTSrhQYmU6G8GBa": {
                 "colour": [
@@ -45,11 +50,29 @@
                     1.0,
                     1.0
                 ]
+            },		
+			"CamTest": {
+                "position": [
+                    5.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -1.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
             }
         }
     },
     "Entities": {
-        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Cube"
+        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Cube",
+		"CamTest": "CamTest"
     },
     "LightingSettings": {
         "AmbientColour": [

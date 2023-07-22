@@ -7,6 +7,7 @@
 
 struct CameraSystem : public System<Camera>
 {
+	void PreUpdate();
 	void OnUpdate(Camera* comp);
 };
 

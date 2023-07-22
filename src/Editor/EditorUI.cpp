@@ -38,6 +38,8 @@ void EditorUI::InitializeInterface()
 
 void EditorUI::DoInterface()
 {
+	HandleShortcutInputs();
+
 	DoMainMenuBar();
 
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
@@ -139,6 +141,14 @@ void EditorUI::DoInterface()
 		ImGui::ShowDemoWindow();
 }
 
+
+void EditorUI::HandleShortcutInputs()
+{
+	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_q))
+		CreateEditorCam();
+}
+
+
 void EditorUI::DoMainMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())
@@ -183,9 +193,6 @@ void EditorUI::DoFileMenu()
 			{
 				SceneManager::LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
 				Renderer::UpdateWindowTitle(m_sWindowName + " (" + SceneManager::GetCurrentSceneLocalPath() + ")");
-
-				Entity* entity = Application::CreateEntity();
-				entity->AddBehaviour<DebugCam>();
 			}
 		}
 
@@ -211,10 +218,11 @@ void EditorUI::DoToolMenu()
 {
 	ImGui::MenuItem("Tools", NULL, false, false);
 
+	std::string shortcut = "(Ctrl+Q)";
 	std::string camButton = "Create Editor Cam";
 	if(m_DebugCam != nullptr)
 		camButton = "Delete Editor Cam";
-	if (ImGui::MenuItem(camButton.c_str()))
+	if (ImGui::MenuItem(camButton.c_str(), shortcut.c_str()))
 	{
 		CreateEditorCam();
 	}

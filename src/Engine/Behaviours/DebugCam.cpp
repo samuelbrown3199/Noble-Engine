@@ -12,7 +12,7 @@ void DebugCam::Start()
 {
 	Entity* hackCam = Application::GetEntity(m_sEntityID);
 	Transform* tr = hackCam->AddComponent<Transform>(glm::vec3(5,0,0));
-	hackCam->AddComponent<Camera>()->m_bIsMainCam = true;
+	hackCam->AddComponent<Camera>()->m_state = editorCam;
 	hackCam->AddComponent<AudioListener>();
 
 	tr->m_rotation.x = -1;

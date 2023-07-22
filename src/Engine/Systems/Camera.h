@@ -5,20 +5,27 @@
 #include "../ECS/Component.hpp"
 #include "Transform.h"
 
+enum CameraState
+{
+	inactive,
+	mainCam,
+	editorCam
+};
+
 struct Camera : ComponentData<Camera>
 {
 	Transform* m_camTransform = nullptr;
-	bool m_bIsMainCam = false;
+	CameraState m_state = inactive;
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"MainCam", m_bIsMainCam} };
+		nlohmann::json data = { {"CameraState", m_state} };
 		return data;
 	}
 
 	void FromJson(const nlohmann::json& j) override
 	{
-		m_bIsMainCam = j["MainCam"];
+		m_state = j["CameraState"];
 	}
 };
 

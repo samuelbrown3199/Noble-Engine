@@ -20,6 +20,9 @@ public:
 
 	void InitializeInterface();
 	void DoInterface() override;
+
+	void HandleShortcutInputs();
+
 	void DoMainMenuBar();
 	void DoFileMenu();
 	void DoToolMenu();

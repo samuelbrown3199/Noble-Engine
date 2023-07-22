@@ -10,8 +10,19 @@
 
 void DebugCam::Start()
 {
+
+	glm::vec3 pos = glm::vec3(5, 0, 0);
+	glm::vec3 rot = glm::vec3(-1, 0, 0);
+
+	Camera* curCam = Renderer::GetCamera();
+	if (curCam)
+	{
+		pos = curCam->m_camTransform->m_position;
+		rot = curCam->m_camTransform->m_rotation;
+	}
+
 	Entity* hackCam = Application::GetEntity(m_sEntityID);
-	Transform* tr = hackCam->AddComponent<Transform>(glm::vec3(5,0,0));
+	Transform* tr = hackCam->AddComponent<Transform>(pos, rot);
 	hackCam->AddComponent<Camera>()->m_state = editorCam;
 	hackCam->AddComponent<AudioListener>();
 

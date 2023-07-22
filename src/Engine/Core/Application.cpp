@@ -73,8 +73,9 @@ void Application::RegisterCoreKeybinds()
 	InputManager::AddKeybind(Keybind("Left", { Input(SDLK_a, -1), Input(SDLK_LEFT, -1) }));
 	InputManager::AddKeybind(Keybind("Right", { Input(SDLK_d, -1), Input(SDLK_RIGHT, -1) }));
 
-	InputManager::AddKeybind(Keybind("LeftMouse", { Input(SDLK_UNKNOWN, 0) }));
-	InputManager::AddKeybind(Keybind("RightMouse", { Input(SDLK_UNKNOWN, 1) }));
+	InputManager::AddKeybind(Keybind("LeftMouse", { Input(SDLK_UNKNOWN, 1) }));
+	InputManager::AddKeybind(Keybind("MiddleMouse", { Input(SDLK_UNKNOWN, 2) }));
+	InputManager::AddKeybind(Keybind("RightMouse", { Input(SDLK_UNKNOWN, 3) }));
 }
 
 void Application::LoadSettings()

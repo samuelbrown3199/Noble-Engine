@@ -984,6 +984,9 @@ void Renderer::UpdateScreenSize()
 
 void Renderer::UpdateScreenSize(const int& _height, const int& _width)
 {
+	if (_height <= 0 || _width <= 0)
+		Logger::LogError(FormatString("Trying to resize screen to invalid size, %d %d", _width, _height), 2);
+
 	int newWidth = _width, newHeight = _height;
 	if (newWidth != m_iScreenWidth || newHeight != m_iScreenHeight)
 	{

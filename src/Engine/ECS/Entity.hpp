@@ -74,10 +74,12 @@ struct Entity
 	T* AddBehaviour(Args&&... _args)
 	{
 		T* comp = new T();
+
+		m_vBehaviours.push_back(comp);
+
 		comp->m_sEntityID = m_sEntityID;
 		comp->Start();
 
-		m_vBehaviours.push_back(comp);
 		return comp;
 	}
 

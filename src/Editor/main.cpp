@@ -19,9 +19,6 @@ void StartupEditor()
     ui->m_uiOpen = true;
 
     Entity* entity = Application::CreateEntity();
-    entity->AddBehaviour<DebugCam>();
-
-    entity = Application::CreateEntity();
     entity->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
     MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
     mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");

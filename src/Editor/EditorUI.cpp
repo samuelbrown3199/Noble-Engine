@@ -5,9 +5,27 @@
 #include <Engine\Core\Graphics\Renderer.h>
 #include <Engine\Core\SceneManager.h>
 #include <Engine\Behaviours\DebugCam.h>
+#include <Engine\Core\InputManager.h>
 
 int EditorUI::m_iSelEntity = -1;
 int EditorUI::m_iSelSystem = -1;
+
+Entity* EditorUI::m_DebugCam = nullptr;
+
+void EditorUI::CreateEditorCam()
+{
+	if (!m_DebugCam)
+	{
+		m_DebugCam = Application::CreateEntity();
+		m_DebugCam->m_sEntityName = "Editor Cam";
+		m_DebugCam->AddBehaviour<DebugCam>();
+	}
+	else
+	{
+		Application::DeleteEntity(m_DebugCam->m_sEntityID);
+		m_DebugCam = nullptr;
+	}
+}
 
 void EditorUI::InitializeInterface()
 {
@@ -131,6 +149,12 @@ void EditorUI::DoMainMenuBar()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Tools"))
+		{
+			DoToolMenu();
+			ImGui::EndMenu();
+		}
+
 #ifndef NDEBUG
 		if (ImGui::BeginMenu("Developer Debug"))
 		{
@@ -180,6 +204,19 @@ void EditorUI::DoFileMenu()
 	if (ImGui::MenuItem("Quit Editor"))
 	{
 		Application::StopApplication();
+	}
+}
+
+void EditorUI::DoToolMenu()
+{
+	ImGui::MenuItem("Tools", NULL, false, false);
+
+	std::string camButton = "Create Editor Cam";
+	if(m_DebugCam != nullptr)
+		camButton = "Delete Editor Cam";
+	if (ImGui::MenuItem(camButton.c_str()))
+	{
+		CreateEditorCam();
 	}
 }
 

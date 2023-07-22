@@ -92,10 +92,11 @@ class InputManager
 {
 private:
 
-	static bool m_bCurrentlyInputtingText;
 	static Controller m_controller;
 
 	static std::vector<Keybind> m_vKeybinds;
+
+	static void RemoveKeyFromOldDownKeys(SDL_Scancode key);
 
 public:
 	/**
@@ -107,7 +108,6 @@ public:
 	static std::vector<SDL_Scancode> m_vUpKeys;
 	static std::vector<int> m_vDownMouseButtons, m_vOldMouseButtons;
 	static std::vector<int> m_vUpMouseButtons;
-	static std::string m_sInputText;
 
 	static void HandleGeneralInput();
 	
@@ -150,9 +150,6 @@ public:
 	*Clears the keys that are currently up and down.
 	*/
 	static void ClearFrameInputs();
-
-	static void StartTextInput();
-	static void StopTextInput();
 };
 
 #endif

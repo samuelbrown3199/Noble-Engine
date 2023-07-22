@@ -9,7 +9,6 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
-bool InputManager::m_bCurrentlyInputtingText;
 Controller InputManager::m_controller;
 
 std::vector<Keybind> InputManager::m_vKeybinds;
@@ -22,7 +21,18 @@ std::vector<SDL_Scancode> InputManager::m_vDownKeys = std::vector<SDL_Scancode>(
 std::vector<SDL_Scancode> InputManager::m_vUpKeys = std::vector<SDL_Scancode>();
 std::vector<int> InputManager::m_vDownMouseButtons = std::vector<int>(), InputManager::m_vOldMouseButtons = std::vector<int>();
 std::vector<int> InputManager::m_vUpMouseButtons = std::vector<int>();
-std::string InputManager::m_sInputText;
+
+void InputManager::RemoveKeyFromOldDownKeys(SDL_Scancode key)
+{
+	for (int i = 0; i < m_vOldDownKeys.size(); i++)
+	{
+		if (m_vOldDownKeys.at(i) == key)
+		{
+			m_vOldDownKeys.erase(m_vOldDownKeys.begin() + i);
+			return;
+		}
+	}
+}
 
 void InputManager::HandleGeneralInput()
 {
@@ -39,11 +49,6 @@ void InputManager::HandleGeneralInput()
 			Application::m_bLoop = false;
 		}
 
-		if (e.type == SDL_TEXTINPUT)
-		{
-			m_sInputText = e.text.text;
-		}
-
 		if (e.type == SDL_KEYDOWN)
 		{
 			m_vDownKeys.push_back(e.key.keysym.scancode);
@@ -51,37 +56,16 @@ void InputManager::HandleGeneralInput()
 		else if (e.type == SDL_KEYUP)
 		{
 			m_vUpKeys.push_back(e.key.keysym.scancode);
+			RemoveKeyFromOldDownKeys(e.key.keysym.scancode);
 		}
 
 		if (e.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
-			{
-				m_vDownMouseButtons.push_back(0);
-			}
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_RIGHT))
-			{
-				m_vDownMouseButtons.push_back(1);
-			}
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_MIDDLE))
-			{
-				m_vDownMouseButtons.push_back(2);
-			}
+			m_vDownMouseButtons.push_back(e.button.button);
 		}
-		else
+		else if (e.type == SDL_MOUSEBUTTONUP)
 		{
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
-			{
-				m_vUpMouseButtons.push_back(0);
-			}
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_RIGHT))
-			{
-				m_vUpMouseButtons.push_back(1);
-			}
-			if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_MIDDLE))
-			{
-				m_vUpMouseButtons.push_back(2);
-			}
+			m_vUpMouseButtons.push_back(e.button.button);
 		}
 	}
 }
@@ -215,14 +199,13 @@ bool InputManager::GetKey(SDL_Keycode _key)
 
 bool InputManager::GetKeyDown(SDL_Keycode _key)
 {
-	for (int i = 0; i < m_vDownKeys.size(); i++)
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+	if (std::find(m_vDownKeys.begin(), m_vDownKeys.end(), SDL_GetScancodeFromKey(_key)) != m_vDownKeys.end())
 	{
-		if (m_vDownKeys.at(i) == SDL_GetScancodeFromKey(_key))
+		if (std::find(m_vOldDownKeys.begin(), m_vOldDownKeys.end(), SDL_GetScancodeFromKey(_key)) == m_vOldDownKeys.end())
 		{
-			if (std::find(m_vOldDownKeys.begin(), m_vOldDownKeys.end(), SDL_GetScancodeFromKey(_key)) == m_vOldDownKeys.end())
-			{
-				return true;
-			}
+			m_vOldDownKeys.push_back(SDL_GetScancodeFromKey(_key));
+			return true;
 		}
 	}
 
@@ -244,26 +227,9 @@ bool InputManager::GetKeyUp(SDL_Keycode _key)
 
 bool InputManager::GetMouseButton(int _button)
 {
-	if (_button == 0)
+	if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(_button))
 	{
-		if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_LEFT))
-		{
-			return true;
-		}
-	}
-	else if (_button == 1)
-	{
-		if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_RIGHT))
-		{
-			return true;
-		}
-	}
-	else if (_button == 2)
-	{
-		if (SDL_GetMouseState(&m_iMouseX, &m_iMouseY) & SDL_BUTTON(SDL_BUTTON_MIDDLE))
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;
@@ -275,14 +241,14 @@ bool InputManager::GetMouseButtonDown(int _button)
 	{
 		if (m_vDownMouseButtons.at(i) == _button)
 		{
-			if (std::find(m_vDownMouseButtons.begin(), m_vDownMouseButtons.end(), _button) == m_vDownMouseButtons.end())
+			if (std::find(m_vOldMouseButtons.begin(), m_vOldMouseButtons.end(), _button) == m_vOldMouseButtons.end())
 			{
 				return true;
 			}
 		}
 	}
 
-	false;
+	return false;
 }
 
 bool InputManager::GetMouseButtonUp(int _button)
@@ -309,32 +275,10 @@ void InputManager::GetMousePosition()
 
 void InputManager::ClearFrameInputs()
 {
-	m_vOldDownKeys = m_vDownKeys;
 	m_vOldMouseButtons = m_vDownMouseButtons;
 
 	m_vDownKeys.clear();
 	m_vUpKeys.clear();
 	m_vDownMouseButtons.clear();
 	m_vUpMouseButtons.clear();
-
-	m_sInputText.clear();
-}
-
-void InputManager::StartTextInput()
-{
-	if (m_bCurrentlyInputtingText)
-		return;
-
-	m_sInputText.clear();
-	SDL_StartTextInput();
-	m_bCurrentlyInputtingText = true;
-}
-
-void InputManager::StopTextInput()
-{
-	if (!m_bCurrentlyInputtingText)
-		return;
-
-	SDL_StopTextInput();
-	m_bCurrentlyInputtingText = false;
 }

@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 
-
+#include <cstdio>
 #include <iomanip>
 #include <ctime>
 #include <filesystem>
@@ -51,24 +51,24 @@ std::string RemoveCharacterFromString(const std::string& _input, const char _tar
     return returnString;
 }
 
-std::string GetDateTimeString()
+std::string GetDateTimeString(std::string format)
 {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
     std::ostringstream dateString;
-    dateString << std::put_time(&tm, "%d-%m-%Y-%H-%M-%S");
+    dateString << std::put_time(&tm, format.c_str());
 
     return dateString.str();
 }
 
-std::string GetTimeString()
+std::string GetTimeString(std::string format)
 {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
     std::ostringstream dateString;
-    dateString << std::put_time(&tm, "%H:%M:%S");
+    dateString << std::put_time(&tm, format.c_str());
 
     return dateString.str();
 }
@@ -177,6 +177,11 @@ std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fi
     }
 
     return files;
+}
+
+void DeleteFilePath(std::string path)
+{
+    std::remove(path.c_str());
 }
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------

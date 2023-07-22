@@ -1,0 +1,102 @@
+{
+	"Keybinds": {
+		"Back": {
+			"Input0": {
+				"InputType": "Keyboard",
+				"InputValue": 115
+			},
+			"Input1": {
+				"InputType": "Keyboard",
+				"InputValue": 59
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"Forward": {
+			"Input0": {
+				"InputType": "Keyboard",
+				"InputValue": 119
+			},
+			"Input1": {
+				"InputType": "Keyboard",
+				"InputValue": 1073741906
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"Left": {
+			"Input0": {
+				"InputType": "Keyboard",
+				"InputValue": 97
+			},
+			"Input1": {
+				"InputType": "Keyboard",
+				"InputValue": 1073741904
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"LeftMouse": {
+			"Input0": {
+				"InputType": "MouseButton",
+				"InputValue": 1
+			},
+			"Input1": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"MiddleMouse": {
+			"Input0": {
+				"InputType": "MouseButton",
+				"InputValue": 2
+			},
+			"Input1": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"Right": {
+			"Input0": {
+				"InputType": "Keyboard",
+				"InputValue": 100
+			},
+			"Input1": {
+				"InputType": "Keyboard",
+				"InputValue": 1073741903
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		},
+		"RightMouse": {
+			"Input0": {
+				"InputType": "MouseButton",
+				"InputValue": 3
+			},
+			"Input1": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			},
+			"Input2": {
+				"InputType": "UNKNOWN",
+				"InputValue": -1
+			}
+		}
+	}
+}

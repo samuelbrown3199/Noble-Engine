@@ -31,8 +31,8 @@ std::string& TrimString(std::string& s, const char* t);
 
 std::vector<std::string> SplitString(const std::string& _input, const char _delimiter);
 std::string RemoveCharacterFromString(const std::string& _input, const char _targetCharacter);
-std::string GetDateTimeString();
-std::string GetTimeString();
+std::string GetDateTimeString(std::string format);
+std::string GetTimeString(std::string format);
 
 std::string GenerateRandomString(size_t _length);
 
@@ -45,8 +45,7 @@ std::string GetWorkingDirectory();
 std::string OpenFileSelectDialog();
 
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
-
-
+void DeleteFilePath(std::string path);
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 

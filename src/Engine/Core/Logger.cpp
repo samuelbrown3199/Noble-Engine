@@ -9,11 +9,20 @@ bool Logger::m_bUseLogging;
 
 Logger::Logger()
 {
-	m_sSessionFileName = GetDateTimeString();
+	m_sSessionFileName = GetDateTimeString("%d-%m-%Y");
 
 	logFolder = GetWorkingDirectory() + "\\Logs\\";
 	if (!PathExists(logFolder))
 		CreateNewDirectory(logFolder);
+	else
+	{
+		std::vector<std::string> files = GetAllFilesOfType(logFolder, ".txt");
+
+		for (int i = 0; i < files.size(); i++)
+		{
+			DeleteFilePath(files.at(i)); //deleting all files currently. Want to delete logs that are a few days old.
+		}
+	}
 }
 
 void Logger::LogInformation(const std::string& _logString)
@@ -21,7 +30,7 @@ void Logger::LogInformation(const std::string& _logString)
 	if (!m_bUseLogging)
 		return;
 
-	std::string writtenLine = FormatString("[%s] - ", GetTimeString());
+	std::string writtenLine = FormatString("[%s] - ", GetTimeString("%H:%M:%S"));
 	writtenLine += _logString + "\n";
 	
 	std::cout << writtenLine;

@@ -9,7 +9,10 @@
 #include <SDL/SDL.h>
 #include <glm/glm.hpp>
 
+#include <nlohmann/json.hpp>
+
 #include "Logger.h"
+#include "../Useful.h"
 
 struct Controller
 {
@@ -63,6 +66,41 @@ public:
 		m_keycode = keycode;
 		m_iMouseButton = mouseButton;
 	}
+
+	nlohmann::json WriteInputToJson()
+	{
+		nlohmann::json data;
+		
+		if (m_keycode != SDLK_UNKNOWN)
+		{
+			data["InputType"] = "Keyboard";
+			data["InputValue"] = m_keycode;
+		}
+		else if (m_iMouseButton != -1)
+		{
+			data["InputType"] = "MouseButton";
+			data["InputValue"] = m_iMouseButton;
+		}
+		else
+		{
+			data["InputType"] = "UNKNOWN";
+			data["InputValue"] = -1;
+		}
+
+		return data;
+	}
+
+	void FromJson(const nlohmann::json& j)
+	{
+		if (j["InputType"] == "Keyboard")
+		{
+			m_keycode = j["InputValue"];
+		}
+		else if (j["InputType"] == "MouseButton")
+		{
+			m_iMouseButton = j["InputValue"];
+		}
+	}
 };
 
 struct Keybind
@@ -82,6 +120,29 @@ struct Keybind
 			Logger::LogError("Trying to change a keybind at an invalid index.", 2);
 
 		m_vKeybindKeys.at(index) = newInput;
+	}
+
+	nlohmann::json WriteKeybindToJson()
+	{
+		nlohmann::json data;
+
+		for (int i = 0; i < m_vKeybindKeys.size(); i++)
+		{
+			std::string key = FormatString("Input%d", i);
+			data[key] = m_vKeybindKeys.at(i).WriteInputToJson();
+		}
+
+		return data;
+	}
+
+	void FromJson(const nlohmann::json& j)
+	{
+		int i = 0;
+		for (auto it : j.items())
+		{
+			m_vKeybindKeys.at(i).FromJson(j[it.key()]);
+			i++;
+		}
 	}
 };
 
@@ -109,11 +170,15 @@ public:
 	static std::vector<int> m_vDownMouseButtons, m_vOldMouseButtons;
 	static std::vector<int> m_vUpMouseButtons;
 
+	static void SaveKeybindings();
+	static void LoadKeybindings();
+
 	static void HandleGeneralInput();
 	
 	static void AddKeybind(Keybind keybind);
 	static void ChangeKeybind(std::string _keybind, int index, Input newInput);
 
+	static Keybind* FindKeybind(std::string _keybind);
 	static bool GetKeybind(std::string _keybind);
 	static bool GetKeybindDown(std::string _keybind);
 	static bool GetKeybindUp(std::string _keybind);

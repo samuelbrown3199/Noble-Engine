@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 #include <algorithm>
+#include <fstream>
 
 #include "Application.h"
 #include "Graphics\Renderer.h"
@@ -32,6 +33,48 @@ void InputManager::RemoveKeyFromOldDownKeys(SDL_Scancode key)
 			return;
 		}
 	}
+}
+
+void InputManager::SaveKeybindings()
+{
+	nlohmann::json keybinds;
+
+	for (int i = 0; i < m_vKeybinds.size(); i++)
+	{
+		keybinds["Keybinds"][m_vKeybinds.at(i).m_keybindIdentifier] = m_vKeybinds.at(i).WriteKeybindToJson();
+	}
+
+	std::fstream keybindFile("Keybinds.json", 'w');
+	keybindFile << keybinds.dump();
+	keybindFile.close();
+
+	Logger::LogInformation("Saved keybindings.");
+}
+
+void InputManager::LoadKeybindings()
+{
+	std::ifstream keybindFile("Keybinds.json");
+	if (!keybindFile.is_open())
+	{
+		Logger::LogInformation("Couldnt find keybinding file.");
+		return;
+	}
+
+	nlohmann::json keybinds = nlohmann::json::parse(keybindFile);
+
+	if (keybinds.find("Keybinds") != keybinds.end())
+	{
+		nlohmann::json binds = keybinds.at("Keybinds");
+
+		for (auto it : binds.items())
+		{
+			Keybind* keybind = FindKeybind(it.key());
+			if (keybind)
+				keybind->FromJson(binds[it.key()]);
+		}
+	}
+
+	Logger::LogInformation("Loaded keybindings.");
 }
 
 void InputManager::HandleGeneralInput()
@@ -109,23 +152,35 @@ void InputManager::ChangeKeybind(std::string _keybind, int index, Input newInput
 	}
 }
 
-bool InputManager::GetKeybind(std::string _keybind)
+Keybind* InputManager::FindKeybind(std::string _keybind)
 {
-	bool isKeybind = false;
 	for (int i = 0; i < m_vKeybinds.size(); i++)
 	{
 		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
 		{
-			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
-			{
-				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
-					isKeybind = GetKey(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
-				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
-					isKeybind = GetMouseButton(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+			return &m_vKeybinds.at(i);
+		}
+	}
 
-				if (isKeybind)
-					return isKeybind;
-			}
+	return nullptr;
+}
+
+bool InputManager::GetKeybind(std::string _keybind)
+{
+	bool isKeybind = false;
+	Keybind* keybind = FindKeybind(_keybind);
+
+	if(keybind)
+	{
+		for (int o = 0; o < keybind->m_vKeybindKeys.size(); o++)
+		{
+			if (keybind->m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+				isKeybind = GetKey(keybind->m_vKeybindKeys.at(o).m_keycode);
+			else if (keybind->m_vKeybindKeys.at(o).m_iMouseButton != -1)
+				isKeybind = GetMouseButton(keybind->m_vKeybindKeys.at(o).m_iMouseButton);
+
+			if (isKeybind)
+				return isKeybind;
 		}
 	}
 
@@ -135,24 +190,23 @@ bool InputManager::GetKeybind(std::string _keybind)
 bool InputManager::GetKeybindDown(std::string _keybind)
 {
 	bool isKeybind = false;
-	for (int i = 0; i < m_vKeybinds.size(); i++)
-	{
-		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
-		{
-			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
-			{
-				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
-					isKeybind = GetKeyDown(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
-				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
-					isKeybind = GetMouseButtonDown(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+	Keybind* keybind = FindKeybind(_keybind);
 
-				if (isKeybind)
-					return isKeybind;
-			}
+	if (keybind)
+	{
+		for (int o = 0; o < keybind->m_vKeybindKeys.size(); o++)
+		{
+			if (keybind->m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+				isKeybind = GetKeyDown(keybind->m_vKeybindKeys.at(o).m_keycode);
+			else if (keybind->m_vKeybindKeys.at(o).m_iMouseButton != -1)
+				isKeybind = GetMouseButtonDown(keybind->m_vKeybindKeys.at(o).m_iMouseButton);
 
 			if (isKeybind)
-				break;
+				return isKeybind;
 		}
+
+		if (isKeybind)
+			return isKeybind;
 	}
 
 	return isKeybind;
@@ -161,24 +215,23 @@ bool InputManager::GetKeybindDown(std::string _keybind)
 bool InputManager::GetKeybindUp(std::string _keybind)
 {
 	bool isKeybind = false;
-	for (int i = 0; i < m_vKeybinds.size(); i++)
-	{
-		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
-		{
-			for (int o = 0; o < m_vKeybinds.at(i).m_vKeybindKeys.size(); o++)
-			{
-				if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
-					isKeybind = GetKeyUp(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_keycode);
-				else if (m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton != -1)
-					isKeybind = GetMouseButtonUp(m_vKeybinds.at(i).m_vKeybindKeys.at(o).m_iMouseButton);
+	Keybind* keybind = FindKeybind(_keybind);
 
-				if (isKeybind)
-					return isKeybind;
-			}
+	if (keybind)
+	{
+		for (int o = 0; o < keybind->m_vKeybindKeys.size(); o++)
+		{
+			if (keybind->m_vKeybindKeys.at(o).m_keycode != SDLK_UNKNOWN)
+				isKeybind = GetKeyUp(keybind->m_vKeybindKeys.at(o).m_keycode);
+			else if (keybind->m_vKeybindKeys.at(o).m_iMouseButton != -1)
+				isKeybind = GetMouseButtonUp(keybind->m_vKeybindKeys.at(o).m_iMouseButton);
 
 			if (isKeybind)
-				break;
+				return isKeybind;
 		}
+
+		if (isKeybind)
+			return isKeybind;
 	}
 
 	return isKeybind;

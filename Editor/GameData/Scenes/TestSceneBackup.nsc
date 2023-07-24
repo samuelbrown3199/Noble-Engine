@@ -18,7 +18,8 @@
         },
 		"Camera":{
 			"CamTest": {
-				"CameraState": 1
+				"CameraState": 1,
+				"ViewMode": 1
 			}
 		},
         "Mesh": {

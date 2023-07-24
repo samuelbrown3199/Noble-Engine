@@ -23,15 +23,13 @@ int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
 float Renderer::m_fFarPlane = 1000.0f;
-float Renderer::m_fScale = 20;
+float Renderer::m_fScale = 0.5;
 
 float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
 
 Camera* Renderer::m_camera = nullptr;
-
-bool Renderer::m_bProjectionRendering = true;
 
 VkInstance Renderer::m_vulkanInstance;
 VkPhysicalDevice Renderer::m_physicalDevice = VK_NULL_HANDLE;
@@ -1030,7 +1028,10 @@ void Renderer::SetVSyncMode(const int& _mode)
 
 glm::mat4 Renderer::GenerateProjMatrix()
 {
-	if (m_bProjectionRendering)
+	if (m_camera == nullptr)
+		return glm::mat4(1.0f);
+
+	if (m_camera->m_viewMode == projection)
 		return GenerateProjectionMatrix();
 
 	return GenerateOrthographicMatrix();
@@ -1046,13 +1047,13 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(0.0f, (float)m_iScreenWidth / m_fScale, (float)m_iScreenHeight / m_fScale, 0.0f, 0.0f, m_fFarPlane);
+	glm::mat4 orthoMatrix = glm::ortho(0.0f, 1.0f, 1.0f, 0.0f, 0.0f, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 
 glm::mat4 Renderer::GenerateUIOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(0.0f, (float)m_iScreenWidth, (float)m_iScreenHeight, 0.0f, 0.0f, m_fFarPlane);
+	glm::mat4 orthoMatrix = glm::ortho(0.0f, 1.0f, 1.0f, 0.0f, 0.0f, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 

@@ -170,8 +170,6 @@ private:
 	static float m_fFov;
 	static const float m_fMaxScale, m_fMinScale;
 
-	static bool m_bProjectionRendering;
-
 	const std::vector<const char*> m_vValidationLayers = {
 		"VK_LAYER_KHRONOS_validation"
 	};

@@ -193,6 +193,11 @@ void Application::CleanupApplication()
 
 	ClearLoadedScene();
 
+	for (int i = 0; i < m_vComponentSystems.size(); i++)
+	{
+		m_vComponentSystems.at(i).reset();
+	}
+
 	m_resourceManager->UnloadAllResources();
 	delete m_resourceManager;
 

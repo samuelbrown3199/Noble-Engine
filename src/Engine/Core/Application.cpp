@@ -186,6 +186,8 @@ void Application::CleanupApplication()
 {
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
+	m_gameRenderer->SetCamera(nullptr);
+
 	vkDestroyDescriptorPool(Renderer::GetLogicalDevice(), m_imguiPool, nullptr);
 	ImGui_ImplVulkan_Shutdown();
 

@@ -4,7 +4,6 @@
 #include "../Core/Graphics/BufferHelper.h"
 #include "../Core/Graphics/GraphicsPipeline.h"
 
-
 #include <iostream>
 
 std::weak_ptr<SystemBase> MeshRendererSystem::self;

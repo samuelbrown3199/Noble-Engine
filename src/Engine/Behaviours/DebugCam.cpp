@@ -71,6 +71,13 @@ void DebugCam::UpdateControls()
 	{
 		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
+	if (InputManager::GetKeyDown(SDLK_p))
+	{
+		if(ca->m_viewMode == orthographic)
+			ca->m_viewMode = projection;
+		else
+			ca->m_viewMode = orthographic;
+	}
 }
 
 void DebugCam::UpdateCameraRotation()

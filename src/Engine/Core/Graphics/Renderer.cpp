@@ -23,7 +23,7 @@ int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
 float Renderer::m_fFarPlane = 1000.0f;
-float Renderer::m_fScale = 0.5;
+float Renderer::m_fScale = 3000;
 
 float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
@@ -1047,7 +1047,7 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(0.0f, 1.0f, 1.0f, 0.0f, 0.0f, m_fFarPlane); //need to readd scale and ratio is properly to screen size
+	glm::mat4 orthoMatrix = glm::ortho(0.0f, (m_fScale / m_iScreenHeight), (m_fScale / m_iScreenWidth), 0.0f, 0.0f, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 

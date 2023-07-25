@@ -6,6 +6,7 @@
 #include "../Systems/CameraSystem.h"
 #include "../Systems/TransformSystem.h"
 #include "../Systems/MeshRendererSystem.h"
+#include "../Systems/SpriteSystem.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
@@ -57,6 +58,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->BindSystem<AudioListenerSystem>(SystemUsage::useUpdate, "AudioListener");
 	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
 	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
+	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;

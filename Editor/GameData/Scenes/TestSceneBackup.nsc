@@ -19,7 +19,7 @@
 		"Camera":{
 			"CamTest": {
 				"CameraState": 1,
-				"ViewMode": 1
+				"ViewMode": 0
 			}
 		},
         "Mesh": {
@@ -34,6 +34,17 @@
                 "texturePath": "GameData\\Textures\\cottage_diffuse.png"
             }
         },
+		"Sprite": {
+			"SpriteTest": {
+				"colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+				"spritePath": "GameData\\Textures\\PlanetBase.png"
+			}
+		},
         "Transform": {
             "NWCIsHAcA0vTSrhQYmU6G8GBa": {
                 "position": [
@@ -68,12 +79,30 @@
                     1.0,
                     1.0
                 ]
+            },
+			"SpriteTest": {
+                "position": [
+                    5.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
             }
         }
     },
     "Entities": {
         "NWCIsHAcA0vTSrhQYmU6G8GBa": "Cube",
-		"CamTest": "CamTest"
+		"CamTest": "CamTest",
+		"SpriteTest": "SpriteTest"
     },
     "LightingSettings": {
         "AmbientColour": [

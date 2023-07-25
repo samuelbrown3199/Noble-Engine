@@ -22,7 +22,7 @@ struct Camera : ComponentData<Camera>
 {
 	Transform* m_camTransform = nullptr;
 	CameraState m_state = inactive;
-	ViewMode m_viewMode = orthographic;
+	ViewMode m_viewMode = projection;
 
 	nlohmann::json WriteJson() override
 	{

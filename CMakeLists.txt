@@ -148,6 +148,10 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/MeshRenderer.h
 	src/Engine/Systems/MeshRendererSystem.h
 	src/Engine/Systems/MeshRendererSystem.cpp
+
+	src/Engine/Systems/Sprite.h
+	src/Engine/Systems/SpriteSystem.h
+	src/Engine/Systems/SpriteSystem.cpp
 )
 target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_17)

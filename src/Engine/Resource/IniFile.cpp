@@ -4,10 +4,16 @@
 
 #include <fstream>
 
+IniFile::IniFile(std::string path)
+{
+	m_sIniFilePath = path;
+	OnLoad();
+}
+
 void IniFile::OnLoad()
 {
 	std::ifstream iniFile;
-	iniFile.open(m_sResourcePath);
+	iniFile.open(m_sIniFilePath);
 	std::string line;
 	while (std::getline(iniFile, line))
 	{
@@ -121,7 +127,7 @@ int IniFile::GetIniLineIndex(const std::string& _sectionName, const std::string&
 void IniFile::RewriteIniFile()
 {
 	std::ofstream iniFile;
-	iniFile.open(m_sResourcePath, std::ofstream::out, std::ofstream::trunc);
+	iniFile.open(m_sIniFilePath, std::ofstream::out, std::ofstream::trunc);
 	for (int i = 0; i < m_vIniLines.size(); i++)
 	{
 		std::string newLine = m_vIniLines.at(i) + "\n";

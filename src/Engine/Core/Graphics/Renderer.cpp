@@ -1047,7 +1047,7 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(0.0f, (m_fScale / m_iScreenHeight), (m_fScale / m_iScreenWidth), 0.0f, 0.0f, m_fFarPlane); //need to readd scale and ratio is properly to screen size
+	glm::mat4 orthoMatrix = glm::ortho(-1.0f, (m_fScale / m_iScreenHeight), (m_fScale / m_iScreenWidth), -1.0f, m_fNearPlane, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 

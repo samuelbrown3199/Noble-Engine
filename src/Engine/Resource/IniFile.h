@@ -1,11 +1,12 @@
-#include "Resource.h"
 
 #include <vector>
 #include <string>
 
-struct IniFile : public Resource
+struct IniFile
 {
 private:
+
+	std::string m_sIniFilePath;
 
 	std::vector<std::string> m_vIniLines;
 	std::vector<std::string> GetSettingLine(const std::string& _sectionName, const std::string& _settingName);
@@ -13,10 +14,13 @@ private:
 	int GetIniLineIndex(const std::string& _sectionName, const std::string& _settingName);
 
 	void RewriteIniFile();
+	
+	void OnLoad();
 
 public:
 
-	void OnLoad();
+	IniFile(std::string path);
+
 	bool GetBooleanSetting(const std::string& _sectionName, const std::string& _settingName, const bool& _defaultValue);
 	std::string GetStringSetting(const std::string& _sectionName, const std::string& _settingName, const std::string& _defaultValue);
 	int GetIntSetting(const std::string& _sectionName, const std::string& _settingName, const int& _defaultValue);

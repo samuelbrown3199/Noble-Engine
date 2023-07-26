@@ -51,7 +51,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	rtn->InitializeImGui();
 
-	rtn->m_mainIniFile = ResourceManager::LoadResource<IniFile>("game.ini");
+	rtn->m_mainIniFile = std::make_shared<IniFile>(GetWorkingDirectory() + "\\game.ini");
 
 	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
 	rtn->BindSystem<CameraSystem>(SystemUsage::useUpdate, "Camera");

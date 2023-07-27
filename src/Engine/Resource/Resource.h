@@ -14,7 +14,7 @@ public:
 
 	std::string m_sLocalPath;
 	/**
-	*Stores the path of the resource. This is used to checkForPhysicsBody if the resource is already loaded.
+	*Stores the path of the resource.
 	*/
 	std::string m_sResourcePath;
 

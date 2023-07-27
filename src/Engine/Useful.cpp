@@ -1,5 +1,6 @@
 #include "Useful.h"
 #include "Core/Logger.h"
+#include "Core/ResourceManager.h"
 
 #include <Windows.h>
 
@@ -188,12 +189,12 @@ void DeleteFilePath(std::string path)
 
 std::string GetGameDataFolder()
 {
-    return GetWorkingDirectory() + "\\GameData";
+    return ResourceManager::GetWorkingDirectory() + "\\GameData";
 }
 
 std::string GetFolderLocationRelativeToGameData(std::string path)
 {
-    path.erase(0, GetWorkingDirectory().length());
+    path.erase(0, ResourceManager::GetWorkingDirectory().length());
     return path;
 }
 

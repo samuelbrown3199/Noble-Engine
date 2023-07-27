@@ -9,20 +9,20 @@
 #include <Engine/Resource/Model.h>
 #include <Engine/Resource/Texture.h>
 
-#include "EditorUI.h"
+#include "Interface/EditorUI.h"
 
 void StartupEditor()
 {
-    std::shared_ptr<Application> app = Application::StartApplication("Noble Editor Debug");
+#ifndef NDEBUG
+    std::string windowName = "Noble Editor Debug";
+#else
+    std::string windowName = "Noble Editor";
+#endif
+
+    std::shared_ptr<Application> app = Application::StartApplication(windowName);
 
     std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     ui->m_uiOpen = true;
-
-    Entity* entity = Application::CreateEntity();
-    entity->AddComponent<Transform>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
-    MeshRenderer* mr = entity->AddComponent<MeshRenderer>();
-    mr->m_model = ResourceManager::LoadResource<Model>("GameData\\Models\\viking_room.obj");
-    mr->m_texture = ResourceManager::LoadResource<Texture>("GameData\\Textures\\viking_room.png");
 
     app->MainLoop();
 }

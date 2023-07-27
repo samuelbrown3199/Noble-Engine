@@ -1,0 +1,120 @@
+{
+    "ComponentData": {
+        "AudioSource": {
+            "NWCIsHAcA0vTSrhQYmU6G8GBa": {
+                "3DSound": true,
+                "clipPath": "GameData\\Sounds\\nukes.mp3",
+                "volume": 0.5,
+                "loopCount": -1,
+                "mixerOption": "Master",
+                "paused": false,
+                "pitch": 1.0,
+                "velocity": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        },
+		"Camera":{
+			"CamTest": {
+				"CameraState": 1,
+				"ViewMode": 0
+			}
+		},
+        "Mesh": {
+            "NWCIsHAcA0vTSrhQYmU6G8GBa": {
+                "colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "modelPath": "GameData\\Models\\cube.obj",
+                "texturePath": "GameData\\Textures\\cottage_diffuse.png"
+            }
+        },
+		"Sprite": {
+			"SpriteTest": {
+				"colour": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+				"spritePath": "GameData\\Textures\\PlanetBase.png"
+			}
+		},
+        "Transform": {
+            "NWCIsHAcA0vTSrhQYmU6G8GBa": {
+                "position": [
+                    0.0,
+                    5.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },		
+			"CamTest": {
+                "position": [
+                    15.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -1.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+			"SpriteTest": {
+                "position": [
+                    5.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    },
+    "Entities": {
+        "NWCIsHAcA0vTSrhQYmU6G8GBa": "Cube",
+		"CamTest": "CamTest",
+		"SpriteTest": "SpriteTest"
+    },
+    "LightingSettings": {
+        "AmbientColour": [
+            1,
+            1,
+            1
+        ],
+        "AmbientStrength": 1.0,
+        "ClearColour": [
+            0.0,
+            0.0,
+            0.0
+        ]
+    }
+}

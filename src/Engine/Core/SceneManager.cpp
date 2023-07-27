@@ -64,5 +64,8 @@ void SceneManager::SaveScene(std::string scenePath)
 
 std::string SceneManager::GetCurrentSceneLocalPath()
 {
-	return m_currentScene->m_sLocalPath;
+	if (m_currentScene)
+		return m_currentScene->m_sLocalPath;
+	else
+		return "";
 }

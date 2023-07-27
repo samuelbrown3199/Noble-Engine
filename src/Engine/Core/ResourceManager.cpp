@@ -14,6 +14,11 @@ ResourceManager::~ResourceManager()
 	m_vResources.clear();
 }
 
+void ResourceManager::SetWorkingDirectory(std::string directory)
+{
+	m_sWorkingDirectory = directory;
+}
+
 void ResourceManager::UnloadUnusedResources()
 {
 	for (size_t re = 0; re < m_vResources.size(); re++)

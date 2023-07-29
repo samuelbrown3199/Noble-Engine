@@ -6,7 +6,6 @@
 
 #include<vulkan/vulkan.h>
 
-
 /**
 *Stores a texture for use in the engine.
 */
@@ -23,7 +22,9 @@ struct Texture : public Resource
     VkImageView m_textureImageView;
     VkSampler m_textureSampler;
 
-    void OnLoad();
+    void OnLoad() override;
+    void OnUnload() override;
+
     void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
     //These functions here are probably worth moving out of the texture object at some point, they are helpful functions
@@ -33,7 +34,10 @@ struct Texture : public Resource
     void CreateTextureImageView();
     void CreateTextureSampler();
 
+    Texture();
     ~Texture();
+
+    nlohmann::json AddToDatabase() override;
 };
 
 #endif

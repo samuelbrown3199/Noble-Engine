@@ -117,19 +117,21 @@ std::string GetWorkingDirectory()
     return (getcwd(temp, sizeof(temp)) ? std::string(temp) : std::string(""));
 }
 
-std::string OpenFileSelectDialog()
+std::string OpenFileSelectDialog(std::string filter)
 {
     char filename[MAX_PATH];
+
+    std::string filterString = FormatString("Text Files\0*%s\0Any File\0*.*\0", filter);
 
     OPENFILENAME ofn;
     ZeroMemory(&filename, sizeof(filename));
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = NULL;  // If you have a window to center over, put its HANDLE here
-    ofn.lpstrFilter = "Text Files\0*.json\0Any File\0*.*\0";
+    ofn.lpstrFilter = filterString.c_str();
     ofn.lpstrFile = filename;
     ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrTitle = "Select a File, yo!";
+    ofn.lpstrTitle = "Select a File.";
     ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
 
     if (GetOpenFileNameA(&ofn))
@@ -187,9 +189,14 @@ void DeleteFilePath(std::string path)
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 
+std::string GetGameFolder()
+{
+    return ResourceManager::GetWorkingDirectory();
+}
+
 std::string GetGameDataFolder()
 {
-    return ResourceManager::GetWorkingDirectory() + "\\GameData";
+    return GetGameFolder() + "\\GameData";
 }
 
 std::string GetFolderLocationRelativeToGameData(std::string path)

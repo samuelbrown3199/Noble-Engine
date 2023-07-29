@@ -23,7 +23,11 @@ struct AudioClip : public Resource
 	/**
 	*Loads a sound file and buffers it.
 	*/
-	void OnLoad();
+	void OnLoad() override;
+	void OnUnload() override;
+
+	nlohmann::json AddToDatabase() override;
+	void LoadFromJson(std::string path, nlohmann::json data) override;
 };
 
 #endif

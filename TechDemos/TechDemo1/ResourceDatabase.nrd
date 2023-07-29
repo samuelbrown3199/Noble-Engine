@@ -1,0 +1,14 @@
+{
+	"AudioClip": {
+		"\\GameData\\Sounds\\nukes.mp3": {
+			"SoundMode": 0
+		}
+	},
+	"Model": {
+		"\\GameData\\Models\\cube.obj": null
+	},
+	"Texture": {
+		"\\GameData\\Textures\\PlanetBase.png": null,
+		"\\GameData\\Textures\\cottage_diffuse.png": null
+	}
+}

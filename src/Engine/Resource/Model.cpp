@@ -7,9 +7,15 @@
 
 #include <unordered_map>
 
+Model::Model()
+{
+    m_resourceType = "Model";
+}
+
 Model::~Model()
 {
-
+    if (m_bIsLoaded)
+        OnUnload();
 }
 
 void Model::OnLoad()
@@ -61,4 +67,11 @@ void Model::OnLoad()
 
     BufferHelper::CreateVertexBuffer(m_vertexBuffer, m_vertices);
     BufferHelper::CreateIndexBuffer(m_indexBuffer, m_indices);
+
+    m_bIsLoaded = true;
+}
+
+void Model::OnUnload()
+{
+    m_bIsLoaded = false;
 }

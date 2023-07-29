@@ -42,13 +42,14 @@ bool PathExists(const std::string& _path);
 bool CreateNewDirectory(const std::string& _path);
 bool DeleteDirectory(const std::string& _path);
 std::string GetWorkingDirectory();
-std::string OpenFileSelectDialog();
+std::string OpenFileSelectDialog(std::string filter);
 
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
 void DeleteFilePath(std::string path);
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 
+std::string GetGameFolder();
 std::string GetGameDataFolder();
 std::string GetFolderLocationRelativeToGameData(std::string path);
 

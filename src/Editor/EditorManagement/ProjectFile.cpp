@@ -30,6 +30,8 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	m_projectData = nlohmann::json::parse(projectFile);
 	projectFile.close();
 
+	Logger::LogInformation("Loaded project file " + file);
+
 	m_sProjectName = m_projectData["ProjectName"];
 	m_sProjectDirectory = m_projectData["ProjectDirectory"];
 
@@ -37,4 +39,5 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	std::string gamedataPath = m_sProjectDirectory + "\\GameData";
 	if(!PathExists(gamedataPath))
 		CreateNewDirectory(gamedataPath);
+
 }

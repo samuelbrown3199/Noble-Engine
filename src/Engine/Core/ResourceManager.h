@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 #include "../Useful.h"
 #include "../Resource/Resource.h"
 #include "Logger.h"
@@ -16,10 +18,16 @@
 struct ResourceManager
 {
 	/**
+	*Stores all resources.
+	*/
+	static std::vector<std::shared_ptr<Resource>> m_vResourceDatabase;
+	/**
 	*Stores all loaded resources.
 	*/
-	static std::vector<std::shared_ptr<Resource>> m_vResources;
+	static std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
 	static std::string m_sWorkingDirectory;
+
+	static nlohmann::json m_resourceDatabaseJson;
 
 	ResourceManager();
 	~ResourceManager();
@@ -28,21 +36,34 @@ struct ResourceManager
 	static void SetWorkingDirectory(std::string directory);
 
 	template<typename T>
-	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory)
+	static void AddNewResource(std::string path)
 	{
-		Logger::LogInformation(FormatString("Loading asset file %s", _fileDirectory.c_str()));
+		std::shared_ptr<T> newResource = std::make_shared<T>();
+		newResource->m_sResourcePath = path;
+		newResource->m_sLocalPath = GetFolderLocationRelativeToGameData(path);
 
+		m_vResourceDatabase.push_back(newResource);
+		Logger::LogInformation("Added new resource " + newResource->m_sLocalPath);
+
+		WriteResourceDatabase();
+	}
+	
+	static void LoadResourceDatabase();
+	static void WriteResourceDatabase();
+	
+	template<typename T>
+	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory, std::vector<std::shared_ptr<Resource>> targetVector)
+	{
 		if (!PathExists(_fileDirectory))
 		{
-			Logger::LogError(FormatString("%s could not be found!", _fileDirectory.c_str()), 1);
-			return nullptr;
+			Logger::LogError(FormatString("%s could not be found!", _fileDirectory.c_str()), 2);
 		}
 
-		for (size_t re = 0; re < m_vResources.size(); re++)
+		for (size_t re = 0; re < targetVector.size(); re++)
 		{
-			if (m_vResources.at(re)->m_sResourcePath == _fileDirectory)
+			if (targetVector.at(re)->m_sResourcePath == _fileDirectory)
 			{
-				std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(m_vResources.at(re));
+				std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(targetVector.at(re));
 				if (resource)
 				{
 					return resource;
@@ -61,36 +82,24 @@ struct ResourceManager
 	{
 		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
 		
-		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath);
+		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_vLoadedResources);
 		if (oldResource != nullptr)
+		{
+			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
+		}
 
-		std::shared_ptr<T> newResource = std::make_shared<T>();
-		newResource->m_sResourcePath = searchPath;
-		newResource->m_sLocalPath = _fileDirectory;
-		newResource->OnLoad();
-		m_vResources.push_back(newResource);
-		return newResource;
-	}
-
-	/**
-	*Loads a resource of the passed type with the file directory.
-	*/
-	template<typename T, typename ... Args>
-	static std::shared_ptr<T> LoadResource(std::string _fileDirectory, Args&&... _args)
-	{
-		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
-
-		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath);
+		oldResource = PrelimLoadResource<T>(searchPath, m_vResourceDatabase);
 		if (oldResource != nullptr)
+		{
+			oldResource->OnLoad();
+			m_vLoadedResources.push_back(oldResource);
+			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
-
-		std::shared_ptr<T> newResource = std::make_shared<T>(std::forward<Args>(_args)...);
-		newResource->m_sResourcePath = searchPath;
-		newResource->m_sLocalPath = _fileDirectory;
-		newResource->OnLoad();
-		m_vResources.push_back(newResource);
-		return newResource;
+		}
+		
+		Logger::LogError("Resource doesnt exist in database, make sure it is added.", 1);
+		return nullptr;
 	}
 
 	/**

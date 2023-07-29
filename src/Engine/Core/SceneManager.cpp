@@ -20,13 +20,14 @@ void SceneManager::LoadScene(std::string scenePath)
 	m_vKeysToCheck.push_back("ComponentData");
 
 	Application::ClearLoadedScene();
-	m_currentScene = ResourceManager::LoadResource<Scene>(scenePath);
+	m_currentScene = std::make_shared<Scene>(scenePath);
+	m_currentScene->OnLoad();
 	m_currentScene->LoadSceneIntoApplication();
 }
 
 void SceneManager::SaveLoadedScene()
 {
-	SaveScene(m_currentScene->m_sResourcePath);
+	SaveScene(m_currentScene->GetResourcePath());
 }
 
 void SceneManager::SaveScene(std::string scenePath)
@@ -65,7 +66,7 @@ void SceneManager::SaveScene(std::string scenePath)
 std::string SceneManager::GetCurrentSceneLocalPath()
 {
 	if (m_currentScene)
-		return m_currentScene->m_sLocalPath;
+		return GetFolderLocationRelativeToGameData(m_currentScene->GetResourcePath());
 	else
 		return "";
 }

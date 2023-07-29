@@ -16,6 +16,9 @@ void AudioSourceSystem::OnUpdate(AudioSource* comp)
 {
 	if (!comp->m_bPaused)
 	{
+		if (comp->m_clip == nullptr || !comp->m_clip->m_bIsLoaded)
+			false;
+
 		if (comp->m_sourceTransform == nullptr || Application::GetEntitiesDeleted())
 		{
 			comp->m_sourceTransform = Transform::GetComponent(comp->m_sEntityID);

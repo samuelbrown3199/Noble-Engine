@@ -7,6 +7,11 @@
 
 #include <fstream>
 
+Scene::Scene(std::string path)
+{
+	m_sResourcePath = GetGameFolder() + path;
+}
+
 void Scene::OnLoad()
 {
 	std::ifstream sceneFile(m_sResourcePath);

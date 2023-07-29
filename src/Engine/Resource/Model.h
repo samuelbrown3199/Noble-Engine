@@ -17,8 +17,11 @@ struct Model : public Resource
 	GraphicsBuffer m_vertexBuffer;
 	GraphicsBuffer m_indexBuffer;
 
+	Model();
 	~Model();
-	void OnLoad();
+
+	void OnLoad() override;
+	void OnUnload() override;
 };
 
 #endif

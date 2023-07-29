@@ -38,6 +38,16 @@ void Texture::OnLoad()
 
     CreateTextureImageView();
     CreateTextureSampler();
+    m_bIsLoaded = true;
+}
+
+void Texture::OnUnload()
+{
+    vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
+    vkDestroyImageView(Renderer::GetLogicalDevice(), m_textureImageView, nullptr);
+    vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);
+    vkFreeMemory(Renderer::GetLogicalDevice(), m_textureImageMemory, nullptr);
+    m_bIsLoaded = false;
 }
 
 void Texture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
@@ -277,10 +287,21 @@ void Texture::CreateTextureSampler()
     }
 }
 
+Texture::Texture()
+{
+    m_resourceType = "Texture";
+}
+
 Texture::~Texture()
 {
-    vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
-    vkDestroyImageView(Renderer::GetLogicalDevice(), m_textureImageView, nullptr);
-    vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);
-    vkFreeMemory(Renderer::GetLogicalDevice(), m_textureImageMemory, nullptr);
+    if (m_bIsLoaded)
+    {
+        OnUnload();
+    }
+}
+
+nlohmann::json Texture::AddToDatabase()
+{
+    nlohmann::json data;
+    return data;
 }

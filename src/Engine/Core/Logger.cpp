@@ -72,7 +72,6 @@ void Logger::LogError(const std::string& _logString, const int& _errorLevel)
 
 	passedString += _logString+"\n";
 
-	std::cout << passedString;
 	LogInformation(passedString);
 
 	if (_errorLevel == 2)

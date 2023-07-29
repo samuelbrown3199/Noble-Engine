@@ -7,6 +7,10 @@
 #include <Engine\Behaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
 
+#include <Engine\Resource\AudioClip.h>
+#include <Engine\Resource\Model.h>
+#include <Engine\Resource\Texture.h>
+
 #include "../EditorManagement/ProjectFile.h"
 
 int EditorUI::m_iSelEntity = -1;
@@ -172,10 +176,13 @@ void EditorUI::DoMainMenuBar()
 		}
 		DoNewProjectModal();
 
-		if (ImGui::BeginMenu("Assets"))
+		if (m_projectFile)
 		{
-			DoAssetMenu();
-			ImGui::EndMenu();
+			if (ImGui::BeginMenu("Assets"))
+			{
+				DoAssetMenu();
+				ImGui::EndMenu();
+			}
 		}
 
 		if (ImGui::BeginMenu("Tools"))
@@ -270,6 +277,29 @@ void EditorUI::DoFileMenu()
 void EditorUI::DoAssetMenu()
 {
 	ImGui::MenuItem("Assets", NULL, false, false);
+	if (ImGui::BeginMenu("Add Asset"))
+	{
+		if (ImGui::MenuItem("Audio Clip"))
+		{
+			std::string path = OpenFileSelectDialog(".mp3");
+			if(path != "")
+				ResourceManager::AddNewResource<AudioClip>(path);
+		}
+		if (ImGui::MenuItem("Model"))
+		{
+			std::string path = OpenFileSelectDialog(".obj");
+			if (path != "")
+				ResourceManager::AddNewResource<Model>(path);
+		}
+		if (ImGui::MenuItem("Texture"))
+		{
+			std::string path = OpenFileSelectDialog(".png");
+			if (path != "")
+				ResourceManager::AddNewResource<Texture>(path);
+		}
+
+		ImGui::EndMenu();
+	}
 }
 
 void EditorUI::DoToolMenu()

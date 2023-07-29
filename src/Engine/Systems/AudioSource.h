@@ -16,7 +16,7 @@ struct AudioSource : public ComponentData<AudioSource>
 {
 	FMOD_CHANNEL* channel = nullptr;
 	Transform* m_sourceTransform = nullptr;
-	std::shared_ptr<AudioClip> m_clip;
+	std::shared_ptr<AudioClip> m_clip = nullptr;
 	int m_iLoopCount = 0;
 	float m_fPitch = 1;
 	float m_fVolume = 1;

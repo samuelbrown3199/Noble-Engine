@@ -6,14 +6,20 @@
 
 #include "Resource.h"
 
-class Scene : public Resource
+class Scene
 {
+	std::string m_sResourcePath;
+
 	nlohmann::json m_sceneData;
 	bool m_bSceneReady = false;
 
 public:
+
+	Scene(std::string path);
+
 	void OnLoad();
 	void LoadSceneIntoApplication();
+	std::string GetResourcePath() { return m_sResourcePath; }
 };
 
 #endif

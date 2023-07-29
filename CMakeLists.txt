@@ -118,9 +118,6 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Resource/AudioClip.h
 	src/Engine/Resource/AudioClip.cpp
 
-	src/Engine/Resource/UILayout.h
-	src/Engine/Resource/UILayout.cpp
-
 	src/Engine/Resource/Model.h
 	src/Engine/Resource/Model.cpp
 

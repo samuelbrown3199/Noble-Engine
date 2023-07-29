@@ -124,8 +124,6 @@ void ResourceManager::UnloadUnusedResources()
 
 void ResourceManager::UnloadAllResources()
 {
-	for (size_t re = 0; re < m_vLoadedResources.size(); re++)
-	{
-		m_vLoadedResources.erase(m_vLoadedResources.begin() + re);
-	}
+	m_vLoadedResources.clear();
+	m_vResourceDatabase.clear();
 }

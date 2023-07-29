@@ -16,7 +16,7 @@ struct Resource
 {
 public:
 
-	bool m_bIsLoaded;
+	bool m_bIsLoaded = false;
 
 	std::string m_resourceType;
 	std::string m_sLocalPath;

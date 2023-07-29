@@ -9,6 +9,9 @@
 
 void Texture::OnLoad()
 {
+    if (m_bIsLoaded)
+        return;
+
     stbi_uc* pixels = stbi_load(m_sResourcePath.c_str(), &m_iWidth, &m_iHeight, &m_iTexChannels, STBI_rgb_alpha);
 
     m_iMipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(m_iWidth, m_iHeight)))) + 1;
@@ -43,6 +46,9 @@ void Texture::OnLoad()
 
 void Texture::OnUnload()
 {
+    if (!m_bIsLoaded)
+        return;
+
     vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
     vkDestroyImageView(Renderer::GetLogicalDevice(), m_textureImageView, nullptr);
     vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);

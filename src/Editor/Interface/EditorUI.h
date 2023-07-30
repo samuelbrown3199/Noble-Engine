@@ -5,6 +5,8 @@
 #include <Engine\Core\DebugUI.hpp>
 #include <Engine\ECS\Entity.hpp>
 
+#include "ResourceManagerWindow.h"
+
 class ProjectFile;
 
 class EditorUI : public DebugUI
@@ -21,12 +23,16 @@ class EditorUI : public DebugUI
 
 	std::string m_sWindowName;
 
+	std::shared_ptr<ResourceManagerWindow> m_resourceManagerWind;
+
 	void CreateEditorCam();
 	void UpdateEditorWindowTitle();
 
+	void OpenResourceManager();
+
 public:
 
-	void InitializeInterface();
+	void InitializeInterface() override;
 	void DoInterface() override;
 
 	void HandleShortcutInputs();

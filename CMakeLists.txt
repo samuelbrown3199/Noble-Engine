@@ -159,6 +159,9 @@ add_executable(Editor
 	src/Editor/Interface/EditorUI.h
 	src/Editor/Interface/EditorUI.cpp
 
+	src/Editor/Interface/ResourceManagerWindow.h
+	src/Editor/Interface/ResourceManagerWindow.cpp
+
 	src/Editor/EditorManagement/ProjectFile.h
 	src/Editor/EditorManagement/ProjectFile.cpp
 )

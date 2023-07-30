@@ -40,7 +40,7 @@ void Texture::OnLoad()
     GenerateMipmaps(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, m_iWidth, m_iHeight, m_iMipLevels);
 
     CreateTextureImageView();
-    CreateTextureSampler();
+    CreateTextureSampler(m_textureFilter);
     m_bIsLoaded = true;
 }
 
@@ -263,12 +263,12 @@ void Texture::CreateTextureImageView()
     m_textureImageView = Renderer::CreateImageView(m_textureImage, m_iMipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
-void Texture::CreateTextureSampler()
+void Texture::CreateTextureSampler(VkFilter filter)
 {
     VkSamplerCreateInfo samplerInfo{};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = VK_FILTER_LINEAR;
-    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.magFilter = filter;
+    samplerInfo.minFilter = filter;
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -306,8 +306,38 @@ Texture::~Texture()
     }
 }
 
+void Texture::DoResourceInterface(std::shared_ptr<Resource> targetResource)
+{
+    ImGui::Text(targetResource->m_sLocalPath.c_str());
+    ImGui::Text(targetResource->m_resourceType.c_str());
+
+    if (targetResource->m_bIsLoaded)
+    {
+        ImGui::Text("Texture is currently in use and can't be modified.");
+        return;
+    }
+
+    std::shared_ptr<Texture> resource = std::dynamic_pointer_cast<Texture>(targetResource);
+
+    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    const char* items[] = { "Nearest", "Linear" };
+    int item = resource->m_textureFilter;
+    ImGui::Combo("Filter Mode", &item, items, IM_ARRAYSIZE(items));
+
+    resource->m_textureFilter = (VkFilter)item;
+}
+
 nlohmann::json Texture::AddToDatabase()
 {
     nlohmann::json data;
+
+    data["Filter"] = m_textureFilter;
+
     return data;
+}
+
+void Texture::LoadFromJson(std::string path, nlohmann::json data)
+{
+    Resource::LoadFromJson(path, data);
+    m_textureFilter = data["Filter"];
 }

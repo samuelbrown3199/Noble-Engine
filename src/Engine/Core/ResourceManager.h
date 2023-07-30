@@ -52,7 +52,7 @@ struct ResourceManager
 	static void WriteResourceDatabase();
 	
 	template<typename T>
-	static std::shared_ptr<T> PrelimLoadResource(std::string _fileDirectory, std::vector<std::shared_ptr<Resource>> targetVector)
+	static std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)
 	{
 		if (!PathExists(_fileDirectory))
 		{
@@ -74,14 +74,30 @@ struct ResourceManager
 		return nullptr;
 	}
 
+	static std::string GetResourcePath(const std::string& _fileDirectory)
+	{
+		std::string gamedataDir = _fileDirectory;
+		if (_fileDirectory[0] != '\\')
+			gamedataDir = "\\" + _fileDirectory;
+		std::string searchPath = m_sWorkingDirectory + gamedataDir;
+
+		return searchPath;
+	}
+
+	template<typename T>
+	static std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory)
+	{
+		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(GetResourcePath(_fileDirectory), m_vResourceDatabase);
+		return oldResource;
+	}
+
 	/**
 	*Loads a resource of the passed type with the file directory.
 	*/
 	template<typename T>
-	static std::shared_ptr<T> LoadResource(std::string _fileDirectory)
+	static std::shared_ptr<T> LoadResource(const std::string& _fileDirectory)
 	{
-		std::string searchPath = m_sWorkingDirectory + "\\" + _fileDirectory;
-		
+		std::string searchPath = GetResourcePath(_fileDirectory);
 		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_vLoadedResources);
 		if (oldResource != nullptr)
 		{
@@ -98,7 +114,7 @@ struct ResourceManager
 			return oldResource;
 		}
 		
-		Logger::LogError("Resource doesnt exist in database, make sure it is added.", 1);
+		Logger::LogError(FormatString("Resource %s doesnt exist in database, make sure it is added.", _fileDirectory.c_str()), 1);
 		return nullptr;
 	}
 

@@ -43,6 +43,14 @@ void EditorUI::UpdateEditorWindowTitle()
 	Renderer::UpdateWindowTitle(title);
 }
 
+void EditorUI::OpenResourceManager()
+{
+	if (!m_projectFile)
+		return;
+
+	m_resourceManagerWind->m_uiOpen = !m_resourceManagerWind->m_uiOpen;
+}
+
 void EditorUI::InitializeInterface()
 {
 	m_windowFlags |= ImGuiWindowFlags_NoMove;
@@ -50,6 +58,8 @@ void EditorUI::InitializeInterface()
 	m_windowFlags |= ImGuiWindowFlags_NoResize;
 
 	m_sWindowName = Renderer::GetWindowTitle();
+
+	m_resourceManagerWind = Application::BindDebugUI<ResourceManagerWindow>();
 }
 
 void EditorUI::DoInterface()
@@ -162,6 +172,9 @@ void EditorUI::HandleShortcutInputs()
 {
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_q))
 		CreateEditorCam();
+
+	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_r))
+		OpenResourceManager();
 }
 
 
@@ -178,7 +191,7 @@ void EditorUI::DoMainMenuBar()
 
 		if (m_projectFile)
 		{
-			if (ImGui::BeginMenu("Assets"))
+			if (ImGui::BeginMenu("Resources"))
 			{
 				DoAssetMenu();
 				ImGui::EndMenu();
@@ -276,8 +289,8 @@ void EditorUI::DoFileMenu()
 
 void EditorUI::DoAssetMenu()
 {
-	ImGui::MenuItem("Assets", NULL, false, false);
-	if (ImGui::BeginMenu("Add Asset"))
+	ImGui::MenuItem("Resources", NULL, false, false);
+	if (ImGui::BeginMenu("Add Resource"))
 	{
 		if (ImGui::MenuItem("Audio Clip"))
 		{
@@ -299,6 +312,11 @@ void EditorUI::DoAssetMenu()
 		}
 
 		ImGui::EndMenu();
+	}
+
+	if (ImGui::MenuItem("Resource Manager", "(CTRL+R)"))
+	{
+		OpenResourceManager();
 	}
 }
 

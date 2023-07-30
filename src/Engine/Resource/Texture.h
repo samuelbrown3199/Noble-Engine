@@ -16,6 +16,7 @@ struct Texture : public Resource
     int m_iTexChannels = 0;
 
     uint32_t m_iMipLevels;
+    VkFilter m_textureFilter = VK_FILTER_LINEAR;
 
     VkImage m_textureImage;
     VkDeviceMemory m_textureImageMemory;
@@ -32,12 +33,14 @@ struct Texture : public Resource
     static void TransitionImageLayout(VkImage image, uint32_t mipLevels, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     void CreateTextureImageView();
-    void CreateTextureSampler();
+    void CreateTextureSampler(VkFilter filter);
 
     Texture();
     ~Texture();
 
+    static void DoResourceInterface(std::shared_ptr<Resource> targetResource);
     nlohmann::json AddToDatabase() override;
+    void LoadFromJson(std::string path, nlohmann::json data) override;
 };
 
 #endif

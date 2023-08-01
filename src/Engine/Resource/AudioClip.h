@@ -14,7 +14,6 @@
 struct AudioClip : public Resource
 {
 	AudioClip();
-	AudioClip(FMOD_MODE _mode);
 	~AudioClip();
 	
 
@@ -26,6 +25,7 @@ struct AudioClip : public Resource
 	void OnLoad() override;
 	void OnUnload() override;
 
+	static void DoResourceInterface(std::shared_ptr<Resource> targetResource);
 	nlohmann::json AddToDatabase() override;
 	void LoadFromJson(std::string path, nlohmann::json data) override;
 };

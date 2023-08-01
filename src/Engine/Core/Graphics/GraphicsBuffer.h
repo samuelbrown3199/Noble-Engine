@@ -6,6 +6,8 @@
 
 struct GraphicsBuffer
 {
+	bool m_bBufferExist = false;
+
 	VkBuffer m_buffer;
 	VkDeviceMemory m_bufferMemory;
 	uint32_t m_bufferSize;

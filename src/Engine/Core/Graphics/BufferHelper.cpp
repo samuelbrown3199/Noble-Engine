@@ -4,6 +4,7 @@ void BufferHelper::CreateGraphicsBuffer(VkDeviceSize size, VkBufferUsageFlags us
 {
 	CreateBuffer(size, usage, properties, buffer.m_buffer, buffer.m_bufferMemory);
 	buffer.m_bufferSize = size;
+	buffer.m_bBufferExist = true;
 }
 
 uint32_t BufferHelper::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)

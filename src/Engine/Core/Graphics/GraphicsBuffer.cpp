@@ -3,11 +3,13 @@
 
 GraphicsBuffer::~GraphicsBuffer()
 {
-	if (m_buffer != VK_NULL_HANDLE)
+	if (m_bBufferExist)
 	{
 		vkDestroyBuffer(Renderer::GetLogicalDevice(), m_buffer, nullptr);
 		vkFreeMemory(Renderer::GetLogicalDevice(), m_bufferMemory, nullptr);
 	}
+
+	m_bBufferExist = false;
 }
 
 void GraphicsBuffer::Map()

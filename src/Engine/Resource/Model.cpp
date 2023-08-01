@@ -73,5 +73,7 @@ void Model::OnLoad()
 
 void Model::OnUnload()
 {
+    m_vertexBuffer.~GraphicsBuffer();
+    m_indexBuffer.~GraphicsBuffer();
     m_bIsLoaded = false;
 }

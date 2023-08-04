@@ -258,7 +258,7 @@ public:
 	{
 		Logger::LogInformation("Started server loop.");
 
-		NetworkConnection* newConnection;
+		NetworkConnection* newConnection = nullptr;
 		std::string packetString;
 		while (enet_host_service(m_peer, &serverEvent, 1000) > 0 || true)
 		{
@@ -309,7 +309,7 @@ public:
 				newConnection->m_sUsername = packet->m_packetData;
 				clients.push_back(newConnection);
 				{
-					int newID = clients.size();
+					size_t newID = clients.size();
 					SendPacketToClient(newConnection->m_connection, Packet(newID, 1, std::string("IDConf")));
 					newConnection->m_iID = newID;
 				}

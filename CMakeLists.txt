@@ -48,6 +48,47 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Core/DebugUI.hpp
 
+	#lua
+	
+	src/Engine/Lua/lstrlib.c
+    src/Engine/Lua/lundump.c
+    src/Engine/Lua/lmathlib.c
+    src/Engine/Lua/lopcodes.c
+    src/Engine/Lua/lcorolib.c
+    src/Engine/Lua/lfunc.c
+    src/Engine/Lua/lstate.c
+    src/Engine/Lua/lutf8lib.c
+    src/Engine/Lua/lbitlib.c
+    src/Engine/Lua/loslib.c
+    src/Engine/Lua/lobject.c
+    src/Engine/Lua/lapi.c
+    src/Engine/Lua/lbaselib.c
+    src/Engine/Lua/lzio.c
+    src/Engine/Lua/lcode.c
+    src/Engine/Lua/lparser.c
+    src/Engine/Lua/llex.c
+    src/Engine/Lua/liolib.c
+    src/Engine/Lua/linit.c
+    src/Engine/Lua/ldump.c
+    src/Engine/Lua/loadlib.c
+    src/Engine/Lua/ltablib.c
+    src/Engine/Lua/lmem.c
+    src/Engine/Lua/lgc.c
+    src/Engine/Lua/ldebug.c
+    src/Engine/Lua/ldblib.c
+    src/Engine/Lua/ldo.c
+    src/Engine/Lua/ltm.c
+    src/Engine/Lua/ltable.c
+    src/Engine/Lua/lctype.c
+    src/Engine/Lua/lvm.c
+    src/Engine/Lua/lstring.c
+    src/Engine/Lua/lua.hpp
+    src/Engine/Lua/lauxlib.c
+    src/Engine/Lua/luac.c
+
+	src/Engine/Lua/sol.hpp
+	src/Engine/Lua/config.hpp
+	
 	#Networking
 	src/Engine/Networking/NetworkManager.h
 	src/Engine/Networking/NetworkManager.cpp

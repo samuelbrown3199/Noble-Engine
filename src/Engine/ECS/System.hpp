@@ -81,7 +81,7 @@ private:
 			}
 			else
 			{
-				int amountOfThreads = ceil(T::componentData.size() / maxComponentsPerThread) + 1;
+				double amountOfThreads = ceil(T::componentData.size() / maxComponentsPerThread) + 1;
 				for (int i = 0; i < amountOfThreads; i++)
 				{
 					int buffer = maxComponentsPerThread * i;

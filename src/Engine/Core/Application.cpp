@@ -12,6 +12,9 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_vulkan.h"
 
+#define SOL_ALL_SAFETIES_ON 1
+#include "../Lua/sol.hpp"
+
 bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
@@ -62,6 +65,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
+
+	sol::state luaState;
+	luaState.open_libraries(sol::lib::base, sol::lib::package);
+	luaState.script("print('bark bark bark!')");
 
 	Logger::LogInformation("Engine started successfully");
 

@@ -9,15 +9,18 @@ NobleLuaState::NobleLuaState()
 	AddFunction("LogError", Logger::LogError);
 }
 
+void NobleLuaState::SetScript(std::shared_ptr<Script> script)
+{
+	m_luaState.script(script->m_sScriptString);
+}
+
 void NobleLuaState::RunScript(std::shared_ptr<Script> script)
 {
 	m_luaState.script(script->m_sScriptString);
 }
 
-void NobleLuaState::RunScriptFunction(std::shared_ptr<Script> script, std::string functionName)
+void NobleLuaState::RunScriptFunction(std::string functionName)
 {
-	m_luaState.set(script->m_sScriptString);
 	sol::function function = m_luaState[functionName];
-
 	function();
 }

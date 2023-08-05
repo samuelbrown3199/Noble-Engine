@@ -23,15 +23,26 @@ public:
 		m_luaState.set_function(funcName, std::forward<Args>(args)...);
 	}
 
+	void SetScript(std::shared_ptr<Script> script);
 	void RunScript(std::shared_ptr<Script> script);
-	void RunScriptFunction(std::shared_ptr<Script> script, std::string functionName);
+	void RunScriptFunction(std::string functionName);
 
 	template <typename ... Args>
-	void RunScriptFunction(std::shared_ptr<Script> script, std::string functionName, Args&&... args)
+	void RunScriptFunction(std::string functionName, Args&&... args)
 	{
-		m_luaState.set(script->m_sScriptString);
 		sol::function function = m_luaState[functionName];
-
 		function(std::forward<Args>(args)...);
+	}
+
+	template<typename T>
+	T GetVariable(std::string varName)
+	{
+		return m_luaState[varName];
+	};
+
+	template<typename T>
+	void SetVariable(std::string varName, T varValue)
+	{
+		m_luaState[varName] = varValue;
 	}
 };

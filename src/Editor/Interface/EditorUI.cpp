@@ -10,6 +10,7 @@
 #include <Engine\Resource\AudioClip.h>
 #include <Engine\Resource\Model.h>
 #include <Engine\Resource\Texture.h>
+#include <Engine\Resource\Script.h>
 
 #include "../EditorManagement/ProjectFile.h"
 
@@ -309,6 +310,12 @@ void EditorUI::DoAssetMenu()
 			std::string path = OpenFileSelectDialog(".png");
 			if (path != "")
 				ResourceManager::AddNewResource<Texture>(path);
+		}
+		if (ImGui::MenuItem("Script"))
+		{
+			std::string path = OpenFileSelectDialog(".lua");
+			if (path != "")
+				ResourceManager::AddNewResource<Script>(path);
 		}
 
 		ImGui::EndMenu();

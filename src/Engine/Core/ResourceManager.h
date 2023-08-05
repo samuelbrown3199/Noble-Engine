@@ -32,7 +32,7 @@ struct ResourceManager
 	ResourceManager();
 	~ResourceManager();
 
-	static std::string GetWorkingDirectory() { return m_sWorkingDirectory; }
+	static std::string GetResourceManagerWorkingDirectory() { return m_sWorkingDirectory; }
 	static void SetWorkingDirectory(std::string directory);
 
 	template<typename T>

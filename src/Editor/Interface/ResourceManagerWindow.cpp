@@ -3,6 +3,7 @@
 #include <Engine/Resource/AudioClip.h>
 #include <Engine/Resource/Texture.h>
 #include <Engine/Resource/Model.h>
+#include <Engine/Resource/Script.h>
 
 void ResourceManagerWindow::InitializeInterface()
 {
@@ -14,6 +15,7 @@ void ResourceManagerWindow::DoInterface()
     static int selectedAC = -1;
     static int selectedTex = -1;
     static int selectedMod = -1;
+    static int selectedScript = -1;
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -36,6 +38,7 @@ void ResourceManagerWindow::DoInterface()
             selectedAC = ac;
             selectedTex = -1;
             selectedMod = -1;
+            selectedScript = -1;
 
             selResource = ResourceManager::GetResourceFromDatabase<AudioClip>(it.key());
         }
@@ -53,6 +56,7 @@ void ResourceManagerWindow::DoInterface()
             selectedTex = tex;
             selectedAC = -1;
             selectedMod = -1;
+            selectedScript = -1;
 
             selResource = ResourceManager::GetResourceFromDatabase<Texture>(it.key());
         }
@@ -70,11 +74,30 @@ void ResourceManagerWindow::DoInterface()
             selectedMod = mod;
             selectedAC = -1;
             selectedTex = -1;
+            selectedScript = -1;
 
             selResource = ResourceManager::GetResourceFromDatabase<Model>(it.key());
         }
 
         mod++;
+    }
+
+    ImGui::Text("Scripts");
+    int scr = 0;
+    nlohmann::json scripts = ResourceManager::m_resourceDatabaseJson.at("Script");
+    for (auto it : scripts.items())
+    {
+        if (ImGui::Selectable(it.key().c_str(), selectedScript == scr))
+        {
+            selectedScript = scr;
+            selectedAC = -1;
+            selectedTex = -1;
+            selectedMod = -1;
+
+            selResource = ResourceManager::GetResourceFromDatabase<Script>(it.key());
+        }
+
+        scr++;
     }
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -89,6 +112,8 @@ void ResourceManagerWindow::DoInterface()
             Texture::DoResourceInterface(selResource);
         else if (selectedMod != -1)
             Model::DoResourceInterface(selResource);
+        else if (selectedScript != -1)
+            Script::DoResourceInterface(selResource);
 
         if (ImGui::Button("Save Resource"))
         {

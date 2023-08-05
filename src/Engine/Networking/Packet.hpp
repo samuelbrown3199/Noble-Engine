@@ -12,7 +12,7 @@
 */
 struct NetworkConnection
 {
-	int m_iID = 0;
+	size_t m_iID = 0;
 	std::string m_sUsername;
 	ENetPeer* m_connection;
 };
@@ -38,7 +38,7 @@ struct Packet
 		m_packetData = splitPacket.at(2);
 	}
 
-	Packet(const int& connectionID, const int& packetType, std::string& packetData)
+	Packet(const size_t& connectionID, const int& packetType, std::string& packetData)
 	{
 		m_connectionID = connectionID;
 		m_packetType = packetType;

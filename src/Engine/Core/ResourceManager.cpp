@@ -4,6 +4,7 @@
 #include "../Resource/AudioClip.h"
 #include "../Resource/Texture.h"
 #include "../Resource/Model.h"
+#include "../Resource/Script.h"
 
 std::vector<std::shared_ptr<Resource>> ResourceManager::m_vResourceDatabase;
 std::vector<std::shared_ptr<Resource>> ResourceManager::m_vLoadedResources;
@@ -87,6 +88,21 @@ void ResourceManager::LoadResourceDatabase()
 		}
 
 		Logger::LogInformation(FormatString("Loaded %d Models", mod.size()));
+	}
+
+	if (m_resourceDatabaseJson.find("Script") != m_resourceDatabaseJson.end())
+	{
+		nlohmann::json scr = m_resourceDatabaseJson.at("Script");
+
+		for (auto it : scr.items())
+		{
+			std::shared_ptr<Script> clip = std::make_shared<Script>();
+			clip->LoadFromJson(it.key(), it.value());
+
+			m_vResourceDatabase.push_back(clip);
+		}
+
+		Logger::LogInformation(FormatString("Loaded %d Scripts", scr.size()));
 	}
 }
 

@@ -191,7 +191,7 @@ void DeleteFilePath(std::string path)
 
 std::string GetGameFolder()
 {
-    return ResourceManager::GetWorkingDirectory();
+    return ResourceManager::GetResourceManagerWorkingDirectory();
 }
 
 std::string GetGameDataFolder()
@@ -201,7 +201,7 @@ std::string GetGameDataFolder()
 
 std::string GetFolderLocationRelativeToGameData(std::string path)
 {
-    path.erase(0, ResourceManager::GetWorkingDirectory().length());
+    path.erase(0, ResourceManager::GetResourceManagerWorkingDirectory().length());
     return path;
 }
 

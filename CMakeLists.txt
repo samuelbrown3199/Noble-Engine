@@ -88,6 +88,9 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Lua/sol.hpp
 	src/Engine/Lua/config.hpp
+
+	src/Engine/Lua/NobleLuaState.h
+	src/Engine/Lua/NobleLuaState.cpp
 	
 	#Networking
 	src/Engine/Networking/NetworkManager.h
@@ -164,6 +167,9 @@ add_library(Engine ${SRC_IMGUI}
 
 	src/Engine/Resource/Scene.h
 	src/Engine/Resource/Scene.cpp
+
+	src/Engine/Resource/Script.h
+	src/Engine/Resource/Script.cpp
 
 	#Systems & components
 

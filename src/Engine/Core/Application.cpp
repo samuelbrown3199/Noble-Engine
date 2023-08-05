@@ -12,8 +12,8 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_vulkan.h"
 
-#define SOL_ALL_SAFETIES_ON 1
-#include "../Lua/sol.hpp"
+#include "../Lua/NobleLuaState.h"
+#include "../Resource/Script.h"
 
 bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
@@ -66,9 +66,11 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
 
-	sol::state luaState;
-	luaState.open_libraries(sol::lib::base, sol::lib::package);
-	luaState.script("print('bark bark bark!')");
+	NobleLuaState luaState;
+	std::shared_ptr<Script> script = ResourceManager::LoadResource<Script>("GameData\\Scripts\\TestScript.lua");
+	luaState.RunScript(script);
+	luaState.RunScriptFunction(script, "testFunc");
+	luaState.RunScriptFunction(script, "testFuncWithParameters", "TestParameter");
 
 	Logger::LogInformation("Engine started successfully");
 

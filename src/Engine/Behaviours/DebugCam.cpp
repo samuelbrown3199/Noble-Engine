@@ -10,9 +10,8 @@
 
 void DebugCam::Start()
 {
-
 	glm::vec3 pos = glm::vec3(5, 0, 0);
-	glm::vec3 rot = glm::vec3(-1, 0, 0);
+	glm::vec3 rot = glm::vec3(0, 0, 1);
 
 	Camera* curCam = Renderer::GetCamera();
 	if (curCam)
@@ -43,7 +42,7 @@ void DebugCam::Update()
 void DebugCam::UpdateControls()
 {
 	Camera* ca = Renderer::GetCamera();
-	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	if (InputManager::GetKeybind("Forward"))
 	{
@@ -73,7 +72,7 @@ void DebugCam::UpdateControls()
 	}
 	if (InputManager::GetKeyDown(SDLK_p))
 	{
-		if(ca->m_viewMode == orthographic)
+		if (ca->m_viewMode == orthographic)
 			ca->m_viewMode = projection;
 		else
 			ca->m_viewMode = orthographic;
@@ -100,7 +99,7 @@ void DebugCam::UpdateCameraRotation()
 		xoffset *= sensitivity;
 		yoffset *= sensitivity;
 
-		yaw -= xoffset;
+		yaw += xoffset;
 		pitch += yoffset;
 
 		ca->m_camTransform->m_rotation.x += pitch;
@@ -113,9 +112,9 @@ void DebugCam::UpdateCameraRotation()
 			pitch = -89.0f;
 
 		glm::vec3 front;
-		front.x = -cos(glm::radians(ca->m_camTransform->m_rotation.x)) * sin(glm::radians(ca->m_camTransform->m_rotation.y));
-		front.y = cos(glm::radians(ca->m_camTransform->m_rotation.x)) * cos(glm::radians(ca->m_camTransform->m_rotation.y));
-		front.z = sin(glm::radians(ca->m_camTransform->m_rotation.x));
+		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.y = sin(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		ca->m_camTransform->m_rotation = glm::normalize(front);
 	}
 	else

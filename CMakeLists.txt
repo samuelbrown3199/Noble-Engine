@@ -19,9 +19,9 @@ if(MSVC)
 	)
 endif()
 
-add_definitions(-DSDL_MAIN_HANDLED)
+set (
 
-add_library(Engine ${SRC_IMGUI}
+	source_list
 
 	src/Engine/Useful.h
 	src/Engine/Useful.cpp
@@ -196,13 +196,29 @@ add_library(Engine ${SRC_IMGUI}
 	src/Engine/Systems/Sprite.h
 	src/Engine/Systems/SpriteSystem.h
 	src/Engine/Systems/SpriteSystem.cpp
+
+)
+
+add_definitions(-DSDL_MAIN_HANDLED)
+add_library(Engine ${SRC_IMGUI}
+	
+	${source_list}
 )
 target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
-add_executable(Editor
-	src/Editor/main.cpp
+foreach(source IN LISTS source_list)
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+    source_group("${source_path_msvc}" FILES "${source}")
+endforeach()
 
+set (
+
+	editor_source
+	
+	src/Editor/main.cpp
+	
 	src/Editor/Interface/EditorUI.h
 	src/Editor/Interface/EditorUI.cpp
 
@@ -211,11 +227,24 @@ add_executable(Editor
 
 	src/Editor/EditorManagement/ProjectFile.h
 	src/Editor/EditorManagement/ProjectFile.cpp
+	
+)
+
+add_executable(Editor
+
+	${editor_source}
+
 )
 target_link_libraries(Editor Engine)
 set_target_properties(Editor PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(Editor PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 target_compile_features(Editor PRIVATE cxx_std_17)
+
+foreach(source IN LISTS editor_source)
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+    source_group("${source_path_msvc}" FILES "${source}")
+endforeach()
 
 add_executable(TechDemo1
     src/Game/main.cpp

@@ -11,7 +11,7 @@
 void DebugCam::Start()
 {
 	glm::vec3 pos = glm::vec3(5, 0, 0);
-	glm::vec3 rot = glm::vec3(0, 0, 1);
+	glm::vec3 rot = glm::vec3(0, 0, -1);
 
 	Camera* curCam = Renderer::GetCamera();
 	if (curCam)
@@ -24,10 +24,6 @@ void DebugCam::Start()
 	Transform* tr = hackCam->AddComponent<Transform>(pos, rot);
 	hackCam->AddComponent<Camera>()->m_state = editorCam;
 	hackCam->AddComponent<AudioListener>();
-
-	tr->m_rotation.x = -1;
-	tr->m_rotation.y = 0;
-	tr->m_rotation.z = 0;
 
 	oldMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
 	newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
@@ -102,8 +98,8 @@ void DebugCam::UpdateCameraRotation()
 		yaw += xoffset;
 		pitch += yoffset;
 
-		ca->m_camTransform->m_rotation.x += pitch;
-		ca->m_camTransform->m_rotation.y += yaw;
+		ca->m_camTransform->m_rotation.x = pitch;
+		ca->m_camTransform->m_rotation.y = yaw;
 
 		// make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (pitch > 89.0f)

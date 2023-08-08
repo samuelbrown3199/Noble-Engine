@@ -1,9 +1,13 @@
 #include "NobleLuaState.h"
+
+#include "../Core/Graphics/Renderer.h"
 #include "../Core/Logger.h"
 
 NobleLuaState::NobleLuaState()
 {
 	m_luaState.open_libraries(sol::lib::base, sol::lib::package);
+
+	AddFunction("SetClearColour", Renderer::SetClearColour);
 
 	AddFunction("LogInfo", Logger::LogInformation);
 	AddFunction("LogError", Logger::LogError);

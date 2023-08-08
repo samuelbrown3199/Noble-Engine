@@ -131,6 +131,8 @@ private:
 	const static int MAX_FRAMES_IN_FLIGHT = 2;
 	static VkSampleCountFlagBits m_msaaSamples;
 
+	static glm::vec3 m_clearColour;
+
 	static VkInstance m_vulkanInstance;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
 	static VkPhysicalDevice m_physicalDevice;
@@ -249,6 +251,8 @@ public:
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
 	static void SetWindowFullScreen(const int& _mode);
 	static void SetVSyncMode(const int& _mode);
+
+	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 
 	//Adds the amount onto scale. The larger the scale the larger the world.
 	static void AdjustScale(const float& _amount);

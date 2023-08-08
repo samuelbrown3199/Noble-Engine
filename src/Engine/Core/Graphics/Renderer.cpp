@@ -19,6 +19,8 @@ SDL_Window* Renderer::m_gameWindow;
 uint32_t Renderer::m_iCurrentFrame = 0;
 VkSampleCountFlagBits Renderer::m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
+glm::vec3 Renderer::m_clearColour = glm::vec3(0.0f, 0.0f, 0.0f);
+
 int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
@@ -625,7 +627,7 @@ void Renderer::StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32
 	renderPassInfo.renderArea.extent = m_swapChainExtent;
 
 	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+	clearValues[0].color = { {m_clearColour.x, m_clearColour.y, m_clearColour.z, 1.0f} };
 	clearValues[1].depthStencil = { 1.0f, 0 };
 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -1059,9 +1061,7 @@ glm::mat4 Renderer::GenerateUIOrthographicMatrix()
 
 glm::mat4 Renderer::GenerateViewMatrix()
 {
-	if (m_camera == nullptr)
-		return glm::mat4(1.0f);
-	if(m_camera->m_camTransform == nullptr)
+	if (m_camera == nullptr || m_camera->m_camTransform == nullptr)
 		return glm::mat4(1.0f);
 
 	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_camTransform->m_position, m_camera->m_camTransform->m_position + m_camera->m_camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));

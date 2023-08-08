@@ -65,6 +65,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	Logger::LogInformation("Engine started successfully");
 
+	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
+
 	return rtn;
 }
 

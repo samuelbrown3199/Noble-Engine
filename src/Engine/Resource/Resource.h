@@ -49,10 +49,10 @@ public:
 	*/
 	virtual void OnSave() {};
 
-	static void DoResourceInterface(std::shared_ptr<Resource> targetResource)
+	virtual void DoResourceInterface()
 	{
-		ImGui::Text(targetResource->m_sLocalPath.c_str());
-		ImGui::Text(targetResource->m_resourceType.c_str());
+		ImGui::Text(m_sLocalPath.c_str());
+		ImGui::Text(m_resourceType.c_str());
 		ImGui::Text("No editable values. Resource window not defined for this type.");
 	}
 

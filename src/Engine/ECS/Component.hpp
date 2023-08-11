@@ -1,29 +1,39 @@
 #pragma once
-#ifndef COMPONENT_H_
-#define COMPONENT_H_
 
 #include <vector>
 #include <memory>
 
 #include <nlohmann/json.hpp>
 
+#include "../imgui/imgui.h"
+
 struct SystemBase;
+
+struct Component
+{
+	/**
+	*Stores the entity ID for the entity this component belongs to.
+	*/
+	std::string m_sEntityID;
+
+	virtual void DoComponentInterface()
+	{
+		ImGui::Text(m_sEntityID.c_str());
+		ImGui::Text("No editable values. Component window not defined for this type.");
+	}
+};
 
 /**
 *The parent struct of all component types. Create your own component types by inheriting from this, for example struct Transform : public ComponentData<Transform>.
 */
 template<typename T>
-struct ComponentData
+struct ComponentData : public Component
 {
 	friend struct Entity;
 	/**
 	*Stores the full list of the component types data.
 	*/
 	static std::vector<T> componentData;
-	/**
-	*Stores the entity ID for the entity this component belongs to.
-	*/
-	std::string m_sEntityID;
 	/**
 	*Stores a weak pointer to the system that handles this component type.
 	*/
@@ -32,7 +42,7 @@ struct ComponentData
 	/**
 	* This can be used to create initialisation functions for components.
 	*/
-	virtual void OnInitialize() {};
+	virtual void OnInitialize(){};
 	/**
 	* This is used when deleting component data. Useful for cleaning up memory etc.
 	*/
@@ -82,5 +92,3 @@ private:
 		}
 	}
 };
-
-#endif

@@ -106,14 +106,7 @@ void ResourceManagerWindow::DoInterface()
 
     if (selResource != nullptr) 
     {
-        if (selectedAC != -1)
-            AudioClip::DoResourceInterface(selResource);
-        else if (selectedTex != -1)
-            Texture::DoResourceInterface(selResource);
-        else if (selectedMod != -1)
-            Model::DoResourceInterface(selResource);
-        else if (selectedScript != -1)
-            Script::DoResourceInterface(selResource);
+        selResource->DoResourceInterface();
 
         if (ImGui::Button("Save Resource"))
         {

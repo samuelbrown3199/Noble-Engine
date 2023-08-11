@@ -1,8 +1,8 @@
 #pragma once
-#ifndef ENTITY_H_
-#define ENTITY_H_
 
 #include "Behaviour.hpp"
+
+struct Component;
 
 /**
 *Entities act as containers of component data.
@@ -112,5 +112,3 @@ struct Entity
 		m_vBehaviours.clear();
 	}
 };
-
-#endif

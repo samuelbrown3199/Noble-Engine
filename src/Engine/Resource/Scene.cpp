@@ -63,4 +63,12 @@ void Scene::LoadSceneIntoApplication()
 		//tbd for the future.
 		Logger::LogInformation("Found Behaviours information");
 	}
+
+	if (m_sceneData.find("LightingSettings") != m_sceneData.end())
+	{
+		nlohmann::json lightingInfo = m_sceneData.at("LightingSettings");
+
+		glm::vec3 clearColour = glm::vec3(lightingInfo["ClearColour"][0], lightingInfo["ClearColour"][1], lightingInfo["ClearColour"][2]);
+		Renderer::SetClearColour(clearColour);
+	}
 }

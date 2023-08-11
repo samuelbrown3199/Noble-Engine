@@ -253,6 +253,7 @@ public:
 	static void SetVSyncMode(const int& _mode);
 
 	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
+	static glm::vec3 GetClearColour() { return m_clearColour; }
 
 	//Adds the amount onto scale. The larger the scale the larger the world.
 	static void AdjustScale(const float& _amount);

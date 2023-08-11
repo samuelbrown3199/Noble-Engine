@@ -306,25 +306,23 @@ Texture::~Texture()
     }
 }
 
-void Texture::DoResourceInterface(std::shared_ptr<Resource> targetResource)
+void Texture::DoResourceInterface()
 {
-    ImGui::Text(targetResource->m_sLocalPath.c_str());
-    ImGui::Text(targetResource->m_resourceType.c_str());
+    ImGui::Text(m_sLocalPath.c_str());
+    ImGui::Text(m_resourceType.c_str());
 
-    if (targetResource->m_bIsLoaded)
+    if (m_bIsLoaded)
     {
         ImGui::Text("Texture is currently in use and can't be modified.");
         return;
     }
 
-    std::shared_ptr<Texture> resource = std::dynamic_pointer_cast<Texture>(targetResource);
-
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     const char* items[] = { "Nearest", "Linear" };
-    int item = resource->m_textureFilter;
+    int item = m_textureFilter;
     ImGui::Combo("Filter Mode", &item, items, IM_ARRAYSIZE(items));
 
-    resource->m_textureFilter = (VkFilter)item;
+    m_textureFilter = (VkFilter)item;
 }
 
 nlohmann::json Texture::AddToDatabase()

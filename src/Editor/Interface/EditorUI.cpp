@@ -113,7 +113,10 @@ void EditorUI::DoInterface()
 					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
 					{
 						ImGui::Indent();
-						ImGui::Selectable(systemList.at(o)->m_systemID.c_str());
+						if (ImGui::Button(systemList.at(o)->m_systemID.c_str()))
+						{
+							m_selComponent = entities.at(i).GetComponent<Transform>();
+						}
 						ImGui::Unindent();
 					}
 				}
@@ -123,6 +126,15 @@ void EditorUI::DoInterface()
 		}
 		ImGui::TreePop();
 	}
+
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::SeparatorText("Component Information");
+	ImGui::BeginChild("Component Info", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y/3), false);
+
+	if (m_selComponent != nullptr)
+		m_selComponent->DoComponentInterface();
+
+	ImGui::EndChild();
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
@@ -161,6 +173,12 @@ void EditorUI::DoInterface()
 		}
 		ImGui::TreePop();
 	}
+
+	ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	static ImVec4 color = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
+	ImGui::ColorEdit3("Clear Colour", (float*)&color);
+	if(ImGui::Button("Apply Clear Colour"))
+		Renderer::SetClearColour(glm::vec3(color.x, color.y, color.z));
 
 	ImGui::End();
 

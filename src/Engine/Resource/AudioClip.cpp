@@ -35,12 +35,12 @@ void AudioClip::OnUnload()
 	m_bIsLoaded = false;
 }
 
-void AudioClip::DoResourceInterface(std::shared_ptr<Resource> targetResource)
+void AudioClip::DoResourceInterface()
 {
-	ImGui::Text(targetResource->m_sLocalPath.c_str());
-	ImGui::Text(targetResource->m_resourceType.c_str());
+	ImGui::Text(m_sLocalPath.c_str());
+	ImGui::Text(m_resourceType.c_str());
 	
-	if (targetResource->m_bIsLoaded)
+	if (m_bIsLoaded)
 	{
 		ImGui::Text("Audio Clip is currently in use and can't be modified.");
 		return;
@@ -48,21 +48,18 @@ void AudioClip::DoResourceInterface(std::shared_ptr<Resource> targetResource)
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-
-	std::shared_ptr<AudioClip> resource = std::dynamic_pointer_cast<AudioClip>(targetResource);
-
-	bool loop = resource->m_mode & FMOD_LOOP_NORMAL;
+	bool loop = m_mode & FMOD_LOOP_NORMAL;
 	ImGui::Checkbox("Loop", &loop);
 
-	bool spatialSound = resource->m_mode & FMOD_3D;
+	bool spatialSound = m_mode & FMOD_3D;
 	ImGui::Checkbox("3D Sound", &spatialSound);
 
-	resource->m_mode = FMOD_DEFAULT;
+	m_mode = FMOD_DEFAULT;
 	if (loop)
-		resource->m_mode |= FMOD_LOOP_NORMAL;
+		m_mode |= FMOD_LOOP_NORMAL;
 
 	if (spatialSound)
-		resource->m_mode |= FMOD_3D;
+		m_mode |= FMOD_3D;
 }
 
 nlohmann::json AudioClip::AddToDatabase()

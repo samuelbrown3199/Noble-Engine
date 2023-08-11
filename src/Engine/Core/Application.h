@@ -7,7 +7,6 @@
 #include <SDL/SDL.h>
 
 #include "Graphics/Renderer.h"
-#include "../Networking/NetworkManager.h"
 #include "AudioManager.h"
 #include "ThreadingManager.h"
 #include "PerformanceStats.h"
@@ -33,7 +32,6 @@ private:
 
     Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
-	NetworkManager* m_networkManager;
     ThreadingManager* m_threadManager;
     ResourceManager* m_resourceManager;
     Logger* m_logger;

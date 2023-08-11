@@ -91,13 +91,6 @@ set (
 
 	src/Engine/Lua/NobleLuaState.h
 	src/Engine/Lua/NobleLuaState.cpp
-	
-	#Networking
-	src/Engine/Networking/NetworkManager.h
-	src/Engine/Networking/NetworkManager.cpp
-
-	src/Engine/Networking/Packet.hpp
-	src/Engine/Networking/PacketParser.h
 
 	#Behaviours
 	src/Engine/Behaviours/DebugCam.h

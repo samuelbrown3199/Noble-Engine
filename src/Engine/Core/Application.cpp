@@ -207,7 +207,6 @@ void Application::CleanupApplication()
 
 	delete m_gameRenderer;
 	delete m_audioManager;
-	delete m_networkManager;
 	delete m_threadManager;
 	delete m_logger;
 	delete m_pStats;
@@ -399,16 +398,4 @@ std::shared_ptr<SystemBase> Application::GetSystemFromID(std::string _ID)
 	}
 
 	return nullptr;
-}
-
-void Application::CreateNetworkManager(const int& _mode)
-{
-	if (!m_self.lock()->m_networkManager)
-	{
-		m_self.lock()->m_networkManager = new NetworkManager(_mode);
-		std::thread* networkThread = new std::thread([=] {
-			m_self.lock()->m_networkManager->m_parser->Loop();
-			});
-		networkThread->detach();
-	}
 }

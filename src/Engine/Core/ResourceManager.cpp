@@ -1,6 +1,8 @@
 #include "ResourceManager.h"
 #include "../Useful.h"
 
+#include "Registry.h"
+
 #include "../Resource/AudioClip.h"
 #include "../Resource/Texture.h"
 #include "../Resource/Model.h"
@@ -15,12 +17,22 @@ nlohmann::json ResourceManager::m_resourceDatabaseJson;
 ResourceManager::ResourceManager()
 {
 	m_sWorkingDirectory = GetWorkingDirectory();
+	RegisterResourceTypes();
+
 	LoadResourceDatabase();
 }
 
 ResourceManager::~ResourceManager()
 {
 	m_vLoadedResources.clear();
+}
+
+void ResourceManager::RegisterResourceTypes()
+{
+	NobleRegistry::RegisterResource("AudioClip", new AudioClip());
+	NobleRegistry::RegisterResource("Texture", new Texture());
+	NobleRegistry::RegisterResource("Model", new Model());
+	NobleRegistry::RegisterResource("Script", new Script());
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)

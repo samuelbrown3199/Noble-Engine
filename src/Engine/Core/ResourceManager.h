@@ -32,6 +32,8 @@ struct ResourceManager
 	ResourceManager();
 	~ResourceManager();
 
+	void RegisterResourceTypes();
+
 	static std::string GetResourceManagerWorkingDirectory() { return m_sWorkingDirectory; }
 	static void SetWorkingDirectory(std::string directory);
 
@@ -118,6 +120,21 @@ struct ResourceManager
 		return nullptr;
 	}
 
+	template<typename T>
+	static std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()
+	{
+		std::vector<std::shared_ptr<Resource>> returnVec;
+
+		for (int i = 0; i < m_vResourceDatabase.size(); i++)
+		{
+			std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(m_vResourceDatabase.at(i));
+			if (resource != nullptr)
+				returnVec.push_back(m_vResourceDatabase.at(i));
+		}
+
+		return returnVec;
+	}
+	
 	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/

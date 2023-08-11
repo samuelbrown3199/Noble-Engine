@@ -1,5 +1,6 @@
 #include "ResourceManagerWindow.h"
 
+#include <Engine/Core/Registry.h>
 #include <Engine/Resource/AudioClip.h>
 #include <Engine/Resource/Texture.h>
 #include <Engine/Resource/Model.h>
@@ -12,10 +13,7 @@ void ResourceManagerWindow::InitializeInterface()
 
 void ResourceManagerWindow::DoInterface()
 {
-    static int selectedAC = -1;
-    static int selectedTex = -1;
-    static int selectedMod = -1;
-    static int selectedScript = -1;
+    static int selectedRes = -1;
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -26,78 +24,24 @@ void ResourceManagerWindow::DoInterface()
         return;
     }
 
-    //Need to have a think on this at some point.
+    std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
-    ImGui::Text("Audio Clips");
-    int ac = 0;
-    nlohmann::json audioClips = ResourceManager::m_resourceDatabaseJson.at("AudioClip");
-    for (auto it : audioClips.items())
+    for (int i = 0; i < resourceRegistry->size(); i++)
     {
-        if (ImGui::Selectable(it.key().c_str(), selectedAC == ac))
+        ImGui::Text(resourceRegistry->at(i).first.c_str());
+        std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
+
+        int res = 0;
+
+        for (int i = 0; i < resources.size(); i++)
         {
-            selectedAC = ac;
-            selectedTex = -1;
-            selectedMod = -1;
-            selectedScript = -1;
+            if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), selectedRes == res))
+            {
+                selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(i)->m_sLocalPath);
+            }
 
-            selResource = ResourceManager::GetResourceFromDatabase<AudioClip>(it.key());
+            res++;
         }
-
-        ac++;
-    }
-
-    ImGui::Text("Textures");
-    int tex = 0;
-    nlohmann::json textures = ResourceManager::m_resourceDatabaseJson.at("Texture");
-    for (auto it : textures.items())
-    {
-        if (ImGui::Selectable(it.key().c_str(), selectedTex == tex))
-        {
-            selectedTex = tex;
-            selectedAC = -1;
-            selectedMod = -1;
-            selectedScript = -1;
-
-            selResource = ResourceManager::GetResourceFromDatabase<Texture>(it.key());
-        }
-
-        tex++;
-    }
-
-    ImGui::Text("Models");
-    int mod = 0;
-    nlohmann::json models = ResourceManager::m_resourceDatabaseJson.at("Model");
-    for (auto it : models.items())
-    {
-        if (ImGui::Selectable(it.key().c_str(), selectedMod == mod))
-        {
-            selectedMod = mod;
-            selectedAC = -1;
-            selectedTex = -1;
-            selectedScript = -1;
-
-            selResource = ResourceManager::GetResourceFromDatabase<Model>(it.key());
-        }
-
-        mod++;
-    }
-
-    ImGui::Text("Scripts");
-    int scr = 0;
-    nlohmann::json scripts = ResourceManager::m_resourceDatabaseJson.at("Script");
-    for (auto it : scripts.items())
-    {
-        if (ImGui::Selectable(it.key().c_str(), selectedScript == scr))
-        {
-            selectedScript = scr;
-            selectedAC = -1;
-            selectedTex = -1;
-            selectedMod = -1;
-
-            selResource = ResourceManager::GetResourceFromDatabase<Script>(it.key());
-        }
-
-        scr++;
     }
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));

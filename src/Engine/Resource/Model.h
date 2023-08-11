@@ -22,6 +22,9 @@ struct Model : public Resource
 
 	void OnLoad() override;
 	void OnUnload() override;
+
+	virtual void AddResource(std::string path) override;
+	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 };
 
 #endif

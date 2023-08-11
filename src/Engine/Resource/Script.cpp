@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "../Core/ResourceManager.h"
+
 Script::Script()
 {
 	m_resourceType = "Script";
@@ -23,4 +25,14 @@ void Script::OnLoad()
 void Script::OnUnload()
 {
 	m_sScriptString.clear();
+}
+
+void Script::AddResource(std::string path)
+{
+	ResourceManager::AddNewResource<Script>(path);
+}
+
+std::vector<std::shared_ptr<Resource>> Script::GetResourcesOfType()
+{
+	return ResourceManager::GetAllResourcesOfType<Script>();
 }

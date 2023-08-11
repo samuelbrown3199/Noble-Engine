@@ -311,31 +311,19 @@ void EditorUI::DoAssetMenu()
 	ImGui::MenuItem("Resources", NULL, false, false);
 	if (ImGui::BeginMenu("Add Resource"))
 	{
-		if (ImGui::MenuItem("Audio Clip"))
-		{
-			std::string path = OpenFileSelectDialog(".mp3");
-			if(path != "")
-				ResourceManager::AddNewResource<AudioClip>(path);
-		}
-		if (ImGui::MenuItem("Model"))
-		{
-			std::string path = OpenFileSelectDialog(".obj");
-			if (path != "")
-				ResourceManager::AddNewResource<Model>(path);
-		}
-		if (ImGui::MenuItem("Texture"))
-		{
-			std::string path = OpenFileSelectDialog(".png");
-			if (path != "")
-				ResourceManager::AddNewResource<Texture>(path);
-		}
-		if (ImGui::MenuItem("Script"))
-		{
-			std::string path = OpenFileSelectDialog(".lua");
-			if (path != "")
-				ResourceManager::AddNewResource<Script>(path);
-		}
+		std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
+		for (int i = 0; i < resourceRegistry->size(); i++)
+		{
+			if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
+			{
+				std::string path = OpenFileSelectDialog(".mp3");
+				if (path != "")
+				{
+					resourceRegistry->at(i).second->AddResource(path);
+				}
+			}
+		}
 		ImGui::EndMenu();
 	}
 

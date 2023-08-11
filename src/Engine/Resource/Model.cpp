@@ -2,6 +2,8 @@
 #include "../Core/Logger.h"
 #include "../Core/Graphics/BufferHelper.h"
 
+#include "../Core/ResourceManager.h"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -76,4 +78,14 @@ void Model::OnUnload()
     m_vertexBuffer.~GraphicsBuffer();
     m_indexBuffer.~GraphicsBuffer();
     m_bIsLoaded = false;
+}
+
+void Model::AddResource(std::string path)
+{
+    ResourceManager::AddNewResource<Model>(path);
+}
+
+std::vector<std::shared_ptr<Resource>> Model::GetResourcesOfType()
+{
+    return ResourceManager::GetAllResourcesOfType<Model>();
 }

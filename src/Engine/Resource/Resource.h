@@ -35,6 +35,9 @@ public:
 	*/
 	virtual void OnUnload() = 0;
 
+	virtual void AddResource(std::string path) = 0;
+	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() = 0;
+
 	void ReloadResource()
 	{
 		if (!m_bIsLoaded)

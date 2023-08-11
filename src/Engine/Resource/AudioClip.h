@@ -25,6 +25,9 @@ struct AudioClip : public Resource
 	void OnLoad() override;
 	void OnUnload() override;
 
+	virtual void AddResource(std::string path) override;
+	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
+
 	virtual void DoResourceInterface() override;
 	nlohmann::json AddToDatabase() override;
 	void LoadFromJson(std::string path, nlohmann::json data) override;

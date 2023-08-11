@@ -3,6 +3,7 @@
 #include "../Useful.h"
 
 #include "..\Core\AudioManager.h"
+#include "../Core/ResourceManager.h"
 
 AudioClip::AudioClip()
 {
@@ -33,6 +34,16 @@ void AudioClip::OnUnload()
 	//Need to check if this leaks memory. Hopefully not...
 	FMOD_Sound_Release(m_sound);
 	m_bIsLoaded = false;
+}
+
+void AudioClip::AddResource(std::string path)
+{
+	ResourceManager::AddNewResource<AudioClip>(path);
+}
+
+std::vector<std::shared_ptr<Resource>> AudioClip::GetResourcesOfType()
+{
+	return ResourceManager::GetAllResourcesOfType<AudioClip>();
 }
 
 void AudioClip::DoResourceInterface()

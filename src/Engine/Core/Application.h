@@ -11,6 +11,7 @@
 #include "ThreadingManager.h"
 #include "PerformanceStats.h"
 #include "Logger.h"
+#include "Registry.h"
 
 #include "ResourceManager.h"
 #include "../Resource/IniFile.h"
@@ -30,6 +31,7 @@ private:
     
 	static std::weak_ptr<Application> m_self;
 
+	NobleRegistry* m_registry;
     Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
     ThreadingManager* m_threadManager;

@@ -4,6 +4,8 @@
 #include "../Core/Graphics/Renderer.h"
 #include "../Core/Graphics/BufferHelper.h"
 
+#include "../Core/ResourceManager.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -54,6 +56,16 @@ void Texture::OnUnload()
     vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);
     vkFreeMemory(Renderer::GetLogicalDevice(), m_textureImageMemory, nullptr);
     m_bIsLoaded = false;
+}
+
+void Texture::AddResource(std::string path)
+{
+    ResourceManager::AddNewResource<Texture>(path);
+}
+
+std::vector<std::shared_ptr<Resource>> Texture::GetResourcesOfType()
+{
+    return ResourceManager::GetAllResourcesOfType<Texture>();
 }
 
 void Texture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)

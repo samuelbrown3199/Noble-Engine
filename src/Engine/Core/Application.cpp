@@ -32,6 +32,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	srand(time(NULL));
 
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
+
+	rtn->m_registry = new NobleRegistry();
 	rtn->m_logger = new Logger();
 
 #ifndef NDEBUG
@@ -205,6 +207,7 @@ void Application::CleanupApplication()
 	m_resourceManager->UnloadAllResources();
 	delete m_resourceManager;
 
+	delete m_registry;
 	delete m_gameRenderer;
 	delete m_audioManager;
 	delete m_threadManager;
@@ -250,6 +253,7 @@ void Application::InitializeImGui()
 
 	//this initializes imgui for SDL
 	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
+	ImGui::StyleColorsDark();
 
 	//this initializes imgui for Vulkan
 	ImGui_ImplVulkan_InitInfo init_info = {};

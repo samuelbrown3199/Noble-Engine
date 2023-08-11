@@ -118,6 +118,9 @@ set (
 	src/Engine/Core/ResourceManager.h
 	src/Engine/Core/ResourceManager.cpp
 
+	src/Engine/Core/Registry.h
+	src/Engine/Core/Registry.cpp
+
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 

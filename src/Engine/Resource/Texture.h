@@ -26,6 +26,9 @@ struct Texture : public Resource
     void OnLoad() override;
     void OnUnload() override;
 
+    virtual void AddResource(std::string path) override;
+    virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
+
     void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
     //These functions here are probably worth moving out of the texture object at some point, they are helpful functions

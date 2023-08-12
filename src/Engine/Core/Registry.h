@@ -1,8 +1,12 @@
 #pragma once
 
-#include<map>
-#include<string>
+#include <map>
+#include <memory>
+#include <string>
+#include <typeinfo>
 
+#include "Application.h"
+#include "../ECS/Component.hpp"
 #include "../Resource/Resource.h"
 
 class NobleRegistry

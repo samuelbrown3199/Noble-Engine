@@ -1,6 +1,4 @@
 #pragma once
-#ifndef AUDIOSOURCE_H_
-#define AUDIOSOURCE_H_
 
 #include "../ECS/Component.hpp"
 #include "../Resource/AudioClip.h"
@@ -12,7 +10,7 @@
 #include <FMOD/fmod.h>
 #include <FMOD/fmod_common.h>
 
-struct AudioSource : public ComponentData<AudioSource>
+struct AudioSource : public Component
 {
 	FMOD_CHANNEL* channel = nullptr;
 	Transform* m_sourceTransform = nullptr;
@@ -20,7 +18,7 @@ struct AudioSource : public ComponentData<AudioSource>
 	int m_iLoopCount = 0;
 	float m_fPitch = 1;
 	float m_fVolume = 1;
-	glm::vec3 m_vVelocity = {0,0,0};
+	glm::vec3 m_vVelocity = { 0,0,0 };
 	bool m_bPaused = false;
 	bool m_b3DSound = false;
 
@@ -36,7 +34,7 @@ struct AudioSource : public ComponentData<AudioSource>
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_vVelocity.x, m_vVelocity.y, m_vVelocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_sMixerOption}};
+		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_vVelocity.x, m_vVelocity.y, m_vVelocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_sMixerOption} };
 		return data;
 	}
 
@@ -73,5 +71,3 @@ struct AudioSource : public ComponentData<AudioSource>
 		m_iLoopCount = _loopCount;
 	}
 };
-
-#endif

@@ -1,10 +1,9 @@
 #pragma once
-#ifndef EDITOR_H_
-#define EDITOR_H_
 
+#include <Engine\Core\Registry.h>
 #include <Engine\Core\DebugUI.hpp>
 #include <Engine\ECS\Entity.hpp>
-#include<Engine\ECS\Component.hpp>
+#include <Engine\ECS\Component.hpp>
 
 #include "ResourceManagerWindow.h"
 
@@ -48,5 +47,3 @@ public:
 
 	void DoNewProjectModal();
 };
-
-#endif

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef CAMERA_H_
-#define CAMERA_H_
 
 #include "../ECS/Component.hpp"
 #include "Transform.h"
@@ -18,7 +16,7 @@ enum ViewMode
 	orthographic
 };
 
-struct Camera : ComponentData<Camera>
+struct Camera : Component
 {
 	Transform* m_camTransform = nullptr;
 	CameraState m_state = inactive;
@@ -36,5 +34,3 @@ struct Camera : ComponentData<Camera>
 		m_viewMode = j["ViewMode"];
 	}
 };
-
-#endif

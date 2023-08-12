@@ -3,8 +3,7 @@
 #include <glm/ext.hpp>
 
 std::weak_ptr<SystemBase> TransformSystem::self;
-std::weak_ptr<SystemBase> Transform::componentSystem;
-std::vector<Transform> Transform::componentData;
+std::vector<Transform> TransformSystem::componentData;
 
 void TransformSystem::OnUpdate(Transform* comp)
 {

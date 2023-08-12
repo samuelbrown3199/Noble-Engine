@@ -1,6 +1,4 @@
 #pragma once
-#ifndef APPLICATION_H_
-#define APPLICATION_H_
 
 #include <iostream>
 
@@ -11,16 +9,17 @@
 #include "ThreadingManager.h"
 #include "PerformanceStats.h"
 #include "Logger.h"
-#include "Registry.h"
 
 #include "ResourceManager.h"
 #include "../Resource/IniFile.h"
 
-#include "../ECS/Entity.hpp"
 #include "../ECS/System.hpp"
 #include "../ECS/Behaviour.hpp"
 
 #include "DebugUI.hpp"
+
+struct Entity;
+class NobleRegistry;
 
 class Application
 {
@@ -129,6 +128,19 @@ public:
 	}
 
 	template<typename T>
+	static std::shared_ptr<System<T>> GetComponentSystem()
+	{
+		for (int i = 0; i < m_vComponentSystems.size(); i++)
+		{
+			std::shared_ptr<System<T>> sys = std::dynamic_pointer_cast<System<T>>(m_vComponentSystems.at(i));
+			if (sys != nullptr)
+				return sys;
+		}
+
+		return nullptr;
+	}
+
+	template<typename T>
 	static std::shared_ptr<T> BindDebugUI()
 	{
 		std::shared_ptr<T> sys = std::make_shared<T>();
@@ -136,8 +148,4 @@ public:
 		m_vDebugUIs.push_back(sys);
 		return sys;
 	}
-
-	static void CreateNetworkManager(const int& _mode);
 };
-
-#endif

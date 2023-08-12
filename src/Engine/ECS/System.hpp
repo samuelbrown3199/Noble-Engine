@@ -6,11 +6,7 @@
 
 #include "../Core/ThreadingManager.h"
 
-//avoid using this in actual engine library compile so intel compiler can be used. Seems like its something to do with some inheritance
-#define SetupComponent(T, U) \
-std::weak_ptr<SystemBase> U::self; \
-std::weak_ptr<SystemBase> T::componentSystem; \
-std::vector<T> T::componentData; \
+struct Component;
 
 enum SystemUsage
 {
@@ -40,12 +36,14 @@ struct SystemBase
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
 	virtual nlohmann::json WriteComponentDataToJson() = 0;
+
+	virtual void AddComponent(Component* comp) = 0;
 };
 
-	template<typename T>
-	/**
-	* Inherit from this to create new systems.
-	*/
+/**
+* Inherit from this to create new systems.
+*/
+template<typename T>
 class System : public SystemBase
 {
 	friend class Application;
@@ -55,13 +53,14 @@ private:
 	*Keeps a weak pointer to itself.
 	*/
 	static std::weak_ptr<SystemBase> self;
+
 	/**
 	*Sets up the system.
 	*/
 	static void InitializeSystem(std::string _ID)
 	{
 		self.lock()->m_systemID = _ID;
-		T::componentSystem = self;
+		//NobleRegistry::RegisterComponent<T>(_ID);
 	}
 	/**
 	*Loops through the component data and updates them.
@@ -72,14 +71,14 @@ private:
 		{
 			if (!useThreads)
 			{
-				for (int i = 0; i < T::componentData.size(); i++)
+				for (int i = 0; i < componentData.size(); i++)
 				{
-					OnUpdate(&T::componentData.at(i));
+					OnUpdate(&componentData.at(i));
 				}
 			}
 			else
 			{
-				double amountOfThreads = ceil(T::componentData.size() / maxComponentsPerThread) + 1;
+				double amountOfThreads = ceil(componentData.size() / maxComponentsPerThread) + 1;
 				for (int i = 0; i < amountOfThreads; i++)
 				{
 					int buffer = maxComponentsPerThread * i;
@@ -93,10 +92,10 @@ private:
 		int maxCap = _buffer + _amount;
 		for (size_t co = _buffer; co < maxCap; co++)
 		{
-			if (co >= T::componentData.size())
+			if (co >= componentData.size())
 				break;
 
-			OnUpdate(&T::componentData.at(co));
+			OnUpdate(&componentData.at(co));
 		}
 	}
 	/**
@@ -106,20 +105,20 @@ private:
 	{
 		if (systemUsage == useRender || systemUsage == useBoth)
 		{
-			for (int i = 0; i < T::componentData.size(); i++)
+			for (int i = 0; i < componentData.size(); i++)
 			{
-				OnRender(&T::componentData.at(i));
+				OnRender(&componentData.at(i));
 			}
 		}
 	}
 
 	void RemoveComponent(std::string _ID)
 	{
-		for (int i = 0; i < T::componentData.size(); i++)
+		for (int i = 0; i < componentData.size(); i++)
 		{
-			if (T::componentData.at(i).m_sEntityID == _ID)
+			if (componentData.at(i).m_sEntityID == _ID)
 			{
-				T::componentData.erase(T::componentData.begin() + i);
+				componentData.erase(componentData.begin() + i);
 				break;
 			}
 		}
@@ -127,15 +126,18 @@ private:
 
 	void RemoveAllComponents()
 	{
-		for (int i = 0; i < T::componentData.size(); i++)
+		for (int i = 0; i < componentData.size(); i++)
 		{
-			T::componentData.at(i).OnRemove();
+			componentData.at(i).OnRemove();
 		}
 
-		T::componentData.clear();
+		componentData.clear();
 	}
 
 protected:
+
+	static std::vector<T> componentData;
+
 	/**
 	* Overwrite this to create functionality on a component every update.
 	*/
@@ -147,14 +149,32 @@ protected:
 
 public:
 
-	int GetComponentIndex(std::string _ID)
+	virtual void AddComponent(Component* comp) override
 	{
-		return T::GetComponentIndex(_ID);
+		T* compT = dynamic_cast<T*>(comp);
+		componentData.push_back(*compT);
 	}
 
-	T* GetComponent(std::string _ID)
+	int GetComponentIndex(std::string _ID)
 	{
-		return T::GetComponent(_ID);
+		for (int i = 0; i < componentData.size(); i++)
+		{
+			if (componentData.at(i).m_sEntityID == _ID)
+				return i;
+		}
+		
+		return -1;
+	}
+
+	static T* GetComponent(std::string _ID)
+	{
+		for (int i = 0; i < componentData.size(); i++)
+		{
+			if (componentData.at(i).m_sEntityID == _ID)
+				return &componentData.at(i);
+		}
+
+		return nullptr;
 	}
 
 	void LoadComponentDataFromJson(nlohmann::json& j)
@@ -165,7 +185,7 @@ public:
 			component.m_sEntityID = it.key();
 			component.FromJson(j[it.key()]);
 
-			T::componentData.push_back(component);
+			componentData.push_back(component);
 		}
 	}
 
@@ -173,9 +193,9 @@ public:
 	{
 		nlohmann::json data;
 
-		for (int i = 0; i < T::componentData.size(); i++)
+		for (int i = 0; i < componentData.size(); i++)
 		{
-			data[T::componentData.at(i).m_sEntityID] = T::componentData.at(i).WriteJson();
+			data[componentData.at(i).m_sEntityID] = componentData.at(i).WriteJson();
 		}
 
 		return data;

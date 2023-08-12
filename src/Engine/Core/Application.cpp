@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "InputManager.h"
+#include "Registry.h"
 
 #include "../Systems/AudioListenerSystem.h"
 #include "../Systems/AudioSourceSystem.h"
@@ -7,6 +8,8 @@
 #include "../Systems/TransformSystem.h"
 #include "../Systems/MeshRendererSystem.h"
 #include "../Systems/SpriteSystem.h"
+
+#include "../ECS/Entity.hpp"
 
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"

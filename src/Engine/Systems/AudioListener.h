@@ -1,11 +1,9 @@
 #pragma once
-#ifndef AUDIOLISTENER_H_
-#define AUDIOLISTENER_H_
 
 #include "../ECS/Component.hpp"
 #include "Transform.h"
 
-struct AudioListener : ComponentData<AudioListener>
+struct AudioListener : Component
 {
 	Transform* m_listenerTransform = nullptr;
 	glm::vec3 m_velocity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -22,5 +20,3 @@ struct AudioListener : ComponentData<AudioListener>
 		m_velocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
 	}
 };
-
-#endif

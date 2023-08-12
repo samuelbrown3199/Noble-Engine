@@ -1,13 +1,14 @@
 #include "AudioSourceSystem.h"
 
 std::weak_ptr<SystemBase> AudioSourceSystem::self;
-std::weak_ptr<SystemBase> AudioSource::componentSystem;
-std::vector<AudioSource> AudioSource::componentData;
+std::vector<AudioSource> AudioSourceSystem::componentData;
 
 #include "../Core/Application.h"
 #include "../Core/AudioManager.h"
 #include "Transform.h"
 #include "../ECS/Entity.hpp"
+
+#include "TransformSystem.h"
 
 #include <FMOD/fmod.h>
 #include <FMOD/fmod_common.h>
@@ -21,7 +22,7 @@ void AudioSourceSystem::OnUpdate(AudioSource* comp)
 
 		if (comp->m_sourceTransform == nullptr || Application::GetEntitiesDeleted())
 		{
-			comp->m_sourceTransform = Transform::GetComponent(comp->m_sEntityID);
+			comp->m_sourceTransform = TransformSystem::GetComponent(comp->m_sEntityID);
 			return;
 		}
 

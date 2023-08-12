@@ -2,6 +2,7 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
 
+#include <Engine/ECS/Entity.hpp>
 #include <Engine/ECS/Behaviour.hpp>
 #include <Engine/Core/Logger.h>
 #include <Engine/Core/Application.h>

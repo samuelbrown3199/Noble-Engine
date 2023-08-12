@@ -1,12 +1,10 @@
 #pragma once
-#ifndef TRANSFORM_H_
-#define TRANSFORM_H_
 
 #include "../ECS/Component.hpp"
 
 #include <glm/glm.hpp>
 
-struct Transform : ComponentData<Transform>
+struct Transform : Component
 {
 	glm::vec3 m_prevPosition;
 	glm::vec3 m_prevRotation;
@@ -77,5 +75,3 @@ struct Transform : ComponentData<Transform>
 		m_scale = glm::vec3(scale[0], scale[1], scale[2]);
 	}
 };
-
-#endif

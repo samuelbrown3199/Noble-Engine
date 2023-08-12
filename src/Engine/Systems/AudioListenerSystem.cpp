@@ -2,21 +2,22 @@
 #include "..\Core\AudioManager.h"
 #include "AudioListenerSystem.h"
 
+#include "TransformSystem.h"
+
 std::weak_ptr<SystemBase> AudioListenerSystem::self;
-std::weak_ptr<SystemBase> AudioListener::componentSystem;
-std::vector<AudioListener> AudioListener::componentData;
+std::vector<AudioListener> AudioListenerSystem::componentData;
 
 void AudioListenerSystem::PreUpdate()
 {
 	m_iCurrentListener = 0;
-	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), AudioListener::componentData.size());
+	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), componentData.size());
 }
 
 void AudioListenerSystem::OnUpdate(AudioListener* comp)
 {
 	if (comp->m_listenerTransform == nullptr || Application::GetEntitiesDeleted())
 	{
-		comp->m_listenerTransform = Transform::GetComponent(comp->m_sEntityID);
+		comp->m_listenerTransform = TransformSystem::GetComponent(comp->m_sEntityID);
 	}
 
 	pos.x = comp->m_listenerTransform->m_position.x;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Core/Application.h"
 #include "Behaviour.hpp"
 
 struct Component;
@@ -23,6 +24,7 @@ struct Entity
 	*/
 	bool m_bAvailableForUse = false;
 
+	std::vector<Component*> m_vComponents;
 	std::vector<Behaviour*> m_vBehaviours;
 
 	/**
@@ -45,9 +47,10 @@ struct Entity
 			T comp;
 			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize();
-			T::componentData.push_back(comp);
+			Application::GetComponentSystem<T>()->AddComponent(&comp);
 
-			return &T::componentData.at(T::componentData.size() - 1);
+			m_vComponents.push_back(dynamic_cast<T*>(Application::GetComponentSystem<T>()->GetComponent(m_sEntityID)));
+			return dynamic_cast<T*>(m_vComponents.at(m_vComponents.size() - 1));
 		}
 		return alreadyHasComponent;
 	}
@@ -63,9 +66,10 @@ struct Entity
 			T comp;
 			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize(std::forward<Args>(_args)...);
-			T::componentData.push_back(comp);
+			Application::GetComponentSystem<T>()->AddComponent(&comp);
 
-			return &T::componentData.at(T::componentData.size() - 1);
+			m_vComponents.push_back(dynamic_cast<T*>(Application::GetComponentSystem<T>()->GetComponent(m_sEntityID)));
+			return dynamic_cast<T*>(m_vComponents.at(m_vComponents.size() - 1));
 		}
 		return alreadyHasComponent;
 	}
@@ -89,8 +93,12 @@ struct Entity
 	template<typename T>
 	T* GetComponent()
 	{
-		T* temp = T::GetComponent(m_sEntityID);
-		return temp;
+		for (int i = 0; i < m_vComponents.size(); i++)
+		{
+			T* comp = dynamic_cast<T*>(m_vComponents.at(i));
+			if (comp != nullptr)
+				return comp;
+		}
 	}
 
 	/**

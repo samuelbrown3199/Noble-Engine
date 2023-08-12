@@ -4,17 +4,18 @@
 #include "../Core/Graphics/BufferHelper.h"
 #include "../Core/Graphics/GraphicsPipeline.h"
 
+#include "TransformSystem.h"
+
 #include <iostream>
 
 std::weak_ptr<SystemBase> MeshRendererSystem::self;
-std::weak_ptr<SystemBase> MeshRenderer::componentSystem;
-std::vector<MeshRenderer> MeshRenderer::componentData;
+std::vector<MeshRenderer> MeshRendererSystem::componentData;
 
 void MeshRendererSystem::OnRender(MeshRenderer* comp)
 {
 	if (comp->m_transform == nullptr || Application::GetEntitiesDeleted())
 	{
-		comp->m_transform = Transform::GetComponent(comp->m_sEntityID);
+		comp->m_transform = TransformSystem::GetComponent(comp->m_sEntityID);
 	}
 
 	if (comp->m_model == nullptr)

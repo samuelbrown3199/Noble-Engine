@@ -8,6 +8,8 @@
 #include "../Systems/Camera.h"
 #include "../Systems/AudioListener.h"
 
+#include "../ECS/Entity.hpp"
+
 void DebugCam::Start()
 {
 	glm::vec3 pos = glm::vec3(5, 0, 0);

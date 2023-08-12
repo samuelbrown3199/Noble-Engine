@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../ECS/Component.hpp"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
@@ -6,7 +8,7 @@
 
 #include <glm/glm.hpp>
 
-struct Sprite : public ComponentData<Sprite>
+struct Sprite : public Component
 {
 	Transform* m_spriteTransform = nullptr;
 

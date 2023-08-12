@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MESHRENDERER_H_
-#define MESHRENDERER_H_
 
 #include "../ECS/Component.hpp"
 #include "../Resource/Model.h"
@@ -10,7 +8,7 @@
 
 #include "Transform.h"
 
-struct MeshRenderer : public ComponentData<MeshRenderer>
+struct MeshRenderer : public Component
 {
 	std::shared_ptr<Model> m_model = nullptr;
 	std::shared_ptr<Texture> m_texture = nullptr;
@@ -39,5 +37,3 @@ struct MeshRenderer : public ComponentData<MeshRenderer>
 		m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 	}
 };
-
-#endif

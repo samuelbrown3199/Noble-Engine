@@ -18,7 +18,7 @@ struct AudioSource : public Component
 	int m_iLoopCount = 0;
 	float m_fPitch = 1;
 	float m_fVolume = 1;
-	glm::vec3 m_vVelocity = { 0,0,0 };
+	glm::vec3 m_velocity = { 0,0,0 };
 	bool m_bPaused = false;
 	bool m_b3DSound = false;
 
@@ -36,7 +36,7 @@ struct AudioSource : public Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_vVelocity.x, m_vVelocity.y, m_vVelocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_sMixerOption} };
+		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_velocity.x, m_velocity.y, m_velocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_sMixerOption} };
 		return data;
 	}
 
@@ -46,7 +46,7 @@ struct AudioSource : public Component
 		m_iLoopCount = j["loopCount"];
 		m_fPitch = j["pitch"];
 		m_fVolume = j["volume"];
-		m_vVelocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
+		m_velocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
 		m_bPaused = j["paused"];
 		m_b3DSound = j["3DSound"];
 		m_sMixerOption = j["mixerOption"];
@@ -78,12 +78,11 @@ struct AudioSource : public Component
 		ImGui::Text("Something to select clip (WIP)");
 		ImGui::Text("Function built into Res Manager?");
 
-		ImGui::DragInt("Loop Count", &m_iLoopCount, 1, -1, 50);
-
-		float vel[3] = { m_vVelocity.x,m_vVelocity.y ,m_vVelocity.z };
+		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
 		ImGui::DragFloat3("Velocity", vel);
-		m_vVelocity = glm::vec3(vel[0], vel[1], vel[2]);
+		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
 
+		ImGui::DragInt("Loop Count", &m_iLoopCount, 1, -1, 50);
 		ImGui::DragFloat("Pitch", &m_fPitch, 0.1, 0, 3);
 		ImGui::DragFloat("Volume", &m_fVolume, 0.1, 0, 10);
 		ImGui::Checkbox("Paused", &m_bPaused);

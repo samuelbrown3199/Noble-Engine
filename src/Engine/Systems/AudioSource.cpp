@@ -98,9 +98,9 @@ void AudioSource::OnUpdate()
 			pos.z = m_sourceTransform->m_position.z;
 
 			FMOD_VECTOR vel;
-			vel.x = m_vVelocity.x;
-			vel.y = m_vVelocity.y;
-			vel.z = m_vVelocity.z;
+			vel.x = m_velocity.x;
+			vel.y = m_velocity.y;
+			vel.z = m_velocity.z;
 
 			FMOD_Channel_Set3DAttributes(channel, &pos, &vel);
 		}

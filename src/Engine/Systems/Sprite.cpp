@@ -27,6 +27,11 @@ void Sprite::RemoveComponent(std::string entityID)
 void Sprite::RemoveAllComponents()
 {
 	m_componentData.clear();
+
+	m_vertexBuffer.~GraphicsBuffer();
+	m_indexBuffer.~GraphicsBuffer();
+
+	m_bInitializedSpriteQuad = false;
 }
 
 Sprite* Sprite::GetComponent(std::string entityID)

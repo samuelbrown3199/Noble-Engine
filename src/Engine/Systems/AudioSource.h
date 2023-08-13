@@ -75,13 +75,15 @@ struct AudioSource : public Component
 
 	virtual void DoComponentInterface() override
 	{
-		ImGui::Text(m_sEntityID.c_str());
-		ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
 		ImGui::Text("Something to select clip (WIP)");
 		ImGui::Text("Function built into Res Manager?");
 
 		ImGui::DragInt("Loop Count", &m_iLoopCount, 1, -1, 50);
+
+		float vel[3] = { m_vVelocity.x,m_vVelocity.y ,m_vVelocity.z };
+		ImGui::DragFloat3("Velocity", vel);
+		m_vVelocity = glm::vec3(vel[0], vel[1], vel[2]);
+
 		ImGui::DragFloat("Pitch", &m_fPitch, 0.1, 0, 3);
 		ImGui::DragFloat("Volume", &m_fVolume, 0.1, 0, 10);
 		ImGui::Checkbox("Paused", &m_bPaused);

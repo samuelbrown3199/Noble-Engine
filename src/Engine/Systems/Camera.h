@@ -41,6 +41,19 @@ struct Camera : Component
 		return GetComponent(entityID);
 	}
 
+	virtual void DoComponentInterface() override
+	{
+		const char* states[] = { "Inactive", "Main Cam", "Editor Cam" };
+		int currentState = m_state;
+		ImGui::Combo("State", &currentState, states, IM_ARRAYSIZE(states));
+		m_state = (CameraState)currentState;
+
+		const char* viewmodes[] = { "Projection", "Orthographic" };
+		int currentViewMode = m_viewMode;
+		ImGui::Combo("View Mode", &currentViewMode, viewmodes, IM_ARRAYSIZE(viewmodes));
+		m_viewMode = (ViewMode)currentViewMode;
+	}
+
 	virtual void AddComponent() override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;

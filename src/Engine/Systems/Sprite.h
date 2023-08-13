@@ -66,6 +66,16 @@ struct Sprite : public Component
 		return GetComponent(entityID);
 	}
 
+	virtual void DoComponentInterface() override
+	{
+		ImGui::Text("Something to select texture (WIP)");
+		ImGui::Text("Function built into Res Manager?");
+
+		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
+		ImGui::ColorEdit4("Colour", (float*)&color);
+		m_colour = glm::vec4(color.x, color.y, color.z, color.w);
+	}
+
 	virtual void AddComponent() override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;

@@ -34,6 +34,13 @@ struct AudioListener : Component
 		return GetComponent(entityID);
 	}
 
+	virtual void DoComponentInterface() override
+	{
+		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
+		ImGui::DragFloat3("Velocity", vel);
+		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
+	}
+
 	virtual void AddComponent() override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;

@@ -28,7 +28,6 @@ struct Component
 
 	virtual void DoComponentInterface()
 	{
-		ImGui::Text(m_sEntityID.c_str());
 		ImGui::Text("No editable values. Component window not defined for this type.");
 	}
 

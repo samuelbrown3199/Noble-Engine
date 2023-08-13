@@ -66,9 +66,6 @@ struct Transform : Component
 
 	virtual void DoComponentInterface() override
 	{
-		ImGui::Text(m_sEntityID.c_str());
-		ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
 		float position[3] = { m_position.x, m_position.y, m_position.z};
 		ImGui::DragFloat3("Position", position, 0.01f);
 		m_position = glm::vec3(position[0], position[1], position[2]);

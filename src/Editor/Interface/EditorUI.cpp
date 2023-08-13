@@ -117,12 +117,9 @@ void EditorUI::DoInterface()
 
 					if (comp != nullptr)
 					{
-						ImGui::Indent();
-						if (ImGui::Button(compRegistry->at(o).first.c_str()))
-						{
-							m_selComponent = comp;
-						}
-						ImGui::Unindent();
+						ImGui::SeparatorText(compRegistry->at(o).first.c_str());
+						comp->DoComponentInterface();
+						ImGui::Dummy(ImVec2(0.0f, 20.0f));
 					}
 				}
 
@@ -131,15 +128,6 @@ void EditorUI::DoInterface()
 		}
 		ImGui::TreePop();
 	}
-
-	ImGui::Dummy(ImVec2(0.0f, 10.0f));
-	ImGui::SeparatorText("Component Information");
-	ImGui::BeginChild("Component Info", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y/3), false);
-
-	if (m_selComponent != nullptr )
-		m_selComponent->DoComponentInterface();
-
-	ImGui::EndChild();
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	static ImVec4 color = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);

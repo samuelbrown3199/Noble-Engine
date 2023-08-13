@@ -142,7 +142,6 @@ set (
 
 	src/Engine/ECS/Entity.hpp
 	src/Engine/ECS/Component.hpp
-	src/Engine/ECS/System.hpp
 	src/Engine/ECS/Behaviour.hpp
 
 	#Resource Handling
@@ -170,29 +169,22 @@ set (
 	#Systems & components
 
 	src/Engine/Systems/AudioListener.h
-	src/Engine/Systems/AudioListenerSystem.h
-	src/Engine/Systems/AudioListenerSystem.cpp
+	src/Engine/Systems/AudioListener.cpp
 
 	src/Engine/Systems/AudioSource.h
-	src/Engine/Systems/AudioSourceSystem.h
-	src/Engine/Systems/AudioSourceSystem.cpp
+	src/Engine/Systems/AudioSource.cpp
 
 	src/Engine/Systems/Camera.h
-	src/Engine/Systems/CameraSystem.h
-	src/Engine/Systems/CameraSystem.cpp
+	src/Engine/Systems/Camera.cpp
 
 	src/Engine/Systems/Transform.h
-	src/Engine/Systems/TransformSystem.h
-	src/Engine/Systems/TransformSystem.cpp
+	src/Engine/Systems/Transform.cpp
 
 	src/Engine/Systems/MeshRenderer.h
-	src/Engine/Systems/MeshRendererSystem.h
-	src/Engine/Systems/MeshRendererSystem.cpp
+	src/Engine/Systems/MeshRenderer.cpp
 
 	src/Engine/Systems/Sprite.h
-	src/Engine/Systems/SpriteSystem.h
-	src/Engine/Systems/SpriteSystem.cpp
-
+	src/Engine/Systems/Sprite.cpp
 )
 
 add_definitions(-DSDL_MAIN_HANDLED)

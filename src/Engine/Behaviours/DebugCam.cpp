@@ -24,7 +24,9 @@ void DebugCam::Start()
 
 	Entity* hackCam = Application::GetEntity(m_sEntityID);
 	Transform* tr = hackCam->AddComponent<Transform>(pos, rot);
-	hackCam->AddComponent<Camera>()->m_state = editorCam;
+	Camera* editCam = hackCam->AddComponent<Camera>();
+	editCam->m_state = editorCam;
+
 	hackCam->AddComponent<AudioListener>();
 
 	oldMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);

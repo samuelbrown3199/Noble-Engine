@@ -13,7 +13,6 @@
 #include "ResourceManager.h"
 #include "../Resource/IniFile.h"
 
-#include "../ECS/System.hpp"
 #include "../ECS/Behaviour.hpp"
 
 #include "DebugUI.hpp"
@@ -46,7 +45,6 @@ private:
 
     PerformanceStats* m_pStats;
 
-    static std::vector<std::shared_ptr<SystemBase>> m_vComponentSystems;
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
 
@@ -74,71 +72,7 @@ public:
 	void CleanupDeletionEntities();
 
 	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
-	static std::vector<std::shared_ptr<SystemBase>> GetSystemList() { return m_vComponentSystems; }
-
 	static void ClearLoadedScene();
-
-	static std::shared_ptr<SystemBase> GetSystemFromID(std::string _ID);
-
-	template<typename T>
-	static std::shared_ptr<T> BindSystem(SystemUsage _usage, std::string _ID)
-	{
-		std::shared_ptr<T> temp;
-		for (size_t sys = 0; sys < m_vComponentSystems.size(); sys++)
-		{
-			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
-			if (temp)
-			{
-				Logger::LogError("System is already bound.", 2);
-				return temp;
-			}
-		}
-
-		std::shared_ptr<T> system = std::make_shared<T>();
-		system->self = system;
-		system->systemUsage = _usage;
-		system->useThreads = false;
-		system->InitializeSystem(_ID);
-		m_vComponentSystems.push_back(system);
-		return system;
-	}
-
-	template<typename T>
-	static std::shared_ptr<T> BindSystem(SystemUsage _usage, std::string _ID, int _componentsPerThread)
-	{
-		std::shared_ptr<T> temp;
-		for (size_t sys = 0; sys < m_vComponentSystems.size(); sys++)
-		{
-			temp = std::dynamic_pointer_cast<T>(m_vComponentSystems.at(sys));
-			if (temp)
-			{
-				Logger::LogError("System is already bound.", 2);
-				return temp;
-			}
-		}
-
-		std::shared_ptr<T> system = std::make_shared<T>();
-		system->self = system;
-		system->systemUsage = _usage;
-		system->useThreads = true;
-		system->maxComponentsPerThread = _componentsPerThread;
-		system->InitializeSystem(_ID);
-		m_vComponentSystems.push_back(system);
-		return system;
-	}
-
-	template<typename T>
-	static std::shared_ptr<System<T>> GetComponentSystem()
-	{
-		for (int i = 0; i < m_vComponentSystems.size(); i++)
-		{
-			std::shared_ptr<System<T>> sys = std::dynamic_pointer_cast<System<T>>(m_vComponentSystems.at(i));
-			if (sys != nullptr)
-				return sys;
-		}
-
-		return nullptr;
-	}
 
 	template<typename T>
 	static std::shared_ptr<T> BindDebugUI()

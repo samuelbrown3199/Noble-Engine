@@ -1,5 +1,6 @@
 #include "Scene.h"
 
+#include "..\Core\Registry.h"
 #include "..\Core\Logger.h"
 #include "..\Core\Application.h"
 #include "..\Core\SceneManager.h"
@@ -38,24 +39,31 @@ void Scene::LoadSceneIntoApplication()
 		return;
 
 	//parse out JSON here. Should probably check that the file isnt malformed in some way as well.
+	if (m_sceneData.find("ComponentData") != m_sceneData.end())
+	{
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+
+		nlohmann::json componentData = m_sceneData.at("ComponentData");
+
+		for (auto it : componentData.items())
+		{
+			for (int i = 0; i < compRegistry->size(); i++)
+			{
+				if (compRegistry->at(i).first == it.key())
+				{
+					compRegistry->at(i).second.m_comp->LoadComponentDataFromJson(componentData[it.key()]);
+				}
+			}
+		}
+	}
 	if (m_sceneData.find("Entities") != m_sceneData.end())
 	{
 		nlohmann::json entities = m_sceneData.at("Entities");
 
 		for (auto it : entities.items())
 		{
-			Application::CreateEntity(it.key(), it.value());
-		}
-	}
-	if (m_sceneData.find("ComponentData") != m_sceneData.end())
-	{
-		nlohmann::json componentData = m_sceneData.at("ComponentData");
-
-		for (auto it : componentData.items())
-		{
-			std::shared_ptr<SystemBase> targetSystem = Application::GetSystemFromID(it.key());
-			if (targetSystem != nullptr)
-				targetSystem->LoadComponentDataFromJson(componentData[it.key()]);
+			Entity* ent = Application::CreateEntity(it.key(), it.value());
+			ent->GetAllComponents();
 		}
 	}
 	if (m_sceneData.find("Behaviours") != m_sceneData.end())

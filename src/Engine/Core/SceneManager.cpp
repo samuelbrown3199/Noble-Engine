@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 
 #include "Application.h"
+#include "Registry.h"
 #include "ResourceManager.h"
 #include "..\Resource\Scene.h"
 
@@ -35,7 +36,7 @@ void SceneManager::SaveScene(std::string scenePath)
 	Logger::LogInformation("Saving Scene " + scenePath);
 
 	std::vector<Entity>& entities = Application::GetEntityList();
-	std::vector<std::shared_ptr<SystemBase>> systems = Application::GetSystemList();
+	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
 
 	nlohmann::json data;
 
@@ -53,9 +54,9 @@ void SceneManager::SaveScene(std::string scenePath)
 		data["Entities"][entities.at(i).m_sEntityID] = entities.at(i).m_sEntityName;
 	}
 
-	for (int i = 0; i < systems.size(); i++)
+	for (int i = 0; i < compRegistry->size(); i++)
 	{
-		data["ComponentData"][systems.at(i)->m_systemID] = systems.at(i)->WriteComponentDataToJson();
+		data["ComponentData"][compRegistry->at(i).first] = compRegistry->at(i).second.m_comp->WriteComponentDataToJson();
 	}
 
 	std::fstream sceneFile(scenePath, 'w');

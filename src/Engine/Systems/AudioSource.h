@@ -24,6 +24,8 @@ struct AudioSource : public Component
 
 	std::string m_sMixerOption;
 
+	static std::vector<AudioSource> m_componentData;
+
 	~AudioSource()
 	{
 		if (channel != nullptr)
@@ -70,4 +72,40 @@ struct AudioSource : public Component
 		m_fPitch = _pitchValue;
 		m_iLoopCount = _loopCount;
 	}
+
+	virtual void DoComponentInterface() override
+	{
+		ImGui::Text(m_sEntityID.c_str());
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+		ImGui::Text("Something to select clip (WIP)");
+		ImGui::Text("Function built into Res Manager?");
+
+		ImGui::DragInt("Loop Count", &m_iLoopCount, 1, -1, 50);
+		ImGui::DragFloat("Pitch", &m_fPitch, 0.1, 0, 3);
+		ImGui::DragFloat("Volume", &m_fVolume, 0.1, 0, 10);
+		ImGui::Checkbox("Paused", &m_bPaused);
+		ImGui::Checkbox("3D Sound", &m_b3DSound);
+	}
+
+	Component* GetAsComponent(std::string entityID) override
+	{
+		return GetComponent(entityID);
+	}
+
+	virtual void AddComponent() override;
+	virtual void RemoveComponent(std::string entityID) override;
+	virtual void RemoveAllComponents() override;
+
+	AudioSource* GetComponent(std::string entityID);
+
+	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
+	virtual void ThreadUpdate(int _buffer, int _amount) override;
+	virtual void OnUpdate() override;
+
+	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
+	virtual void ThreadRender(int _buffer, int _amount) override;
+
+	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
+	virtual nlohmann::json WriteComponentDataToJson() override;
 };

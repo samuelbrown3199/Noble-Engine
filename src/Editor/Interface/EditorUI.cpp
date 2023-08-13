@@ -7,6 +7,8 @@
 #include <Engine\Behaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
 
+#include <Engine\ECS\Entity.hpp>
+
 #include <Engine\Resource\AudioClip.h>
 #include <Engine\Resource\Model.h>
 #include <Engine\Resource\Texture.h>
@@ -75,7 +77,6 @@ void EditorUI::DoInterface()
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
 	std::vector<Entity>& entities = Application::GetEntityList();
-	std::vector<std::shared_ptr<SystemBase>> systemList = Application::GetSystemList();
 	if(ImGui::Button("Create Entity"))
 	{
 		Application::CreateEntity();
@@ -88,6 +89,8 @@ void EditorUI::DoInterface()
 
 	if (ImGui::TreeNode("Entities"))
 	{
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);
 		for (int i = 0; i < entities.size(); i++)
@@ -108,14 +111,16 @@ void EditorUI::DoInterface()
 
 			if (node_open)
 			{
-				for (int o = 0; o < systemList.size(); o++)
+				for (int o = 0; o < compRegistry->size(); o++)
 				{
-					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
+					Component* comp = compRegistry->at(o).second.m_comp->GetAsComponent(entities.at(i).m_sEntityID);
+
+					if (comp != nullptr)
 					{
 						ImGui::Indent();
-						if (ImGui::Button(systemList.at(o)->m_systemID.c_str()))
+						if (ImGui::Button(compRegistry->at(o).first.c_str()))
 						{
-							m_selComponent = entities.at(i).GetComponent<Transform>();
+							m_selComponent = comp;
 						}
 						ImGui::Unindent();
 					}
@@ -131,48 +136,10 @@ void EditorUI::DoInterface()
 	ImGui::SeparatorText("Component Information");
 	ImGui::BeginChild("Component Info", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y/3), false);
 
-	if (m_selComponent != nullptr)
+	if (m_selComponent != nullptr )
 		m_selComponent->DoComponentInterface();
 
 	ImGui::EndChild();
-
-	ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
-	if (ImGui::TreeNode("Systems"))
-	{
-		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-		static int selection_mask = (1 << 2);
-		for (int i = 0; i < systemList.size(); i++)
-		{
-
-			// Disable the default "open on single-click behavior" + set Selected flag according to our selection.
-			// To alter selection we use IsItemClicked() && !IsItemToggledOpen(), so clicking on an arrow doesn't alter selection.
-			ImGuiTreeNodeFlags node_flags = base_flags;
-			const bool is_selected = i == m_iSelSystem;
-			if (is_selected)
-				node_flags |= ImGuiTreeNodeFlags_Selected;
-
-			bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, systemList.at(i)->m_systemID.c_str());
-			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-				m_iSelSystem = i;
-
-			if (node_open)
-			{
-				/*for (int o = 0; o < systemList.at(i); o++)
-				{
-					if (systemList.at(o)->GetComponentIndex(entities.at(i).m_sEntityID) != -1)
-					{
-						ImGui::Indent();
-						ImGui::Selectable(systemList.at(o)->m_systemID.c_str());
-						ImGui::Unindent();
-					}
-				}*/
-
-				ImGui::TreePop();
-			}
-		}
-		ImGui::TreePop();
-	}
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	static ImVec4 color = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
@@ -265,6 +232,7 @@ void EditorUI::DoFileMenu()
 	{
 		if (ImGui::MenuItem("New Scene"))
 		{
+			m_selComponent = nullptr;
 			Application::ClearLoadedScene();
 		}
 		if (ImGui::BeginMenu("Open Scene"))

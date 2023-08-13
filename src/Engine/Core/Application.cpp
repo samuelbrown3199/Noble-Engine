@@ -2,12 +2,12 @@
 #include "InputManager.h"
 #include "Registry.h"
 
-#include "../Systems/AudioListenerSystem.h"
-#include "../Systems/AudioSourceSystem.h"
-#include "../Systems/CameraSystem.h"
-#include "../Systems/TransformSystem.h"
-#include "../Systems/MeshRendererSystem.h"
-#include "../Systems/SpriteSystem.h"
+#include "../Systems/Transform.h"
+#include "../Systems/AudioListener.h"
+#include "../Systems/AudioSource.h"
+#include "../Systems/Camera.h"
+#include "../Systems/MeshRenderer.h"
+#include "../Systems/Sprite.h"
 
 #include "../ECS/Entity.hpp"
 
@@ -22,7 +22,6 @@ std::weak_ptr<Application> Application::m_self;
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
 
-std::vector<std::shared_ptr<SystemBase>> Application::m_vComponentSystems;
 std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
 
 //----------------- Private Functions ----------------------
@@ -52,18 +51,17 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
 
-	rtn->RegisterCoreKeybinds();
+	rtn->m_registry->RegisterComponent("Transform", new Transform(), false, 1024);
+	rtn->m_registry->RegisterComponent("Camera", new Camera(), false, 1024);
+	rtn->m_registry->RegisterComponent("AudioListener", new AudioListener(), false, 1024);
+	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024);
+	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024);
+	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024);
 
+	rtn->RegisterCoreKeybinds();
 	rtn->InitializeImGui();
 
 	rtn->m_mainIniFile = std::make_shared<IniFile>(GetWorkingDirectory() + "\\game.ini");
-
-	rtn->BindSystem<TransformSystem>(SystemUsage::useUpdate, "Transform");
-	rtn->BindSystem<CameraSystem>(SystemUsage::useUpdate, "Camera");
-	rtn->BindSystem<AudioListenerSystem>(SystemUsage::useUpdate, "AudioListener");
-	rtn->BindSystem<AudioSourceSystem>(SystemUsage::useUpdate, "AudioSource");
-	rtn->BindSystem<MeshRendererSystem>(SystemUsage::useRender, "Mesh");
-	rtn->BindSystem<SpriteSystem>(SystemUsage::useRender, "Sprite");
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
@@ -109,6 +107,8 @@ void Application::MainLoop()
 
 	while (m_bLoop)
 	{
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
+
 		m_pStats->ResetPerformanceStats();
 		m_pStats->preUpdateStart = SDL_GetTicks();
 		InputManager::HandleGeneralInput();
@@ -122,14 +122,14 @@ void Application::MainLoop()
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
 		AudioManager::UpdateSystem();
-		for (int i = 0; i < m_vComponentSystems.size(); i++)
+		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			Uint32 updateStart = SDL_GetTicks();
-			m_vComponentSystems.at(i)->PreUpdate();
-			m_vComponentSystems.at(i)->Update();
+			compRegistry->at(i).second.m_comp->PreUpdate();
+			compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
 			Uint32 updateEnd = SDL_GetTicks() - updateStart;
 
-			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, updateEnd);
+			std::pair<std::string, Uint32> pair(compRegistry->at(i).first, updateEnd);
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
 		for (int i = 0; i < m_vEntities.size(); i++)
@@ -156,17 +156,16 @@ void Application::MainLoop()
 
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();
-		for (int i = 0; i < m_vComponentSystems.size(); i++)
+		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			Uint32 renderStart = SDL_GetTicks();
-			m_vComponentSystems.at(i)->PreRender();
-			m_vComponentSystems.at(i)->Render();
+			compRegistry->at(i).second.m_comp->PreRender();
+			compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
 			Uint32 renderEnd = SDL_GetTicks() - renderStart;
 
-			std::pair<std::string, Uint32> pair(m_vComponentSystems.at(i)->m_systemID, renderEnd);
+			std::pair<std::string, Uint32> pair(compRegistry->at(i).first, renderEnd);
 			m_pStats->m_mSystemRenderTimes.push_back(pair);
 		}
-		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->EndDrawFrame();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
@@ -201,11 +200,6 @@ void Application::CleanupApplication()
 	ThreadingManager::StopThreads();
 
 	ClearLoadedScene();
-
-	for (int i = 0; i < m_vComponentSystems.size(); i++)
-	{
-		m_vComponentSystems.at(i).reset();
-	}
 
 	m_resourceManager->UnloadAllResources();
 	delete m_resourceManager;
@@ -371,9 +365,10 @@ void Application::ClearLoadedScene()
 	m_vEntities.clear();
 	m_vDeletionEntities.clear();
 
-	for (int i = 0; i < m_vComponentSystems.size(); i++)
+	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+	for (int i = 0; i < compRegistry->size(); i++)
 	{
-		m_vComponentSystems.at(i)->RemoveAllComponents();
+		compRegistry->at(i).second.m_comp->RemoveAllComponents();
 	}
 }
 
@@ -384,25 +379,18 @@ void Application::CleanupDeletionEntities()
 		Entity* currentEntity = m_vDeletionEntities.front();
 		currentEntity->DeleteAllBehaviours();
 		m_vDeletionEntities.pop_front();
-		for (int o = 0; o < m_vComponentSystems.size(); o++)
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		for (int i = 0; i < compRegistry->size(); i++)
 		{
-			m_vComponentSystems.at(o)->RemoveComponent(currentEntity->m_sEntityID);
+			compRegistry->at(i).second.m_comp->RemoveComponent(currentEntity->m_sEntityID);
 		}
 		currentEntity->m_bAvailableForUse = true;
 
 		m_bEntitiesDeleted = true;
 	}
-}
 
-std::shared_ptr<SystemBase> Application::GetSystemFromID(std::string _ID)
-{
-	for (int i = 0; i < m_vComponentSystems.size(); i++)
+	for (int i = 0; i < m_vEntities.size(); i++)
 	{
-		if (m_vComponentSystems.at(i)->m_systemID == _ID)
-		{
-			return m_vComponentSystems.at(i);
-		}
+		m_vEntities.at(i).GetAllComponents();
 	}
-
-	return nullptr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Application.h"
+#include "../Core/Registry.h"
 #include "Behaviour.hpp"
 
 struct Component;
@@ -35,24 +35,39 @@ struct Entity
 		m_sEntityID = _ID;
 	}
 
+	void GetAllComponents()
+	{
+		m_vComponents.clear();
+
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		for (int i = 0; i < compRegistry->size(); i++)
+		{
+			Component* comp = compRegistry->at(i).second.m_comp->GetAsComponent(m_sEntityID);
+			if (comp != nullptr)
+				m_vComponents.push_back(comp);
+		}
+	}
+
 	/**
 	*Adds a component of the type to the Entity.
 	*/
 	template<typename T>
 	T* AddComponent()
 	{
-		T* alreadyHasComponent = GetComponent<T>();
-		if (!alreadyHasComponent)
-		{
+		/*T* alreadyHasComponent = GetComponent<T>();
+		if (alreadyHasComponent == nullptr)
+		{*/
 			T comp;
 			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize();
-			Application::GetComponentSystem<T>()->AddComponent(&comp);
+			comp.AddComponent();
 
-			m_vComponents.push_back(dynamic_cast<T*>(Application::GetComponentSystem<T>()->GetComponent(m_sEntityID)));
-			return dynamic_cast<T*>(m_vComponents.at(m_vComponents.size() - 1));
-		}
-		return alreadyHasComponent;
+			T* rtnPtr = comp.GetComponent(m_sEntityID);
+			m_vComponents.push_back(rtnPtr);
+			return rtnPtr;
+		//}
+
+		//return alreadyHasComponent;
 	}
 	/**
 	*Adds a component of the type to the Entity.
@@ -61,15 +76,16 @@ struct Entity
 	T* AddComponent(Args&&... _args)
 	{
 		T* alreadyHasComponent = GetComponent<T>();
-		if (!alreadyHasComponent)
+		if (alreadyHasComponent == nullptr)
 		{
 			T comp;
 			comp.m_sEntityID = m_sEntityID;
 			comp.OnInitialize(std::forward<Args>(_args)...);
-			Application::GetComponentSystem<T>()->AddComponent(&comp);
+			comp.AddComponent();
 
-			m_vComponents.push_back(dynamic_cast<T*>(Application::GetComponentSystem<T>()->GetComponent(m_sEntityID)));
-			return dynamic_cast<T*>(m_vComponents.at(m_vComponents.size() - 1));
+			T* rtnPtr = comp.GetComponent(m_sEntityID);
+			m_vComponents.push_back(rtnPtr);
+			return rtnPtr;
 		}
 		return alreadyHasComponent;
 	}

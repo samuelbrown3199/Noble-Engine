@@ -8,6 +8,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../imgui/imgui.h"
 #include "../Useful.h"
 #include "../Resource/Resource.h"
 #include "Logger.h"
@@ -140,6 +141,39 @@ struct ResourceManager
 	*/
 	static void UnloadUnusedResources();
 	static void UnloadAllResources();
+
+
+
+	template<typename T>
+	static std::shared_ptr<T> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath)
+	{
+		std::vector<std::shared_ptr<Resource>> resources = GetAllResourcesOfType<T>();
+
+		if (resources.size() == 0)
+		{
+			ImGui::Text(FormatString("No resources of type %s exist in database.", interfaceText).c_str());
+			return nullptr;
+		}
+
+		int currentSel = 0;
+		if (ImGui::BeginCombo(interfaceText.c_str(), currentResourcePath.c_str()))
+		{
+			for (int n = 0; n < resources.size(); n++)
+			{
+				const bool is_selected = (currentSel == n);
+				if (ImGui::Selectable(resources[n]->m_sLocalPath.c_str(), is_selected))
+				{
+					currentSel = n;
+					return LoadResource<T>(resources[n]->m_sLocalPath);
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
 };
 
 #endif

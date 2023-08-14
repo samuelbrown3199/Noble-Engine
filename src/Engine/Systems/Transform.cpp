@@ -4,68 +4,31 @@
 
 #include <glm/ext.hpp>
 
-std::vector<Transform> Transform::m_componentData;
+ComponentDatalist<Transform> Transform::m_componentList;
 
 void Transform::AddComponent()
 {
-	m_componentData.push_back(*this);
+	m_componentList.AddComponent(this);
 }
 
 void Transform::RemoveComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			m_componentData.erase(m_componentData.begin() + i);
-	}
+	m_componentList.RemoveComponent(entityID);
 }
 
 void Transform::RemoveAllComponents()
 {
-	m_componentData.clear();
+	m_componentList.RemoveAllComponents();
 }
 
 Transform* Transform::GetComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			return &m_componentData.at(i);
-	}
-
-	return nullptr;
+	return m_componentList.GetComponent(entityID);
 }
 
 void Transform::Update(bool useThreads, int maxComponentsPerThread)
 {
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnUpdate();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void Transform::ThreadUpdate(int _buffer, int _amount)
-{
-	int maxCap = _buffer + _amount;
-	for (size_t co = _buffer; co < maxCap; co++)
-	{
-		if (co >= m_componentData.size())
-			break;
-
-		m_componentData.at(co).OnUpdate();
-	}
+	m_componentList.Update(useThreads, maxComponentsPerThread);
 }
 
 void Transform::OnUpdate()
@@ -86,28 +49,13 @@ void Transform::OnUpdate()
 }
 
 void Transform::Render(bool useThreads, int maxComponentsPerThread){}
-void Transform::ThreadRender(int _buffer, int _amount) {}
 
 void Transform::LoadComponentDataFromJson(nlohmann::json& j)
 {
-	for (auto it : j.items())
-	{
-		Transform component;
-		component.m_sEntityID = it.key();
-		component.FromJson(j[it.key()]);
-
-		m_componentData.push_back(component);
-	}
+	m_componentList.LoadComponentDataFromJson(j);
 }
 
 nlohmann::json Transform::WriteComponentDataToJson()
 {
-	nlohmann::json data;
-
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
-	}
-
-	return data;
+	return m_componentList.WriteComponentDataToJson();
 }

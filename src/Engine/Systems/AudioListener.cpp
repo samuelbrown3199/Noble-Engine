@@ -8,82 +8,46 @@ FMOD_VECTOR AudioListener::pos;
 FMOD_VECTOR AudioListener::vel;
 FMOD_VECTOR AudioListener::forward;
 FMOD_VECTOR AudioListener::up;
-std::vector<AudioListener> AudioListener::m_componentData;
+
+ComponentDatalist<AudioListener> AudioListener::m_componentList;
 
 void AudioListener::AddComponent()
 {
-	m_componentData.push_back(*this);
+	m_componentList.AddComponent(this);
 }
 
 void AudioListener::RemoveComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			m_componentData.erase(m_componentData.begin() + i);
-	}
+	m_componentList.RemoveComponent(entityID);
 }
 
 void AudioListener::RemoveAllComponents()
 {
-	m_componentData.clear();
+	m_componentList.RemoveAllComponents();
 }
 
 AudioListener* AudioListener::GetComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			return &m_componentData.at(i);
-	}
-
-	return nullptr;
+	return m_componentList.GetComponent(entityID);
 }
 
 void AudioListener::PreUpdate()
 {
 	m_iCurrentListener = 0;
-	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), m_componentData.size());
+	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), m_componentList.m_componentData.size());
 }
 
 void AudioListener::Update(bool useThreads, int maxComponentsPerThread)
 {
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnUpdate();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void AudioListener::ThreadUpdate(int _buffer, int _amount)
-{
-	int maxCap = _buffer + _amount;
-	for (size_t co = _buffer; co < maxCap; co++)
-	{
-		if (co >= m_componentData.size())
-			break;
-
-		m_componentData.at(co).OnUpdate();
-	}
+	m_componentList.Update(useThreads, maxComponentsPerThread);
 }
 
 void AudioListener::OnUpdate()
 {
-	if (m_listenerTransform == nullptr || Application::GetEntitiesDeleted())
-	{
-		m_listenerTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-	}
+	m_listenerTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
+	if (m_listenerTransform == nullptr)
+		return;
+
 
 	pos.x = m_listenerTransform->m_position.x;
 	pos.y = m_listenerTransform->m_position.y;
@@ -107,28 +71,13 @@ void AudioListener::OnUpdate()
 }
 
 void AudioListener::Render(bool useThreads, int maxComponentsPerThread) {}
-void AudioListener::ThreadRender(int _buffer, int _amount) {}
 
 void AudioListener::LoadComponentDataFromJson(nlohmann::json& j)
 {
-	for (auto it : j.items())
-	{
-		AudioListener component;
-		component.m_sEntityID = it.key();
-		component.FromJson(j[it.key()]);
-
-		m_componentData.push_back(component);
-	}
+	m_componentList.LoadComponentDataFromJson(j);
 }
 
 nlohmann::json AudioListener::WriteComponentDataToJson()
 {
-	nlohmann::json data;
-
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
-	}
-
-	return data;
+	return m_componentList.WriteComponentDataToJson();
 }

@@ -24,7 +24,7 @@ struct AudioSource : public Component
 
 	std::string m_sMixerOption;
 
-	static std::vector<AudioSource> m_componentData;
+	static ComponentDatalist<AudioSource> m_componentList;
 
 	~AudioSource()
 	{
@@ -101,11 +101,9 @@ struct AudioSource : public Component
 	AudioSource* GetComponent(std::string entityID);
 
 	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadUpdate(int _buffer, int _amount) override;
 	virtual void OnUpdate() override;
 
 	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadRender(int _buffer, int _amount) override;
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
 	virtual nlohmann::json WriteComponentDataToJson() override;

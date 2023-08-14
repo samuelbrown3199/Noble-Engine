@@ -22,7 +22,7 @@ struct MeshRenderer : public Component
 	std::vector<void*> m_uniformBuffersMapped;
 	std::vector<VkDescriptorSet> m_descriptorSets;
 
-	static std::vector<MeshRenderer> m_componentData;
+	static ComponentDatalist<MeshRenderer> m_componentList;
 
 	nlohmann::json WriteJson()
 	{
@@ -46,6 +46,15 @@ struct MeshRenderer : public Component
 
 	virtual void DoComponentInterface() override
 	{
+		if (m_transform == nullptr)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+			ImGui::Text("No transform attached. Object won't render.");
+			ImGui::PopStyleColor();
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		}
+
 		ImGui::Text("Something to select clip (WIP)");
 		ImGui::Text("Function built into Res Manager?");
 
@@ -61,10 +70,8 @@ struct MeshRenderer : public Component
 	MeshRenderer* GetComponent(std::string entityID);
 
 	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadUpdate(int _buffer, int _amount) override;
 
 	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadRender(int _buffer, int _amount) override;
 	virtual void OnRender() override;
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;

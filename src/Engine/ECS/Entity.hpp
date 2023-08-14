@@ -115,6 +115,8 @@ struct Entity
 			if (comp != nullptr)
 				return comp;
 		}
+
+		return nullptr;
 	}
 
 	/**
@@ -124,6 +126,8 @@ struct Entity
 	void RemoveComponent()
 	{
 		T::RemoveComponent(m_sEntityID);
+		GetAllComponents();
+		Application::SetEntitiesDeleted();
 	}
 
 	void DeleteAllBehaviours()

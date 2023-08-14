@@ -22,7 +22,7 @@ struct Camera : Component
 	CameraState m_state = inactive;
 	ViewMode m_viewMode = projection;
 
-	static std::vector<Camera> m_componentData;
+	static ComponentDatalist<Camera> m_componentList;
 
 	nlohmann::json WriteJson() override
 	{
@@ -62,11 +62,9 @@ struct Camera : Component
 
 	virtual void PreUpdate() override;
 	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadUpdate(int _buffer, int _amount) override;
 	virtual void OnUpdate() override;
 
 	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadRender(int _buffer, int _amount) override;
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
 	virtual nlohmann::json WriteComponentDataToJson() override;

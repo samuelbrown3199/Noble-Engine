@@ -16,7 +16,8 @@ struct AudioListener : Component
 	static FMOD_VECTOR vel;
 	static FMOD_VECTOR forward;
 	static FMOD_VECTOR up;
-	static std::vector<AudioListener> m_componentData;
+
+	static ComponentDatalist<AudioListener> m_componentList;
 
 	nlohmann::json WriteJson() override
 	{
@@ -49,11 +50,9 @@ struct AudioListener : Component
 
 	virtual void PreUpdate() override;
 	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadUpdate(int _buffer, int _amount) override;
 	virtual void OnUpdate() override;
 
 	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadRender(int _buffer, int _amount) override;
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
 	virtual nlohmann::json WriteComponentDataToJson() override;

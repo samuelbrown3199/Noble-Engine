@@ -8,64 +8,30 @@
 bool Sprite::m_bInitializedSpriteQuad = false;
 GraphicsBuffer Sprite::m_vertexBuffer;
 GraphicsBuffer Sprite::m_indexBuffer;
-std::vector<Sprite> Sprite::m_componentData;
+
+ComponentDatalist<Sprite> Sprite::m_componentList;
 
 void Sprite::AddComponent()
 {
-	m_componentData.push_back(*this);
+	m_componentList.AddComponent(this);
 }
 
 void Sprite::RemoveComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			m_componentData.erase(m_componentData.begin() + i);
-	}
+	m_componentList.RemoveComponent(entityID);
 }
 
 void Sprite::RemoveAllComponents()
 {
-	m_componentData.clear();
-
-	m_vertexBuffer.~GraphicsBuffer();
-	m_indexBuffer.~GraphicsBuffer();
-
-	m_bInitializedSpriteQuad = false;
+	m_componentList.RemoveAllComponents();
 }
 
 Sprite* Sprite::GetComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			return &m_componentData.at(i);
-	}
-
-	return nullptr;
+	return m_componentList.GetComponent(entityID);
 }
 
-void Sprite::Update(bool useThreads, int maxComponentsPerThread)
-{
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnUpdate();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void Sprite::ThreadUpdate(int _buffer, int _amount) {}
+void Sprite::Update(bool useThreads, int maxComponentsPerThread) {}
 
 const std::vector<Vertex> vertices =
 {
@@ -93,43 +59,12 @@ void Sprite::PreRender()
 
 void Sprite::Render(bool useThreads, int maxComponentsPerThread)
 {
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnRender();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadRender(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void Sprite::ThreadRender(int _buffer, int _amount)
-{
-	int maxCap = _buffer + _amount;
-	for (size_t co = _buffer; co < maxCap; co++)
-	{
-		if (co >= m_componentData.size())
-			break;
-
-		m_componentData.at(co).OnRender();
-	}
+	m_componentList.Render(useThreads, maxComponentsPerThread);
 }
 
 void Sprite::OnRender()
 {
-	if (m_spriteTransform == nullptr || Application::GetEntitiesDeleted())
-	{
-		m_spriteTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-		return;
-	}
+	m_spriteTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 	if (m_spriteTexture == nullptr)
 		return;
 
@@ -161,24 +96,10 @@ void Sprite::OnRender()
 
 void Sprite::LoadComponentDataFromJson(nlohmann::json& j)
 {
-	for (auto it : j.items())
-	{
-		Sprite  component;
-		component.m_sEntityID = it.key();
-		component.FromJson(j[it.key()]);
-
-		m_componentData.push_back(component);
-	}
+	m_componentList.LoadComponentDataFromJson(j);
 }
 
 nlohmann::json Sprite::WriteComponentDataToJson()
 {
-	nlohmann::json data;
-
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
-	}
-
-	return data;
+	return m_componentList.WriteComponentDataToJson();
 }

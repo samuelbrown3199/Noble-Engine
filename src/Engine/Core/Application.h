@@ -63,6 +63,7 @@ public:
     void MainLoop();
     void CleanupApplication();
 
+	static void SetEntitiesDeleted() { m_bEntitiesDeleted = true; }
 	static bool GetEntitiesDeleted() { return m_bEntitiesDeleted; }
 
 	static Entity* CreateEntity();

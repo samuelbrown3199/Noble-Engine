@@ -6,79 +6,40 @@
 #include "../Core/Graphics/GraphicsPipeline.h"
 #include "../ECS/Entity.hpp"
 
-std::vector<MeshRenderer> MeshRenderer::m_componentData;
+ComponentDatalist<MeshRenderer> MeshRenderer::m_componentList;
 
 void MeshRenderer::AddComponent()
 {
-	m_componentData.push_back(*this);
+	m_componentList.AddComponent(this);
 }
 
 void MeshRenderer::RemoveComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			m_componentData.erase(m_componentData.begin() + i);
-	}
+	m_componentList.RemoveComponent(entityID);
 }
 
-void MeshRenderer ::RemoveAllComponents()
+void MeshRenderer::RemoveAllComponents()
 {
-	m_componentData.clear();
+	m_componentList.RemoveAllComponents();
 }
 
 MeshRenderer* MeshRenderer::GetComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			return &m_componentData.at(i);
-	}
-
-	return nullptr;
+	return m_componentList.GetComponent(entityID);
 }
 
 void MeshRenderer::Update(bool useThreads, int maxComponentsPerThread) {}
-void MeshRenderer::ThreadUpdate(int _buffer, int _amount){}
 
 void MeshRenderer::Render(bool useThreads, int maxComponentsPerThread)
 {
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnRender();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadRender(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void MeshRenderer::ThreadRender(int _buffer, int _amount)
-{
-	int maxCap = _buffer + _amount;
-	for (size_t co = _buffer; co < maxCap; co++)
-	{
-		if (co >= m_componentData.size())
-			break;
-
-		m_componentData.at(co).OnRender();
-	}
+	m_componentList.Render(useThreads, maxComponentsPerThread);
 }
 
 void MeshRenderer::OnRender() 
 {
-	if (m_transform == nullptr || Application::GetEntitiesDeleted())
-	{
-		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-	}
+	m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
+	if (m_transform == nullptr)
+		return;
 
 	if (m_model == nullptr)
 		return;
@@ -112,24 +73,10 @@ void MeshRenderer::OnRender()
 
 void MeshRenderer::LoadComponentDataFromJson(nlohmann::json& j)
 {
-	for (auto it : j.items())
-	{
-		MeshRenderer  component;
-		component.m_sEntityID = it.key();
-		component.FromJson(j[it.key()]);
-
-		m_componentData.push_back(component);
-	}
+	m_componentList.LoadComponentDataFromJson(j);
 }
 
 nlohmann::json MeshRenderer::WriteComponentDataToJson()
 {
-	nlohmann::json data;
-
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
-	}
-
-	return data;
+	return m_componentList.WriteComponentDataToJson();
 }

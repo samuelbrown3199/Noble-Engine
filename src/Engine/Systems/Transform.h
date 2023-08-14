@@ -16,7 +16,7 @@ struct Transform : Component
 
 	glm::mat4 m_transformMat;
 
-	static std::vector<Transform> m_componentData;
+	static ComponentDatalist<Transform> m_componentList;
 
 	Component* GetAsComponent(std::string entityID) override
 	{
@@ -86,11 +86,9 @@ struct Transform : Component
 	Transform* GetComponent(std::string entityID);
 
 	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadUpdate(int _buffer, int _amount) override;
 	virtual void OnUpdate() override;
 
 	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-	virtual void ThreadRender(int _buffer, int _amount) override;
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
 	virtual nlohmann::json WriteComponentDataToJson() override;

@@ -4,36 +4,31 @@
 #include "../ECS/Entity.hpp"
 #include "Transform.h"
 
-std::vector<Camera> Camera::m_componentData;
+ComponentDatalist<Camera> Camera::m_componentList;
 
 void Camera::AddComponent()
 {
-	m_componentData.push_back(*this);
+	m_componentList.AddComponent(this);
 }
 
 void Camera::RemoveComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			m_componentData.erase(m_componentData.begin() + i);
-	}
+	m_componentList.RemoveComponent(entityID);
 }
 
 void Camera::RemoveAllComponents()
 {
-	m_componentData.clear();
+	m_componentList.RemoveAllComponents();
 }
 
 Camera* Camera::GetComponent(std::string entityID)
 {
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		if (m_componentData.at(i).m_sEntityID == entityID)
-			return &m_componentData.at(i);
-	}
+	return m_componentList.GetComponent(entityID);
+}
 
-	return nullptr;
+void Camera::Update(bool useThreads, int maxComponentsPerThread)
+{
+	m_componentList.Update(useThreads, maxComponentsPerThread);
 }
 
 void Camera::PreUpdate()
@@ -41,11 +36,11 @@ void Camera::PreUpdate()
 	int bestCam = -1;
 	CameraState bestState = inactive;
 
-	for (int i = 0; i < m_componentData.size(); i++)
+	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
 	{
-		if (bestState <= m_componentData.at(i).m_state)
+		if (bestState <= m_componentList.m_componentData.at(i).m_state)
 		{
-			bestState = m_componentData.at(i).m_state;
+			bestState = m_componentList.m_componentData.at(i).m_state;
 			bestCam = i;
 		}
 
@@ -54,39 +49,7 @@ void Camera::PreUpdate()
 	}
 
 	if (bestCam != -1)
-		Renderer::SetCamera(&m_componentData.at(bestCam));
-}
-
-void Camera::Update(bool useThreads, int maxComponentsPerThread)
-{
-	if (!useThreads)
-	{
-		for (int i = 0; i < m_componentData.size(); i++)
-		{
-			m_componentData.at(i).OnUpdate();
-		}
-	}
-	else
-	{
-		double amountOfThreads = ceil(m_componentData.size() / maxComponentsPerThread) + 1;
-		for (int i = 0; i < amountOfThreads; i++)
-		{
-			int buffer = maxComponentsPerThread * i;
-			auto th = ThreadingManager::EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
-		}
-	}
-}
-
-void Camera::ThreadUpdate(int _buffer, int _amount)
-{
-	int maxCap = _buffer + _amount;
-	for (size_t co = _buffer; co < maxCap; co++)
-	{
-		if (co >= m_componentData.size())
-			break;
-
-		m_componentData.at(co).OnUpdate();
-	}
+		Renderer::SetCamera(&m_componentList.m_componentData.at(bestCam));
 }
 
 void Camera::OnUpdate()
@@ -106,28 +69,13 @@ void Camera::OnUpdate()
 }
 
 void Camera::Render(bool useThreads, int maxComponentsPerThread) {}
-void Camera::ThreadRender(int _buffer, int _amount) {}
 
 void Camera::LoadComponentDataFromJson(nlohmann::json& j)
 {
-	for (auto it : j.items())
-	{
-		Camera component;
-		component.m_sEntityID = it.key();
-		component.FromJson(j[it.key()]);
-
-		m_componentData.push_back(component);
-	}
+	m_componentList.LoadComponentDataFromJson(j);
 }
 
 nlohmann::json Camera::WriteComponentDataToJson()
 {
-	nlohmann::json data;
-
-	for (int i = 0; i < m_componentData.size(); i++)
-	{
-		data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
-	}
-
-	return data;
+	return m_componentList.WriteComponentDataToJson();
 }

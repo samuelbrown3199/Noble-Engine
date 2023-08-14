@@ -111,6 +111,9 @@ void EditorUI::DoInterface()
 
 			if (node_open)
 			{
+				ImGui::Unindent();
+				ImGui::SeparatorText("Components");
+				ImGui::Indent();
 				for (int o = 0; o < compRegistry->size(); o++)
 				{
 					Component* comp = compRegistry->at(o).second.m_comp->GetAsComponent(entities.at(i).m_sEntityID);
@@ -119,10 +122,28 @@ void EditorUI::DoInterface()
 					{
 						ImGui::SeparatorText(compRegistry->at(o).first.c_str());
 						comp->DoComponentInterface();
+
+						ImGui::Dummy(ImVec2(0.0f, 5.0f));
+						if (ImGui::Button("Remove Component"))
+						{
+							comp->RemoveComponent(entities.at(i).m_sEntityID);
+							Application::SetEntitiesDeleted();
+						}
 						ImGui::Dummy(ImVec2(0.0f, 20.0f));
 					}
 				}
 
+				ImGui::Unindent();
+				if (ImGui::Button("Add Component"))
+				{
+					entities.at(i).AddComponent<Transform>();
+				}
+				ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+				ImGui::SeparatorText("Behaviours TBD");
+				ImGui::Indent();
+
+				ImGui::Dummy(ImVec2(0.0f, 20.0f));
 				ImGui::TreePop();
 			}
 		}

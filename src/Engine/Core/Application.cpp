@@ -112,16 +112,35 @@ void Application::MainLoop()
 		m_pStats->ResetPerformanceStats();
 		m_pStats->preUpdateStart = SDL_GetTicks();
 		InputManager::HandleGeneralInput();
-		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
 
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
 
 		ImGui::NewFrame();
 
+		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
+
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
+
 		AudioManager::UpdateSystem();
+
+		for (int i = 0; i < m_vDebugUIs.size(); i++)
+		{
+			if (m_vDebugUIs.at(i)->m_uiOpen)
+			{
+				m_vDebugUIs.at(i)->DoInterface();
+			}
+		}
+
+		for (int i = 0; i < m_vEntities.size(); i++)
+		{
+			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
+			{
+				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
+			}
+		}
+
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			Uint32 updateStart = SDL_GetTicks();
@@ -132,27 +151,12 @@ void Application::MainLoop()
 			std::pair<std::string, Uint32> pair(compRegistry->at(i).first, updateEnd);
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
-		for (int i = 0; i < m_vEntities.size(); i++)
-		{
-			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
-			{
-				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
-			}
-		}
 		ThreadingManager::WaitForTasksToClear();
 		m_pStats->updateTime = SDL_GetTicks() - m_pStats->updateStart;
 		//update end
 
 		//Render Start
 		m_pStats->renderStart = SDL_GetTicks();
-
-		for (int i = 0; i < m_vDebugUIs.size(); i++)
-		{
-			if (m_vDebugUIs.at(i)->m_uiOpen)
-			{
-				m_vDebugUIs.at(i)->DoInterface();
-			}
-		}
 
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();

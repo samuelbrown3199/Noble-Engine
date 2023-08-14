@@ -44,6 +44,9 @@ void Camera::PreUpdate()
 
 	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
 	{
+		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
+			continue;
+
 		if (bestState <= m_componentList.m_componentData.at(i).m_state)
 		{
 			bestState = m_componentList.m_componentData.at(i).m_state;

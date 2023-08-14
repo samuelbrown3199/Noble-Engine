@@ -155,24 +155,21 @@ struct ResourceManager
 			return nullptr;
 		}
 
-		int currentSel = 0;
-		if (ImGui::BeginCombo(interfaceText.c_str(), currentResourcePath.c_str()))
+		int res = 0;
+		for (int i = 0; i < resources.size(); i++)
 		{
-			for (int n = 0; n < resources.size(); n++)
-			{
-				const bool is_selected = (currentSel == n);
-				if (ImGui::Selectable(resources[n]->m_sLocalPath.c_str(), is_selected))
-				{
-					currentSel = n;
-					return LoadResource<T>(resources[n]->m_sLocalPath);
-				}
-
-				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
+			if (resources.at(i)->m_sLocalPath == currentResourcePath)
+				res = i;
 		}
+
+		ImGui::DragInt("Temp Res", &res, 1, 0, resources.size() - 1);
+
+		if (resources.at(res)->m_sLocalPath == currentResourcePath)
+		{
+			return std::dynamic_pointer_cast<T>(resources.at(res));
+		}
+
+		return LoadResource<T>(resources.at(res)->m_sLocalPath);
 	}
 };
 

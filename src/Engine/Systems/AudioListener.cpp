@@ -40,7 +40,17 @@ AudioListener* AudioListener::GetComponent(std::string entityID)
 void AudioListener::PreUpdate()
 {
 	m_iCurrentListener = 0;
-	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), m_componentList.m_componentData.size());
+
+	int listenerCount = 0;
+	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
+	{
+		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
+			continue;
+
+		listenerCount++;
+	}
+
+	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), listenerCount);
 }
 
 void AudioListener::Update(bool useThreads, int maxComponentsPerThread)

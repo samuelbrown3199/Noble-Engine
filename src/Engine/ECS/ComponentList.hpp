@@ -150,6 +150,9 @@ struct ComponentDatalist
 
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
+			if (m_componentData.at(i).m_bAvailableForReuse)
+				continue;
+
 			data[m_componentData.at(i).m_sEntityID] = m_componentData.at(i).WriteJson();
 		}
 

@@ -2,6 +2,7 @@
 
 #include <FMOD/fmod.h>
 
+#include "../ECS/ComponentList.hpp"
 #include "../ECS/Component.hpp"
 #include "Transform.h"
 
@@ -43,6 +44,7 @@ struct AudioListener : Component
 	}
 
 	virtual void AddComponent() override;
+	virtual void AddComponentToEntity(std::string entityID) override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;
 

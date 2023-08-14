@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../ECS/ComponentList.hpp"
 #include "../ECS/Component.hpp"
 #include "../Resource/Model.h"
 #include "../Resource/Texture.h"
@@ -64,6 +65,7 @@ struct MeshRenderer : public Component
 	}
 
 	virtual void AddComponent() override;
+	virtual void AddComponentToEntity(std::string entityID) override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;
 

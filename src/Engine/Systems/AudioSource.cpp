@@ -10,6 +10,12 @@ void AudioSource::AddComponent()
 	m_componentList.AddComponent(this);
 }
 
+void AudioSource::AddComponentToEntity(std::string entityID)
+{
+	m_componentList.AddComponentToEntity(entityID);
+	Application::GetEntity(entityID)->GetAllComponents();
+}
+
 void AudioSource::RemoveComponent(std::string entityID)
 {
 	m_componentList.RemoveComponent(entityID);

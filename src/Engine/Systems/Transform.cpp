@@ -1,6 +1,7 @@
 #include "Transform.h"
 
 #include "../Core/Application.h"
+#include "../ECS/Entity.hpp"
 
 #include <glm/ext.hpp>
 
@@ -9,6 +10,12 @@ ComponentDatalist<Transform> Transform::m_componentList;
 void Transform::AddComponent()
 {
 	m_componentList.AddComponent(this);
+}
+
+void Transform::AddComponentToEntity(std::string entityID)
+{
+	m_componentList.AddComponentToEntity(entityID);
+	Application::GetEntity(entityID)->GetAllComponents();
 }
 
 void Transform::RemoveComponent(std::string entityID)

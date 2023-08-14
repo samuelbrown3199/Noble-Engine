@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../ECS/ComponentList.hpp"
 #include "../ECS/Component.hpp"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
@@ -78,6 +79,7 @@ struct Sprite : public Component
 	}
 
 	virtual void AddComponent() override;
+	virtual void AddComponentToEntity(std::string entityID) override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;
 	Sprite* GetComponent(std::string entityID);

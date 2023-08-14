@@ -141,7 +141,10 @@ set (
 	#ECS
 
 	src/Engine/ECS/Entity.hpp
+
 	src/Engine/ECS/Component.hpp
+	src/Engine/ECS/ComponentList.hpp
+
 	src/Engine/ECS/Behaviour.hpp
 
 	#Resource Handling

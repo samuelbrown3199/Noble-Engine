@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ECS/Component.hpp"
+#include "../ECS/ComponentList.hpp"
 #include "../Resource/AudioClip.h"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
@@ -52,6 +53,11 @@ struct AudioSource : public Component
 		m_sMixerOption = j["mixerOption"];
 	}
 
+	void OnInitialize()
+	{
+
+	}
+
 	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption)
 	{
 		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation);
@@ -95,6 +101,7 @@ struct AudioSource : public Component
 	}
 
 	virtual void AddComponent() override;
+	virtual void AddComponentToEntity(std::string entityID) override;
 	virtual void RemoveComponent(std::string entityID) override;
 	virtual void RemoveAllComponents() override;
 

@@ -124,10 +124,9 @@ void EditorUI::DoInterface()
 						comp->DoComponentInterface();
 
 						ImGui::Dummy(ImVec2(0.0f, 5.0f));
-						if (ImGui::Button("Remove Component"))
+						if (ImGui::Button(FormatString("Remove %s %s", entities.at(i).m_sEntityName, compRegistry->at(o).first).c_str()))
 						{
 							comp->RemoveComponent(entities.at(i).m_sEntityID);
-							Application::SetEntitiesDeleted();
 						}
 						ImGui::Dummy(ImVec2(0.0f, 20.0f));
 					}
@@ -135,9 +134,23 @@ void EditorUI::DoInterface()
 
 				ImGui::Unindent();
 				if (ImGui::Button("Add Component"))
+					ImGui::OpenPopup("ComponentAdd");
+
+				int selComp = -1;
+				if (ImGui::BeginPopup("ComponentAdd"))
 				{
-					entities.at(i).AddComponent<Transform>();
+					ImGui::SeparatorText("Components");
+					for (int i = 0; i < compRegistry->size(); i++)
+						if (ImGui::Selectable(compRegistry->at(i).first.c_str()))
+							selComp = i;
+					ImGui::EndPopup();
 				}
+				
+				if (selComp != -1)
+				{
+					compRegistry->at(selComp).second.m_comp->AddComponentToEntity(entities.at(i).m_sEntityID);
+				}
+
 				ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 				ImGui::SeparatorText("Behaviours TBD");

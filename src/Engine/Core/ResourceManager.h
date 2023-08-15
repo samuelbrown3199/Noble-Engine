@@ -162,7 +162,15 @@ struct ResourceManager
 				res = i;
 		}
 
-		ImGui::DragInt("Temp Res", &res, 1, 0, resources.size() - 1);
+		ImGui::Text(interfaceText.c_str());
+
+		for (int i = 0; i < resources.size(); i++)
+		{
+			if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), res == i))
+				res = i;
+		}
+
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		if (resources.at(res)->m_sLocalPath == currentResourcePath)
 		{

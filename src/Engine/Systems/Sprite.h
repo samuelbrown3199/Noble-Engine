@@ -68,10 +68,30 @@ struct Sprite : public Component
 		return GetComponent(entityID);
 	}
 
+	void ChangeSprite(std::shared_ptr<Texture> sprite)
+	{
+		if (sprite == nullptr)
+			return;
+
+		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
+			return;
+
+		m_spriteTexture = sprite;
+		m_bCreatedDescriptorSets = false;
+	}
+
 	virtual void DoComponentInterface() override
 	{
-		ImGui::Text("Something to select texture (WIP)");
-		ImGui::Text("Function built into Res Manager?");
+		if (m_spriteTransform == nullptr)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+			ImGui::Text("No transform attached. Object won't render.");
+			ImGui::PopStyleColor();
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		}
+
+		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_spriteTexture != nullptr ? m_spriteTexture->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

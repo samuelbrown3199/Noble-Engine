@@ -45,6 +45,29 @@ struct MeshRenderer : public Component
 		return GetComponent(entityID);
 	}
 
+	void ChangeTexture(std::shared_ptr<Texture> texture)
+	{
+		if (texture == nullptr)
+			return;
+
+		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
+			return;
+
+		m_texture = texture;
+		m_bCreatedDescriptorSets = false;
+	}
+
+	void ChangeModel(std::shared_ptr<Model> model)
+	{
+		if (model == nullptr)
+			return;
+
+		if (m_model != nullptr && m_model->m_sLocalPath == model->m_sLocalPath)
+			return;
+
+		m_model = model;
+	}
+
 	virtual void DoComponentInterface() override
 	{
 		if (m_transform == nullptr)
@@ -56,8 +79,8 @@ struct MeshRenderer : public Component
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
 
-		ImGui::Text("Something to select clip (WIP)");
-		ImGui::Text("Function built into Res Manager?");
+		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

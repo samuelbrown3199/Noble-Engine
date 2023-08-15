@@ -81,7 +81,10 @@ struct AudioSource : public Component
 
 	void ChangeAudioClip(std::shared_ptr<AudioClip> clip)
 	{
-		if (clip->m_sLocalPath == m_clip->m_sLocalPath)
+		if (clip == nullptr)
+			return;
+
+		if (m_clip != nullptr && clip->m_sLocalPath == m_clip->m_sLocalPath)
 			return;
 
 		FMOD_Channel_Stop(channel);
@@ -92,10 +95,7 @@ struct AudioSource : public Component
 
 	virtual void DoComponentInterface() override
 	{
-		ImGui::Text("Something to select clip (WIP)");
-		ImGui::Text("Function built into Res Manager?");
-
-		ChangeAudioClip(ResourceManager::DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip->m_sLocalPath));
+		ChangeAudioClip(ResourceManager::DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
 
 		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
 		ImGui::DragFloat3("Velocity", vel);

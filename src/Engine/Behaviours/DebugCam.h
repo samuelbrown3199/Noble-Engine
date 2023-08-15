@@ -14,10 +14,20 @@ struct DebugCam : public Behaviour
 	bool firstMouse = false;
 	float pitch = 0.0f, yaw = -90.0f;
 
+	Behaviour* GetAsBehaviour(std::string entityID) override;
+	void AddBehaviourToEntity(std::string entityID) override;
+	void RemoveBehaviourFromEntity(std::string entityID) override;
+
 	void Start();
 	void Update();
 	void UpdateControls();
 	void UpdateCameraRotation();
+
+	virtual void DoBehaviourInterface() override
+	{
+		ImGui::SliderFloat("Move Speed", &m_fMovementSpeed, 5, 64);
+		ImGui::SliderFloat("Sensitivity", &sensitivity, 0.1f, 1.0f);
+	}
 };
 
 #endif

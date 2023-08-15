@@ -37,6 +37,8 @@ set (
 	src/Engine/imgui/imstb_rectpack.h
 	src/Engine/imgui/imstb_textedit.h
 	src/Engine/imgui/imstb_truetype.h
+	src/Engine/imgui/imgui_stdlib.h
+	src/Engine/imgui/imgui_stdlib.cpp
 
 	src/Engine/imgui/imgui.h
 	src/Engine/imgui/imgui.cpp

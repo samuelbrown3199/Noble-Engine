@@ -10,6 +10,23 @@
 
 #include "../ECS/Entity.hpp"
 
+Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
+{
+	Entity* ent = Application::GetEntity(entityID);
+	return ent->GetBehaviour<DebugCam>();
+}
+
+void DebugCam::AddBehaviourToEntity(std::string entityID)
+{
+	Entity* ent = Application::GetEntity(entityID);
+	ent->AddBehaviour<DebugCam>();
+}
+
+void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
+{
+
+}
+
 void DebugCam::Start()
 {
 	glm::vec3 pos = glm::vec3(5, 0, 0);

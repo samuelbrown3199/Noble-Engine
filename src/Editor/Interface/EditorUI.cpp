@@ -84,12 +84,14 @@ void EditorUI::DoInterface()
 	ImGui::SameLine();
 	if (ImGui::Button("Delete Entity"))
 	{
-		Application::DeleteEntity(entities.at(m_iSelEntity).m_sEntityID);
+		if(m_iSelEntity != -1)
+			Application::DeleteEntity(entities.at(m_iSelEntity).m_sEntityID);
 	}
 
 	if (ImGui::TreeNode("Entities"))
 	{
 		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		std::map<int, std::pair<std::string, Behaviour*>>* behaviourRegistry = NobleRegistry::GetBehaviourRegistry();
 
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);
@@ -111,6 +113,9 @@ void EditorUI::DoInterface()
 
 			if (node_open)
 			{
+				ImGui::InputText("Entity Name", &entities.at(i).m_sEntityName, 128);
+				ImGui::Text(FormatString("Entity ID: %s", entities.at(i).m_sEntityID.c_str()).c_str());
+
 				ImGui::Unindent();
 				ImGui::SeparatorText("Components");
 				ImGui::Indent();
@@ -153,8 +158,44 @@ void EditorUI::DoInterface()
 
 				ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-				ImGui::SeparatorText("Behaviours TBD");
+				ImGui::SeparatorText("Behaviours");
 				ImGui::Indent();
+				for (int o = 0; o < behaviourRegistry->size(); o++)
+				{
+					Behaviour* beh = behaviourRegistry->at(o).second->GetAsBehaviour(entities.at(i).m_sEntityID);
+
+					if (beh != nullptr)
+					{
+						ImGui::SeparatorText(behaviourRegistry->at(o).first.c_str());
+						beh->DoBehaviourInterface();
+
+						ImGui::Dummy(ImVec2(0.0f, 5.0f));
+						if (ImGui::Button(FormatString("Remove %s %s", entities.at(i).m_sEntityName, behaviourRegistry->at(o).first).c_str()))
+						{
+							beh->RemoveBehaviourFromEntity(entities.at(i).m_sEntityID);
+						}
+						ImGui::Dummy(ImVec2(0.0f, 20.0f));
+					}
+				}
+
+				ImGui::Unindent();
+				if (ImGui::Button("Add Behaviour"))
+					ImGui::OpenPopup("BehaviourAdd");
+
+				int selBeh = -1;
+				if (ImGui::BeginPopup("BehaviourAdd"))
+				{
+					ImGui::SeparatorText("Behaviours");
+					for (int i = 0; i < behaviourRegistry->size(); i++)
+						if (ImGui::Selectable(behaviourRegistry->at(i).first.c_str()))
+							selBeh = i;
+					ImGui::EndPopup();
+				}
+
+				if (selBeh != -1)
+				{
+					behaviourRegistry->at(selComp).second->AddBehaviourToEntity(entities.at(i).m_sEntityID);
+				}
 
 				ImGui::Dummy(ImVec2(0.0f, 20.0f));
 				ImGui::TreePop();

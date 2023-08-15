@@ -11,6 +11,8 @@
 
 #include "../ECS/Entity.hpp"
 
+#include "../Behaviours/DebugCam.h"
+
 #include "../imgui/imgui.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_vulkan.h"
@@ -57,6 +59,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024);
 	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024);
 	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024);
+
+	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 
 	rtn->RegisterCoreKeybinds();
 	rtn->InitializeImGui();

@@ -90,19 +90,6 @@ struct Entity
 		return alreadyHasComponent;
 	}
 
-	template <typename T, typename ... Args>
-	T* AddBehaviour(Args&&... _args)
-	{
-		T* comp = new T();
-
-		m_vBehaviours.push_back(comp);
-
-		comp->m_sEntityID = m_sEntityID;
-		comp->Start();
-
-		return comp;
-	}
-
 	/**
 	*Gets a component of the type from the Entity.
 	*/
@@ -128,6 +115,49 @@ struct Entity
 		T::RemoveComponent(m_sEntityID);
 		GetAllComponents();
 		Application::SetEntitiesDeleted();
+	}
+
+
+	template <typename T, typename ... Args>
+	T* AddBehaviour(Args&&... _args)
+	{
+		T* comp = new T();
+
+		m_vBehaviours.push_back(comp);
+
+		comp->m_sEntityID = m_sEntityID;
+		comp->Start();
+
+		return comp;
+	}
+
+	template <typename T>
+	T* GetBehaviour()
+	{
+		for (int i = 0; i < m_vBehaviours.size(); i++)
+		{
+			T* beh = dynamic_cast<T*>(m_vBehaviours.at(i));
+			if (beh != nullptr)
+				return beh;
+		}
+
+		return nullptr;
+	}
+
+	template <typename T>
+	void RemoveBehaviour()
+	{
+		for (int i = 0; i < m_vBehaviours.size(); i++)
+		{
+			T* beh = dynamic_cast<T*>(m_vBehaviours.at(i));
+			if (beh != nullptr)
+			{
+				m_vBehaviours.erase(m_vBehaviour.begin() + i);
+				delete beh;
+
+				return;
+			}
+		}
 	}
 
 	void DeleteAllBehaviours()

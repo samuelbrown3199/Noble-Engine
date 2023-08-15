@@ -34,6 +34,7 @@ class NobleRegistry
 {
 	static std::map<int, std::pair<std::string, Resource*>> m_mResourceRegistry;
 	static std::map<int, std::pair<std::string, ComponentRegistry>> m_mComponentRegistry;
+	static std::map<int, std::pair<std::string, Behaviour*>> m_mBehaviourRegistry;
 
 public:
 
@@ -42,4 +43,7 @@ public:
 
 	static void RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread);
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
+
+	static void RegisterBehaviour(std::string ID, Behaviour* comp);
+	static std::map<int, std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_mBehaviourRegistry; }
 };

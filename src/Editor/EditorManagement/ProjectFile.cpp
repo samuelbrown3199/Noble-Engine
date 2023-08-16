@@ -1,5 +1,6 @@
 #include "ProjectFile.h"
 
+#include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
 #include <Engine/Core/ResourceManager.h>
 
@@ -25,6 +26,8 @@ bool ProjectFile::CreateProjectFile(std::string projectName, std::string project
 
 void ProjectFile::LoadProjectFile(const std::string& file)
 {
+	Application::ClearLoadedScene();
+
 	std::ifstream projectFile;
 	projectFile.open(file);
 	m_projectData = nlohmann::json::parse(projectFile);

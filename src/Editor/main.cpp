@@ -11,6 +11,8 @@
 
 #include "Interface/EditorUI.h"
 
+#include <Windows.h>
+
 void StartupEditor()
 {
 #ifndef NDEBUG
@@ -34,7 +36,7 @@ int main()
     return 0;
 }
 #else
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
     StartupEditor();
     return 0;

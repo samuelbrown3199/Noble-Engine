@@ -1,0 +1,5 @@
+[09:53:50] - Engine started successfully
+[09:53:54] - Starting cleanup and closing engine!
+[09:53:54] - Stopping threads.
+[09:53:54] - Stopped threads.
+[09:53:54] - Audio Manager cleaned up

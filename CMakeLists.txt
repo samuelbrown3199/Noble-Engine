@@ -19,6 +19,8 @@ if(MSVC)
 	)
 endif()
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "../bin")
+
 set (
 
 	source_list
@@ -223,6 +225,7 @@ set (
 	
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../Editor")
 add_executable(Editor
 
 	${editor_source}
@@ -239,6 +242,7 @@ foreach(source IN LISTS editor_source)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../TechDemos/TechDemo1")
 add_executable(TechDemo1
     src/Game/main.cpp
 

@@ -8,6 +8,16 @@
 
 #include "World/World.hpp"
 
+#include <Windows.h>
+
+int main()
+{
+    std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
+
+    app->MainLoop();
+    return 0;
+}
+
 #ifndef NDEBUG
 int main()
 {
@@ -17,7 +27,7 @@ int main()
     return 0;
 }
 #else
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
 

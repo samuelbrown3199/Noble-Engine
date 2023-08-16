@@ -24,7 +24,8 @@ void DebugCam::AddBehaviourToEntity(std::string entityID)
 
 void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
 {
-
+	Entity* ent = Application::GetEntity(entityID);
+	ent->RemoveBehaviour<DebugCam>();
 }
 
 void DebugCam::Start()

@@ -152,7 +152,7 @@ struct Entity
 			T* beh = dynamic_cast<T*>(m_vBehaviours.at(i));
 			if (beh != nullptr)
 			{
-				m_vBehaviours.erase(m_vBehaviour.begin() + i);
+				m_vBehaviours.erase(m_vBehaviours.begin() + i);
 				delete beh;
 
 				return;

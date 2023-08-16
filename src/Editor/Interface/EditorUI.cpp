@@ -194,7 +194,7 @@ void EditorUI::DoInterface()
 
 				if (selBeh != -1)
 				{
-					behaviourRegistry->at(selComp).second->AddBehaviourToEntity(entities.at(i).m_sEntityID);
+					behaviourRegistry->at(selBeh).second->AddBehaviourToEntity(entities.at(i).m_sEntityID);
 				}
 
 				ImGui::Dummy(ImVec2(0.0f, 20.0f));

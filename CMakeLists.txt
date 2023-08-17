@@ -175,23 +175,26 @@ set (
 
 	#Systems & components
 
-	src/Engine/Systems/AudioListener.h
-	src/Engine/Systems/AudioListener.cpp
+	src/Engine/Components/AudioListener.h
+	src/Engine/Components/AudioListener.cpp
 
-	src/Engine/Systems/AudioSource.h
-	src/Engine/Systems/AudioSource.cpp
+	src/Engine/Components/AudioSource.h
+	src/Engine/Components/AudioSource.cpp
 
-	src/Engine/Systems/Camera.h
-	src/Engine/Systems/Camera.cpp
+	src/Engine/Components/Camera.h
+	src/Engine/Components/Camera.cpp
 
-	src/Engine/Systems/Transform.h
-	src/Engine/Systems/Transform.cpp
+	src/Engine/Components/Transform.h
+	src/Engine/Components/Transform.cpp
 
-	src/Engine/Systems/MeshRenderer.h
-	src/Engine/Systems/MeshRenderer.cpp
+	src/Engine/Components/MeshRenderer.h
+	src/Engine/Components/MeshRenderer.cpp
 
-	src/Engine/Systems/Sprite.h
-	src/Engine/Systems/Sprite.cpp
+	src/Engine/Components/Sprite.h
+	src/Engine/Components/Sprite.cpp
+
+	src/Engine/Components/ScriptEmbedder.h
+	src/Engine/Components/ScriptEmbedder.cpp
 )
 
 add_definitions(-DSDL_MAIN_HANDLED)

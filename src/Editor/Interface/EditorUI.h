@@ -27,6 +27,8 @@ class EditorUI : public DebugUI
 
 	std::shared_ptr<ResourceManagerWindow> m_resourceManagerWind;
 
+	void ChangeEditorMode();
+
 	void CreateEditorCam();
 	void UpdateEditorWindowTitle();
 

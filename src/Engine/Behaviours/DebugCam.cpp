@@ -2,11 +2,11 @@
 
 #include "../Core/Application.h"
 #include "../Core/InputManager.h"
-#include "../Systems/Transform.h"
+#include "../Components/Transform.h"
 #include "../Core/Graphics/Renderer.h"
 #include "../Core/PerformanceStats.h"
-#include "../Systems/Camera.h"
-#include "../Systems/AudioListener.h"
+#include "../Components/Camera.h"
+#include "../Components/AudioListener.h"
 
 #include "../ECS/Entity.hpp"
 

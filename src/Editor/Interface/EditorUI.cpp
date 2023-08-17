@@ -21,6 +21,14 @@ int EditorUI::m_iSelSystem = -1;
 
 Entity* EditorUI::m_DebugCam = nullptr;
 
+void EditorUI::ChangeEditorMode()
+{
+	Application::SetPlayMode(!Application::GetPlayMode());
+
+	if(Application::GetPlayMode() == false)
+		SceneManager::LoadScene(SceneManager::GetCurrentSceneLocalPath());
+}
+
 void EditorUI::CreateEditorCam()
 {
 	if (!m_DebugCam)
@@ -80,7 +88,7 @@ void EditorUI::DoInterface()
 		playModeButton = "Enter Edit Mode";
 	if (ImGui::Button(playModeButton.c_str()))
 	{
-		Application::SetPlayMode(!Application::GetPlayMode());
+		ChangeEditorMode();
 	}
 
 	std::vector<Entity>& entities = Application::GetEntityList();
@@ -233,7 +241,7 @@ void EditorUI::HandleShortcutInputs()
 		OpenResourceManager();
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_RETURN))
-		Application::SetPlayMode(!Application::GetPlayMode());
+		ChangeEditorMode();
 }
 
 
@@ -403,15 +411,6 @@ void EditorUI::DoAssetMenu()
 void EditorUI::DoToolMenu()
 {
 	ImGui::MenuItem("Tools", NULL, false, false);
-
-	std::string playButton = "Enter Play Mode";
-	if(Application::GetPlayMode())
-		playButton = "Enter Edit Mode";
-
-	if (ImGui::MenuItem(playButton.c_str(), "(Shift+Enter)"))
-	{
-		Application::SetPlayMode(!Application::GetPlayMode());
-	}
 
 	std::string camButton = "Create Editor Cam";
 	if(m_DebugCam != nullptr)

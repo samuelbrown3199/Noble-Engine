@@ -2,12 +2,13 @@
 #include "InputManager.h"
 #include "Registry.h"
 
-#include "../Systems/Transform.h"
-#include "../Systems/AudioListener.h"
-#include "../Systems/AudioSource.h"
-#include "../Systems/Camera.h"
-#include "../Systems/MeshRenderer.h"
-#include "../Systems/Sprite.h"
+#include "../Components/Transform.h"
+#include "../Components/AudioListener.h"
+#include "../Components/AudioSource.h"
+#include "../Components/Camera.h"
+#include "../Components/MeshRenderer.h"
+#include "../Components/ScriptEmbedder.h"
+#include "../Components/Sprite.h"
 
 #include "../ECS/Entity.hpp"
 
@@ -59,6 +60,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_registry->RegisterComponent("AudioListener", new AudioListener(), false, 1024, false, false);
 	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024, false, false);
 	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent("ScriptEmbedder", new ScriptEmbedder(), false, 1024, false, false);
 	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());

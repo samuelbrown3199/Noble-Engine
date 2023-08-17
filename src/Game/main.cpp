@@ -1,12 +1,4 @@
 #include <Engine/Core/Application.h>
-#include <Engine/Useful.h>
-#include <Engine\Behaviours\DebugCam.h>
-
-#include <Engine/Systems/AudioSource.h>
-#include <Engine/Systems/Transform.h>
-#include <Engine/Resource/Scene.h>
-
-#include "World/World.hpp"
 
 #include <Windows.h>
 

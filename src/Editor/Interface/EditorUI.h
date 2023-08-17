@@ -40,6 +40,7 @@ public:
 	void HandleShortcutInputs();
 
 	void DoMainMenuBar();
+
 	void DoFileMenu();
 	void DoAssetMenu();
 	void DoToolMenu();

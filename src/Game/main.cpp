@@ -10,14 +10,6 @@
 
 #include <Windows.h>
 
-int main()
-{
-    std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
-
-    app->MainLoop();
-    return 0;
-}
-
 #ifndef NDEBUG
 int main()
 {

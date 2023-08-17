@@ -29,6 +29,8 @@ private:
     
 	static std::weak_ptr<Application> m_self;
 
+	static bool m_bPlayMode;
+
 	NobleRegistry* m_registry;
     Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
@@ -57,6 +59,9 @@ public:
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }
+
+	static void SetPlayMode(bool play);
+	static bool GetPlayMode() { return m_bPlayMode; }
 
 	void RegisterCoreKeybinds();
     void LoadSettings();

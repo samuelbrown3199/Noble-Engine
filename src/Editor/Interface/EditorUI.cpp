@@ -71,10 +71,17 @@ void EditorUI::DoInterface()
 
 	DoMainMenuBar();
 
-	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(300, Renderer::GetScreenSize().y));
+	ImGui::SetNextWindowSize(ImVec2(450, Renderer::GetScreenSize().y));
 
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
+
+	std::string playModeButton = "Enter Play Mode";
+	if(Application::GetPlayMode())
+		playModeButton = "Enter Edit Mode";
+	if (ImGui::Button(playModeButton.c_str()))
+	{
+		Application::SetPlayMode(!Application::GetPlayMode());
+	}
 
 	std::vector<Entity>& entities = Application::GetEntityList();
 	if(ImGui::Button("Create Entity"))
@@ -224,6 +231,9 @@ void EditorUI::HandleShortcutInputs()
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_r))
 		OpenResourceManager();
+
+	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_RETURN))
+		Application::SetPlayMode(!Application::GetPlayMode());
 }
 
 
@@ -315,11 +325,37 @@ void EditorUI::DoFileMenu()
 		}
 		if (ImGui::MenuItem("Save Scene"))
 		{
+			if (Application::GetPlayMode())
+			{
+				return;
+			}
+
 			SceneManager::SaveLoadedScene();
 		}
-		if (ImGui::MenuItem("Save Scene As..."))
+
+		if (ImGui::BeginMenu("Save Scene As..."))
 		{
-			SceneManager::SaveScene("\\GameData\\Scenes\\SceneSaveAs.nsc");
+			if (Application::GetPlayMode())
+			{
+				return;
+			}
+
+			std::string newSceneName;
+			ImGui::InputText("Scene Name", &newSceneName);
+
+			static std::string path = "";
+			if (!newSceneName.empty())
+			{
+				path = ResourceManager::GetResourceManagerWorkingDirectory() + "\\GameData\\" + newSceneName + ".nsc";
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("Create"))
+			{
+				SceneManager::SaveScene(path);
+			}
+
+			ImGui::EndMenu();
 		}
 	}
 	else
@@ -368,11 +404,19 @@ void EditorUI::DoToolMenu()
 {
 	ImGui::MenuItem("Tools", NULL, false, false);
 
-	std::string shortcut = "(Ctrl+Q)";
+	std::string playButton = "Enter Play Mode";
+	if(Application::GetPlayMode())
+		playButton = "Enter Edit Mode";
+
+	if (ImGui::MenuItem(playButton.c_str(), "(Shift+Enter)"))
+	{
+		Application::SetPlayMode(!Application::GetPlayMode());
+	}
+
 	std::string camButton = "Create Editor Cam";
 	if(m_DebugCam != nullptr)
 		camButton = "Delete Editor Cam";
-	if (ImGui::MenuItem(camButton.c_str(), shortcut.c_str()))
+	if (ImGui::MenuItem(camButton.c_str(), "(Ctrl+Q)"))
 	{
 		CreateEditorCam();
 	}

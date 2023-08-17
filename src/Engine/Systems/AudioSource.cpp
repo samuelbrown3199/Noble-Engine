@@ -47,6 +47,14 @@ void AudioSource::OnUpdate()
 		if (m_sourceTransform == nullptr)
 			return;
 
+		if (Application::GetPlayMode() == false)
+		{
+			FMOD_Channel_Stop(channel);
+			channel = nullptr;
+
+			return;
+		}
+
 		if (channel == nullptr)
 		{
 			FMOD_System_PlaySound(AudioManager::GetFMODSystem(), m_clip->m_sound, nullptr, true, &channel);

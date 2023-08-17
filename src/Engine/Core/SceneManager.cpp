@@ -5,6 +5,8 @@
 #include "ResourceManager.h"
 #include "..\Resource\Scene.h"
 
+#include "../imgui/imgui.h"
+
 std::shared_ptr<Scene> SceneManager::m_currentScene;
 std::vector<std::string> SceneManager::m_vKeysToCheck;
 
@@ -33,6 +35,9 @@ void SceneManager::SaveLoadedScene()
 
 void SceneManager::SaveScene(std::string scenePath)
 {
+	if (scenePath.empty())
+		return;
+
 	Logger::LogInformation("Saving Scene " + scenePath);
 
 	std::vector<Entity>& entities = Application::GetEntityList();

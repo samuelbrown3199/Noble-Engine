@@ -225,7 +225,7 @@ set (
 	
 )
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../Editor")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Editor>)
 add_executable(Editor
 
 	${editor_source}
@@ -234,6 +234,8 @@ add_executable(Editor
 target_link_libraries(Editor Engine)
 set_target_properties(Editor PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(Editor PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+set_property(TARGET Editor PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Editor")
+
 target_compile_features(Editor PRIVATE cxx_std_17)
 
 foreach(source IN LISTS editor_source)
@@ -251,4 +253,5 @@ add_executable(TechDemo1
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>)
 target_compile_features(TechDemo1 PRIVATE cxx_std_17)

@@ -20,6 +20,7 @@
 bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
+bool Application::m_bPlayMode = true;
 
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
@@ -53,12 +54,12 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
 
-	rtn->m_registry->RegisterComponent("Transform", new Transform(), false, 1024);
-	rtn->m_registry->RegisterComponent("Camera", new Camera(), false, 1024);
-	rtn->m_registry->RegisterComponent("AudioListener", new AudioListener(), false, 1024);
-	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024);
-	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024);
-	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024);
+	rtn->m_registry->RegisterComponent("Transform", new Transform(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent("Camera", new Camera(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent("AudioListener", new AudioListener(), false, 1024, false, false);
+	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024, false, false);
+	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 
@@ -75,6 +76,19 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
 
 	return rtn;
+}
+
+void Application::SetPlayMode(bool play)
+{ 
+	m_bPlayMode = play;
+	
+	//loop over components and do one more tick of update and render. This allows any components that need to stop themselves
+	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+	for (int i = 0; i < compRegistry->size(); i++)
+	{
+		compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
+		compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
+	}
 }
 
 void Application::RegisterCoreKeybinds()
@@ -147,6 +161,9 @@ void Application::MainLoop()
 
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
+			if (!m_bPlayMode && !compRegistry->at(i).second.m_bUpdateInEditor)
+				continue;
+
 			Uint32 updateStart = SDL_GetTicks();
 			compRegistry->at(i).second.m_comp->PreUpdate();
 			compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
@@ -166,6 +183,9 @@ void Application::MainLoop()
 		m_gameRenderer->StartDrawFrame();
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
+			if (!m_bPlayMode && !compRegistry->at(i).second.m_bRenderInEditor)
+				continue;
+
 			Uint32 renderStart = SDL_GetTicks();
 			compRegistry->at(i).second.m_comp->PreRender();
 			compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
@@ -259,6 +279,9 @@ void Application::InitializeImGui()
 	//this initializes imgui for SDL
 	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());
 	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
 	//this initializes imgui for Vulkan
 	ImGui_ImplVulkan_InitInfo init_info = {};

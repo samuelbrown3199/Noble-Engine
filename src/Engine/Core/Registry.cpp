@@ -9,9 +9,9 @@ void NobleRegistry::RegisterResource(std::string ID, Resource* resource)
 	m_mResourceRegistry[m_mResourceRegistry.size()] = std::make_pair(ID, resource);
 }
 
-void NobleRegistry::RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread)
+void NobleRegistry::RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
 {
-	ComponentRegistry reg(comp, useThreads, maxComponentsPerThread);
+	ComponentRegistry reg(comp, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
 	m_mComponentRegistry[m_mComponentRegistry.size()] = std::make_pair(ID, reg);
 }
 

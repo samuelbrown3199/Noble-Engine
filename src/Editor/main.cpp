@@ -23,6 +23,8 @@ void StartupEditor()
 
     std::shared_ptr<Application> app = Application::StartApplication(windowName);
 
+    app->SetPlayMode(false);
+
     std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
     ui->m_uiOpen = true;
 

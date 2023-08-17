@@ -10,10 +10,12 @@
 #include "../Resource/Resource.h"
 
 struct ComponentRegistry
-{
+{	
 	Component* m_comp = nullptr;
 	bool m_bUseThreads = false;
 	int m_iMaxComponentsPerThread = 1024;
+
+	bool m_bUpdateInEditor, m_bRenderInEditor;
 
 	ComponentRegistry()
 	{
@@ -22,11 +24,13 @@ struct ComponentRegistry
 		m_iMaxComponentsPerThread = 1024;
 	}
 
-	ComponentRegistry(Component* comp, bool useThreads, int maxComponentsPerThread)
+	ComponentRegistry(Component* comp, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
 	{
 		m_comp = comp;
 		m_bUseThreads = useThreads;
 		m_iMaxComponentsPerThread = maxComponentsPerThread;
+		m_bUpdateInEditor = updateEditMode;
+		m_bRenderInEditor = renderEditMode;
 	}
 };
 
@@ -41,7 +45,7 @@ public:
 	static void RegisterResource(std::string ID, Resource* resource);
 	static std::map<int, std::pair<std::string, Resource*>>* GetResourceRegistry() { return &m_mResourceRegistry; }
 
-	static void RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread);
+	static void RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode);
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
 
 	static void RegisterBehaviour(std::string ID, Behaviour* comp);

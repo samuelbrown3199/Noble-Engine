@@ -73,7 +73,10 @@ void AudioListener::OnUpdate()
 	vel.y = m_velocity.y;
 	vel.z = m_velocity.z;
 
-	glm::vec3 normFor = glm::normalize(m_listenerTransform->m_rotation);
+	glm::vec3 lisRot = m_listenerTransform->m_rotation;
+	lisRot.y = 0;
+
+	glm::vec3 normFor = glm::normalize(lisRot);
 	forward.x = normFor.x;
 	forward.y = 0;
 	forward.z = normFor.z;

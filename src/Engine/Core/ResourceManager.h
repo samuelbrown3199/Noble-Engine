@@ -62,6 +62,8 @@ struct ResourceManager
 		WriteResourceDatabase();
 	}
 
+	static void RemoveResourceFromDatabase(std::string path);
+
 	static void SetResourceToDefaults(std::shared_ptr<Resource> res);
 	
 	static void LoadResourceDatabase();

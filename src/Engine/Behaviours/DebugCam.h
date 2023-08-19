@@ -15,7 +15,7 @@ struct DebugCam : public Behaviour
 	float pitch = 0.0f, yaw = -90.0f;
 
 	Behaviour* GetAsBehaviour(std::string entityID) override;
-	void AddBehaviourToEntity(std::string entityID) override;
+	Behaviour* AddBehaviourToEntity(std::string entityID) override;
 	void RemoveBehaviourFromEntity(std::string entityID) override;
 
 	void Start();
@@ -28,6 +28,9 @@ struct DebugCam : public Behaviour
 		ImGui::SliderFloat("Move Speed", &m_fMovementSpeed, 5, 64);
 		ImGui::SliderFloat("Sensitivity", &sensitivity, 0.1f, 1.0f);
 	}
+
+	virtual void LoadBehaviourFromJson(std::string entityID, nlohmann::json& j) override;
+	virtual nlohmann::json WriteBehaviourToJson() override;
 };
 
 #endif

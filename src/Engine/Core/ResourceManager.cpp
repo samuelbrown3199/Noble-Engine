@@ -41,6 +41,20 @@ void ResourceManager::SetWorkingDirectory(std::string directory)
 	LoadResourceDatabase();
 }
 
+void ResourceManager::RemoveResourceFromDatabase(std::string path)
+{
+	for (int i = 0; i < m_vResourceDatabase.size(); i++)
+	{
+		if (m_vResourceDatabase.at(i)->m_sLocalPath == path)
+		{
+			m_vResourceDatabase.erase(m_vResourceDatabase.begin() + i);
+			WriteResourceDatabase();
+			Logger::LogInformation(FormatString("Remove asset %s from Resource Database", path.c_str()));
+			return;
+		}
+	}
+}
+
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
 	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();

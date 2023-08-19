@@ -16,10 +16,10 @@ Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
 	return ent->GetBehaviour<DebugCam>();
 }
 
-void DebugCam::AddBehaviourToEntity(std::string entityID)
+Behaviour* DebugCam::AddBehaviourToEntity(std::string entityID)
 {
 	Entity* ent = Application::GetEntity(entityID);
-	ent->AddBehaviour<DebugCam>();
+	return ent->AddBehaviour<DebugCam>();
 }
 
 void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
@@ -34,7 +34,7 @@ void DebugCam::Start()
 	glm::vec3 rot = glm::vec3(0, 0, -1);
 
 	Camera* curCam = Renderer::GetCamera();
-	if (curCam)
+	if (curCam && curCam->m_camTransform != nullptr)
 	{
 		pos = curCam->m_camTransform->m_position;
 		rot = curCam->m_camTransform->m_rotation;
@@ -139,4 +139,23 @@ void DebugCam::UpdateCameraRotation()
 	{
 		firstMouse = true;
 	}
+}
+
+
+void DebugCam::LoadBehaviourFromJson(std::string entityID, nlohmann::json& j)
+{
+	DebugCam* cam = dynamic_cast<DebugCam*>(AddBehaviourToEntity(entityID));
+
+	cam->m_fMovementSpeed = j["MoveSpeed"];
+	cam->sensitivity = j["Sensitivity"];
+}
+
+nlohmann::json DebugCam::WriteBehaviourToJson()
+{
+	nlohmann::json data;
+
+	data["MoveSpeed"] = m_fMovementSpeed;
+	data["Sensitivity"] = sensitivity;
+
+	return data;
 }

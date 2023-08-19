@@ -54,21 +54,37 @@ void ResourceManagerWindow::DoInterface()
     }
 
     ImGui::SeparatorText("Resources");
+
+    if (ImGui::BeginMenu("Add Resource"))
+    {
+        std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+
+        for (int i = 0; i < resourceRegistry->size(); i++)
+        {
+            if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
+            {
+                std::string path = OpenFileSelectDialog(".mp3");
+                if (path != "")
+                {
+                    resourceRegistry->at(i).second->AddResource(path);
+                }
+            }
+        }
+        ImGui::EndMenu();
+    }
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
         ImGui::Text(resourceRegistry->at(i).first.c_str());
         std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
 
-        int res = 0;
-
-        for (int i = 0; i < resources.size(); i++)
+        for (int o = 0; o < resources.size(); o++)
         {
-            if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), selectedRes == i))
+            if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
             {
-                selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(i)->m_sLocalPath);
+                selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath);
             }
-
-            res++;
         }
     }
 
@@ -84,6 +100,12 @@ void ResourceManagerWindow::DoInterface()
         {
             ResourceManager::WriteResourceDatabase();
             selResource->ReloadResource();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Remove Resource"))
+        {
+            ResourceManager::RemoveResourceFromDatabase(selResource->m_sLocalPath);
+            selResource = nullptr;
         }
     }
     ImGui::EndChild();

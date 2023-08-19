@@ -133,6 +133,10 @@ void Application::MainLoop()
 		m_pStats->preUpdateStart = SDL_GetTicks();
 		InputManager::HandleGeneralInput();
 
+		Uint32 windowFlags = SDL_GetWindowFlags(m_gameRenderer->GetWindow());
+		if (windowFlags & SDL_WINDOW_MINIMIZED)
+			continue;
+
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
 

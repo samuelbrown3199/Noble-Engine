@@ -53,6 +53,9 @@ struct MeshRenderer : public Component
 		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
 			return;
 
+		m_uniformBuffers.clear();
+		m_descriptorSets.clear();
+
 		m_texture = texture;
 		m_bCreatedDescriptorSets = false;
 	}

@@ -76,6 +76,9 @@ struct Sprite : public Component
 		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
 			return;
 
+		m_uniformBuffers.clear();
+		m_descriptorSets.clear();
+
 		m_spriteTexture = sprite;
 		m_bCreatedDescriptorSets = false;
 	}

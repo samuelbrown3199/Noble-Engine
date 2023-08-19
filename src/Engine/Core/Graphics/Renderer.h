@@ -131,6 +131,8 @@ private:
 	const static int MAX_FRAMES_IN_FLIGHT = 2;
 	static VkSampleCountFlagBits m_msaaSamples;
 
+	static bool m_bVsync;
+
 	static glm::vec3 m_clearColour;
 
 	static VkInstance m_vulkanInstance;
@@ -249,8 +251,8 @@ public:
 	static SDL_Window* GetWindow() { return m_gameWindow; }
 
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
-	static void SetWindowFullScreen(const int& _mode);
-	static void SetVSyncMode(const int& _mode);
+	void SetWindowFullScreen(const int& _mode);
+	void SetVSyncMode(const int& _mode);
 
 	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	static glm::vec3 GetClearColour() { return m_clearColour; }

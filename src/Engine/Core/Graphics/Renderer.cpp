@@ -19,6 +19,8 @@ SDL_Window* Renderer::m_gameWindow;
 uint32_t Renderer::m_iCurrentFrame = 0;
 VkSampleCountFlagBits Renderer::m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
+bool Renderer::m_bVsync = false;
+
 glm::vec3 Renderer::m_clearColour = glm::vec3(0.0f, 0.0f, 0.0f);
 
 int Renderer::m_iScreenWidth = 500;
@@ -430,9 +432,19 @@ VkPresentModeKHR Renderer::ChooseSwapPresentMode(const std::vector<VkPresentMode
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+		if (m_bVsync)
 		{
-			return availablePresentMode;
+			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+			{
+				return availablePresentMode;
+			}
+		}
+		else
+		{
+			if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+			{
+				return availablePresentMode;
+			}
 		}
 	}
 
@@ -1022,9 +1034,11 @@ std::string Renderer::GetWindowTitle()
 	return name;
 }
 
-// 0 No VSync, 1 VSync, 2 Adaptive VSync
+// 0 No VSync, 1 VSync
 void Renderer::SetVSyncMode(const int& _mode)
 {
+	m_bVsync = _mode;
+	RecreateSwapchain();
 	Logger::LogInformation(FormatString("Changing VSync mode to %d", _mode));
 }
 

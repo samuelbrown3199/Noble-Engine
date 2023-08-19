@@ -41,15 +41,28 @@ struct ResourceManager
 	template<typename T>
 	static void AddNewResource(std::string path)
 	{
+		for (int i = 0; i < m_vResourceDatabase.size(); i++)
+		{
+			if (m_vResourceDatabase.at(i)->m_sResourcePath == path)
+			{
+				Logger::LogError("Tried to add a duplicate resource.", 0);
+				return;
+			}
+		}
+
 		std::shared_ptr<T> newResource = std::make_shared<T>();
 		newResource->m_sResourcePath = path;
 		newResource->m_sLocalPath = GetFolderLocationRelativeToGameData(path);
+
+		SetResourceToDefaults(newResource);
 
 		m_vResourceDatabase.push_back(newResource);
 		Logger::LogInformation("Added new resource " + newResource->m_sLocalPath);
 
 		WriteResourceDatabase();
 	}
+
+	static void SetResourceToDefaults(std::shared_ptr<Resource> res);
 	
 	static void LoadResourceDatabase();
 	static void WriteResourceDatabase();

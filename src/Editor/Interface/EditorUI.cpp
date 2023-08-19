@@ -242,6 +242,9 @@ void EditorUI::HandleShortcutInputs()
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_RETURN))
 		ChangeEditorMode();
+
+	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_s))
+		SceneManager::SaveLoadedScene();
 }
 
 
@@ -331,7 +334,8 @@ void EditorUI::DoFileMenu()
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("Save Scene"))
+
+		if (ImGui::MenuItem("Save Scene", "(CTRL+S)"))
 		{
 			if (Application::GetPlayMode())
 			{

@@ -41,6 +41,25 @@ void ResourceManager::SetWorkingDirectory(std::string directory)
 	LoadResourceDatabase();
 }
 
+void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
+{
+	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+
+	bool foundRegistryRes = false;
+	for (int i = 0; i < resourceRegistry->size(); i++)
+	{
+		if (resourceRegistry->at(i).first == res->m_resourceType)
+		{
+			resourceRegistry->at(i).second->SetResourceToDefaults(res);
+			foundRegistryRes = true;
+			break;
+		}
+	}
+
+	if (!foundRegistryRes)
+		Logger::LogError("Couldnt find resource type in Registry. Has it been registered?", 2);
+}
+
 void ResourceManager::LoadResourceDatabase()
 {
 	std::string databasePath = m_sWorkingDirectory + "\\ResourceDatabase.nrd";
@@ -56,65 +75,34 @@ void ResourceManager::LoadResourceDatabase()
 		database.close();
 	}
 
-	//Need to have a think on this at some point.
-	if (m_resourceDatabaseJson.find("AudioClip") != m_resourceDatabaseJson.end())
+	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+
+	if (m_resourceDatabaseJson.find("Defaults") != m_resourceDatabaseJson.end())
 	{
-		nlohmann::json ac = m_resourceDatabaseJson.at("AudioClip");
+		nlohmann::json def = m_resourceDatabaseJson.at("Defaults");
 
-		for (auto it : ac.items())
+		for (int i = 0; i < resourceRegistry->size(); i++)
 		{
-			std::shared_ptr<AudioClip> clip = std::make_shared<AudioClip>();
-			clip->LoadFromJson(it.key(), it.value());
-
-			m_vResourceDatabase.push_back(clip);
+			if (def.find(resourceRegistry->at(i).first) != def.end())
+			{
+				resourceRegistry->at(i).second->SetDefaults(def[resourceRegistry->at(i).first]);
+			}
 		}
-
-		Logger::LogInformation(FormatString("Loaded %d AudioClips", ac.size()));
 	}
 
-	if (m_resourceDatabaseJson.find("Texture") != m_resourceDatabaseJson.end())
+	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
-		nlohmann::json tex = m_resourceDatabaseJson.at("Texture");
-
-		for (auto it : tex.items())
+		if (m_resourceDatabaseJson.find(resourceRegistry->at(i).first) != m_resourceDatabaseJson.end())
 		{
-			std::shared_ptr<Texture> clip = std::make_shared<Texture>();
-			clip->LoadFromJson(it.key(), it.value());
+			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(i).first);
+			for (auto it : ac.items())
+			{
+				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->LoadFromJson(it.key(), it.value());
+				m_vResourceDatabase.push_back(res);
+			}
 
-			m_vResourceDatabase.push_back(clip);
+			Logger::LogInformation(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
 		}
-
-		Logger::LogInformation(FormatString("Loaded %d Textures", tex.size()));
-	}
-
-	if (m_resourceDatabaseJson.find("Model") != m_resourceDatabaseJson.end())
-	{
-		nlohmann::json mod = m_resourceDatabaseJson.at("Model");
-
-		for (auto it : mod.items())
-		{
-			std::shared_ptr<Model> clip = std::make_shared<Model>();
-			clip->LoadFromJson(it.key(), it.value());
-
-			m_vResourceDatabase.push_back(clip);
-		}
-
-		Logger::LogInformation(FormatString("Loaded %d Models", mod.size()));
-	}
-
-	if (m_resourceDatabaseJson.find("Script") != m_resourceDatabaseJson.end())
-	{
-		nlohmann::json scr = m_resourceDatabaseJson.at("Script");
-
-		for (auto it : scr.items())
-		{
-			std::shared_ptr<Script> clip = std::make_shared<Script>();
-			clip->LoadFromJson(it.key(), it.value());
-
-			m_vResourceDatabase.push_back(clip);
-		}
-
-		Logger::LogInformation(FormatString("Loaded %d Scripts", scr.size()));
 	}
 }
 
@@ -124,6 +112,12 @@ void ResourceManager::WriteResourceDatabase()
 	for (size_t re = 0; re < m_vResourceDatabase.size(); re++)
 	{
 		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();
+	}
+
+	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	for (int i = 0; i < resourceRegistry->size(); i++)
+	{
+		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second->AddToDatabase();
 	}
 
 	std::fstream database(m_sWorkingDirectory + "\\ResourceDatabase.nrd", 'w');

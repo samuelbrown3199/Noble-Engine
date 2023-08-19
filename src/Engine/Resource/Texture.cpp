@@ -68,6 +68,13 @@ std::vector<std::shared_ptr<Resource>> Texture::GetResourcesOfType()
     return ResourceManager::GetAllResourcesOfType<Texture>();
 }
 
+void Texture::SetResourceToDefaults(std::shared_ptr<Resource> res)
+{
+    std::shared_ptr<Texture> dyRes = std::dynamic_pointer_cast<Texture>(res);
+    dyRes->m_textureFilter = m_textureFilter;
+}
+
+
 void Texture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
     VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
@@ -346,8 +353,18 @@ nlohmann::json Texture::AddToDatabase()
     return data;
 }
 
-void Texture::LoadFromJson(std::string path, nlohmann::json data)
+std::shared_ptr<Resource> Texture::LoadFromJson(const std::string& path, const nlohmann::json& data)
 {
-    Resource::LoadFromJson(path, data);
+    std::shared_ptr<Texture> res = std::make_shared<Texture>();
+
+    res->m_sLocalPath = path;
+    res->m_sResourcePath = GetGameFolder() + path;
+    res->m_textureFilter = data["Filter"];
+
+    return res;
+}
+
+void Texture::SetDefaults(const nlohmann::json& data)
+{
     m_textureFilter = data["Filter"];
 }

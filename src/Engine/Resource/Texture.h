@@ -29,6 +29,8 @@ struct Texture : public Resource
     virtual void AddResource(std::string path) override;
     virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 
+    virtual void SetResourceToDefaults(std::shared_ptr<Resource> res) override;
+
     void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
     //These functions here are probably worth moving out of the texture object at some point, they are helpful functions
@@ -43,7 +45,8 @@ struct Texture : public Resource
 
     virtual void DoResourceInterface() override;
     nlohmann::json AddToDatabase() override;
-    void LoadFromJson(std::string path, nlohmann::json data) override;
+    std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
+    void SetDefaults(const nlohmann::json& data) override;
 };
 
 #endif

@@ -15,6 +15,8 @@ Scene::Scene(std::string path)
 
 void Scene::OnLoad()
 {
+	m_sceneData.clear();
+
 	std::ifstream sceneFile(m_sResourcePath);
 	m_sceneData = nlohmann::json::parse(sceneFile);
 

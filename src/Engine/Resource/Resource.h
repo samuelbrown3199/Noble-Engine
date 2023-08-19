@@ -38,6 +38,8 @@ public:
 	virtual void AddResource(std::string path) = 0;
 	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() = 0;
 
+	virtual void SetResourceToDefaults(std::shared_ptr<Resource> res) {};
+
 	void ReloadResource()
 	{
 		if (!m_bIsLoaded)
@@ -64,10 +66,7 @@ public:
 		nlohmann::json data;
 		return data;
 	};
-	virtual void LoadFromJson(std::string path, nlohmann::json data)
-	{
-		m_sLocalPath = path;
-		m_sResourcePath = GetGameFolder() + path;
-	}
+	virtual std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) = 0;
+	virtual void SetDefaults(const nlohmann::json& data) {};
 };
 #endif

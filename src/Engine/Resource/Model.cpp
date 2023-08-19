@@ -89,3 +89,13 @@ std::vector<std::shared_ptr<Resource>> Model::GetResourcesOfType()
 {
     return ResourceManager::GetAllResourcesOfType<Model>();
 }
+
+std::shared_ptr<Resource> Model::LoadFromJson(const std::string& path, const nlohmann::json& data)
+{
+    std::shared_ptr<Model> res = std::make_shared<Model>();
+
+    res->m_sLocalPath = path;
+    res->m_sResourcePath = GetGameFolder() + path;
+
+    return res;
+}

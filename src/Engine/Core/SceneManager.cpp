@@ -31,6 +31,7 @@ void SceneManager::LoadScene(std::string scenePath)
 void SceneManager::SaveLoadedScene()
 {
 	SaveScene(m_currentScene->GetResourcePath());
+	m_currentScene->OnLoad();
 }
 
 void SceneManager::SaveScene(std::string scenePath)

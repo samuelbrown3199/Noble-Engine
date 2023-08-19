@@ -46,6 +46,12 @@ std::vector<std::shared_ptr<Resource>> AudioClip::GetResourcesOfType()
 	return ResourceManager::GetAllResourcesOfType<AudioClip>();
 }
 
+void AudioClip::SetResourceToDefaults(std::shared_ptr<Resource> res)
+{
+	std::shared_ptr<AudioClip> dyRes = std::dynamic_pointer_cast<AudioClip>(res);
+	dyRes->m_mode = m_mode;
+}
+
 void AudioClip::DoResourceInterface()
 {
 	ImGui::Text(m_sLocalPath.c_str());
@@ -82,8 +88,20 @@ nlohmann::json AudioClip::AddToDatabase()
 	return data;
 }
 
-void AudioClip::LoadFromJson(std::string path, nlohmann::json data)
+std::shared_ptr<Resource> AudioClip::LoadFromJson(const std::string& path, const nlohmann::json& data)
 {
-	Resource::LoadFromJson(path, data);
+	std::shared_ptr<AudioClip> res = std::make_shared<AudioClip>();
+
+	res->m_sLocalPath = path;
+	res->m_sResourcePath = GetGameFolder() + path;
+	res->m_mode = data["SoundMode"];
+
+	return res;
+
+
+}
+
+void AudioClip::SetDefaults(const nlohmann::json& data)
+{
 	m_mode = data["SoundMode"];
 }

@@ -14,6 +14,8 @@ void ResourceManagerWindow::InitializeInterface()
 void ResourceManagerWindow::DoInterface()
 {
     static int selectedRes = -1;
+    static int selectedDefaultRes = -1;
+    static Resource* defaultRes = nullptr;
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -28,6 +30,32 @@ void ResourceManagerWindow::DoInterface()
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
+        int res = 0;
+
+        if (ImGui::Selectable(resourceRegistry->at(i).first.c_str(), selectedDefaultRes == res))
+        {
+            defaultRes = resourceRegistry->at(i).second;
+        }
+
+        res++;
+    }
+
+
+    ImGui::SeparatorText("Resource Load Defaults");
+    if (defaultRes != nullptr)
+    {
+        defaultRes->DoResourceInterface();
+
+        if (ImGui::Button("Save Resource"))
+        {
+            ResourceManager::WriteResourceDatabase();
+            defaultRes->ReloadResource();
+        }
+    }
+
+    ImGui::SeparatorText("Resources");
+    for (int i = 0; i < resourceRegistry->size(); i++)
+    {
         ImGui::Text(resourceRegistry->at(i).first.c_str());
         std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
 
@@ -35,7 +63,7 @@ void ResourceManagerWindow::DoInterface()
 
         for (int i = 0; i < resources.size(); i++)
         {
-            if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), selectedRes == res))
+            if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), selectedRes == i))
             {
                 selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(i)->m_sLocalPath);
             }

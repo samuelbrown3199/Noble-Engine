@@ -5,25 +5,20 @@
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
 #include "../Resource/Texture.h"
-#include "../Core/Graphics/GraphicsBuffer.h"
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 struct Sprite : public Component
 {
 	Transform* m_spriteTransform = nullptr;
 
-	bool m_bCreatedDescriptorSets = false;
-	std::vector<GraphicsBuffer> m_uniformBuffers;
-	std::vector<void*> m_uniformBuffersMapped;
-	std::vector<VkDescriptorSet> m_descriptorSets;
-
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour;
+	std::shared_ptr<ShaderProgram> m_shader;
 
+	static GLuint m_iQuadVAO;
 	static bool m_bInitializedSpriteQuad;
-	static GraphicsBuffer m_vertexBuffer;
-	static GraphicsBuffer m_indexBuffer;
 
 	static ComponentDatalist<Sprite> m_componentList;
 
@@ -76,11 +71,18 @@ struct Sprite : public Component
 		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
 			return;
 
-		m_uniformBuffers.clear();
-		m_descriptorSets.clear();
-
 		m_spriteTexture = sprite;
-		m_bCreatedDescriptorSets = false;
+	}
+
+	void ChangeShaderProgram(std::shared_ptr<ShaderProgram> sProgram)
+	{
+		if (sProgram == nullptr)
+			return;
+
+		if (sProgram->m_shaderProgramID == m_shader->m_shaderProgramID)
+			return;
+
+		m_shader = sProgram;
 	}
 
 	virtual void DoComponentInterface() override
@@ -95,6 +97,7 @@ struct Sprite : public Component
 		}
 
 		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_spriteTexture != nullptr ? m_spriteTexture->m_sLocalPath : "none"));
+		//ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface());
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

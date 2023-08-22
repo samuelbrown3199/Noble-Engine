@@ -11,6 +11,7 @@
 #include "../imgui/imgui.h"
 #include "../Useful.h"
 #include "../Resource/Resource.h"
+#include "../Resource/ShaderProgram.h"
 #include "Logger.h"
 
 /**
@@ -27,6 +28,8 @@ struct ResourceManager
 	*/
 	static std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
 	static std::string m_sWorkingDirectory;
+
+	static std::vector<std::shared_ptr<ShaderProgram>> m_vShaderPrograms; //to be integrated more properly
 
 	static nlohmann::json m_resourceDatabaseJson;
 
@@ -150,7 +153,14 @@ struct ResourceManager
 
 		return returnVec;
 	}
-	
+
+	/**
+	* Creates a shader program and stores it in the shader program list.
+	*/
+	static std::shared_ptr<ShaderProgram> CreateShaderProgram(std::string shaderProgramID);
+	static std::shared_ptr<ShaderProgram> GetShaderProgram(std::string shaderProgramID);
+	static std::vector<std::shared_ptr<ShaderProgram>>* GetShaderPrograms();
+
 	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
@@ -193,6 +203,24 @@ struct ResourceManager
 		}
 
 		return LoadResource<T>(resources.at(res)->m_sLocalPath);
+	}
+
+	static std::shared_ptr<ShaderProgram> DoShaderProgramSelectInterface()
+	{
+		if (m_vShaderPrograms.size() == 0)
+		{
+			ImGui::Text(FormatString("No shader programs exist in database.").c_str());
+			return nullptr;
+		}
+
+		int res = 0;
+		for (int i = 0; i < m_vShaderPrograms.size(); i++)
+		{
+			if (ImGui::Selectable(m_vShaderPrograms.at(i)->m_shaderProgramID.c_str(), res == i))
+				res = i;
+		}
+
+		return m_vShaderPrograms.at(res);
 	}
 };
 

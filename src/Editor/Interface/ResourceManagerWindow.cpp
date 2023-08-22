@@ -1,5 +1,6 @@
 #include "ResourceManagerWindow.h"
 
+#include <Engine/Core/ResourceManager.h>
 #include <Engine/Core/Registry.h>
 #include <Engine/Resource/AudioClip.h>
 #include <Engine/Resource/Texture.h>
@@ -15,6 +16,7 @@ void ResourceManagerWindow::DoInterface()
 {
     static int selectedRes = -1;
     static int selectedDefaultRes = -1;
+    static int selectedShaderProg = -1;
     static Resource* defaultRes = nullptr;
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
@@ -79,6 +81,9 @@ void ResourceManagerWindow::DoInterface()
         ImGui::Text(resourceRegistry->at(i).first.c_str());
         std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
 
+        if (resourceRegistry->at(i).second->m_resourceType == "Shader") //temp hack
+            continue;
+
         for (int o = 0; o < resources.size(); o++)
         {
             if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
@@ -109,6 +114,23 @@ void ResourceManagerWindow::DoInterface()
         }
     }
     ImGui::EndChild();
+
+    ImGui::SeparatorText("Shader Programs");
+    std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
+
+    for (int o = 0; o < shaderPrograms->size(); o++)
+    {
+        if (ImGui::Selectable(shaderPrograms->at(o)->m_shaderProgramID.c_str(), selectedShaderProg == o))
+        {
+            selectedShaderProg = o;
+        }
+    }
+
+    if (selectedShaderProg != -1)
+    {  
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        shaderPrograms->at(selectedShaderProg)->DoShaderProgramInterface();
+    }
 
     ImGui::End();
 }

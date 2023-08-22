@@ -44,8 +44,8 @@ set (
 
 	src/Engine/imgui/imgui.h
 	src/Engine/imgui/imgui.cpp
-	src/Engine/imgui/backends/imgui_impl_vulkan.h
-	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
+	src/Engine/imgui/backends/imgui_impl_opengl3.h
+	src/Engine/imgui/backends/imgui_impl_opengl3.cpp
 
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
@@ -132,15 +132,6 @@ set (
 
 	src/Engine/Core/Graphics/Renderer.h
 	src/Engine/Core/Graphics/Renderer.cpp
-	
-	src/Engine/Core/Graphics/GraphicsPipeline.h
-	src/Engine/Core/Graphics/GraphicsPipeline.cpp
-
-	src/Engine/Core/Graphics/BufferHelper.h
-	src/Engine/Core/Graphics/BufferHelper.cpp
-
-	src/Engine/Core/Graphics/GraphicsBuffer.h
-	src/Engine/Core/Graphics/GraphicsBuffer.cpp
 
 	#ECS
 
@@ -154,6 +145,9 @@ set (
 	#Resource Handling
 	
 	src/Engine/Resource/Resource.h
+
+	src/Engine/Resource/ShaderProgram.h
+	src/Engine/Resource/ShaderProgram.cpp
 
 	src/Engine/Resource/Texture.h
 	src/Engine/Resource/Texture.cpp
@@ -202,7 +196,7 @@ add_library(Engine ${SRC_IMGUI}
 	
 	${source_list}
 )
-target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc vulkan-1)
+target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc glew32 opengl32 freetype)
 target_compile_features(Engine PRIVATE cxx_std_17)
 
 foreach(source IN LISTS source_list)

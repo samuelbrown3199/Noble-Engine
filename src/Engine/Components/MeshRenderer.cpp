@@ -2,8 +2,6 @@
 
 #include "../Core/Application.h"
 #include "../Core/Graphics/Renderer.h"
-#include "../Core/Graphics/BufferHelper.h"
-#include "../Core/Graphics/GraphicsPipeline.h"
 #include "../ECS/Entity.hpp"
 
 ComponentDatalist<MeshRenderer> MeshRenderer::m_componentList;
@@ -50,31 +48,20 @@ void MeshRenderer::OnRender()
 	if (m_model == nullptr)
 		return;
 
-	if (!m_bCreatedDescriptorSets)
-	{
-		BufferHelper::CreateUniformBuffers(m_uniformBuffers, m_uniformBuffersMapped);
-		Renderer::GetGraphicsPipeline()->CreateDescriptorSets(m_descriptorSets, m_uniformBuffers, m_texture);
+	//if (m_shader == nullptr)
+		//return;
 
-		m_bCreatedDescriptorSets = true;
-	}
+	Application::m_mainShaderProgram->UseProgram();
+	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
+	glBindTexture(GL_TEXTURE_2D, m_texture->m_iTextureID);
+	glBindVertexArray(m_model->m_vaoID);
 
-	UniformBufferObject ubo{};
-	ubo.model = m_transform->m_transformMat; //This is worth moving to a push descriptor I think.
-	ubo.view = Renderer::GenerateViewMatrix(); //Probably worth having UBO for Projection and View, bound once per frame.
-	ubo.proj = Renderer::GenerateProjMatrix();
+	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);
+	Application::m_mainShaderProgram->BindMat4("transMat", m_transform->m_transformMat);
+	Application::m_mainShaderProgram->BindVector4("colour", m_colour);
 
-	memcpy(m_uniformBuffersMapped[Renderer::GetCurrentFrame()], &ubo, sizeof(ubo)); //Not the most efficient way to do this, refer back to conclusion of https://vulkan-tutorial.com/Uniform_buffers/Descriptor_layout_and_buffer
-
-	//Bind vertex memory buffer to our command buffer, then draw it.
-	VkBuffer vertexBuffers[] = { m_model->m_vertexBuffer.m_buffer };
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(Renderer::GetCurrentCommandBuffer(), 0, 1, vertexBuffers, offsets);
-
-	vkCmdBindIndexBuffer(Renderer::GetCurrentCommandBuffer(), m_model->m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
-
-	vkCmdBindDescriptorSets(Renderer::GetCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::GetGraphicsPipeline()->GetPipelineLayout(), 0, 1, &m_descriptorSets[Renderer::GetCurrentFrame()], 0, nullptr);
-	//Command to draw our triangle. Parameters as follows, CommandBuffer, IndexCount, InstanceCount, firstIndex, vertexOffset, firstInstance
-	vkCmdDrawIndexed(Renderer::GetCurrentCommandBuffer(), static_cast<uint32_t>(m_model->m_indices.size()), 1, 0, 0, 0);
+	glDrawElements(Renderer::GetRenderMode(), m_model->m_indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void MeshRenderer::LoadComponentDataFromJson(nlohmann::json& j)

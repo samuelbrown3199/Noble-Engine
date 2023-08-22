@@ -17,11 +17,7 @@ struct MeshRenderer : public Component
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	Transform* m_transform = nullptr;
-
-	bool m_bCreatedDescriptorSets = false;
-	std::vector<GraphicsBuffer> m_uniformBuffers;
-	std::vector<void*> m_uniformBuffersMapped;
-	std::vector<VkDescriptorSet> m_descriptorSets;
+	std::shared_ptr<ShaderProgram> m_shader;
 
 	static ComponentDatalist<MeshRenderer> m_componentList;
 
@@ -53,11 +49,7 @@ struct MeshRenderer : public Component
 		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
 			return;
 
-		m_uniformBuffers.clear();
-		m_descriptorSets.clear();
-
 		m_texture = texture;
-		m_bCreatedDescriptorSets = false;
 	}
 
 	void ChangeModel(std::shared_ptr<Model> model)
@@ -69,6 +61,17 @@ struct MeshRenderer : public Component
 			return;
 
 		m_model = model;
+	}
+
+	void ChangeShaderProgram(std::shared_ptr<ShaderProgram> sProgram)
+	{
+		if (sProgram == nullptr)
+			return;
+
+		if (sProgram->m_shaderProgramID == m_shader->m_shaderProgramID)
+			return;
+
+		m_shader = sProgram;
 	}
 
 	virtual void DoComponentInterface() override
@@ -83,6 +86,7 @@ struct MeshRenderer : public Component
 		}
 
 		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		//ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface());
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);

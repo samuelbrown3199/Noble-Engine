@@ -220,6 +220,19 @@ void EditorUI::DoInterface()
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+	static ImVec4 ambientColour = ImVec4(0, 0, 0, 200.0f / 255.0f);
+	static float ambientStrength = 1.0f;
+	ImGui::ColorEdit3("Ambient Light Colour", (float*)&ambientColour);
+	ImGui::DragFloat("Ambient Light Strength", &ambientStrength, 0.1f, 0.0f, 1.0f, "%.2f");
+	if (ImGui::Button("Apply Ambient Colour"))
+	{
+		Application::m_mainShaderProgram->BindVector3("ambientColour", glm::vec3(ambientColour.x, ambientColour.y, ambientColour.z));
+		Application::m_mainShaderProgram->BindFloat("ambientStrength", ambientStrength);
+	}
+
+	ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
 	static ImVec4 color = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
 	ImGui::ColorEdit3("Clear Colour", (float*)&color);
 	if(ImGui::Button("Apply Clear Colour"))
@@ -402,6 +415,19 @@ void EditorUI::DoAssetMenu()
 					resourceRegistry->at(i).second->AddResource(path);
 				}
 			}
+		}
+		ImGui::EndMenu();
+	}
+
+	if (ImGui::BeginMenu("New Shader Program..."))
+	{
+		static std::string newShaderProgram = "";
+		ImGui::InputText("Shader Program ID", &newShaderProgram);
+
+		ImGui::SameLine();
+		if (ImGui::Button("Create Shader Program"))
+		{
+			ResourceManager::CreateShaderProgram(newShaderProgram);
 		}
 		ImGui::EndMenu();
 	}

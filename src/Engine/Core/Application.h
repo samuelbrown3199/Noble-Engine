@@ -38,8 +38,6 @@ private:
     ResourceManager* m_resourceManager;
     Logger* m_logger;
 
-	VkDescriptorPool m_imguiPool;
-
     std::shared_ptr<IniFile> m_mainIniFile;
 
 	static bool m_bEntitiesDeleted;
@@ -56,6 +54,8 @@ private:
 	void InitializeImGui();
 
 public:
+
+	static std::shared_ptr<ShaderProgram> m_mainShaderProgram; //temp
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }

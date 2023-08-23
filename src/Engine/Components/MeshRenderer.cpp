@@ -48,17 +48,17 @@ void MeshRenderer::OnRender()
 	if (m_model == nullptr)
 		return;
 
-	//if (m_shader == nullptr)
-		//return;
+	if (m_shader == nullptr)
+		return;
 
-	Application::m_mainShaderProgram->UseProgram();
+	m_shader->UseProgram();
 	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
 	glBindTexture(GL_TEXTURE_2D, m_texture->m_iTextureID);
 	glBindVertexArray(m_model->m_vaoID);
 
-	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);
-	Application::m_mainShaderProgram->BindMat4("transMat", m_transform->m_transformMat);
-	Application::m_mainShaderProgram->BindVector4("colour", m_colour);
+	m_shader->BindMat4("vpMat", finalMat);
+	m_shader->BindMat4("transMat", m_transform->m_transformMat);
+	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), m_model->m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

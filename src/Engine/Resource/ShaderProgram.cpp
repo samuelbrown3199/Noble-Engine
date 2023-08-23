@@ -37,17 +37,60 @@ void Shader::SetDefaults(const nlohmann::json& data)
 }
 
 
+void ShaderProgram::ChangeShader(std::shared_ptr<Shader> shader, std::shared_ptr<Shader>& targetShader)
+{
+	if (shader == nullptr)
+		return;
+
+	if (targetShader != nullptr && shader->m_sLocalPath == targetShader->m_sLocalPath)
+		return;
+
+	targetShader = shader;
+}
+
 
 void ShaderProgram::DoShaderProgramInterface()
 {
-	ImGui::Text("YOOOO SHADER PROGRAM EDITOR?!");
-
-	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Vertex Shader", ""), m_vertexShader);
-	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Fragment Shader", ""), m_fragmentShader);
+	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Vertex Shader", m_vertexShader != nullptr ? m_vertexShader->m_sLocalPath : ""), m_vertexShader);
+	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Fragment Shader", m_fragmentShader != nullptr ? m_fragmentShader->m_sLocalPath : ""), m_fragmentShader);
 
 	if (ImGui::Button("Compile Program"))
 	{
 		BindShader(m_vertexShader, GL_VERTEX_SHADER);
+		BindShader(m_fragmentShader, GL_FRAGMENT_SHADER);
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Save Program"))
+	{
+		ResourceManager::WriteResourceDatabase();
+	}
+}
+
+nlohmann::json ShaderProgram::WriteToJson()
+{
+	nlohmann::json data;
+
+	if (m_vertexShader)
+		data["Vertex"] = m_vertexShader->m_sLocalPath;
+	if(m_fragmentShader)
+		data["Fragment"] = m_fragmentShader->m_sLocalPath;
+
+	return data;
+}
+
+void ShaderProgram::LoadFromJson(nlohmann::json j)
+{
+	if (j.find("Vertex") != j.end())
+	{
+		m_vertexShader = ResourceManager::LoadResource<Shader>(j.at("Vertex"));
+		BindShader(m_vertexShader, GL_VERTEX_SHADER);
+	}
+
+	if (j.find("Fragment") != j.end())
+	{
+		m_fragmentShader = ResourceManager::LoadResource<Shader>(j.at("Fragment"));
 		BindShader(m_fragmentShader, GL_FRAGMENT_SHADER);
 	}
 }

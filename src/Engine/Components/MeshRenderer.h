@@ -26,14 +26,28 @@ struct MeshRenderer : public Component
 		nlohmann::json data;
 		data = { {"texturePath", m_texture->m_sLocalPath }, {"modelPath", m_model->m_sLocalPath},{"colour", {m_colour.x, m_colour.y, m_colour.z, m_colour.w}}};
 
+		if (m_texture != nullptr)
+			data["texturePath"] = m_texture->m_sLocalPath;
+		if(m_model != nullptr)
+			data["modelPath"] = m_model->m_sLocalPath;
+		if (m_shader != nullptr)
+			data["ShaderProgram"] = m_shader->m_shaderProgramID;
+
+		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
+
 		return data;
 	}
 
 	void FromJson(const nlohmann::json& j)
 	{
-		m_texture = ResourceManager::LoadResource<Texture>(j["texturePath"]);
-		m_model = ResourceManager::LoadResource<Model>(j["modelPath"]);
-		m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
+		if (j.find("texturePath") != j.end())
+			m_texture = ResourceManager::LoadResource<Texture>(j["texturePath"]);
+		if (j.find("modelPath") != j.end())
+			m_model = ResourceManager::LoadResource<Model>(j["modelPath"]);
+		if (j.find("colour") != j.end())
+			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
+		if (j.find("ShaderProgram") != j.end())
+			m_shader = ResourceManager::GetShaderProgram(j["ShaderProgram"]);
 	}
 
 	Component* GetAsComponent(std::string entityID) override
@@ -68,7 +82,7 @@ struct MeshRenderer : public Component
 		if (sProgram == nullptr)
 			return;
 
-		if (sProgram->m_shaderProgramID == m_shader->m_shaderProgramID)
+		if (m_shader != nullptr && sProgram->m_shaderProgramID == m_shader->m_shaderProgramID)
 			return;
 
 		m_shader = sProgram;
@@ -85,8 +99,17 @@ struct MeshRenderer : public Component
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
 
+		if (m_shader == nullptr)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+			ImGui::Text("No shader selected. Object won't render.");
+			ImGui::PopStyleColor();
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		}
+
 		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
-		//ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface());
+		ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface(m_shader != nullptr ? m_shader->m_shaderProgramID : ""));
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);

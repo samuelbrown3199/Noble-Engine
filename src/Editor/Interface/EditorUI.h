@@ -34,6 +34,13 @@ class EditorUI : public DebugUI
 
 	void OpenResourceManager();
 
+	ImVec4 ambientColour;
+	float ambientStrength;
+	ImVec4 clearColour;
+	void UpdateLightingWidgets();
+
+	void LoadScene(std::string scenePath);
+
 public:
 
 	void InitializeInterface() override;

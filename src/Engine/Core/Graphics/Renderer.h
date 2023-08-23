@@ -52,6 +52,9 @@ private:
 	static float m_fScale;
 
 	static glm::vec3 m_clearColour;
+	static glm::vec3 m_ambientColour;
+	static float m_ambientStrength;
+
 
 	static Camera* m_camera;
 
@@ -68,8 +71,10 @@ public:
 	Renderer(const std::string _windowName);
 	~Renderer();
 
-	void ClearBuffer();
-	void SwapGraphicsBuffer();
+	void StartFrameRender();
+	void SetShaderInformation();
+
+	void EndFrameRender();
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
 	static SDL_Window* GetWindow() { return m_gameWindow; }
@@ -103,6 +108,11 @@ public:
 
 	static void SetClearColour(glm::vec3 colour);
 	static glm::vec3 GetClearColour() { return m_clearColour; }
+
+	static void SetAmbientColour(glm::vec3 colour, float strength);
+	static glm::vec3 GetAmbientColour() { return m_ambientColour; }
+	static float GetAmbientStrength() { return m_ambientStrength; }
+
 	static void SetCullFace(bool value);
 };
 

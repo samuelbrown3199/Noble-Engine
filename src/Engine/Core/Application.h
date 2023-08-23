@@ -55,8 +55,6 @@ private:
 
 public:
 
-	static std::shared_ptr<ShaderProgram> m_mainShaderProgram; //temp
-
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
 	static void StopApplication() { m_bLoop = false; }
 

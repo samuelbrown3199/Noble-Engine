@@ -26,7 +26,7 @@ void EditorUI::ChangeEditorMode()
 	Application::SetPlayMode(!Application::GetPlayMode());
 
 	if(Application::GetPlayMode() == false)
-		SceneManager::LoadScene(SceneManager::GetCurrentSceneLocalPath());
+		LoadScene(SceneManager::GetCurrentSceneLocalPath());
 }
 
 void EditorUI::CreateEditorCam()
@@ -60,6 +60,24 @@ void EditorUI::OpenResourceManager()
 		return;
 
 	m_resourceManagerWind->m_uiOpen = !m_resourceManagerWind->m_uiOpen;
+}
+
+void EditorUI::UpdateLightingWidgets()
+{
+	glm::vec3 ambColour = Renderer::GetAmbientColour();
+
+	ambientColour = ImVec4(ambColour.x, ambColour.y, ambColour.z, 200.0f / 255.0f);
+	ambientStrength = Renderer::GetAmbientStrength();
+
+	clearColour = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
+}
+
+void EditorUI::LoadScene(std::string scenePath)
+{
+	SceneManager::LoadScene(scenePath);
+
+	UpdateEditorWindowTitle();
+	UpdateLightingWidgets();
 }
 
 void EditorUI::InitializeInterface()
@@ -221,22 +239,14 @@ void EditorUI::DoInterface()
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-	static ImVec4 ambientColour = ImVec4(0, 0, 0, 200.0f / 255.0f);
-	static float ambientStrength = 1.0f;
 	ImGui::ColorEdit3("Ambient Light Colour", (float*)&ambientColour);
 	ImGui::DragFloat("Ambient Light Strength", &ambientStrength, 0.1f, 0.0f, 1.0f, "%.2f");
-	if (ImGui::Button("Apply Ambient Colour"))
-	{
-		Application::m_mainShaderProgram->BindVector3("ambientColour", glm::vec3(ambientColour.x, ambientColour.y, ambientColour.z));
-		Application::m_mainShaderProgram->BindFloat("ambientStrength", ambientStrength);
-	}
+	Renderer::SetAmbientColour(glm::vec3(ambientColour.x, ambientColour.y, ambientColour.z), ambientStrength);
 
 	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
-	static ImVec4 color = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
-	ImGui::ColorEdit3("Clear Colour", (float*)&color);
-	if(ImGui::Button("Apply Clear Colour"))
-		Renderer::SetClearColour(glm::vec3(color.x, color.y, color.z));
+	ImGui::ColorEdit3("Clear Colour", (float*)&clearColour);
+	Renderer::SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
 
 	ImGui::End();
 
@@ -340,8 +350,9 @@ void EditorUI::DoFileMenu()
 			{
 				if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
 				{
-					SceneManager::LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
+					LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
 					UpdateEditorWindowTitle();
+					UpdateLightingWidgets();
 				}
 			}
 

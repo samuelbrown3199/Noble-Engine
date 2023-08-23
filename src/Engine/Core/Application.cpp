@@ -28,8 +28,6 @@ std::vector<Entity> Application::m_vEntities;
 
 std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
 
-std::shared_ptr<ShaderProgram> Application::m_mainShaderProgram;
-
 //----------------- Private Functions ----------------------
 
 
@@ -51,8 +49,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 
-	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_gameRenderer = new Renderer(_windowName);
+	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
@@ -74,11 +72,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
-
-	rtn->m_mainShaderProgram = ResourceManager::CreateShaderProgram("Standard");
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.vs"), GL_VERTEX_SHADER);
-	rtn->m_mainShaderProgram->BindShader(ResourceManager::LoadResource<Shader>("GameData\\Shaders\\standard.fs"), GL_FRAGMENT_SHADER);
-	rtn->m_mainShaderProgram->LinkShaderProgram(rtn->m_mainShaderProgram);
 
 	Logger::LogInformation("Engine started successfully");
 
@@ -193,7 +186,7 @@ void Application::MainLoop()
 		m_pStats->renderStart = SDL_GetTicks();
 		ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
-		m_gameRenderer->ClearBuffer();
+		m_gameRenderer->StartFrameRender();
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bRenderInEditor)
@@ -209,7 +202,7 @@ void Application::MainLoop()
 		}
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ThreadingManager::WaitForTasksToClear();
-		m_gameRenderer->SwapGraphicsBuffer();
+		m_gameRenderer->EndFrameRender();
 		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
 		//Render End
 

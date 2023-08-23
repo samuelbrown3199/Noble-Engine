@@ -101,7 +101,6 @@ void Scene::LoadSceneIntoApplication()
 		Renderer::SetClearColour(clearColour);
 
 		glm::vec3 ambientColour = glm::vec3(lightingInfo["AmbientColour"][0], lightingInfo["AmbientColour"][1], lightingInfo["AmbientColour"][2]);
-		Application::m_mainShaderProgram->BindVector3("ambientColour", ambientColour);
-		Application::m_mainShaderProgram->BindFloat("ambientStrength", lightingInfo["AmbientStrength"]);
+		Renderer::SetAmbientColour(ambientColour, lightingInfo["AmbientStrength"]);
 	}
 }

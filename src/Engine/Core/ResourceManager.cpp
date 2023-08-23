@@ -120,6 +120,23 @@ void ResourceManager::LoadResourceDatabase()
 			Logger::LogInformation(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
 		}
 	}
+
+	if (m_resourceDatabaseJson.find("ShaderPrograms") != m_resourceDatabaseJson.end())
+	{
+		nlohmann::json ac = m_resourceDatabaseJson.at("ShaderPrograms");
+		for (auto it : ac.items())
+		{
+			std::shared_ptr<ShaderProgram> newProgram = std::make_shared<ShaderProgram>();
+			newProgram->m_shaderProgramID = it.key();
+			newProgram->LoadFromJson(it.value());
+
+			newProgram->LinkShaderProgram(newProgram);
+
+			m_vShaderPrograms.push_back(newProgram);
+		}
+
+		Logger::LogInformation(FormatString("Loaded %d Shader Programs", ac.size()));
+	}
 }
 
 void ResourceManager::WriteResourceDatabase()
@@ -134,6 +151,11 @@ void ResourceManager::WriteResourceDatabase()
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
 		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second->AddToDatabase();
+	}
+
+	for (int i = 0; i < m_vShaderPrograms.size(); i++)
+	{
+		m_resourceDatabaseJson["ShaderPrograms"][m_vShaderPrograms.at(i)->m_shaderProgramID] = m_vShaderPrograms.at(i)->WriteToJson();
 	}
 
 	std::fstream database(m_sWorkingDirectory + "\\ResourceDatabase.nrd", 'w');
@@ -151,6 +173,8 @@ std::shared_ptr<ShaderProgram> ResourceManager::CreateShaderProgram(std::string 
 	std::shared_ptr<ShaderProgram> rtn = std::make_shared<ShaderProgram>();
 	rtn->m_shaderProgramID = shaderProgramID;
 	m_vShaderPrograms.push_back(rtn);
+	WriteResourceDatabase();
+
 	Logger::LogInformation("Created new shader program.");
 
 	return rtn;

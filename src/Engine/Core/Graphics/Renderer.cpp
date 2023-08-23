@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include "../ResourceManager.h"
 #include "../Logger.h"
 #include "../../Useful.h"
 
@@ -13,6 +14,8 @@ float Renderer::m_fFarPlane = 1000.0f;
 float Renderer::m_fScale = 20;
 
 glm::vec3 Renderer::m_clearColour;
+glm::vec3 Renderer::m_ambientColour;
+float Renderer::m_ambientStrength;
 
 float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
@@ -80,11 +83,25 @@ void Renderer::AdjustScale(const float& _amount)
 		m_fScale = m_fMinScale;
 }
 
-void Renderer::ClearBuffer()
+void Renderer::StartFrameRender()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	SetShaderInformation();
 }
-void Renderer::SwapGraphicsBuffer()
+
+void Renderer::SetShaderInformation()
+{
+	std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
+	for (int i = 0; i < shaderPrograms->size(); i++)
+	{
+		shaderPrograms->at(i)->UseProgram();
+
+		shaderPrograms->at(i)->BindVector3("ambientColour", m_ambientColour);
+		shaderPrograms->at(i)->BindFloat("ambientStrength", m_ambientStrength);
+	}
+}
+
+void Renderer::EndFrameRender()
 {
 	SDL_GL_SwapWindow(m_gameWindow);
 }
@@ -196,6 +213,12 @@ void Renderer::SetClearColour(glm::vec3 colour)
 {
 	m_clearColour = colour;
 	glClearColor(colour.x, colour.y, colour.z, 1.0f);
+}
+
+void Renderer::SetAmbientColour(glm::vec3 colour, float strength)
+{
+	m_ambientColour = colour;
+	m_ambientStrength = strength;
 }
 
 void Renderer::SetCullFace(bool value)

@@ -97,8 +97,8 @@ void Sprite::OnRender()
 	if (m_spriteTexture == nullptr)
 		return;
 
-	//if (m_shader == nullptr)
-		//return;
+	if (m_shader == nullptr)
+		return;
 
 	glBindVertexArray(m_iQuadVAO);
 
@@ -108,13 +108,13 @@ void Sprite::OnRender()
 	m_spriteTransform->m_scale.x = scale.x;
 	m_spriteTransform->m_scale.y = scale.y;
 
-	Application::m_mainShaderProgram->UseProgram();
+	m_shader->UseProgram();
 	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
 	glBindTexture(GL_TEXTURE_2D, m_spriteTexture->m_iTextureID);
 
-	Application::m_mainShaderProgram->BindMat4("vpMat", finalMat);
-	Application::m_mainShaderProgram->BindMat4("transMat", m_spriteTransform->m_transformMat);
-	Application::m_mainShaderProgram->BindVector4("colour", m_colour);
+	m_shader->BindMat4("vpMat", finalMat);
+	m_shader->BindMat4("transMat", m_spriteTransform->m_transformMat);
+	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);
 }

@@ -93,8 +93,8 @@ struct ShaderProgram
 	std::weak_ptr<ShaderProgram> m_self;
 	std::vector<std::shared_ptr<ShaderLocation>> m_vShaderLocations;
 
-	std::shared_ptr<Shader> m_vertexShader;
-	std::shared_ptr<Shader> m_fragmentShader;
+	std::shared_ptr<Shader> m_vertexShader = nullptr;
+	std::shared_ptr<Shader> m_fragmentShader = nullptr;
 
 public:
 	ShaderProgram()
@@ -260,16 +260,8 @@ public:
 		glUseProgram(m_iProgramID);
 	}
 
-	void ChangeShader(std::shared_ptr<Shader> shader, std::shared_ptr<Shader> targetShader)
-	{
-		if (shader == nullptr)
-			return;
-
-		if (targetShader != nullptr && shader->m_sLocalPath == targetShader->m_sLocalPath)
-			return;
-		
-		targetShader = shader;
-	}
-
+	void ChangeShader(std::shared_ptr<Shader> shader, std::shared_ptr<Shader>& targetShader);
 	void DoShaderProgramInterface();
+	nlohmann::json WriteToJson();
+	void LoadFromJson(nlohmann::json j);
 };

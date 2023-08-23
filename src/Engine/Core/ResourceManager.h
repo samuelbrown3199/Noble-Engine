@@ -187,14 +187,17 @@ struct ResourceManager
 				res = i;
 		}
 
-		ImGui::Text(interfaceText.c_str());
-
-		for (int i = 0; i < resources.size(); i++)
+		if (ImGui::BeginMenu(interfaceText.c_str()))
 		{
-			if (ImGui::Selectable(resources.at(i)->m_sLocalPath.c_str(), res == i))
-				res = i;
-		}
+			for (int i = 0; i < resources.size(); i++)
+			{
+				if (ImGui::MenuItem(resources.at(i)->m_sLocalPath.c_str()))
+					res = i;
+			}
 
+			ImGui::EndMenu();
+		}
+		ImGui::Text(currentResourcePath.c_str());
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		if (resources.at(res)->m_sLocalPath == currentResourcePath)
@@ -205,7 +208,7 @@ struct ResourceManager
 		return LoadResource<T>(resources.at(res)->m_sLocalPath);
 	}
 
-	static std::shared_ptr<ShaderProgram> DoShaderProgramSelectInterface()
+	static std::shared_ptr<ShaderProgram> DoShaderProgramSelectInterface(std::string currentID)
 	{
 		if (m_vShaderPrograms.size() == 0)
 		{
@@ -216,9 +219,22 @@ struct ResourceManager
 		int res = 0;
 		for (int i = 0; i < m_vShaderPrograms.size(); i++)
 		{
-			if (ImGui::Selectable(m_vShaderPrograms.at(i)->m_shaderProgramID.c_str(), res == i))
+			if (m_vShaderPrograms.at(i)->m_shaderProgramID == currentID)
 				res = i;
 		}
+
+		if (ImGui::BeginMenu("Shader Programs"))
+		{
+			for (int i = 0; i < m_vShaderPrograms.size(); i++)
+			{
+				if (ImGui::MenuItem(m_vShaderPrograms.at(i)->m_shaderProgramID.c_str()))
+					res = i;
+			}
+			ImGui::EndMenu();
+		}
+
+		ImGui::Text(currentID.c_str());
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		return m_vShaderPrograms.at(res);
 	}

@@ -147,7 +147,10 @@ public:
 			std::string error(begin(v), end(v));
 
 			glDeleteShader(shaderID);
-			return { true, FormatString("Failed to compile shader. %s", error) };
+
+			std::string logError = FormatString("Failed to compile shader. %s", error.c_str());
+			Logger::LogError(logError, 1);
+			return { true, logError };
 		}
 
 		glAttachShader(m_iProgramID, shaderID);

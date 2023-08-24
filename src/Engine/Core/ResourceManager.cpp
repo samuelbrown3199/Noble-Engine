@@ -217,4 +217,5 @@ void ResourceManager::UnloadAllResources()
 {
 	m_vLoadedResources.clear();
 	m_vResourceDatabase.clear();
+	m_vShaderPrograms.clear();
 }

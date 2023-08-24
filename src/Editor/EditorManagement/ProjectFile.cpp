@@ -27,6 +27,7 @@ bool ProjectFile::CreateProjectFile(std::string projectName, std::string project
 void ProjectFile::LoadProjectFile(const std::string& file)
 {
 	Application::ClearLoadedScene();
+	ResourceManager::UnloadAllResources();
 
 	std::ifstream projectFile;
 	projectFile.open(file);
@@ -42,5 +43,4 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	std::string gamedataPath = m_sProjectDirectory + "\\GameData";
 	if(!PathExists(gamedataPath))
 		CreateNewDirectory(gamedataPath);
-
 }

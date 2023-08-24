@@ -9,6 +9,8 @@
 #include <nlohmann/json.hpp>
 
 #include "../imgui/imgui.h"
+#include "../imgui/imgui_stdlib.h"
+
 #include "../Useful.h"
 #include "../Resource/Resource.h"
 #include "../Resource/ShaderProgram.h"
@@ -29,7 +31,7 @@ struct ResourceManager
 	static std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
 	static std::string m_sWorkingDirectory;
 
-	static std::vector<std::shared_ptr<ShaderProgram>> m_vShaderPrograms; //to be integrated more properly
+	static std::vector<std::shared_ptr<ShaderProgram>> m_vShaderPrograms;
 
 	static nlohmann::json m_resourceDatabaseJson;
 
@@ -180,18 +182,39 @@ struct ResourceManager
 			return nullptr;
 		}
 
-		int res = 0;
-		for (int i = 0; i < resources.size(); i++)
+		static std::string searchVal = "";
+		std::vector<std::shared_ptr<Resource>> displayResources = resources;
+
+		int res = -1;
+		for (int i = displayResources.size()-1; i >= 0; i--)
 		{
-			if (resources.at(i)->m_sLocalPath == currentResourcePath)
+			if (!searchVal.empty())
+			{
+				if (displayResources.at(i)->m_sLocalPath.find(searchVal) == std::string::npos)
+				{
+					displayResources.erase(displayResources.begin() + i);
+					continue;
+				}
+			}
+
+			if (displayResources.at(i)->m_sLocalPath == currentResourcePath)
 				res = i;
 		}
 
 		if (ImGui::BeginMenu(interfaceText.c_str()))
 		{
-			for (int i = 0; i < resources.size(); i++)
+			ImGui::InputText("Search", &searchVal);
+
+			if (displayResources.size() == 0)
 			{
-				if (ImGui::MenuItem(resources.at(i)->m_sLocalPath.c_str()))
+				ImGui::Text(FormatString("No resources found.", interfaceText).c_str());
+				ImGui::EndMenu();
+				return nullptr;
+			}
+
+			for (int i = 0; i < displayResources.size(); i++)
+			{
+				if (ImGui::MenuItem(displayResources.at(i)->m_sLocalPath.c_str()))
 					res = i;
 			}
 
@@ -200,12 +223,18 @@ struct ResourceManager
 		ImGui::Text(currentResourcePath.c_str());
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
-		if (resources.at(res)->m_sLocalPath == currentResourcePath)
+		if (res != -1)
 		{
-			return std::dynamic_pointer_cast<T>(resources.at(res));
-		}
+			if (res <= displayResources.size() - 1 && displayResources.at(res)->m_sLocalPath == currentResourcePath)
+				return std::dynamic_pointer_cast<T>(displayResources.at(res));
 
-		return LoadResource<T>(resources.at(res)->m_sLocalPath);
+			if (res <= displayResources.size() - 1)
+				return LoadResource<T>(displayResources.at(res)->m_sLocalPath);
+			else
+				return nullptr;
+		}
+		else
+			return nullptr;
 	}
 
 	static std::shared_ptr<ShaderProgram> DoShaderProgramSelectInterface(std::string currentID)

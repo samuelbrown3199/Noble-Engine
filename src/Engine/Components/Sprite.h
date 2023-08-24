@@ -38,7 +38,7 @@ struct Sprite : public Component
 
 	void FromJson(const nlohmann::json& j)
 	{
-		if(j.find("SpritePath") != j.end())
+		if(j.find("spritePath") != j.end())
 			m_spriteTexture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
 		if(j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);

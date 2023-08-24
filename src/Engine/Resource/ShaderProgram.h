@@ -121,40 +121,14 @@ public:
 	/**
 	*Binds a shader resource to the shader program.
 	*/
-	void BindShader(std::shared_ptr<Shader> _shader, GLenum _shaderType)
+	std::pair<bool, std::string> BindShader(std::shared_ptr<Shader> _shader, GLenum _shaderType)
 	{
-		Logger::LogInformation(FormatString("Binding shader %s to shader program", _shader->m_sResourcePath.c_str()));
-
-		const GLchar* shaderSource = _shader->m_shaderCode->c_str();
-		GLuint shaderID = glCreateShader(_shaderType);
-		glShaderSource(shaderID, 1, &shaderSource, NULL);
-		glCompileShader(shaderID);
-		GLint success = 0;
-		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			Logger::LogError(FormatString("Failed to compile shader with path %s!", _shader->m_sResourcePath.c_str()), 2);
-			GLint maxLength = 0;
-			glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &maxLength);
-
-			std::vector<GLchar> errorLog(maxLength);
-			glGetShaderInfoLog(shaderID, maxLength, &maxLength, &errorLog[0]);
-
-			for (int i = 0; i < errorLog.size(); i++)
-			{
-				std::cout << errorLog[i];
-			}
-
-			glDeleteShader(shaderID);
-			throw std::exception();
-		}
-
-		glAttachShader(m_iProgramID, shaderID);
+		return BindShader(_shader->m_shaderCode->c_str(), _shaderType);
 	}
 	/**
 	*Binds a shader source code string to the shader program.
 	*/
-	void BindShader(const GLchar* _shaderSourceString, GLenum _shaderType)
+	std::pair<bool, std::string> BindShader(const GLchar* _shaderSourceString, GLenum _shaderType)
 	{
 		Logger::LogInformation("Binding shader string to shader program");
 
@@ -165,23 +139,20 @@ public:
 		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
-			Logger::LogError("Failed to compile shader with path passed by string!", 2);
 			GLint maxLength = 0;
 			glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &maxLength);
 
-			std::vector<GLchar> errorLog(maxLength);
-			glGetShaderInfoLog(shaderID, maxLength, &maxLength, &errorLog[0]);
-
-			for (int i = 0; i < errorLog.size(); i++)
-			{
-				std::cout << errorLog[i];
-			}
+			std::vector<char> v(maxLength);
+			glGetShaderInfoLog(shaderID, maxLength, NULL, v.data());
+			std::string error(begin(v), end(v));
 
 			glDeleteShader(shaderID);
-			throw std::exception();
+			return { true, FormatString("Failed to compile shader. %s", error) };
 		}
 
 		glAttachShader(m_iProgramID, shaderID);
+
+		return { true, "" };
 	}
 	/**
 	*This function binds an integer to a uniform int in the shader.
@@ -240,16 +211,12 @@ public:
 			GLint maxLength = 0;
 			glGetProgramiv(m_iProgramID, GL_INFO_LOG_LENGTH, &maxLength);
 
-			std::vector<GLchar> errorLog(maxLength);
-			glGetShaderInfoLog(m_iProgramID, maxLength, &maxLength, &errorLog[0]);
-
-			for (int i = 0; i < errorLog.size(); i++)
-			{
-				std::cout << errorLog[i];
-			}
+			std::vector<char> v(maxLength);
+			glGetShaderInfoLog(m_iProgramID, maxLength, NULL, v.data());
+			std::string error(begin(v), end(v));
 
 			glDeleteProgram(m_iProgramID);
-			throw std::exception();
+			Logger::LogError(FormatString("Failed to link shader program %s. Error: %s", m_shaderProgramID, error), 2);
 		}
 	}
 	/**

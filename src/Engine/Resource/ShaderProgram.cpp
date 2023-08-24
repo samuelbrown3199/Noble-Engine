@@ -54,10 +54,19 @@ void ShaderProgram::DoShaderProgramInterface()
 	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Vertex Shader", m_vertexShader != nullptr ? m_vertexShader->m_sLocalPath : ""), m_vertexShader);
 	ChangeShader(ResourceManager::DoResourceSelectInterface<Shader>("Fragment Shader", m_fragmentShader != nullptr ? m_fragmentShader->m_sLocalPath : ""), m_fragmentShader);
 
+	static std::pair<bool, std::string> compile;
+
+	if (!compile.first)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text(compile.second.c_str());
+		ImGui::PopStyleColor();
+	}
+
 	if (ImGui::Button("Compile Program"))
 	{
-		BindShader(m_vertexShader, GL_VERTEX_SHADER);
-		BindShader(m_fragmentShader, GL_FRAGMENT_SHADER);
+		compile = BindShader(m_vertexShader, GL_VERTEX_SHADER);
+		compile = BindShader(m_fragmentShader, GL_FRAGMENT_SHADER);
 	}
 
 	ImGui::SameLine();

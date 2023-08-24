@@ -37,7 +37,4 @@
 *.db
 /TechDemos/TechDemo1/Logs
 /Editor/Logs
-TechDemos/TechDemo1/Debug/TechDemo1.pdb
-Editor/Editor.pdb
-Editor/Editor.pdb
 *.pdb

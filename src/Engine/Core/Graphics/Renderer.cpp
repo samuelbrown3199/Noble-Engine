@@ -14,8 +14,8 @@ float Renderer::m_fFarPlane = 1000.0f;
 float Renderer::m_fScale = 20;
 
 glm::vec3 Renderer::m_clearColour;
-glm::vec3 Renderer::m_ambientColour;
-float Renderer::m_ambientStrength;
+glm::vec3 Renderer::m_ambientColour = glm::vec3(1.0f, 1.0f, 1.0f);
+float Renderer::m_ambientStrength = 1.0f;
 
 float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;

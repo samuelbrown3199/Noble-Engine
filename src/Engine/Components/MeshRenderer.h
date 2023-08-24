@@ -109,8 +109,9 @@ struct MeshRenderer : public Component
 		}
 
 		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
-		ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface(m_shader != nullptr ? m_shader->m_shaderProgramID : ""));
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
+
+		ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface(m_shader != nullptr ? m_shader->m_shaderProgramID : ""));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

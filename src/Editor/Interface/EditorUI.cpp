@@ -89,6 +89,8 @@ void EditorUI::InitializeInterface()
 	m_sWindowName = Renderer::GetWindowTitle();
 
 	m_resourceManagerWind = Application::BindDebugUI<ResourceManagerWindow>();
+
+	UpdateLightingWidgets();
 }
 
 void EditorUI::DoInterface()

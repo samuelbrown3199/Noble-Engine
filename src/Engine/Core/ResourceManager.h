@@ -186,24 +186,27 @@ struct ResourceManager
 		std::vector<std::shared_ptr<Resource>> displayResources = resources;
 
 		int res = -1;
-		for (int i = displayResources.size()-1; i >= 0; i--)
-		{
-			if (!searchVal.empty())
-			{
-				if (displayResources.at(i)->m_sLocalPath.find(searchVal) == std::string::npos)
-				{
-					displayResources.erase(displayResources.begin() + i);
-					continue;
-				}
-			}
 
-			if (displayResources.at(i)->m_sLocalPath == currentResourcePath)
-				res = i;
-		}
-
-		if (ImGui::BeginMenu(interfaceText.c_str()))
+		ImGui::Text(interfaceText.c_str());
+		ImGui::SameLine();
+		if (ImGui::BeginMenu(currentResourcePath.c_str()))
 		{
 			ImGui::InputText("Search", &searchVal);
+
+			for (int i = displayResources.size() - 1; i >= 0; i--)
+			{
+				if (!searchVal.empty())
+				{
+					if (displayResources.at(i)->m_sLocalPath.find(searchVal) == std::string::npos)
+					{
+						displayResources.erase(displayResources.begin() + i);
+						continue;
+					}
+				}
+
+				if (displayResources.at(i)->m_sLocalPath == currentResourcePath)
+					res = i;
+			}
 
 			if (displayResources.size() == 0)
 			{
@@ -220,7 +223,6 @@ struct ResourceManager
 
 			ImGui::EndMenu();
 		}
-		ImGui::Text(currentResourcePath.c_str());
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		if (res != -1)
@@ -252,7 +254,9 @@ struct ResourceManager
 				res = i;
 		}
 
-		if (ImGui::BeginMenu("Shader Programs"))
+		ImGui::Text("Shader Programs");
+		ImGui::SameLine();
+		if (ImGui::BeginMenu(currentID.c_str()))
 		{
 			for (int i = 0; i < m_vShaderPrograms.size(); i++)
 			{
@@ -261,8 +265,6 @@ struct ResourceManager
 			}
 			ImGui::EndMenu();
 		}
-
-		ImGui::Text(currentID.c_str());
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		return m_vShaderPrograms.at(res);

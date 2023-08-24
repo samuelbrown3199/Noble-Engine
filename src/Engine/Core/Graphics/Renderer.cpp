@@ -11,7 +11,7 @@ int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
 float Renderer::m_fFarPlane = 1000.0f;
-float Renderer::m_fScale = 20;
+float Renderer::m_fScale = 50;
 
 glm::vec3 Renderer::m_clearColour;
 glm::vec3 Renderer::m_ambientColour = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -183,6 +183,7 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
 	glm::mat4 orthoMatrix = glm::ortho(0.0f, (float)m_iScreenWidth / m_fScale, (float)m_iScreenHeight / m_fScale, 0.0f, 0.0f, m_fFarPlane);
+	orthoMatrix[1][1] *= -1;
 	return orthoMatrix;
 }
 

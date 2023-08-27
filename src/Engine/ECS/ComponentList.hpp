@@ -42,6 +42,7 @@ struct ComponentDatalist
 			{
 				m_componentData.at(i).m_bAvailableForReuse = true;
 				m_componentData.at(i).m_sEntityID = "del";
+				m_componentData.at(i).OnRemove();
 				m_deletedComponents.push_back(&m_componentData.at(i));
 			}
 		}

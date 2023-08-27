@@ -141,10 +141,10 @@ struct PointLight : public LightInfo
 struct Light : public Component
 {
 	static ComponentDatalist<Light> m_componentList;
-	static int m_iCurrentLight;
 	static std::vector<Light*> m_closestLights;
+	static int m_iMaxLights;
 
-	Transform* m_transform;
+	Transform* m_transform = nullptr;
 
 	enum LightType
 	{

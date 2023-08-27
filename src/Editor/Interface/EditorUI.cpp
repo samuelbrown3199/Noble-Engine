@@ -299,13 +299,11 @@ void EditorUI::DoMainMenuBar()
 			ImGui::EndMenu();
 		}
 
-#ifndef NDEBUG
-		if (ImGui::BeginMenu("Developer Debug"))
+		if (ImGui::BeginMenu("Debug"))
 		{
 			DoDebugMenu();
 			ImGui::EndMenu();
 		}
-#endif
 
 		ImGui::EndMainMenuBar();
 	}

@@ -109,10 +109,8 @@ void Sprite::OnRender()
 	m_spriteTransform->m_scale.y = scale.y;
 
 	m_shader->UseProgram();
-	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
 	glBindTexture(GL_TEXTURE_2D, m_spriteTexture->m_iTextureID);
 
-	m_shader->BindMat4("vpMat", finalMat);
 	m_shader->BindMat4("transMat", m_spriteTransform->m_transformMat);
 	m_shader->BindVector4("colour", m_colour);
 

@@ -6,6 +6,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../Core/Logger.h"
+
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_stdlib.h"
 

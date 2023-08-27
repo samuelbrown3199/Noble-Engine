@@ -189,6 +189,9 @@ set (
 
 	src/Engine/Components/ScriptEmbedder.h
 	src/Engine/Components/ScriptEmbedder.cpp
+
+	src/Engine/Components/Light.h
+	src/Engine/Components/Light.cpp
 )
 
 add_definitions(-DSDL_MAIN_HANDLED)

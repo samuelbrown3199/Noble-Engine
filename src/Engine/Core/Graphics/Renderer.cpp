@@ -41,7 +41,7 @@ Renderer::Renderer(const std::string _windowName)
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
 	m_glContext = SDL_GL_CreateContext(m_gameWindow);
 	if (!m_glContext)
@@ -66,6 +66,7 @@ Renderer::Renderer(const std::string _windowName)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
 	Logger::LogInformation("Setup default settings for OpenGL.");
 }
 
@@ -91,10 +92,14 @@ void Renderer::StartFrameRender()
 
 void Renderer::SetShaderInformation()
 {
+	glm::mat4 vpMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
+
 	std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
 	for (int i = 0; i < shaderPrograms->size(); i++)
 	{
 		shaderPrograms->at(i)->UseProgram();
+
+		shaderPrograms->at(i)->BindMat4("vpMat", vpMat);
 
 		shaderPrograms->at(i)->BindVector3("ambientColour", m_ambientColour);
 		shaderPrograms->at(i)->BindFloat("ambientStrength", m_ambientStrength);

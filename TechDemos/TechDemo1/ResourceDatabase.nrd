@@ -1,1 +1,57 @@
-{"AudioClip":{"\\GameData\\Sounds\\birds.ogg":{"SoundMode":16},"\\GameData\\Sounds\\glass_smash.ogg":{"SoundMode":16},"\\GameData\\Sounds\\nukes.mp3":{"SoundMode":18}},"Defaults":{"AudioClip":{"SoundMode":16},"Model":null,"Script":null,"Shader":null,"Texture":{"Filter":0}},"Model":{"\\GameData\\Models\\cottage_obj.obj":null,"\\GameData\\Models\\cube.obj":null},"Script":{"\\GameData\\Scripts\\TestScript.lua":null},"Shader":{"\\GameData\\Shaders\\standard.fs":null,"\\GameData\\Shaders\\standard.vs":null,"\\GameData\\Shaders\\standardText.fs":null,"\\GameData\\Shaders\\standardText.vs":null,"\\GameData\\Shaders\\standardUI.fs":null,"\\GameData\\Shaders\\standardUI.vs":null},"ShaderPrograms":{"Standard":{"Fragment":"\\GameData\\Shaders\\standard.fs","Vertex":"\\GameData\\Shaders\\standard.vs"},"Text":{"Fragment":"\\GameData\\Shaders\\standardText.fs","Vertex":"\\GameData\\Shaders\\standardText.vs"},"UI":{"Fragment":"\\GameData\\Shaders\\standardUI.vs","Vertex":"\\GameData\\Shaders\\standardUI.vs"}},"Texture":{"\\GameData\\Textures\\PlanetBase.png":{"Filter":0},"\\GameData\\Textures\\cottage_diffuse.png":{"Filter":0}}}
+{
+	"AudioClip": {
+		"\\GameData\\Sounds\\birds.ogg": {
+			"SoundMode": 16
+		},
+		"\\GameData\\Sounds\\glass_smash.ogg": {
+			"SoundMode": 16
+		},
+		"\\GameData\\Sounds\\nukes.mp3": {
+			"SoundMode": 18
+		}
+	},
+	"Defaults": {
+		"AudioClip": {
+			"SoundMode": 16
+		},
+		"Model": null,
+		"Script": null,
+		"Shader": null,
+		"Texture": {
+			"Filter": 0
+		}
+	},
+	"Model": {
+		"\\GameData\\Models\\cottage_obj.obj": null,
+		"\\GameData\\Models\\cube.obj": null
+	},
+	"Script": {
+		"\\GameData\\Scripts\\TestScript.lua": null
+	},
+	"Shader": {
+		"\\GameData\\Shaders\\standard.fs": null,
+		"\\GameData\\Shaders\\standard.vs": null,
+		"\\GameData\\Shaders\\standardText.fs": null,
+		"\\GameData\\Shaders\\standardText.vs": null,
+		"\\GameData\\Shaders\\standardUI.fs": null,
+		"\\GameData\\Shaders\\standardUI.vs": null
+	},
+	"ShaderPrograms": {
+		"Standard": {
+			"Fragment": "\\GameData\\Shaders\\standard.fs",
+			"Vertex": "\\GameData\\Shaders\\standard.vs"
+		},
+		"Text": {
+			"Fragment": "\\GameData\\Shaders\\standardText.fs",
+			"Vertex": "\\GameData\\Shaders\\standardText.vs"
+		}
+	},
+	"Texture": {
+		"\\GameData\\Textures\\PlanetBase.png": {
+			"Filter": 0
+		},
+		"\\GameData\\Textures\\cottage_diffuse.png": {
+			"Filter": 0
+		}
+	}
+}

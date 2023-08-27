@@ -47,8 +47,9 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	nlohmann::json data;
 
-	data["LightingSettings"]["AmbientColour"] = { 1,1,1 };
-	data["LightingSettings"]["AmbientStrength"] = 1.0f;
+	glm::vec3 ambColour = Renderer::GetAmbientColour();
+	data["LightingSettings"]["AmbientColour"] = { ambColour.x, ambColour.y, ambColour.z };
+	data["LightingSettings"]["AmbientStrength"] = Renderer::GetAmbientStrength();
 
 	glm::vec3 clearColour = Renderer::GetClearColour();
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };

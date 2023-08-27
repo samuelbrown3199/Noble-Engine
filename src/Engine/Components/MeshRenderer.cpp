@@ -52,11 +52,10 @@ void MeshRenderer::OnRender()
 		return;
 
 	m_shader->UseProgram();
-	glm::mat4 finalMat = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix();
+
 	glBindTexture(GL_TEXTURE_2D, m_texture->m_iTextureID);
 	glBindVertexArray(m_model->m_vaoID);
 
-	m_shader->BindMat4("vpMat", finalMat);
 	m_shader->BindMat4("transMat", m_transform->m_transformMat);
 	m_shader->BindVector4("colour", m_colour);
 

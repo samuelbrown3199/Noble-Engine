@@ -9,6 +9,7 @@
 #include "../Components/MeshRenderer.h"
 #include "../Components/ScriptEmbedder.h"
 #include "../Components/Sprite.h"
+#include "../Components/Light.h"
 
 #include "../ECS/Entity.hpp"
 
@@ -62,6 +63,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024, true, true);
 	rtn->m_registry->RegisterComponent("ScriptEmbedder", new ScriptEmbedder(), false, 1024, false, false);
 	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent("Light", new Light(), false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 

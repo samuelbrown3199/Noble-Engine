@@ -194,10 +194,17 @@ set (
 	src/Engine/Components/Light.cpp
 )
 
+set (
+
+	game_source
+
+)
+
 add_definitions(-DSDL_MAIN_HANDLED)
 add_library(Engine ${SRC_IMGUI}
 	
 	${source_list}
+	${game_source}
 )
 target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc glew32 opengl32 freetype)
 target_compile_features(Engine PRIVATE cxx_std_17)

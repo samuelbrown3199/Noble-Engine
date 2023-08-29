@@ -89,11 +89,12 @@ void Sprite::Render(bool useThreads, int maxComponentsPerThread)
 
 void Sprite::OnRender()
 {
-	if (m_spriteTransform == nullptr || Application::GetEntitiesDeleted())
+	if (m_transform == nullptr)
 	{
-		m_spriteTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
+		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 		return;
 	}
+
 	if (m_spriteTexture == nullptr)
 		return;
 
@@ -102,16 +103,16 @@ void Sprite::OnRender()
 
 	glBindVertexArray(m_iQuadVAO);
 
-	glm::vec3 scale = m_spriteTransform->m_scale;
+	glm::vec3 scale = m_transform->m_scale;
 	float heightRat = (float)m_spriteTexture->m_iWidth / (float)m_spriteTexture->m_iHeight;
-	m_spriteTransform->m_scale = glm::normalize(glm::vec3(m_spriteTexture->m_iWidth * heightRat, m_spriteTexture->m_iHeight * heightRat, scale.z));
-	m_spriteTransform->m_scale.x = scale.x;
-	m_spriteTransform->m_scale.y = scale.y;
+	m_transform->m_scale = glm::normalize(glm::vec3(m_spriteTexture->m_iWidth * heightRat, m_spriteTexture->m_iHeight * heightRat, scale.z));
+	m_transform->m_scale.x = scale.x;
+	m_transform->m_scale.y = scale.y;
 
 	m_shader->UseProgram();
 	glBindTexture(GL_TEXTURE_2D, m_spriteTexture->m_iTextureID);
 
-	m_shader->BindMat4("transMat", m_spriteTransform->m_transformMat);
+	m_shader->BindMat4("transMat", m_transform->m_transformMat);
 	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);

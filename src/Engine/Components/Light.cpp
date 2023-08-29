@@ -42,12 +42,15 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 {
 	m_closestLights.clear();
 
+	int numPointLights = 0;
+	int numSpotLights = 0;
+
 	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
 	{
 		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
 			continue;
 
-		if (i < m_iMaxLights)
+		if (m_closestLights.size() < m_iMaxLights)
 		{
 			m_closestLights.push_back(&m_componentList.m_componentData.at(i));
 			std::sort(m_closestLights.begin(), m_closestLights.end(), SortByDistance);
@@ -65,10 +68,29 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 		}
 	}
 
+	for (int i = 0; i < m_closestLights.size(); i++)
+	{
+		if (m_closestLights.at(i)->m_transform == nullptr)
+			continue;
+
+
+		if (m_closestLights.at(i)->m_lightType == Point)
+		{
+			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numPointLights, m_closestLights.at(i)->m_transform);
+			numPointLights++;
+		}
+		else if (m_closestLights.at(i)->m_lightType == Spot)
+		{
+			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numSpotLights, m_closestLights.at(i)->m_transform);
+			numSpotLights++;
+		}
+	}
+
 	std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
 	for (int i = 0; i < shaderPrograms->size(); i++)
 	{
-		shaderPrograms->at(i)->BindInt("numberOfLights", m_closestLights.size());
+		shaderPrograms->at(i)->BindInt("numberOfPointLights", numPointLights);
+		shaderPrograms->at(i)->BindInt("numberOfSpotLights", numSpotLights);
 	}
 
 	for (int i = 0; i < m_closestLights.size(); i++)
@@ -87,14 +109,18 @@ void Light::Update(bool useThreads, int maxComponentsPerThread)
 
 void Light::OnUpdate()
 {
-	m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 	if (m_transform == nullptr)
+	{
+		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 		return;
+	}
+
+	SpotLight* spotLight = dynamic_cast<SpotLight*>(m_lightInfo);
+	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
 	switch (m_lightType)
 	{
 	case Directional:
-		DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 		dirLight->m_direction = glm::normalize(m_transform->m_rotation);
 		break;
 	}

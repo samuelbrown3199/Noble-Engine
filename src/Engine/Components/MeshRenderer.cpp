@@ -41,9 +41,11 @@ void MeshRenderer::Render(bool useThreads, int maxComponentsPerThread)
 
 void MeshRenderer::OnRender() 
 {
-	m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 	if (m_transform == nullptr)
+	{
+		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 		return;
+	}
 
 	if (m_model == nullptr)
 		return;

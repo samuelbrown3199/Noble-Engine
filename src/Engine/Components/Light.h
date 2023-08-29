@@ -81,9 +81,8 @@ struct PointLight : public LightInfo
 		{
 			shaderPrograms->at(i)->UseProgram();
 
-			std::string location = FormatString("lights[%d]", curLight);
+			std::string location = FormatString("pointLights[%d]", curLight);
 
-			shaderPrograms->at(i)->BindVector3(location + ".direction", tr->m_rotation);
 			shaderPrograms->at(i)->BindVector3(location + ".position", tr->m_position);
 
 			shaderPrograms->at(i)->BindVector3(location + ".diffuseLight", m_diffuse);
@@ -138,6 +137,86 @@ struct PointLight : public LightInfo
 	}
 };
 
+struct SpotLight : public LightInfo
+{
+	float m_fCutOff = 12.5f;
+	float m_fOuterCutOff = 13.5f;
+
+	float m_constant = 1;
+	float m_linear = 0.09f;
+	float m_quadratic = 0.032f;
+
+	virtual void BindInfoToShaders(int curLight, Transform* tr)
+	{
+		std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
+		for (int i = 0; i < shaderPrograms->size(); i++)
+		{
+			shaderPrograms->at(i)->UseProgram();
+
+			std::string location = FormatString("spotLights[%d]", curLight);
+
+			shaderPrograms->at(i)->BindVector3(location + ".direction", tr->m_rotation);
+			shaderPrograms->at(i)->BindVector3(location + ".position", tr->m_position);
+
+			shaderPrograms->at(i)->BindVector3(location + ".diffuseLight", m_diffuse);
+			shaderPrograms->at(i)->BindVector3(location + ".specularLight", m_specular);
+			shaderPrograms->at(i)->BindFloat(location + ".constant", m_constant);
+			shaderPrograms->at(i)->BindFloat(location + ".linear", m_linear);
+			shaderPrograms->at(i)->BindFloat(location + ".quadratic", m_quadratic);
+			shaderPrograms->at(i)->BindFloat(location + ".cutOff", m_fCutOff);
+			shaderPrograms->at(i)->BindFloat(location + ".outerCutOff", m_fOuterCutOff);
+		}
+	}
+
+	virtual void DoLightInfoInterface()
+	{
+		ImGui::BeginDisabled();
+		ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
+		ImGui::EndDisabled();
+
+		ImGui::DragFloat("Linear", &m_linear, 0.01f, 0.0014f, 0.7f, "%.4f");
+		ImGui::DragFloat("Quadratic", &m_quadratic, 0.01f, 0.000007f, 1.8f, "%.6f");
+		ImGui::DragFloat("Cutoff", &m_fCutOff);
+		ImGui::DragFloat("Outer Cutoff", &m_fOuterCutOff);
+
+		LightInfo::DoLightInfoInterface();
+	}
+
+	virtual nlohmann::json WriteInfoToJson()
+	{
+		nlohmann::json data;
+
+		data["Diffuse"] = { m_diffuse.x, m_diffuse.y, m_diffuse.z };
+		data["Specular"] = { m_specular.x, m_specular.y, m_specular.z };
+		
+		data["Cutoff"] = m_fCutOff;
+		data["OuterCutoff"] = m_fOuterCutOff;
+		data["constant"] = m_constant;
+		data["linear"] = m_linear;
+		data["quadratic"] = m_quadratic;
+
+		return data;
+	}
+
+	virtual void LoadInfoFromJson(nlohmann::json j)
+	{
+		m_diffuse = glm::vec3(j["Diffuse"][0], j["Diffuse"][1], j["Diffuse"][2]);
+		m_specular = glm::vec3(j["Specular"][0], j["Specular"][1], j["Specular"][2]);
+
+		if(j.find("Cutoff") != j.end())
+			m_fCutOff = j["Cutoff"];
+		if (j.find("OuterCutoff") != j.end())
+			m_fOuterCutOff = j["OuterCutoff"];
+
+		if (j.find("constant") != j.end())
+			m_constant = j["constant"];
+		if (j.find("linear") != j.end())
+			m_linear = j["linear"];
+		if (j.find("quadratic") != j.end())
+			m_quadratic = j["quadratic"];
+	}
+};
+
 struct Light : public Component
 {
 	static ComponentDatalist<Light> m_componentList;
@@ -149,7 +228,8 @@ struct Light : public Component
 	enum LightType
 	{
 		Directional,
-		Point
+		Point,
+		Spot
 	};
 	LightType m_lightType;
 	LightInfo* m_lightInfo = nullptr;
@@ -205,6 +285,9 @@ struct Light : public Component
 		case Point:
 			m_lightInfo = new PointLight();
 			break;
+		case Spot:
+			m_lightInfo = new SpotLight();
+			break;
 		default:
 			Logger::LogError("Trying to switch light to unsupported type.", 2);
 			break;
@@ -222,7 +305,7 @@ struct Light : public Component
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
 
-		const char* lightTypes[] = { "Directional", "Point"};
+		const char* lightTypes[] = { "Directional", "Point", "Spot" };
 		int selLightType = m_lightType;
 		ImGui::Combo("Light Type", &selLightType, lightTypes, IM_ARRAYSIZE(lightTypes));
 		ChangeLightType((LightType)selLightType);

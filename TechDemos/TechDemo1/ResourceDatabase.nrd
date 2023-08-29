@@ -40,10 +40,6 @@
 		"Standard": {
 			"Fragment": "\\GameData\\Shaders\\standard.fs",
 			"Vertex": "\\GameData\\Shaders\\standard.vs"
-		},
-		"Text": {
-			"Fragment": "\\GameData\\Shaders\\standardText.fs",
-			"Vertex": "\\GameData\\Shaders\\standardText.vs"
 		}
 	},
 	"Texture": {

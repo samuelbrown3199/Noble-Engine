@@ -11,7 +11,7 @@
 
 struct Sprite : public Component
 {
-	Transform* m_spriteTransform = nullptr;
+	Transform* m_transform = nullptr;
 
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour;
@@ -97,7 +97,7 @@ struct Sprite : public Component
 
 	virtual void DoComponentInterface() override
 	{
-		if (m_spriteTransform == nullptr)
+		if (m_transform == nullptr)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::Text("No transform attached. Object won't render.");

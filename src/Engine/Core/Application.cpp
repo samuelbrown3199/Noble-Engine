@@ -2,6 +2,8 @@
 #include "InputManager.h"
 #include "Registry.h"
 
+#include "../Game/GameRegister.h"
+
 #include "../Components/Transform.h"
 #include "../Components/AudioListener.h"
 #include "../Components/AudioSource.h"
@@ -66,6 +68,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_registry->RegisterComponent("Light", new Light(), false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
+
+	//For game components, resources and behaviours.
+	GameRegister reg;
+	reg.RegisterGame();
 
 	rtn->RegisterCoreKeybinds();
 	rtn->InitializeImGui();

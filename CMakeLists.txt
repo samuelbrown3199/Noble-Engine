@@ -125,6 +125,9 @@ set (
 	src/Engine/Core/Registry.h
 	src/Engine/Core/Registry.cpp
 
+	src/Engine/Game/GameRegister.h
+	src/Engine/Game/GameRegister.cpp
+
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 
@@ -260,5 +263,5 @@ add_executable(TechDemo1
 target_link_libraries(TechDemo1 Engine)
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>)
+set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>")
 target_compile_features(TechDemo1 PRIVATE cxx_std_17)

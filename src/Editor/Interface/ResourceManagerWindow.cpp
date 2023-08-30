@@ -81,7 +81,7 @@ void ResourceManagerWindow::DoInterface()
         ImGui::Text(resourceRegistry->at(i).first.c_str());
         std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
 
-        if (resourceRegistry->at(i).second->m_resourceType == "Shader") //temp hack
+        if (selectedShaderProg != -1 && resourceRegistry->at(i).first == "Shader") //hack for now.
             continue;
 
         for (int o = 0; o < resources.size(); o++)

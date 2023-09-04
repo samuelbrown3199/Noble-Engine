@@ -17,7 +17,6 @@ glm::vec3 Renderer::m_clearColour;
 glm::vec3 Renderer::m_ambientColour = glm::vec3(1.0f, 1.0f, 1.0f);
 float Renderer::m_ambientStrength = 1.0f;
 
-float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
 
@@ -181,7 +180,7 @@ glm::mat4 Renderer::GenerateProjMatrix()
 
 glm::mat4 Renderer::GenerateProjectionMatrix()
 {
-	glm::mat4 projMatrix = glm::perspective(glm::radians(m_fFov), (float)m_iScreenWidth / (float)m_iScreenHeight, m_fNearPlane, m_fFarPlane);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(m_camera->m_fov), (float)m_iScreenWidth / (float)m_iScreenHeight, m_fNearPlane, m_fFarPlane);
 	return projMatrix;
 }
 

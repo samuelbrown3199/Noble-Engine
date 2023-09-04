@@ -340,7 +340,7 @@ void EditorUI::DoFileMenu()
 		if (ImGui::MenuItem("New Scene"))
 		{
 			m_selComponent = nullptr;
-			Application::ClearLoadedScene();
+			SceneManager::ClearLoadedScene();
 		}
 		if (ImGui::BeginMenu("Open Scene"))
 		{

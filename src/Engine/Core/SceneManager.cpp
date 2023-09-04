@@ -7,11 +7,12 @@
 
 #include "../imgui/imgui.h"
 
-std::shared_ptr<Scene> SceneManager::m_currentScene;
+std::shared_ptr<Scene> SceneManager::m_currentScene = nullptr;
 std::vector<std::string> SceneManager::m_vKeysToCheck;
 
 void SceneManager::ClearLoadedScene()
 {
+	m_currentScene = nullptr;
 	Application::ClearLoadedScene();
 }
 
@@ -30,6 +31,9 @@ void SceneManager::LoadScene(std::string scenePath)
 
 void SceneManager::SaveLoadedScene()
 {
+	if (m_currentScene == nullptr)
+		return;
+
 	SaveScene(m_currentScene->GetResourcePath());
 	m_currentScene->OnLoad();
 }

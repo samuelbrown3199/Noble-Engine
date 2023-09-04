@@ -55,10 +55,7 @@ private:
 	static glm::vec3 m_ambientColour;
 	static float m_ambientStrength;
 
-
 	static Camera* m_camera;
-
-	static float m_fFov;
 	static const float m_fMaxScale, m_fMinScale;
 
 	static glm::mat4 GenerateProjectionMatrix();
@@ -102,9 +99,6 @@ public:
 
 	static void SetRenderMode(GLenum renderMode);
 	static GLenum GetRenderMode() { return m_renderMode; }
-
-	static void SetFov(float value) { m_fFov = value; }
-	static float GetFov() { return m_fFov; }
 
 	static void SetClearColour(glm::vec3 colour);
 	static glm::vec3 GetClearColour() { return m_clearColour; }

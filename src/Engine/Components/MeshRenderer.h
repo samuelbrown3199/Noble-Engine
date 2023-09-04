@@ -24,7 +24,6 @@ struct MeshRenderer : public Component
 	nlohmann::json WriteJson()
 	{
 		nlohmann::json data;
-		data = { {"texturePath", m_texture->m_sLocalPath }, {"modelPath", m_model->m_sLocalPath},{"colour", {m_colour.x, m_colour.y, m_colour.z, m_colour.w}}};
 
 		if (m_texture != nullptr)
 			data["texturePath"] = m_texture->m_sLocalPath;

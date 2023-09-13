@@ -136,6 +136,9 @@ set (
 	src/Engine/Core/Graphics/Renderer.h
 	src/Engine/Core/Graphics/Renderer.cpp
 
+	src/Engine/Core/Graphics/UI.h
+	src/Engine/Core/Graphics/UI.cpp
+
 	#ECS
 
 	src/Engine/ECS/Entity.hpp
@@ -169,6 +172,9 @@ set (
 
 	src/Engine/Resource/Script.h
 	src/Engine/Resource/Script.cpp
+
+	src/Engine/Resource/Font.h
+	src/Engine/Resource/Font.cpp
 
 	#Systems & components
 

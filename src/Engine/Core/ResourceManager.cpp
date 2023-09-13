@@ -8,6 +8,8 @@
 #include "../Resource/Model.h"
 #include "../Resource/Script.h"
 
+FT_Library ResourceManager::m_fontLibrary;
+
 std::vector<std::shared_ptr<Resource>> ResourceManager::m_vResourceDatabase;
 std::vector<std::shared_ptr<Resource>> ResourceManager::m_vLoadedResources;
 std::vector<std::shared_ptr<ShaderProgram>> ResourceManager::m_vShaderPrograms;
@@ -17,9 +19,13 @@ nlohmann::json ResourceManager::m_resourceDatabaseJson;
 
 ResourceManager::ResourceManager()
 {
+	if (FT_Init_FreeType(&m_fontLibrary))
+	{
+		Logger::LogError("Could not initialize FreeType Library!", 2);
+	}
+
 	m_sWorkingDirectory = GetWorkingDirectory();
 	RegisterResourceTypes();
-
 	LoadResourceDatabase();
 }
 

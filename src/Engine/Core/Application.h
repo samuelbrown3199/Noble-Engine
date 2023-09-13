@@ -15,6 +15,7 @@
 
 #include "../ECS/Behaviour.hpp"
 
+#include "Graphics/UI.h"
 #include "DebugUI.hpp"
 
 struct Entity;

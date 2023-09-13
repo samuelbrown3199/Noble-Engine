@@ -8,6 +8,9 @@
 
 #include <nlohmann/json.hpp>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_stdlib.h"
 
@@ -16,11 +19,15 @@
 #include "../Resource/ShaderProgram.h"
 #include "Logger.h"
 
+#include "../Resource/Font.h"
+
 /**
 *Handles resource management. Stores, loads and unloads resources.
 */
 struct ResourceManager
 {
+	static FT_Library m_fontLibrary;
+
 	/**
 	*Stores all resources.
 	*/
@@ -140,6 +147,8 @@ struct ResourceManager
 		Logger::LogError(FormatString("Resource %s doesnt exist in database, make sure it is added.", _fileDirectory.c_str()), 1);
 		return nullptr;
 	}
+
+	static std::shared_ptr<Font> LoadFont(std::string fontPath, int fontPixelSize);
 
 	template<typename T>
 	static std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()

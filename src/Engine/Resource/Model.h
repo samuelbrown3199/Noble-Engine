@@ -13,6 +13,8 @@ struct Model : public Resource
 	std::vector<Vertex> m_vertices;
 	std::vector<uint32_t> m_indices;
 
+	std::vector<glm::vec3> m_modelBoundingBox;
+
 	GLuint m_vaoID;
 
 	Model();

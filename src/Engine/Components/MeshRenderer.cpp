@@ -53,6 +53,22 @@ void MeshRenderer::OnRender()
 	if (m_shader == nullptr)
 		return;
 
+	m_bOnScreen = false;
+	for (int i = 0; i < m_model->m_modelBoundingBox.size(); i++)
+	{
+		glm::vec3 transPos = m_transform->m_transformMat * glm::vec4(m_model->m_modelBoundingBox.at(i), 1.0f);
+		if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
+		{
+			m_bOnScreen = true;
+			break;
+		}
+	}
+	if (!m_bOnScreen)
+	{
+		Logger::LogInformation("Not rendering mesh");
+		return;
+	}
+
 	m_shader->UseProgram();
 
 	glBindTexture(GL_TEXTURE_2D, m_texture->m_iTextureID);

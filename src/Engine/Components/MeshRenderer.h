@@ -21,6 +21,8 @@ struct MeshRenderer : public Component
 
 	static ComponentDatalist<MeshRenderer> m_componentList;
 
+	bool m_bOnScreen = false;
+
 	nlohmann::json WriteJson()
 	{
 		nlohmann::json data;
@@ -106,6 +108,10 @@ struct MeshRenderer : public Component
 
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
+
+		ImGui::BeginDisabled();
+		ImGui::Checkbox("On Screen", &m_bOnScreen);
+		ImGui::EndDisabled();
 
 		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));

@@ -22,6 +22,8 @@ struct Sprite : public Component
 
 	static ComponentDatalist<Sprite> m_componentList;
 
+	bool m_bOnScreen = false;
+
 	nlohmann::json WriteJson()
 	{ 
 		nlohmann::json data;
@@ -114,6 +116,10 @@ struct Sprite : public Component
 
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
+
+		ImGui::BeginDisabled();
+		ImGui::Checkbox("On Screen", &m_bOnScreen);
+		ImGui::EndDisabled();
 
 		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_spriteTexture != nullptr ? m_spriteTexture->m_sLocalPath : "none"));
 		ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface(m_shader != nullptr ? m_shader->m_shaderProgramID : ""));

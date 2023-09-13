@@ -215,3 +215,21 @@ float GenerateNumberBetween01()
 
     return clampedNum;
 }
+
+//-------------------MATHS-------------------------------
+
+bool IsPointInViewFrustum(const glm::vec3& point, const glm::mat4& VP)
+{
+    glm::vec4 v4Point(point, 1.0f);
+    glm::vec4 clipSpacePoint = VP * v4Point;
+
+
+    bool inViewFrustum = ((clipSpacePoint.x <= clipSpacePoint.w) &&
+        (clipSpacePoint.x >= -clipSpacePoint.w) &&
+        (clipSpacePoint.y <= clipSpacePoint.w) &&
+        (clipSpacePoint.y >= -clipSpacePoint.w) &&
+        (clipSpacePoint.z <= clipSpacePoint.w) &&
+        (clipSpacePoint.z >= -clipSpacePoint.w));
+
+    return inViewFrustum;
+}

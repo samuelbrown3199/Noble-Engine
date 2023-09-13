@@ -36,6 +36,8 @@ void Model::OnLoad()
 
     std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
+    float xMin = 0, xMax = 0, yMin = 0, yMax = 0, zMin = 0, zMax = 0;
+
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
             Vertex vertex{};
@@ -45,6 +47,21 @@ void Model::OnLoad()
                 attrib.vertices[3 * index.vertex_index + 1],
                 attrib.vertices[3 * index.vertex_index + 2]
             };
+
+            if (vertex.pos.x < xMin)
+                xMin = vertex.pos.x;
+            else if (vertex.pos.x > xMax)
+                xMax = vertex.pos.x;
+
+            if (vertex.pos.z < zMin)
+                zMin = vertex.pos.z;
+            else if (vertex.pos.z > zMax)
+                zMax = vertex.pos.z;
+
+            if (vertex.pos.y < yMin)
+                yMin = vertex.pos.y;
+            else if (vertex.pos.y > yMax)
+                yMax = vertex.pos.y;
 
             vertex.texCoord = 
             {
@@ -68,6 +85,21 @@ void Model::OnLoad()
             m_indices.push_back(uniqueVertices[vertex]);
         }
     }
+
+    std::vector<glm::vec3> bbox;
+    bbox.push_back(glm::vec3(xMin, yMin, zMin));
+    bbox.push_back(glm::vec3(xMax, yMin, zMin));
+    bbox.push_back(glm::vec3(xMin, yMax, zMax));
+    bbox.push_back(glm::vec3(xMax, yMax, zMax));
+    bbox.push_back(glm::vec3(xMin, yMax, zMin));
+    bbox.push_back(glm::vec3(xMax, yMax, zMin));
+    bbox.push_back(glm::vec3(xMin, yMin, zMax));
+    bbox.push_back(glm::vec3(xMax, yMin, zMax));
+    for (int i = 0; i < bbox.size(); i++)
+    {
+        m_modelBoundingBox.push_back(bbox[i]);
+    }
+
 
     glGenVertexArrays(1, &m_vaoID);
     glBindVertexArray(m_vaoID);

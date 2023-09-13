@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <direct.h>
 
+#include <glm/glm.hpp>
+
 //--------------------STRINGS----------------------------
 
 template<typename ... Args>
@@ -56,5 +58,11 @@ std::string GetFolderLocationRelativeToGameData(std::string path);
 //--------------------NUMBERS----------------------------
 
 float GenerateNumberBetween01();
+
+
+
+//-------------------MATHS-------------------------------
+
+bool IsPointInViewFrustum(const glm::vec3& point, const glm::mat4& VP);
 
 #endif

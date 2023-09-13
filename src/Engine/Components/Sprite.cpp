@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "../Core/Application.h"
-#include "../Core/Graphics/Renderer.h"
 #include "../ECS/Entity.hpp"
+#include "../Core/Graphics/Renderer.h"
 
 GLuint Sprite::m_iQuadVAO;
 bool Sprite::m_bInitializedSpriteQuad = false;
@@ -37,23 +37,23 @@ Sprite* Sprite::GetComponent(std::string entityID)
 
 void Sprite::Update(bool useThreads, int maxComponentsPerThread) {}
 
+const std::vector<Vertex> vertices =
+{
+	{{-0.5f, -0.5f, 0.0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, -0.5f, 0.0}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	{{-0.5f, 0.5f, 0.0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+};
+
+const std::vector<uint32_t> indices =
+{
+	0, 1, 2, 2, 3, 0
+};
+
 void Sprite::PreRender()
 {
 	if (!m_bInitializedSpriteQuad)
 	{
-		const std::vector<Vertex> vertices =
-		{
-			{{-0.5f, -0.5f, 0.0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-			{{0.5f, -0.5f, 0.0}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-			{{0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-			{{-0.5f, 0.5f, 0.0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
-		};
-
-		const std::vector<uint32_t> indices =
-		{
-			0, 1, 2, 2, 3, 0
-		};
-
 		glGenVertexArrays(1, &m_iQuadVAO);
 		glBindVertexArray(m_iQuadVAO);
 
@@ -99,6 +99,19 @@ void Sprite::OnRender()
 		return;
 
 	if (m_shader == nullptr)
+		return;
+
+	m_bOnScreen = false;
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		glm::vec3 transPos = m_transform->m_transformMat * glm::vec4(vertices.at(i).pos, 1.0f);
+		if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
+		{
+			m_bOnScreen = true;
+			break;
+		}
+	}
+	if (!m_bOnScreen)
 		return;
 
 	glBindVertexArray(m_iQuadVAO);

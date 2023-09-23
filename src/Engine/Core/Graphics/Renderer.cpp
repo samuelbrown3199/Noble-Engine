@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "../../ECS/Renderable.hpp"
+
 #include "../ResourceManager.h"
 #include "../Logger.h"
 #include "../../Useful.h"
@@ -112,6 +114,7 @@ void Renderer::SetShaderInformation()
 void Renderer::EndFrameRender()
 {
 	SDL_GL_SwapWindow(m_gameWindow);
+	std::sort(m_onScreenObjects.begin(), m_onScreenObjects.end(), [](Renderable* a, Renderable* b) { return a->m_fDistanceToCam < b->m_fDistanceToCam; });
 }
 void Renderer::UpdateScreenSize()
 {

@@ -45,6 +45,7 @@ void MeshRenderer::OnRender()
 		return;
 
 	m_vertices = &m_model->m_vertices;
+	m_indices = &m_model->m_indices;
 	m_boundingBox = &m_model->m_modelBoundingBox;
 
 	if (m_shader == nullptr)

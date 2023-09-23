@@ -16,31 +16,29 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
     ray.m_rayOrigin = origin;
     ray.m_rayDirection = direction;
 
-    Logger::LogInformation("Raycasting!");
-
     std::vector<Renderable*>* screenObjects = Renderer::GetOnScreenObjects();
     for (int i = 0; i < screenObjects->size(); i++)
     {
         int vert = 0;
-        while (vert < screenObjects->at(i)->m_vertices->size())
+        float closestHit = 1000; //1000 for now should be enough, this should probably be a max distance parameter in the future
+        while (vert < screenObjects->at(i)->m_indices->size()) // probably some smart ways to optimise this, checking every triangle is probably not necessary.
         {
             glm::vec2 baryPos;
             float hitDis;
 
-            glm::vec3 pos1 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(vert).pos, 1);
-            glm::vec3 pos2 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(vert + 1).pos, 1);
-            glm::vec3 pos3 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(vert + 2).pos, 1);
+            glm::vec3 pos1 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert)).pos, 1);
+            glm::vec3 pos2 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+1)).pos, 1);
+            glm::vec3 pos3 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+2)).pos, 1);
 
             bool hit = glm::intersectRayTriangle(ray.m_rayOrigin, ray.m_rayDirection, pos1, pos2, pos3, baryPos, hitDis);
 
-            if (hit)
+            if (hit && hitDis < closestHit)
             {
                 ray.m_hitObject = true;
                 ray.m_hitPosition = ray.m_rayOrigin + hitDis * ray.m_rayDirection;
                 ray.m_hitDistance = hitDis;
+                closestHit = hitDis;
                 ray.m_hitEntity = Application::GetEntity(screenObjects->at(i)->m_sEntityID);
-
-                break;
             }
 
             vert += 3;

@@ -6,21 +6,24 @@
 #include "../Core/Graphics/Renderer.h"
 #include "../ECS/Entity.hpp"
 
+#include "../Components/Camera.h"
 #include "../Components/Transform.h"
 
 struct Renderable : public Component
 {
 	Transform* m_transform = nullptr;
 	std::vector<Vertex>* m_vertices;
+	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
 
 	bool m_bOnScreen = false;
+	float m_fDistanceToCam;
 
 	virtual void PreRender() {};
 	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
 	virtual void OnRender() 
 	{
-		if (m_transform == nullptr)
+		if (m_transform == nullptr || Application::GetEntitiesDeleted())
 		{
 			m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
 			m_bOnScreen = false;
@@ -40,5 +43,13 @@ struct Renderable : public Component
 
 		if (m_bOnScreen)
 			Renderer::AddOnScreenObject(this);
+		else
+			return;
+
+		Camera* cam = Renderer::GetCamera();
+		if (cam != nullptr)
+		{
+			m_fDistanceToCam = glm::length(cam->m_camTransform->m_position - m_transform->m_position);
+		}
 	}
 };

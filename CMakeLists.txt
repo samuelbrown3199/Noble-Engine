@@ -139,11 +139,17 @@ set (
 	src/Engine/Core/Graphics/UI.h
 	src/Engine/Core/Graphics/UI.cpp
 
+	#Maths
+
+	src/Engine/Maths/Raycaster.h
+	src/Engine/Maths/Raycaster.cpp
+
 	#ECS
 
 	src/Engine/ECS/Entity.hpp
 
 	src/Engine/ECS/Component.hpp
+	src/Engine/ECS/Renderable.hpp
 	src/Engine/ECS/ComponentList.hpp
 
 	src/Engine/ECS/Behaviour.hpp

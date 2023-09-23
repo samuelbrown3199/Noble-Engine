@@ -8,6 +8,8 @@
 #include "../Components/Camera.h"
 #include "../Components/AudioListener.h"
 
+#include "../Maths/Raycaster.h"
+
 #include "../ECS/Entity.hpp"
 
 Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
@@ -94,6 +96,11 @@ void DebugCam::UpdateControls()
 			ca->m_viewMode = projection;
 		else
 			ca->m_viewMode = orthographic;
+	}
+
+	if (InputManager::GetKeybindDown("LeftMouse"))
+	{
+		Ray mouseRay = Raycaster::GetRayToMousePosition(ca->m_camTransform->m_position);
 	}
 }
 

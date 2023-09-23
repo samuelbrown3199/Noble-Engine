@@ -48,7 +48,7 @@ struct Component
 	virtual void OnUpdate() {}
 
 	virtual void PreRender() {};
-	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
+	virtual void Render(bool useThreads, int maxComponentsPerThread) {};
 	virtual void OnRender() {}
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;

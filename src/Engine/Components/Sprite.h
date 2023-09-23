@@ -1,28 +1,25 @@
 #pragma once
 
 #include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
-#include "Transform.h"
+#include "../ECS/Renderable.hpp"
 #include "../Core/ResourceManager.h"
 #include "../Resource/Texture.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-struct Sprite : public Component
+struct Sprite : public Renderable
 {
-	Transform* m_transform = nullptr;
-
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour;
 	std::shared_ptr<ShaderProgram> m_shader;
 
 	static GLuint m_iQuadVAO;
 	static bool m_bInitializedSpriteQuad;
+	static std::vector<Vertex> vertices;
+	static std::vector<glm::vec3> boundingBox;
 
 	static ComponentDatalist<Sprite> m_componentList;
-
-	bool m_bOnScreen = false;
 
 	nlohmann::json WriteJson()
 	{ 

@@ -41,33 +41,18 @@ void MeshRenderer::Render(bool useThreads, int maxComponentsPerThread)
 
 void MeshRenderer::OnRender() 
 {
-	if (m_transform == nullptr)
-	{
-		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-		return;
-	}
-
 	if (m_model == nullptr)
 		return;
+
+	m_vertices = &m_model->m_vertices;
+	m_boundingBox = &m_model->m_modelBoundingBox;
 
 	if (m_shader == nullptr)
 		return;
 
-	m_bOnScreen = false;
-	for (int i = 0; i < m_model->m_modelBoundingBox.size(); i++)
-	{
-		glm::vec3 transPos = m_transform->m_transformMat * glm::vec4(m_model->m_modelBoundingBox.at(i), 1.0f);
-		if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
-		{
-			m_bOnScreen = true;
-			break;
-		}
-	}
+	Renderable::OnRender();
 	if (!m_bOnScreen)
-	{
-		Logger::LogInformation("Not rendering mesh");
 		return;
-	}
 
 	m_shader->UseProgram();
 

@@ -37,12 +37,20 @@ Sprite* Sprite::GetComponent(std::string entityID)
 
 void Sprite::Update(bool useThreads, int maxComponentsPerThread) {}
 
-const std::vector<Vertex> vertices =
+std::vector<Vertex> Sprite::vertices =
 {
 	{{-0.5f, -0.5f, 0.0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 	{{0.5f, -0.5f, 0.0}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
 	{{0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
 	{{-0.5f, 0.5f, 0.0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+};
+
+std::vector<glm::vec3> Sprite::boundingBox =
+{
+	glm::vec3(- 0.5f, -0.5f, 0.0),
+	glm::vec3(0.5f, -0.5f, 0.0),
+	glm::vec3(0.5f, 0.5f, 0.0),
+	glm::vec3(-0.5f, 0.5f, 0.0)
 };
 
 const std::vector<uint32_t> indices =
@@ -89,28 +97,16 @@ void Sprite::Render(bool useThreads, int maxComponentsPerThread)
 
 void Sprite::OnRender()
 {
-	if (m_transform == nullptr)
-	{
-		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-		return;
-	}
-
 	if (m_spriteTexture == nullptr)
 		return;
 
 	if (m_shader == nullptr)
 		return;
 
-	m_bOnScreen = false;
-	for (int i = 0; i < vertices.size(); i++)
-	{
-		glm::vec3 transPos = m_transform->m_transformMat * glm::vec4(vertices.at(i).pos, 1.0f);
-		if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
-		{
-			m_bOnScreen = true;
-			break;
-		}
-	}
+	m_vertices = &vertices;
+	m_boundingBox = &boundingBox;
+
+	Renderable::OnRender();
 	if (!m_bOnScreen)
 		return;
 

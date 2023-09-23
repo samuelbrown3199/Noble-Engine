@@ -1,27 +1,23 @@
 #pragma once
 
 #include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
+#include "../ECS/Renderable.hpp"
 #include "../Resource/Model.h"
 #include "../Resource/Texture.h"
 
-#include "..\Core\ResourceManager.h"
+#include "../Core/ResourceManager.h"
 
 #include "Transform.h"
 
-struct MeshRenderer : public Component
+struct MeshRenderer : public Renderable
 {
 	std::shared_ptr<Model> m_model = nullptr;
 	std::shared_ptr<Texture> m_texture = nullptr;
 
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	Transform* m_transform = nullptr;
 	std::shared_ptr<ShaderProgram> m_shader;
 
 	static ComponentDatalist<MeshRenderer> m_componentList;
-
-	bool m_bOnScreen = false;
 
 	nlohmann::json WriteJson()
 	{

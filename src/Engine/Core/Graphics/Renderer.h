@@ -25,6 +25,8 @@ struct Vertex
 	}
 };
 
+struct Renderable;
+
 namespace std
 {
 	template<> struct hash<Vertex>
@@ -62,6 +64,8 @@ private:
 	static glm::mat4 GenerateOrthographicMatrix();
 
 	static GLenum m_renderMode;
+
+	static std::vector<Renderable*> m_onScreenObjects;
 
 public:
 
@@ -108,6 +112,8 @@ public:
 	static float GetAmbientStrength() { return m_ambientStrength; }
 
 	static void SetCullFace(bool value);
+
+	static void AddOnScreenObject(Renderable* comp);
 };
 
 #endif

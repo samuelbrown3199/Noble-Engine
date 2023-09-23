@@ -319,11 +319,7 @@ bool InputManager::GetMouseButtonUp(int _button)
 
 void InputManager::GetMousePosition()
 {
-	/*SDL_GetMouseState(&m_iMouseX, &m_iMouseY);
-	Camera* cam = Renderer::GetCamera();
-
-	if(cam != nullptr && cam->m_camTransform != nullptr)
-		m_iWorldMousePos = glm::vec2((m_iMouseX / Renderer::GetScale()) + cam->m_camTransform->m_position.x, (m_iMouseY / Renderer::GetScale()) + cam->m_camTransform->m_position.y);*/ //crashes sometimes
+	SDL_GetMouseState(&m_iMouseX, &m_iMouseY);
 }
 
 void InputManager::ClearFrameInputs()

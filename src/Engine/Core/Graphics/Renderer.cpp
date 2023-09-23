@@ -23,6 +23,8 @@ const float Renderer::m_fMinScale = 3;
 Camera* Renderer::m_camera = nullptr;
 GLuint Renderer::m_renderMode = GL_TRIANGLES;
 
+std::vector<Renderable*> Renderer::m_onScreenObjects;
+
 //---------- public functions ---------
 
 Renderer::Renderer(const std::string _windowName)
@@ -85,6 +87,8 @@ void Renderer::AdjustScale(const float& _amount)
 
 void Renderer::StartFrameRender()
 {
+	m_onScreenObjects.clear();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SetShaderInformation();
 }
@@ -232,4 +236,9 @@ void Renderer::SetCullFace(bool value)
 		glEnable(GL_CULL_FACE);
 	else
 		glDisable(GL_CULL_FACE);
+}
+
+void Renderer::AddOnScreenObject(Renderable* comp)
+{
+	m_onScreenObjects.push_back(comp);
 }

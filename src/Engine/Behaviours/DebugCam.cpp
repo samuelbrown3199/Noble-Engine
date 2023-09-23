@@ -7,6 +7,7 @@
 #include "../Core/PerformanceStats.h"
 #include "../Components/Camera.h"
 #include "../Components/AudioListener.h"
+#include "../Components/MeshRenderer.h" //temp for ray debugging.
 
 #include "../Maths/Raycaster.h"
 
@@ -100,7 +101,20 @@ void DebugCam::UpdateControls()
 
 	if (InputManager::GetKeybindDown("LeftMouse"))
 	{
-		Ray mouseRay = Raycaster::GetRayToMousePosition(ca->m_camTransform->m_position);
+		Ray mouseRay = Raycaster::GetRayToInDirection(ca->m_camTransform->m_position, ca->m_camTransform->m_rotation);
+
+		if (mouseRay.m_hitObject)
+		{
+			Logger::LogInformation(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
+
+			Entity* ent = Application::CreateEntity();
+			ent->AddComponent<Transform>(mouseRay.m_hitPosition);
+
+			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();
+			mr->m_model = ResourceManager::LoadResource<Model>("\\GameData\\Models\\cube.obj");
+			mr->m_texture = ResourceManager::LoadResource<Texture>("\\GameData\\Textures\\cottage_diffuse.png");
+			mr->m_shader = ResourceManager::GetShaderProgram("Standard");
+		}
 	}
 }
 

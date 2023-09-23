@@ -114,6 +114,7 @@ public:
 	static void SetCullFace(bool value);
 
 	static void AddOnScreenObject(Renderable* comp);
+	static std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
 };
 
 #endif

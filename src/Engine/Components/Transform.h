@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
+#include "../ECS/Component.h"
 
 #include <glm/glm.hpp>
 
@@ -17,11 +16,9 @@ struct Transform : Component
 
 	glm::mat4 m_transformMat;
 
-	static ComponentDatalist<Transform> m_componentList;
-
-	Component* GetAsComponent(std::string entityID) override
+	std::string GetComponentID() override
 	{
-		return GetComponent(entityID);
+		return "Transform";
 	}
 
 	nlohmann::json WriteJson() override
@@ -80,18 +77,5 @@ struct Transform : Component
 		m_scale = glm::vec3(scale[0], scale[1], scale[2]);
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	Transform* GetComponent(std::string entityID);
-
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnUpdate() override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

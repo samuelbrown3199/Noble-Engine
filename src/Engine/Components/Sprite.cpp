@@ -6,37 +6,6 @@
 GLuint Sprite::m_iQuadVAO;
 bool Sprite::m_bInitializedSpriteQuad = false;
 
-ComponentDatalist<Sprite> Sprite::m_componentList;
-
-void Sprite::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void Sprite::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void Sprite::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void Sprite::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-	m_bInitializedSpriteQuad = false;
-}
-
-Sprite* Sprite::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
-void Sprite::Update(bool useThreads, int maxComponentsPerThread) {}
-
 std::vector<Vertex> Sprite::vertices =
 {
 	{{-0.5f, -0.5f, 0.0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
@@ -90,11 +59,6 @@ void Sprite::PreRender()
 	}
 }
 
-void Sprite::Render(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Render(useThreads, maxComponentsPerThread);
-}
-
 void Sprite::OnRender()
 {
 	if (m_spriteTexture == nullptr)
@@ -125,14 +89,4 @@ void Sprite::OnRender()
 	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);
-}
-
-void Sprite::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json Sprite::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

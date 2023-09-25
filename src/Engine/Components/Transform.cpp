@@ -5,39 +5,6 @@
 
 #include <glm/ext.hpp>
 
-ComponentDatalist<Transform> Transform::m_componentList;
-
-void Transform::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void Transform::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void Transform::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void Transform::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-Transform* Transform::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
-void Transform::Update(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Update(useThreads, maxComponentsPerThread);
-}
-
 void Transform::OnUpdate()
 {
 	if (m_position != m_prevPosition || m_rotation != m_prevRotation || m_scale != m_prevScale)
@@ -53,16 +20,4 @@ void Transform::OnUpdate()
 		m_prevRotation =  m_rotation;
 		m_prevScale =  m_scale;
 	}
-}
-
-void Transform::Render(bool useThreads, int maxComponentsPerThread){}
-
-void Transform::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json Transform::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

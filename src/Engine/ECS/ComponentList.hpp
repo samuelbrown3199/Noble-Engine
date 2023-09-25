@@ -5,28 +5,45 @@
 #include <vector>
 #include <deque>
 
+struct Component;
+
+struct Datalist
+{
+	virtual void AddComponent(Component* comp) = 0;
+	virtual void AddComponentToEntity(std::string entityID) = 0;
+	virtual void RemoveComponent(std::string entityID) = 0;
+	virtual void RemoveAllComponents() = 0;
+	virtual Component* GetComponent(std::string entityID) = 0;
+	virtual void Update(bool useThreads, int maxComponentsPerThread) = 0;
+	virtual void ThreadUpdate(int _buffer, int _amount) = 0;
+	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
+	virtual void ThreadRender(int _buffer, int _amount) = 0;
+	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
+	virtual nlohmann::json WriteComponentDataToJson() = 0;
+};
+
 template <typename T>
-struct ComponentDatalist
+struct ComponentDatalist : public Datalist
 {
 	std::vector<T> m_componentData;
 	std::deque<T*> m_deletedComponents;
 
-	void ComponentDatalist::AddComponent(T* comp)
+	void ComponentDatalist::AddComponent(Component* comp) override
 	{
 		if (!m_deletedComponents.empty())
 		{
 			T* co = m_deletedComponents.front();
-			*co = *comp;
+			*co = *dynamic_cast<T*>(comp);
 
 			m_deletedComponents.pop_front();
 
 			return;
 		}
 
-		m_componentData.push_back(*comp);
+		m_componentData.push_back(*dynamic_cast<T*>(comp));
 	}
 
-	void ComponentDatalist::AddComponentToEntity(std::string entityID)
+	void ComponentDatalist::AddComponentToEntity(std::string entityID) override
 	{
 		T comp;
 		comp.m_sEntityID = entityID;
@@ -34,7 +51,7 @@ struct ComponentDatalist
 		comp.AddComponent();
 	}
 
-	void ComponentDatalist::RemoveComponent(std::string entityID)
+	void ComponentDatalist::RemoveComponent(std::string entityID) override
 	{
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
@@ -48,13 +65,13 @@ struct ComponentDatalist
 		}
 	}
 
-	void ComponentDatalist::RemoveAllComponents()
+	void ComponentDatalist::RemoveAllComponents() override
 	{
 		m_componentData.clear();
 		m_deletedComponents.clear();
 	}
 
-	T* ComponentDatalist::GetComponent(std::string entityID)
+	Component* ComponentDatalist::GetComponent(std::string entityID) override
 	{
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
@@ -65,7 +82,7 @@ struct ComponentDatalist
 		return nullptr;
 	}
 
-	void ComponentDatalist::Update(bool useThreads, int maxComponentsPerThread)
+	void ComponentDatalist::Update(bool useThreads, int maxComponentsPerThread) override
 	{
 		if (!useThreads)
 		{
@@ -86,7 +103,7 @@ struct ComponentDatalist
 		}
 	}
 
-	void ComponentDatalist::ThreadUpdate(int _buffer, int _amount)
+	void ComponentDatalist::ThreadUpdate(int _buffer, int _amount) override
 	{
 		int maxCap = _buffer + _amount;
 		for (size_t co = _buffer; co < maxCap; co++)
@@ -99,7 +116,7 @@ struct ComponentDatalist
 		}
 	}
 
-	void ComponentDatalist::Render(bool useThreads, int maxComponentsPerThread)
+	void ComponentDatalist::Render(bool useThreads, int maxComponentsPerThread) override
 	{
 		if (!useThreads)
 		{
@@ -120,7 +137,7 @@ struct ComponentDatalist
 		}
 	}
 
-	void ComponentDatalist::ThreadRender(int _buffer, int _amount)
+	void ComponentDatalist::ThreadRender(int _buffer, int _amount) override
 	{
 		int maxCap = _buffer + _amount;
 		for (size_t co = _buffer; co < maxCap; co++)
@@ -133,7 +150,7 @@ struct ComponentDatalist
 		}
 	}
 
-	void ComponentDatalist::LoadComponentDataFromJson(nlohmann::json& j)
+	void ComponentDatalist::LoadComponentDataFromJson(nlohmann::json& j) override
 	{
 		for (auto it : j.items())
 		{
@@ -145,7 +162,7 @@ struct ComponentDatalist
 		}
 	}
 
-	nlohmann::json ComponentDatalist::WriteComponentDataToJson()
+	nlohmann::json ComponentDatalist::WriteComponentDataToJson() override
 	{
 		nlohmann::json data;
 

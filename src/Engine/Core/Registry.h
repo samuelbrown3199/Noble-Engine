@@ -6,7 +6,8 @@
 #include <typeinfo>
 
 #include "Application.h"
-#include "../ECS/Component.hpp"
+#include "../ECS/Component.h"
+#include "../ECS/ComponentList.hpp"
 #include "../Resource/Resource.h"
 
 struct ComponentRegistry
@@ -17,6 +18,8 @@ struct ComponentRegistry
 
 	bool m_bUpdateInEditor, m_bRenderInEditor;
 
+	Datalist* m_componentDatalist;
+
 	ComponentRegistry()
 	{
 		m_comp = nullptr;
@@ -24,9 +27,10 @@ struct ComponentRegistry
 		m_iMaxComponentsPerThread = 1024;
 	}
 
-	ComponentRegistry(Component* comp, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
+	ComponentRegistry(Component* comp, Datalist* compList, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
 	{
 		m_comp = comp;
+		m_componentDatalist = compList;
 		m_bUseThreads = useThreads;
 		m_iMaxComponentsPerThread = maxComponentsPerThread;
 		m_bUpdateInEditor = updateEditMode;
@@ -45,8 +49,17 @@ public:
 	static void RegisterResource(std::string ID, Resource* resource);
 	static std::map<int, std::pair<std::string, Resource*>>* GetResourceRegistry() { return &m_mResourceRegistry; }
 
-	static void RegisterComponent(std::string ID, Component* comp, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode);
+	template<typename T>
+	static void RegisterComponent(std::string ID, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
+	{
+		T* comp = new T();
+		ComponentDatalist<T>* complist = new ComponentDatalist<T>();
+
+		ComponentRegistry reg(comp, complist, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
+		m_mComponentRegistry[m_mComponentRegistry.size()] = std::make_pair(ID, reg);
+	}
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
+	static Datalist* GetComponentList(std::string ID);
 
 	static void RegisterBehaviour(std::string ID, Behaviour* comp);
 	static std::map<int, std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_mBehaviourRegistry; }

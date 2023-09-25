@@ -3,39 +3,6 @@
 #include "../Core/Application.h"
 #include "../ECS/Entity.hpp"
 
-ComponentDatalist<AudioSource> AudioSource::m_componentList;
-
-void AudioSource::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void AudioSource::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void AudioSource::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void AudioSource::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-AudioSource* AudioSource::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
-void AudioSource::Update(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Update(useThreads, maxComponentsPerThread);
-}
-
 void AudioSource::OnUpdate()
 {
 	if (!m_bPaused)
@@ -92,16 +59,4 @@ void AudioSource::OnUpdate()
 			channel = nullptr;
 		}
 	}
-}
-
-void AudioSource::Render(bool useThreads, int maxComponentsPerThread) {}
-
-void AudioSource::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json AudioSource::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

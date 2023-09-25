@@ -3,59 +3,30 @@
 #include "../Core/Application.h"
 #include "../ECS/Entity.hpp"
 
+#include "../ECS/ComponentList.hpp"
+
 int AudioListener::m_iCurrentListener = 0;
 FMOD_VECTOR AudioListener::pos;
 FMOD_VECTOR AudioListener::vel;
 FMOD_VECTOR AudioListener::forward;
 FMOD_VECTOR AudioListener::up;
 
-ComponentDatalist<AudioListener> AudioListener::m_componentList;
-
-void AudioListener::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void AudioListener::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void AudioListener::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void AudioListener::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-AudioListener* AudioListener::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
 void AudioListener::PreUpdate()
 {
 	m_iCurrentListener = 0;
 
+	ComponentDatalist<AudioListener>* dataList = dynamic_cast<ComponentDatalist<AudioListener>*>(NobleRegistry::GetComponentList(GetComponentID()));
+
 	int listenerCount = 0;
-	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
+	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
-		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
+		if (dataList->m_componentData.at(i).m_bAvailableForReuse)
 			continue;
 
 		listenerCount++;
 	}
 
 	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), listenerCount);
-}
-
-void AudioListener::Update(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Update(useThreads, maxComponentsPerThread);
 }
 
 void AudioListener::OnUpdate()
@@ -87,16 +58,4 @@ void AudioListener::OnUpdate()
 
 	FMOD_RESULT res = FMOD_System_Set3DListenerAttributes(AudioManager::GetFMODSystem(), m_iCurrentListener, &pos, &vel, &forward, &up);
 	m_iCurrentListener++;
-}
-
-void AudioListener::Render(bool useThreads, int maxComponentsPerThread) {}
-
-void AudioListener::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json AudioListener::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

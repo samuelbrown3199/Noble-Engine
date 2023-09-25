@@ -3,7 +3,7 @@
 #include <Engine\Core\Registry.h>
 #include <Engine\Core\DebugUI.hpp>
 #include <Engine\ECS\Entity.hpp>
-#include <Engine\ECS\Component.hpp>
+#include <Engine\ECS\Component.h>
 
 #include "ResourceManagerWindow.h"
 

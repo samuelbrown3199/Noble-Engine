@@ -4,52 +4,23 @@
 #include "../ECS/Entity.hpp"
 #include "Transform.h"
 
-ComponentDatalist<Camera> Camera::m_componentList;
-
-void Camera::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void Camera::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void Camera::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void Camera::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-Camera* Camera::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
-void Camera::Update(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Update(useThreads, maxComponentsPerThread);
-}
+#include "../ECS/ComponentList.hpp"
 
 void Camera::PreUpdate()
 {
 	int bestCam = -1;
 	CameraState bestState = inactive;
 
-	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
+	ComponentDatalist<Camera>* dataList = dynamic_cast<ComponentDatalist<Camera>*>(NobleRegistry::GetComponentList(GetComponentID()));
+
+	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
-		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
+		if (dataList->m_componentData.at(i).m_bAvailableForReuse)
 			continue;
 
-		if (bestState <= m_componentList.m_componentData.at(i).m_state)
+		if (bestState <= dataList->m_componentData.at(i).m_state)
 		{
-			bestState = m_componentList.m_componentData.at(i).m_state;
+			bestState = dataList->m_componentData.at(i).m_state;
 			bestCam = i;
 		}
 
@@ -58,7 +29,7 @@ void Camera::PreUpdate()
 	}
 
 	if (bestCam != -1)
-		Renderer::SetCamera(&m_componentList.m_componentData.at(bestCam));
+		Renderer::SetCamera(&dataList->m_componentData.at(bestCam));
 }
 
 void Camera::OnUpdate()
@@ -75,16 +46,4 @@ void Camera::OnUpdate()
 			m_camTransform->m_rotation = glm::vec3(0, 0, -1);
 	}
 	m_camTransform->m_rotation = glm::normalize(m_camTransform->m_rotation);
-}
-
-void Camera::Render(bool useThreads, int maxComponentsPerThread) {}
-
-void Camera::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json Camera::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

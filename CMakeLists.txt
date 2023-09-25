@@ -148,7 +148,9 @@ set (
 
 	src/Engine/ECS/Entity.hpp
 
-	src/Engine/ECS/Component.hpp
+	src/Engine/ECS/Component.h
+	src/Engine/ECS/Component.cpp
+
 	src/Engine/ECS/Renderable.hpp
 	src/Engine/ECS/ComponentList.hpp
 

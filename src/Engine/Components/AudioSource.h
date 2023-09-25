@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../ECS/Component.hpp"
-#include "../ECS/ComponentList.hpp"
+#include "../ECS/Component.h"
 #include "../Resource/AudioClip.h"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
@@ -25,14 +24,17 @@ struct AudioSource : public Component
 
 	std::string m_sMixerOption;
 
-	static ComponentDatalist<AudioSource> m_componentList;
-
 	~AudioSource()
 	{
 		if (channel != nullptr)
 		{
 			FMOD_Channel_Stop(channel);
 		}
+	}
+
+	std::string GetComponentID() override
+	{
+		return "AudioSource";
 	}
 
 	nlohmann::json WriteJson() override
@@ -108,23 +110,5 @@ struct AudioSource : public Component
 		ImGui::Checkbox("3D Sound", &m_b3DSound);
 	}
 
-	Component* GetAsComponent(std::string entityID) override
-	{
-		return GetComponent(entityID);
-	}
-
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	AudioSource* GetComponent(std::string entityID);
-
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnUpdate() override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

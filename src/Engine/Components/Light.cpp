@@ -3,35 +3,10 @@
 #include "../Core/Application.h"
 #include "../ECS/Entity.hpp"
 
-ComponentDatalist<Light> Light::m_componentList;
+#include "../ECS/ComponentList.hpp"
+
 std::vector<Light*> Light::m_closestLights;
 int Light::m_iMaxLights = 20;
-
-void Light::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void Light::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void Light::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void Light::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-Light* Light::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
 
 bool SortByDistance(Light* val1, Light* val2)
 {
@@ -45,23 +20,25 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 	int numPointLights = 0;
 	int numSpotLights = 0;
 
-	for (int i = 0; i < m_componentList.m_componentData.size(); i++)
+	ComponentDatalist<Light>* dataList = dynamic_cast<ComponentDatalist<Light>*>(NobleRegistry::GetComponentList(GetComponentID()));
+
+	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
-		if (m_componentList.m_componentData.at(i).m_bAvailableForReuse)
+		if (dataList->m_componentData.at(i).m_bAvailableForReuse)
 			continue;
 
 		if (m_closestLights.size() < m_iMaxLights)
 		{
-			m_closestLights.push_back(&m_componentList.m_componentData.at(i));
+			m_closestLights.push_back(&dataList->m_componentData.at(i));
 			std::sort(m_closestLights.begin(), m_closestLights.end(), SortByDistance);
 		}
 		else
 		{
-			Light* curLight = &m_componentList.m_componentData.at(i);
+			Light* curLight = &dataList->m_componentData.at(i);
 			if (curLight->m_fDistanceToCam < m_closestLights.back()->m_fDistanceToCam)
 			{
 				m_closestLights.pop_back();
-				m_closestLights.push_back(&m_componentList.m_componentData.at(i));
+				m_closestLights.push_back(&dataList->m_componentData.at(i));
 				std::sort(m_closestLights.begin(), m_closestLights.end(), SortByDistance);
 				break;
 			}
@@ -102,11 +79,6 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 	}
 }
 
-void Light::Update(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Update(useThreads, maxComponentsPerThread);
-}
-
 void Light::OnUpdate()
 {
 	if (m_transform == nullptr)
@@ -130,16 +102,4 @@ void Light::OnUpdate()
 	float zDis = (Renderer::GetCamera()->m_camTransform->m_position.z - m_transform->m_position.z) * (Renderer::GetCamera()->m_camTransform->m_position.z - m_transform->m_position.z);
 
 	m_fDistanceToCam = sqrt(xDis + yDis + zDis);
-}
-
-void Light::Render(bool useThreads, int maxComponentsPerThread) {}
-
-void Light::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json Light::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

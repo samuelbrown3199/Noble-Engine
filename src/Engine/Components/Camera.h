@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
+#include "../ECS/Component.h"
 #include "Transform.h"
 
 enum CameraState
@@ -25,7 +24,10 @@ struct Camera : Component
 
 	float m_fov;
 
-	static ComponentDatalist<Camera> m_componentList;
+	std::string GetComponentID() override
+	{
+		return "Camera";
+	}
 
 	void OnInitialize() override
 	{
@@ -48,11 +50,6 @@ struct Camera : Component
 			m_fov = j["FOV"];
 	}
 
-	Component* GetAsComponent(std::string entityID) override
-	{
-		return GetComponent(entityID);
-	}
-
 	virtual void DoComponentInterface() override
 	{
 		const char* states[] = { "Inactive", "Main Cam", "Editor Cam" };
@@ -68,19 +65,6 @@ struct Camera : Component
 		ImGui::DragFloat("FoV", &m_fov, 0.5f, 20.0f, 150.0f, "%.2f");
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	Camera* GetComponent(std::string entityID);
-
 	virtual void PreUpdate() override;
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnUpdate() override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

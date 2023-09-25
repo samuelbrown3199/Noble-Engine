@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.hpp"
+#include "Component.h"
 
 #include "../Core/Application.h"
 #include "../Core/Graphics/Renderer.h"
@@ -20,7 +20,6 @@ struct Renderable : public Component
 	float m_fDistanceToCam;
 
 	virtual void PreRender() {};
-	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
 	virtual void OnRender() 
 	{
 		if (m_transform == nullptr || Application::GetEntitiesDeleted())

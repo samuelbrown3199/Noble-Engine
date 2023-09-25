@@ -4,41 +4,6 @@
 #include "../Core/Graphics/Renderer.h"
 #include "../ECS/Entity.hpp"
 
-ComponentDatalist<MeshRenderer> MeshRenderer::m_componentList;
-
-void MeshRenderer::AddComponent()
-{
-	m_componentList.AddComponent(this);
-}
-
-void MeshRenderer::AddComponentToEntity(std::string entityID)
-{
-	m_componentList.AddComponentToEntity(entityID);
-	Application::GetEntity(entityID)->GetAllComponents();
-}
-
-void MeshRenderer::RemoveComponent(std::string entityID)
-{
-	m_componentList.RemoveComponent(entityID);
-}
-
-void MeshRenderer::RemoveAllComponents()
-{
-	m_componentList.RemoveAllComponents();
-}
-
-MeshRenderer* MeshRenderer::GetComponent(std::string entityID)
-{
-	return m_componentList.GetComponent(entityID);
-}
-
-void MeshRenderer::Update(bool useThreads, int maxComponentsPerThread) {}
-
-void MeshRenderer::Render(bool useThreads, int maxComponentsPerThread)
-{
-	m_componentList.Render(useThreads, maxComponentsPerThread);
-}
-
 void MeshRenderer::OnRender() 
 {
 	if (m_model == nullptr)
@@ -65,14 +30,4 @@ void MeshRenderer::OnRender()
 
 	glDrawElements(Renderer::GetRenderMode(), m_model->m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-}
-
-void MeshRenderer::LoadComponentDataFromJson(nlohmann::json& j)
-{
-	m_componentList.LoadComponentDataFromJson(j);
-}
-
-nlohmann::json MeshRenderer::WriteComponentDataToJson()
-{
-	return m_componentList.WriteComponentDataToJson();
 }

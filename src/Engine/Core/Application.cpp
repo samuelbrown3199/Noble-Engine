@@ -58,14 +58,14 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
 
-	rtn->m_registry->RegisterComponent("Transform", new Transform(), false, 1024, true, true);
-	rtn->m_registry->RegisterComponent("Camera", new Camera(), false, 1024, true, true);
-	rtn->m_registry->RegisterComponent("AudioListener", new AudioListener(), false, 1024, false, false);
-	rtn->m_registry->RegisterComponent("AudioSource", new AudioSource(), false, 1024, false, false);
-	rtn->m_registry->RegisterComponent("MeshRenderer", new MeshRenderer(), false, 1024, true, true);
-	rtn->m_registry->RegisterComponent("ScriptEmbedder", new ScriptEmbedder(), false, 1024, false, false);
-	rtn->m_registry->RegisterComponent("Sprite", new Sprite(), false, 1024, true, true);
-	rtn->m_registry->RegisterComponent("Light", new Light(), false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<Transform>("Transform", false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<Camera>("Camera", false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<AudioListener>("AudioListener", false, 1024, false, false);
+	rtn->m_registry->RegisterComponent<AudioSource>("AudioSource", false, 1024, false, false);
+	rtn->m_registry->RegisterComponent<MeshRenderer>("MeshRenderer", false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<ScriptEmbedder>("ScriptEmbedder", false, 1024, false, false);
+	rtn->m_registry->RegisterComponent<Sprite>("Sprite", false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<Light>("Light", false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 

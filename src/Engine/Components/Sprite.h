@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../ECS/ComponentList.hpp"
 #include "../ECS/Renderable.hpp"
 #include "../Core/ResourceManager.h"
 #include "../Resource/Texture.h"
@@ -19,7 +18,10 @@ struct Sprite : public Renderable
 	static std::vector<Vertex> vertices;
 	static std::vector<glm::vec3> boundingBox;
 
-	static ComponentDatalist<Sprite> m_componentList;
+	std::string GetComponentID() override
+	{
+		return "Sprite";
+	}
 
 	nlohmann::json WriteJson()
 	{ 
@@ -65,11 +67,6 @@ struct Sprite : public Renderable
 	{
 		m_spriteTexture = ResourceManager::LoadResource<Texture>(_sheetPath);
 		m_colour = glm::vec4(1.0f);
-	}
-
-	Component* GetAsComponent(std::string entityID) override
-	{
-		return GetComponent(entityID);
 	}
 
 	void ChangeSprite(std::shared_ptr<Texture> sprite)
@@ -126,18 +123,7 @@ struct Sprite : public Renderable
 		m_colour = glm::vec4(color.x, color.y, color.z, color.w);
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-	Sprite* GetComponent(std::string entityID);
-
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
 
 	virtual void PreRender() override;
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnRender() override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

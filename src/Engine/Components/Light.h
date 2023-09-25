@@ -1,10 +1,7 @@
 #pragma once
 
 #include "../Core/ResourceManager.h"
-
-#include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
-
+#include "../ECS/Component.h"
 #include "Transform.h"
 
 #include <glm/glm.hpp>
@@ -219,7 +216,6 @@ struct SpotLight : public LightInfo
 
 struct Light : public Component
 {
-	static ComponentDatalist<Light> m_componentList;
 	static std::vector<Light*> m_closestLights;
 	static int m_iMaxLights;
 
@@ -236,9 +232,9 @@ struct Light : public Component
 
 	float m_fDistanceToCam;
 
-	Component* GetAsComponent(std::string entityID) override
+	std::string GetComponentID() override
 	{
-		return GetComponent(entityID);
+		return "Light";
 	}
 
 	nlohmann::json WriteJson() override
@@ -316,19 +312,6 @@ struct Light : public Component
 			m_lightInfo->DoLightInfoInterface();
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	Light* GetComponent(std::string entityID);
-
-	virtual void PreUpdate();
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
+	virtual void PreUpdate() override;
 	virtual void OnUpdate() override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

@@ -62,7 +62,7 @@ struct Entity
 			comp.OnInitialize();
 			comp.AddComponent();
 
-			T* rtnPtr = comp.GetComponent(m_sEntityID);
+			T* rtnPtr = dynamic_cast<T*>(comp.GetAsComponent(m_sEntityID));
 			m_vComponents.push_back(rtnPtr);
 			return rtnPtr;
 		//}
@@ -83,7 +83,7 @@ struct Entity
 			comp.OnInitialize(std::forward<Args>(_args)...);
 			comp.AddComponent();
 
-			T* rtnPtr = comp.GetComponent(m_sEntityID);
+			T* rtnPtr = dynamic_cast<T*>(comp.GetAsComponent(m_sEntityID));
 			m_vComponents.push_back(rtnPtr);
 			return rtnPtr;
 		}

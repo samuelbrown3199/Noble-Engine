@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../ECS/ComponentList.hpp"
 #include "../ECS/Renderable.hpp"
 #include "../Resource/Model.h"
 #include "../Resource/Texture.h"
@@ -17,7 +16,10 @@ struct MeshRenderer : public Renderable
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	std::shared_ptr<ShaderProgram> m_shader;
 
-	static ComponentDatalist<MeshRenderer> m_componentList;
+	std::string GetComponentID() override
+	{
+		return "MeshRenderer";
+	}
 
 	nlohmann::json WriteJson()
 	{
@@ -45,11 +47,6 @@ struct MeshRenderer : public Renderable
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 		if (j.find("ShaderProgram") != j.end())
 			m_shader = ResourceManager::GetShaderProgram(j["ShaderProgram"]);
-	}
-
-	Component* GetAsComponent(std::string entityID) override
-	{
-		return GetComponent(entityID);
 	}
 
 	void ChangeTexture(std::shared_ptr<Texture> texture)
@@ -119,18 +116,5 @@ struct MeshRenderer : public Renderable
 		m_colour = glm::vec4(color.x, color.y, color.z, color.w);
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	MeshRenderer* GetComponent(std::string entityID);
-
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnRender() override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

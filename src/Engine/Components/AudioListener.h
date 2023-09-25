@@ -2,8 +2,7 @@
 
 #include <FMOD/fmod.h>
 
-#include "../ECS/ComponentList.hpp"
-#include "../ECS/Component.hpp"
+#include "../ECS/Component.h"
 #include "Transform.h"
 
 struct AudioListener : Component
@@ -18,7 +17,10 @@ struct AudioListener : Component
 	static FMOD_VECTOR forward;
 	static FMOD_VECTOR up;
 
-	static ComponentDatalist<AudioListener> m_componentList;
+	std::string GetComponentID() override
+	{
+		return "AudioListener";
+	}
 
 	nlohmann::json WriteJson() override
 	{
@@ -31,11 +33,6 @@ struct AudioListener : Component
 		m_velocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
 	}
 
-	Component* GetAsComponent(std::string entityID) override
-	{
-		return GetComponent(entityID);
-	}
-
 	virtual void DoComponentInterface() override
 	{
 		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
@@ -43,19 +40,6 @@ struct AudioListener : Component
 		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
 	}
 
-	virtual void AddComponent() override;
-	virtual void AddComponentToEntity(std::string entityID) override;
-	virtual void RemoveComponent(std::string entityID) override;
-	virtual void RemoveAllComponents() override;
-
-	AudioListener* GetComponent(std::string entityID);
-
 	virtual void PreUpdate() override;
-	virtual void Update(bool useThreads, int maxComponentsPerThread) override;
 	virtual void OnUpdate() override;
-
-	virtual void Render(bool useThreads, int maxComponentsPerThread) override;
-
-	virtual void LoadComponentDataFromJson(nlohmann::json& j) override;
-	virtual nlohmann::json WriteComponentDataToJson() override;
 };

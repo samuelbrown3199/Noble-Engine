@@ -18,7 +18,7 @@ enum ViewMode
 
 struct Camera : Component
 {
-	Transform* m_camTransform = nullptr;
+	int m_camTransformIndex = -1;
 	CameraState m_state = inactive;
 	ViewMode m_viewMode = projection;
 
@@ -32,6 +32,11 @@ struct Camera : Component
 	void OnInitialize() override
 	{
 		m_fov = 90.0f;
+	}
+
+	void OnRemove() override
+	{
+		m_camTransformIndex = -1;
 	}
 
 	nlohmann::json WriteJson() override

@@ -13,10 +13,15 @@ void MeshRenderer::OnRender()
 	m_indices = &m_model->m_indices;
 	m_boundingBox = &m_model->m_modelBoundingBox;
 
+	Renderable::OnRender();
+
+	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	if (transform == nullptr)
+		return;
+
 	if (m_shader == nullptr)
 		return;
 
-	Renderable::OnRender();
 	if (!m_bOnScreen)
 		return;
 
@@ -25,7 +30,7 @@ void MeshRenderer::OnRender()
 	glBindTexture(GL_TEXTURE_2D, m_texture->m_iTextureID);
 	glBindVertexArray(m_model->m_vaoID);
 
-	m_shader->BindMat4("transMat", m_transform->m_transformMat);
+	m_shader->BindMat4("transMat", transform->m_transformMat);
 	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), m_model->m_indices.size(), GL_UNSIGNED_INT, 0);

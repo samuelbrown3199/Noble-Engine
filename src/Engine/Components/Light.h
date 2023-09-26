@@ -219,7 +219,7 @@ struct Light : public Component
 	static std::vector<Light*> m_closestLights;
 	static int m_iMaxLights;
 
-	Transform* m_transform = nullptr;
+	int m_transformIndex = -1;
 
 	enum LightType
 	{
@@ -261,6 +261,11 @@ struct Light : public Component
 		m_lightInfo = new PointLight();
 	}
 
+	void OnRemove() override
+	{
+		m_transformIndex = -1;
+	}
+
 	void ChangeLightType(LightType newType)
 	{
 		if (newType == m_lightType)
@@ -292,7 +297,7 @@ struct Light : public Component
 
 	virtual void DoComponentInterface() override
 	{
-		if (m_transform == nullptr)
+		if (m_transformIndex == -1)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::Text("No transform attached. Light won't render.");

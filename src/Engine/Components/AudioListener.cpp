@@ -31,20 +31,26 @@ void AudioListener::PreUpdate()
 
 void AudioListener::OnUpdate()
 {
-	m_listenerTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-	if (m_listenerTransform == nullptr)
+	if (m_transformIndex == -1)
+	{
+		m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+		return;
+	}
+
+	Transform* listenerTransform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	if (listenerTransform == nullptr)
 		return;
 
 
-	pos.x = m_listenerTransform->m_position.x;
-	pos.y = m_listenerTransform->m_position.y;
-	pos.z = m_listenerTransform->m_position.z;
+	pos.x = listenerTransform->m_position.x;
+	pos.y = listenerTransform->m_position.y;
+	pos.z = listenerTransform->m_position.z;
 
 	vel.x = m_velocity.x;
 	vel.y = m_velocity.y;
 	vel.z = m_velocity.z;
 
-	glm::vec3 lisRot = m_listenerTransform->m_rotation;
+	glm::vec3 lisRot = listenerTransform->m_rotation;
 	lisRot.y = 0;
 
 	glm::vec3 normFor = glm::normalize(lisRot);

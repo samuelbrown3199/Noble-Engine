@@ -10,8 +10,14 @@ void AudioSource::OnUpdate()
 		if (m_clip == nullptr || !m_clip->m_bIsLoaded)
 			return;
 
-		m_sourceTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-		if (m_sourceTransform == nullptr)
+		if (m_transformIndex == -1)
+		{
+			m_transformIndex == NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+			return;
+		}
+
+		Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+		if (transform == nullptr)
 			return;
 
 		if (Application::GetPlayMode() == false)
@@ -35,9 +41,9 @@ void AudioSource::OnUpdate()
 		if (m_b3DSound)
 		{
 			FMOD_VECTOR pos;
-			pos.x = m_sourceTransform->m_position.x;
-			pos.y = m_sourceTransform->m_position.y;
-			pos.z = m_sourceTransform->m_position.z;
+			pos.x = transform->m_position.x;
+			pos.y = transform->m_position.y;
+			pos.z = transform->m_position.z;
 
 			FMOD_VECTOR vel;
 			vel.x = m_velocity.x;

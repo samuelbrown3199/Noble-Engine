@@ -11,7 +11,7 @@
 
 struct Renderable : public Component
 {
-	Transform* m_transform = nullptr;
+	int m_transformIndex = -1;
 	std::vector<Vertex>* m_vertices;
 	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
@@ -19,20 +19,29 @@ struct Renderable : public Component
 	bool m_bOnScreen = false;
 	float m_fDistanceToCam;
 
+	virtual void OnRemove() override
+	{
+		m_transformIndex = -1;
+	}
+
 	virtual void PreRender() {};
 	virtual void OnRender() 
 	{
-		if (m_transform == nullptr || Application::GetEntitiesDeleted())
+		if (m_transformIndex == -1)
 		{
-			m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
+			m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
 			m_bOnScreen = false;
 			return;
 		}
 
+		Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+		if (transform == nullptr)
+			return;
+
 		m_bOnScreen = false;
 		for (int i = 0; i < m_boundingBox->size(); i++)
 		{
-			glm::vec3 transPos = m_transform->m_transformMat * glm::vec4(m_boundingBox->at(i), 1.0f);
+			glm::vec3 transPos = transform->m_transformMat * glm::vec4(m_boundingBox->at(i), 1.0f);
 			if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
 			{
 				m_bOnScreen = true;
@@ -48,7 +57,8 @@ struct Renderable : public Component
 		Camera* cam = Renderer::GetCamera();
 		if (cam != nullptr)
 		{
-			m_fDistanceToCam = glm::length(cam->m_camTransform->m_position - m_transform->m_position);
+			Transform* camTransform = NobleRegistry::GetComponent<Transform>(cam->m_camTransformIndex);
+			m_fDistanceToCam = glm::length(camTransform->m_position - transform->m_position);
 		}
 	}
 };

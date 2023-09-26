@@ -37,8 +37,9 @@ struct Component
 	}
 
 	virtual std::string GetComponentID() = 0;
-
-	virtual Component* GetAsComponent(std::string entityID);
+	
+	virtual int GetComponentIndex(std::string entityID);
+	virtual Component* GetAsComponent(int index);
 	virtual void AddComponent();
 	virtual void AddComponentToEntity(std::string entityID);
 	virtual void RemoveComponent(std::string entityID);

@@ -93,7 +93,7 @@ struct Sprite : public Renderable
 
 	virtual void DoComponentInterface() override
 	{
-		if (m_transform == nullptr)
+		if (m_transformIndex == -1)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
 			ImGui::Text("No transform attached. Object won't render.");

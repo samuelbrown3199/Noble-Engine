@@ -2,10 +2,16 @@
 
 #include "../Core/Registry.h"
 
-Component* Component::GetAsComponent(std::string entityID)
+int Component::GetComponentIndex(std::string entityID)
 {
 	Datalist* dataList = NobleRegistry::GetComponentList(GetComponentID());
-	return dataList->GetComponent(entityID);
+	return dataList->GetComponentIndex(entityID);
+}
+
+Component* Component::GetAsComponent(int index)
+{
+	Datalist* dataList = NobleRegistry::GetComponentList(GetComponentID());
+	return dataList->GetComponent(index);
 }
 
 void Component::AddComponent()

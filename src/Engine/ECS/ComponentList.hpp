@@ -13,7 +13,8 @@ struct Datalist
 	virtual void AddComponentToEntity(std::string entityID) = 0;
 	virtual void RemoveComponent(std::string entityID) = 0;
 	virtual void RemoveAllComponents() = 0;
-	virtual Component* GetComponent(std::string entityID) = 0;
+	virtual int GetComponentIndex(std::string entityID) = 0;
+	virtual Component* GetComponent(int index) = 0;
 	virtual void Update(bool useThreads, int maxComponentsPerThread) = 0;
 	virtual void ThreadUpdate(int _buffer, int _amount) = 0;
 	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
@@ -71,15 +72,23 @@ struct ComponentDatalist : public Datalist
 		m_deletedComponents.clear();
 	}
 
-	Component* ComponentDatalist::GetComponent(std::string entityID) override
+	int ComponentDatalist::GetComponentIndex(std::string entityID) override
 	{
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
 			if (m_componentData.at(i).m_sEntityID == entityID)
-				return &m_componentData.at(i);
+				return i;
 		}
 
-		return nullptr;
+		return -1;
+	}
+
+	Component* ComponentDatalist::GetComponent(int index) override
+	{
+		if (index > m_componentData.size() - 1 || index < 0)
+			return nullptr;
+
+		return &m_componentData.at(index);
 	}
 
 	void ComponentDatalist::Update(bool useThreads, int maxComponentsPerThread) override

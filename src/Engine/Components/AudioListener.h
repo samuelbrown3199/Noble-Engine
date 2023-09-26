@@ -7,7 +7,7 @@
 
 struct AudioListener : Component
 {
-	Transform* m_listenerTransform = nullptr;
+	int m_transformIndex = -1;
 	glm::vec3 m_velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -16,6 +16,11 @@ struct AudioListener : Component
 	static FMOD_VECTOR vel;
 	static FMOD_VECTOR forward;
 	static FMOD_VECTOR up;
+
+	void OnRemove() override
+	{
+		m_transformIndex = -1;
+	}
 
 	std::string GetComponentID() override
 	{

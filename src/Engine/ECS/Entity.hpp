@@ -24,7 +24,7 @@ struct Entity
 	*/
 	bool m_bAvailableForUse = false;
 
-	std::vector<Component*> m_vComponents;
+	std::map<std::string, int> m_vComponents;
 	std::vector<Behaviour*> m_vBehaviours;
 
 	/**
@@ -42,9 +42,9 @@ struct Entity
 		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
-			Component* comp = compRegistry->at(i).second.m_comp->GetAsComponent(m_sEntityID);
-			if (comp != nullptr)
-				m_vComponents.push_back(comp);
+			int compIndex = compRegistry->at(i).second.m_componentDatalist->GetComponentIndex(m_sEntityID);
+			if (compIndex != -1)
+				m_vComponents[compRegistry->at(i).first] = compIndex;
 		}
 	}
 
@@ -54,20 +54,14 @@ struct Entity
 	template<typename T>
 	T* AddComponent()
 	{
-		/*T* alreadyHasComponent = GetComponent<T>();
-		if (alreadyHasComponent == nullptr)
-		{*/
-			T comp;
-			comp.m_sEntityID = m_sEntityID;
-			comp.OnInitialize();
-			comp.AddComponent();
+		T comp;
+		comp.m_sEntityID = m_sEntityID;
+		comp.OnInitialize();
+		comp.AddComponent();
 
-			T* rtnPtr = dynamic_cast<T*>(comp.GetAsComponent(m_sEntityID));
-			m_vComponents.push_back(rtnPtr);
-			return rtnPtr;
-		//}
-
-		//return alreadyHasComponent;
+		int compIndex = comp.GetComponentIndex(m_sEntityID);
+		m_vComponents[comp.GetComponentID()] = compIndex;
+		return NobleRegistry::GetComponent<T>(compIndex);
 	}
 	/**
 	*Adds a component of the type to the Entity.
@@ -83,9 +77,9 @@ struct Entity
 			comp.OnInitialize(std::forward<Args>(_args)...);
 			comp.AddComponent();
 
-			T* rtnPtr = dynamic_cast<T*>(comp.GetAsComponent(m_sEntityID));
-			m_vComponents.push_back(rtnPtr);
-			return rtnPtr;
+			int compIndex = comp.GetComponentIndex(m_sEntityID);
+			m_vComponents[comp.GetComponentID()] = compIndex;
+			return NobleRegistry::GetComponent<T>(compIndex);
 		}
 		return alreadyHasComponent;
 	}
@@ -98,7 +92,8 @@ struct Entity
 	{
 		for (int i = 0; i < m_vComponents.size(); i++)
 		{
-			T* comp = dynamic_cast<T*>(m_vComponents.at(i));
+			T temp;
+			T* comp = NobleRegistry::GetComponent<T>(m_vComponents[temp.GetComponentID()]);
 			if (comp != nullptr)
 				return comp;
 		}
@@ -112,6 +107,7 @@ struct Entity
 	template<typename T>
 	void RemoveComponent()
 	{
+		//rework this function I think
 		T::RemoveComponent(m_sEntityID);
 		GetAllComponents();
 		Application::SetEntitiesDeleted();

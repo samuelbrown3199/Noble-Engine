@@ -156,7 +156,8 @@ void EditorUI::DoInterface()
 				ImGui::Indent();
 				for (int o = 0; o < compRegistry->size(); o++)
 				{
-					Component* comp = compRegistry->at(o).second.m_comp->GetAsComponent(entities.at(i).m_sEntityID);
+					int compIndex = compRegistry->at(o).second.m_componentDatalist->GetComponentIndex(entities.at(i).m_sEntityID);
+					Component* comp = compRegistry->at(o).second.m_componentDatalist->GetComponent(compIndex);
 
 					if (comp != nullptr)
 					{

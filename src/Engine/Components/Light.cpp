@@ -22,6 +22,14 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 	ComponentDatalist<Light>* dataList = dynamic_cast<ComponentDatalist<Light>*>(NobleRegistry::GetComponentList(GetComponentID()));
 
+	if (m_transformIndex == -1)
+		return;
+
+	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	if (transform == nullptr)
+		return;
+
+
 	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
 		if (dataList->m_componentData.at(i).m_bAvailableForReuse)
@@ -47,17 +55,17 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 	for (int i = 0; i < m_closestLights.size(); i++)
 	{
-		if (m_closestLights.at(i)->m_transform == nullptr)
+		if (transform == nullptr)
 			continue;
 
 		if (m_closestLights.at(i)->m_lightType == Point)
 		{
-			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numPointLights, m_closestLights.at(i)->m_transform);
+			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numPointLights, transform);
 			numPointLights++;
 		}
 		else if (m_closestLights.at(i)->m_lightType == Spot)
 		{
-			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numSpotLights, m_closestLights.at(i)->m_transform);
+			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numSpotLights, transform);
 			numSpotLights++;
 		}
 	}
@@ -71,34 +79,37 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 	for (int i = 0; i < m_closestLights.size(); i++)
 	{
-		if (m_closestLights.at(i)->m_transform == nullptr)
+		if (transform == nullptr)
 			continue;
 
-		m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(i, m_closestLights.at(i)->m_transform);
+		m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(i, transform);
 	}
 }
 
 void Light::OnUpdate()
 {
-	if (m_transform == nullptr)
+	if (m_transformIndex == -1)
 	{
-		m_transform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
+		m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
 		return;
 	}
 
 	SpotLight* spotLight = dynamic_cast<SpotLight*>(m_lightInfo);
 	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
+	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	Transform* camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
+
 	switch (m_lightType)
 	{
 	case Directional:
-		dirLight->m_direction = glm::normalize(m_transform->m_rotation);
+		dirLight->m_direction = glm::normalize(transform->m_rotation);
 		break;
 	}
 
-	float xDis = (Renderer::GetCamera()->m_camTransform->m_position.x - m_transform->m_position.x) * (Renderer::GetCamera()->m_camTransform->m_position.x - m_transform->m_position.x);
-	float yDis = (Renderer::GetCamera()->m_camTransform->m_position.y - m_transform->m_position.y) * (Renderer::GetCamera()->m_camTransform->m_position.y - m_transform->m_position.y);
-	float zDis = (Renderer::GetCamera()->m_camTransform->m_position.z - m_transform->m_position.z) * (Renderer::GetCamera()->m_camTransform->m_position.z - m_transform->m_position.z);
+	float xDis = (camTransform->m_position.x - transform->m_position.x) * (camTransform->m_position.x - transform->m_position.x);
+	float yDis = (camTransform->m_position.y - transform->m_position.y) * (camTransform->m_position.y - transform->m_position.y);
+	float zDis = (camTransform->m_position.z - transform->m_position.z) * (camTransform->m_position.z - transform->m_position.z);
 
 	m_fDistanceToCam = sqrt(xDis + yDis + zDis);
 }

@@ -34,16 +34,16 @@ void Camera::PreUpdate()
 
 void Camera::OnUpdate()
 {
-	if (m_camTransform == nullptr)
+	if (m_camTransformIndex == -1)
 	{
-		m_camTransform = Application::GetEntity(m_sEntityID)->GetComponent<Transform>();
-
-		if (m_camTransform == nullptr)
-			return;
-
-		//Set an initial value if needed.
-		if (m_camTransform->m_rotation == glm::vec3(0, 0, 0))
-			m_camTransform->m_rotation = glm::vec3(0, 0, -1);
+		m_camTransformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+		return;
 	}
-	m_camTransform->m_rotation = glm::normalize(m_camTransform->m_rotation);
+
+	Transform* camTransform = NobleRegistry::GetComponent<Transform>(m_camTransformIndex);
+
+	if (camTransform == nullptr)
+		return;
+
+	camTransform->m_rotation = glm::normalize(camTransform->m_rotation);
 }

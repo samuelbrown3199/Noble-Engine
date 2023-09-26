@@ -37,10 +37,14 @@ void DebugCam::Start()
 	glm::vec3 rot = glm::vec3(0, 0, -1);
 
 	Camera* curCam = Renderer::GetCamera();
-	if (curCam && curCam->m_camTransform != nullptr)
+	if (curCam == nullptr)
+		return;
+
+	Transform* camTransform = NobleRegistry::GetComponent<Transform>(curCam->m_camTransformIndex);
+	if (curCam && camTransform != nullptr)
 	{
-		pos = curCam->m_camTransform->m_position;
-		rot = curCam->m_camTransform->m_rotation;
+		pos = camTransform->m_position;
+		rot = camTransform->m_rotation;
 	}
 
 	Entity* hackCam = Application::GetEntity(m_sEntityID);
@@ -63,33 +67,40 @@ void DebugCam::Update()
 void DebugCam::UpdateControls()
 {
 	Camera* ca = Renderer::GetCamera();
+	if (ca == nullptr)
+		return;
+
+	Transform* camTransform = NobleRegistry::GetComponent<Transform>(ca->m_camTransformIndex);
+	if (camTransform == nullptr)
+		return;
+
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	if (InputManager::GetKeybind("Forward"))
 	{
-		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * camTransform->m_rotation;
 	}
 	if (InputManager::GetKeybind("Back"))
 	{
-		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * ca->m_camTransform->m_rotation;
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * camTransform->m_rotation;
 	}
 	if (InputManager::GetKeybind("Left"))
 	{
-		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
-		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
 	}
 	if (InputManager::GetKeybind("Right"))
 	{
-		glm::vec3 direction = glm::cross(ca->m_camTransform->m_rotation, up);
-		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
 	}
 	if (InputManager::GetKey(SDLK_SPACE))
 	{
-		ca->m_camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 	if (InputManager::GetKey(SDLK_x))
 	{
-		ca->m_camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
 	}
 	if (InputManager::GetKeyDown(SDLK_p))
 	{
@@ -101,7 +112,7 @@ void DebugCam::UpdateControls()
 
 	if (InputManager::GetKeybindDown("LeftMouse"))
 	{
-		Ray mouseRay = Raycaster::GetRayToInDirection(ca->m_camTransform->m_position, ca->m_camTransform->m_rotation);
+		Ray mouseRay = Raycaster::GetRayToInDirection(camTransform->m_position, camTransform->m_rotation);
 
 		if (mouseRay.m_hitObject)
 		{
@@ -123,7 +134,14 @@ void DebugCam::UpdateCameraRotation()
 	if (InputManager::GetKeybind("RightMouse"))
 	{
 		Camera* ca = Renderer::GetCamera();
+		if (ca == nullptr)
+			return;
+
 		newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
+
+		Transform* camTransform = NobleRegistry::GetComponent<Transform>(ca->m_camTransformIndex);
+		if (camTransform == nullptr)
+			return;
 
 		if (firstMouse)
 		{
@@ -141,8 +159,8 @@ void DebugCam::UpdateCameraRotation()
 		yaw += xoffset;
 		pitch += yoffset;
 
-		ca->m_camTransform->m_rotation.x = pitch;
-		ca->m_camTransform->m_rotation.y = yaw;
+		camTransform->m_rotation.x = pitch;
+		camTransform->m_rotation.y = yaw;
 
 		// make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (pitch > 89.0f)
@@ -154,7 +172,7 @@ void DebugCam::UpdateCameraRotation()
 		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		ca->m_camTransform->m_rotation = glm::normalize(front);
+		camTransform->m_rotation = glm::normalize(front);
 	}
 	else
 	{

@@ -209,7 +209,11 @@ glm::mat4 Renderer::GenerateViewMatrix()
 	if (m_camera == nullptr)
 		return glm::mat4(1.0f);
 
-	glm::mat4 viewMatrix = glm::lookAt(m_camera->m_camTransform->m_position, m_camera->m_camTransform->m_position + m_camera->m_camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	Transform* camTransform = NobleRegistry::GetComponent<Transform>(m_camera->m_camTransformIndex);
+	if (camTransform == nullptr)
+		return glm::mat4(1.0f);
+
+	glm::mat4 viewMatrix = glm::lookAt(camTransform->m_position, camTransform->m_position + camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
 }
 

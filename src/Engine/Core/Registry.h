@@ -60,6 +60,36 @@ public:
 	}
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
 	static Datalist* GetComponentList(std::string ID);
+	template<typename T>
+	static int GetComponentIndex(std::string entityID)
+	{
+		T temp;
+
+		for (int i = 0; i < m_mComponentRegistry.size(); i++)
+		{
+			if (temp.GetComponentID() == m_mComponentRegistry.at(i).second.m_comp->GetComponentID())
+			{
+				return m_mComponentRegistry.at(i).second.m_componentDatalist->GetComponentIndex(entityID);
+			}
+		}
+
+		return -1;
+	}
+	template<typename T>
+	static T* GetComponent(int index)
+	{
+		T temp;
+
+		for (int i = 0; i < m_mComponentRegistry.size(); i++)
+		{
+			if (temp.GetComponentID() == m_mComponentRegistry.at(i).second.m_comp->GetComponentID())
+			{
+				return dynamic_cast<T*>(m_mComponentRegistry.at(i).second.m_componentDatalist->GetComponent(index));
+			}
+		}
+
+		return nullptr;
+	}
 
 	static void RegisterBehaviour(std::string ID, Behaviour* comp);
 	static std::map<int, std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_mBehaviourRegistry; }

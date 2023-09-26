@@ -26,9 +26,13 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
             glm::vec2 baryPos;
             float hitDis;
 
-            glm::vec3 pos1 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert)).pos, 1);
-            glm::vec3 pos2 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+1)).pos, 1);
-            glm::vec3 pos3 = screenObjects->at(i)->m_transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+2)).pos, 1);
+            Transform* transform = NobleRegistry::GetComponent<Transform>(screenObjects->at(i)->m_transformIndex);
+            if (transform == nullptr)
+                continue;
+
+            glm::vec3 pos1 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert)).pos, 1);
+            glm::vec3 pos2 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+1)).pos, 1);
+            glm::vec3 pos3 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+2)).pos, 1);
 
             bool hit = glm::intersectRayTriangle(ray.m_rayOrigin, ray.m_rayDirection, pos1, pos2, pos3, baryPos, hitDis);
 

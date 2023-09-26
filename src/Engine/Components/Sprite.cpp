@@ -71,21 +71,26 @@ void Sprite::OnRender()
 	m_boundingBox = &boundingBox;
 
 	Renderable::OnRender();
+
+	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	if (transform == nullptr)
+		return;
+
 	if (!m_bOnScreen)
 		return;
 
 	glBindVertexArray(m_iQuadVAO);
 
-	glm::vec3 scale = m_transform->m_scale;
+	glm::vec3 scale = transform->m_scale;
 	float heightRat = (float)m_spriteTexture->m_iWidth / (float)m_spriteTexture->m_iHeight;
-	m_transform->m_scale = glm::normalize(glm::vec3(m_spriteTexture->m_iWidth * heightRat, m_spriteTexture->m_iHeight * heightRat, scale.z));
-	m_transform->m_scale.x = scale.x;
-	m_transform->m_scale.y = scale.y;
-
+	transform->m_scale = glm::normalize(glm::vec3(m_spriteTexture->m_iWidth * heightRat, m_spriteTexture->m_iHeight * heightRat, scale.z));
+	transform->m_scale.x = scale.x;
+	transform->m_scale.y = scale.y;
+	
 	m_shader->UseProgram();
 	glBindTexture(GL_TEXTURE_2D, m_spriteTexture->m_iTextureID);
 
-	m_shader->BindMat4("transMat", m_transform->m_transformMat);
+	m_shader->BindMat4("transMat", transform->m_transformMat);
 	m_shader->BindVector4("colour", m_colour);
 
 	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);

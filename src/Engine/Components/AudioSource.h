@@ -13,7 +13,7 @@
 struct AudioSource : public Component
 {
 	FMOD_CHANNEL* channel = nullptr;
-	Transform* m_sourceTransform = nullptr;
+	int m_transformIndex = -1;
 	std::shared_ptr<AudioClip> m_clip = nullptr;
 	int m_iLoopCount = 0;
 	float m_fPitch = 1;
@@ -58,6 +58,11 @@ struct AudioSource : public Component
 	void OnInitialize()
 	{
 
+	}
+
+	void OnRemove() override
+	{
+		m_transformIndex = -1;
 	}
 
 	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption)

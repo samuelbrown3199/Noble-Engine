@@ -50,7 +50,6 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 		if (m_closestLights.at(i)->m_transform == nullptr)
 			continue;
 
-
 		if (m_closestLights.at(i)->m_lightType == Point)
 		{
 			m_closestLights.at(i)->m_lightInfo->BindInfoToShaders(numPointLights, m_closestLights.at(i)->m_transform);

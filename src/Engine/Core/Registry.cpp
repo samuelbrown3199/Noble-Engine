@@ -17,7 +17,7 @@ Datalist* NobleRegistry::GetComponentList(std::string ID)
 			return m_mComponentRegistry.at(i).second.m_componentDatalist;
 	}
 
-	return nullptr;
+	Logger::LogError(FormatString("Trying to get component list %s, but it hasn't been registered.", ID.c_str()), 2);
 }
 
 void NobleRegistry::RegisterBehaviour(std::string ID, Behaviour* comp)

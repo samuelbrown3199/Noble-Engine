@@ -39,7 +39,7 @@ void EditorUI::CreateEditorCam()
 	}
 	else
 	{
-		Application::DeleteEntity(m_DebugCam->m_sEntityID);
+		Application::DeleteEntity(Application::GetEntityIndex(m_DebugCam->m_sEntityID));
 		m_DebugCam = nullptr;
 	}
 }
@@ -120,7 +120,7 @@ void EditorUI::DoInterface()
 	if (ImGui::Button("Delete Entity"))
 	{
 		if(m_iSelEntity != -1)
-			Application::DeleteEntity(entities.at(m_iSelEntity).m_sEntityID);
+			Application::DeleteEntity(Application::GetEntityIndex(entities.at(m_iSelEntity).m_sEntityID));
 	}
 
 	if (ImGui::TreeNode("Entities"))

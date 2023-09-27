@@ -41,7 +41,6 @@ private:
 
     std::shared_ptr<IniFile> m_mainIniFile;
 
-	static bool m_bEntitiesDeleted;
     static bool m_bLoop;
 
     PerformanceStats* m_pStats;
@@ -67,13 +66,12 @@ public:
     void MainLoop();
     void CleanupApplication();
 
-	static void SetEntitiesDeleted() { m_bEntitiesDeleted = true; }
-	static bool GetEntitiesDeleted() { return m_bEntitiesDeleted; }
-
 	static Entity* CreateEntity();
 	static Entity* CreateEntity(std::string _desiredID, std::string _name);
-	static void DeleteEntity(std::string _ID);
-	static Entity* GetEntity(std::string _ID);
+
+	static int GetEntityIndex(std::string _ID);
+	static void DeleteEntity(int index);
+	static Entity* GetEntity(int index);
 	void CleanupDeletionEntities();
 
 	static std::vector<Entity>& GetEntityList() { return m_vEntities; }

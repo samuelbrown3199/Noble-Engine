@@ -21,7 +21,6 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
-bool Application::m_bEntitiesDeleted = false;
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
 bool Application::m_bPlayMode = true;
@@ -216,7 +215,6 @@ void Application::MainLoop()
 		//Render End
 
 		m_pStats->cleanupStart = SDL_GetTicks();
-		m_bEntitiesDeleted = false;
 		CleanupDeletionEntities();
 		InputManager::ClearFrameInputs();
 		ResourceManager::UnloadUnusedResources();
@@ -273,7 +271,7 @@ void Application::InitializeImGui()
 std::string Application::GetUniqueEntityID()
 {
 	std::string id = GenerateRandomString(25);
-	while (GetEntity(id) != nullptr)
+	while (GetEntityIndex(id) != -1)
 	{
 		id = GenerateRandomString(25);
 	}
@@ -329,26 +327,31 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
-void Application::DeleteEntity(std::string _ID)
-{
-	for(int i = 0; i < m_vEntities.size(); i++)
-	{
-		if (m_vEntities.at(i).m_sEntityID == _ID)
-		{
-			m_vDeletionEntities.push_back(&m_vEntities.at(i));
-			break;
-		}
-	}
-}
-
-Entity* Application::GetEntity(std::string _ID)
+int Application::GetEntityIndex(std::string _ID)
 {
 	for (int i = 0; i < m_vEntities.size(); i++)
 	{
 		if (m_vEntities.at(i).m_sEntityID == _ID)
-			return &m_vEntities.at(i);
+			return i;
 	}
-	return nullptr;
+
+	return -1;
+}
+
+void Application::DeleteEntity(int index)
+{
+	if (index > m_vEntities.size() - 1 || index < 0)
+		return;
+
+	m_vDeletionEntities.push_back(&m_vEntities.at(index));
+}
+
+Entity* Application::GetEntity(int index)
+{
+	if (index > m_vEntities.size() - 1 || index < 0)
+		return nullptr;
+
+	return &m_vEntities.at(index);
 }
 
 void Application::ClearLoadedScene()
@@ -383,8 +386,6 @@ void Application::CleanupDeletionEntities()
 			compRegistry->at(i).second.m_comp->RemoveComponent(currentEntity->m_sEntityID);
 		}
 		currentEntity->m_bAvailableForUse = true;
-
-		m_bEntitiesDeleted = true;
 	}
 
 	for (int i = 0; i < m_vEntities.size(); i++)

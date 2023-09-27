@@ -15,19 +15,19 @@
 
 Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(entityID);
+	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
 	return ent->GetBehaviour<DebugCam>();
 }
 
 Behaviour* DebugCam::AddBehaviourToEntity(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(entityID);
+	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
 	return ent->AddBehaviour<DebugCam>();
 }
 
 void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(entityID);
+	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
 	ent->RemoveBehaviour<DebugCam>();
 }
 
@@ -47,7 +47,7 @@ void DebugCam::Start()
 		rot = camTransform->m_rotation;
 	}
 
-	Entity* hackCam = Application::GetEntity(m_sEntityID);
+	Entity* hackCam = Application::GetEntity(Application::GetEntityIndex(m_sEntityID));
 	Transform* tr = hackCam->AddComponent<Transform>(pos, rot);
 	Camera* editCam = hackCam->AddComponent<Camera>();
 	editCam->m_state = editorCam;

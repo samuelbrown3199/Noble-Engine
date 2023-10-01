@@ -17,6 +17,7 @@ struct Sprite : public Renderable
 	static bool m_bInitializedSpriteQuad;
 	static std::vector<Vertex> vertices;
 	static std::vector<glm::vec3> boundingBox;
+	static std::vector<uint32_t> indices;
 
 	std::string GetComponentID() override
 	{

@@ -22,7 +22,7 @@ std::vector<glm::vec3> Sprite::boundingBox =
 	glm::vec3(-0.5f, 0.5f, 0.0)
 };
 
-const std::vector<uint32_t> indices =
+std::vector<uint32_t> Sprite::indices =
 {
 	0, 1, 2, 2, 3, 0
 };
@@ -61,14 +61,12 @@ void Sprite::PreRender()
 
 void Sprite::OnRender()
 {
-	if (m_spriteTexture == nullptr)
-		return;
-
 	if (m_shader == nullptr)
 		return;
 
 	m_vertices = &vertices;
 	m_boundingBox = &boundingBox;
+	m_indices = &indices;
 
 	Renderable::OnRender();
 
@@ -77,6 +75,9 @@ void Sprite::OnRender()
 		return;
 
 	if (!m_bOnScreen)
+		return;
+
+	if (m_spriteTexture == nullptr)
 		return;
 
 	glBindVertexArray(m_iQuadVAO);

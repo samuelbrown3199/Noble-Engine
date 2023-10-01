@@ -44,7 +44,7 @@ void Texture::OnLoad()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //upload the image daya to the bound texture unit in the GPU
+    //upload the image data to the bound texture unit in the GPU
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_iWidth, m_iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     //free the loaded data because we now have a copy on the GPU
     free(pixels);

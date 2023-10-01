@@ -232,6 +232,12 @@ foreach(source IN LISTS source_list)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
+foreach(source IN LISTS game_source)
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+    source_group("${source_path_msvc}" FILES "${source}")
+endforeach()
+
 set (
 
 	editor_source
@@ -268,7 +274,7 @@ foreach(source IN LISTS editor_source)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../TechDemos/TechDemo1")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>")
 add_executable(TechDemo1
     src/Game/main.cpp
 

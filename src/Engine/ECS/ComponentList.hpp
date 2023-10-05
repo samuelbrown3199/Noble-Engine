@@ -166,6 +166,7 @@ struct ComponentDatalist : public Datalist
 			T component;
 			component.m_sEntityID = it.key();
 			component.FromJson(j[it.key()]);
+			component.OnInitialize();
 
 			component.AddComponent();
 		}

@@ -164,9 +164,9 @@ struct ComponentDatalist : public Datalist
 		for (auto it : j.items())
 		{
 			T component;
+			component.OnInitialize();
 			component.m_sEntityID = it.key();
 			component.FromJson(j[it.key()]);
-			component.OnInitialize();
 
 			component.AddComponent();
 		}

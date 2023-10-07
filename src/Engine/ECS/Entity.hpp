@@ -69,19 +69,14 @@ struct Entity
 	template <typename T, typename ... Args>
 	T* AddComponent(Args&&... _args)
 	{
-		T* alreadyHasComponent = GetComponent<T>();
-		if (alreadyHasComponent == nullptr)
-		{
-			T comp;
-			comp.m_sEntityID = m_sEntityID;
-			comp.OnInitialize(std::forward<Args>(_args)...);
-			comp.AddComponent();
+		T comp;
+		comp.m_sEntityID = m_sEntityID;
+		comp.OnInitialize(std::forward<Args>(_args)...);
+		comp.AddComponent();
 
-			int compIndex = comp.GetComponentIndex(m_sEntityID);
-			m_vComponents[comp.GetComponentID()] = compIndex;
-			return NobleRegistry::GetComponent<T>(compIndex);
-		}
-		return alreadyHasComponent;
+		int compIndex = comp.GetComponentIndex(m_sEntityID);
+		m_vComponents[comp.GetComponentID()] = compIndex;
+		return NobleRegistry::GetComponent<T>(compIndex);
 	}
 
 	/**

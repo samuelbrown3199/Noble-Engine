@@ -40,6 +40,9 @@ void SceneManager::SaveLoadedScene()
 
 void SceneManager::SaveScene(std::string scenePath)
 {
+	if (Application::GetPlayMode())
+		return;
+
 	if (scenePath.empty())
 		return;
 

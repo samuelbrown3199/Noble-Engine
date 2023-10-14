@@ -23,6 +23,7 @@ struct Camera : Component
 	ViewMode m_viewMode = projection;
 
 	float m_fov;
+	float m_scale;
 
 	std::string GetComponentID() override
 	{
@@ -32,6 +33,7 @@ struct Camera : Component
 	void OnInitialize() override
 	{
 		m_fov = 90.0f;
+		m_scale = 50.0f;
 	}
 
 	void OnRemove() override
@@ -41,7 +43,7 @@ struct Camera : Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"CameraState", m_state}, {"ViewMode", m_viewMode}, {"FOV", m_fov} };
+		nlohmann::json data = { {"CameraState", m_state}, {"ViewMode", m_viewMode}, {"FOV", m_fov}, {"Scale", m_scale} };
 		return data;
 	}
 
@@ -53,6 +55,8 @@ struct Camera : Component
 			m_viewMode = j["ViewMode"];
 		if (j.find("FOV") != j.end())
 			m_fov = j["FOV"];
+		if (j.find("Scale") != j.end())
+			m_scale = j["Scale"];
 	}
 
 	virtual void DoComponentInterface() override
@@ -67,7 +71,10 @@ struct Camera : Component
 		ImGui::Combo("View Mode", &currentViewMode, viewmodes, IM_ARRAYSIZE(viewmodes));
 		m_viewMode = (ViewMode)currentViewMode;
 
-		ImGui::DragFloat("FoV", &m_fov, 0.5f, 20.0f, 150.0f, "%.2f");
+		if (m_viewMode == projection)
+			ImGui::DragFloat("FoV", &m_fov, 0.5f, 20.0f, 150.0f, "%.2f");
+		else
+			ImGui::DragFloat("Scale", &m_scale, 1.0f, 3.0f, 1000.0f, "%.2f");
 	}
 
 	virtual void PreUpdate() override;

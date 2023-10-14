@@ -51,14 +51,12 @@ private:
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
-	static float m_fScale;
 
 	static glm::vec3 m_clearColour;
 	static glm::vec3 m_ambientColour;
 	static float m_ambientStrength;
 
 	static Camera* m_camera;
-	static const float m_fMaxScale, m_fMinScale;
 
 	static glm::mat4 GenerateProjectionMatrix();
 	static glm::mat4 GenerateOrthographicMatrix();
@@ -86,12 +84,8 @@ public:
 	static void SetWindowFullScreen(const int& _mode);
 	static void SetVSyncMode(const int& _mode);
 
-	//Adds the amount onto scale. The larger the scale the larger the world.
-	static void AdjustScale(const float& _amount);
-
 	static void SetCamera(Camera* cam) { m_camera = cam; }
 	static Camera* GetCamera() { return m_camera; };
-	static float GetScale() { return m_fScale; };
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
 	static glm::mat4 GenerateProjMatrix();

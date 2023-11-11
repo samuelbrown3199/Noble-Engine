@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "../Core/Logger.h"
+#include "../Core/Graphics/BufferHelper.h"
 
 #include "../Core/ResourceManager.h"
 
@@ -100,35 +101,8 @@ void Model::OnLoad()
         m_modelBoundingBox.push_back(bbox[i]);
     }
 
-
-    glGenVertexArrays(1, &m_vaoID);
-    glBindVertexArray(m_vaoID);
-
-    unsigned int VBO, EBO;
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // normals attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    BufferHelper::CreateVertexBuffer(m_vertexBuffer, m_vertices);
+    BufferHelper::CreateIndexBuffer(m_indexBuffer, m_indices);
 
     m_bIsLoaded = true;
 }
@@ -138,7 +112,8 @@ void Model::OnUnload()
     if (!m_bIsLoaded)
         return;
 
-    glDeleteVertexArrays(1, &m_vaoID);
+    m_vertexBuffer.~GraphicsBuffer();
+    m_indexBuffer.~GraphicsBuffer();
     m_bIsLoaded = false;
 }
 

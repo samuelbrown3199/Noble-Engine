@@ -15,7 +15,6 @@
 
 #include "../ECS/Behaviour.hpp"
 
-#include "Graphics/UI.h"
 #include "DebugUI.hpp"
 
 struct Entity;
@@ -38,6 +37,8 @@ private:
     ThreadingManager* m_threadManager;
     ResourceManager* m_resourceManager;
     Logger* m_logger;
+
+	VkDescriptorPool m_imguiPool;
 
     std::shared_ptr<IniFile> m_mainIniFile;
 

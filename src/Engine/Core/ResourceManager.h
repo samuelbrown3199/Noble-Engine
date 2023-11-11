@@ -16,10 +16,7 @@
 
 #include "../Useful.h"
 #include "../Resource/Resource.h"
-#include "../Resource/ShaderProgram.h"
 #include "Logger.h"
-
-#include "../Resource/Font.h"
 
 /**
 *Handles resource management. Stores, loads and unloads resources.
@@ -37,8 +34,6 @@ struct ResourceManager
 	*/
 	static std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
 	static std::string m_sWorkingDirectory;
-
-	static std::vector<std::shared_ptr<ShaderProgram>> m_vShaderPrograms;
 
 	static nlohmann::json m_resourceDatabaseJson;
 
@@ -148,8 +143,6 @@ struct ResourceManager
 		return nullptr;
 	}
 
-	static std::shared_ptr<Font> LoadFont(std::string fontPath, int fontPixelSize);
-
 	template<typename T>
 	static std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()
 	{
@@ -166,18 +159,10 @@ struct ResourceManager
 	}
 
 	/**
-	* Creates a shader program and stores it in the shader program list.
-	*/
-	static std::shared_ptr<ShaderProgram> CreateShaderProgram(std::string shaderProgramID);
-	static std::shared_ptr<ShaderProgram> GetShaderProgram(std::string shaderProgramID);
-	static std::vector<std::shared_ptr<ShaderProgram>>* GetShaderPrograms();
-
-	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
 	static void UnloadUnusedResources();
 	static void UnloadAllResources();
-
 
 
 	template<typename T>
@@ -246,37 +231,6 @@ struct ResourceManager
 		}
 		else
 			return nullptr;
-	}
-
-	static std::shared_ptr<ShaderProgram> DoShaderProgramSelectInterface(std::string currentID)
-	{
-		if (m_vShaderPrograms.size() == 0)
-		{
-			ImGui::Text(FormatString("No shader programs exist in database.").c_str());
-			return nullptr;
-		}
-
-		int res = 0;
-		for (int i = 0; i < m_vShaderPrograms.size(); i++)
-		{
-			if (m_vShaderPrograms.at(i)->m_shaderProgramID == currentID)
-				res = i;
-		}
-
-		ImGui::Text("Shader Programs");
-		ImGui::SameLine();
-		if (ImGui::BeginMenu(currentID.c_str()))
-		{
-			for (int i = 0; i < m_vShaderPrograms.size(); i++)
-			{
-				if (ImGui::MenuItem(m_vShaderPrograms.at(i)->m_shaderProgramID.c_str()))
-					res = i;
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-		return m_vShaderPrograms.at(res);
 	}
 };
 

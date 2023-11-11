@@ -64,11 +64,6 @@ void EditorUI::OpenResourceManager()
 
 void EditorUI::UpdateLightingWidgets()
 {
-	glm::vec3 ambColour = Renderer::GetAmbientColour();
-
-	ambientColour = ImVec4(ambColour.x, ambColour.y, ambColour.z, 200.0f / 255.0f);
-	ambientStrength = Renderer::GetAmbientStrength();
-
 	clearColour = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
 }
 
@@ -241,12 +236,6 @@ void EditorUI::DoInterface()
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
-	ImGui::ColorEdit3("Ambient Light Colour", (float*)&ambientColour);
-	ImGui::DragFloat("Ambient Light Strength", &ambientStrength, 0.1f, 0.0f, 1.0f, "%.2f");
-	Renderer::SetAmbientColour(glm::vec3(ambientColour.x, ambientColour.y, ambientColour.z), ambientStrength);
-
-	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 	ImGui::ColorEdit3("Clear Colour", (float*)&clearColour);
 	Renderer::SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
@@ -427,19 +416,6 @@ void EditorUI::DoAssetMenu()
 					resourceRegistry->at(i).second->AddResource(path);
 				}
 			}
-		}
-		ImGui::EndMenu();
-	}
-
-	if (ImGui::BeginMenu("New Shader Program..."))
-	{
-		static std::string newShaderProgram = "";
-		ImGui::InputText("Shader Program ID", &newShaderProgram);
-
-		ImGui::SameLine();
-		if (ImGui::Button("Create Shader Program"))
-		{
-			ResourceManager::CreateShaderProgram(newShaderProgram);
 		}
 		ImGui::EndMenu();
 	}

@@ -1,23 +1,32 @@
 #pragma once
 
 #include "../ECS/Renderable.hpp"
+#include "../ECS/ComponentList.hpp"
+#include "Transform.h"
 #include "../Core/ResourceManager.h"
 #include "../Resource/Texture.h"
+#include "../Core/Graphics/GraphicsBuffer.h"
 
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 struct Sprite : public Renderable
 {
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour;
-	std::shared_ptr<ShaderProgram> m_shader;
 
-	static GLuint m_iQuadVAO;
+	bool m_bCreatedDescriptorSets = false;
+	std::vector<GraphicsBuffer> m_uniformBuffers;
+	std::vector<void*> m_uniformBuffersMapped;
+	std::vector<VkDescriptorSet> m_descriptorSets;
+
 	static bool m_bInitializedSpriteQuad;
 	static std::vector<Vertex> vertices;
 	static std::vector<glm::vec3> boundingBox;
 	static std::vector<uint32_t> indices;
+	static GraphicsBuffer m_vertexBuffer;
+	static GraphicsBuffer m_indexBuffer;
+
+	static void ClearSpriteBuffers();
 
 	std::string GetComponentID() override
 	{
@@ -30,8 +39,6 @@ struct Sprite : public Renderable
 
 		if (m_spriteTexture != nullptr)
 			data["spritePath"] = m_spriteTexture->m_sLocalPath;
-		if (m_shader != nullptr)
-			data["ShaderProgram"] = m_shader->m_shaderProgramID;
 
 		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
 
@@ -44,8 +51,6 @@ struct Sprite : public Renderable
 			m_spriteTexture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
 		if(j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
-		if (j.find("ShaderProgram") != j.end())
-			m_shader = ResourceManager::GetShaderProgram(j["ShaderProgram"]);
 	}
 
 	void OnInitialize()
@@ -78,18 +83,11 @@ struct Sprite : public Renderable
 		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
 			return;
 
+		m_uniformBuffers.clear();
+		m_descriptorSets.clear();
+
 		m_spriteTexture = sprite;
-	}
-
-	void ChangeShaderProgram(std::shared_ptr<ShaderProgram> sProgram)
-	{
-		if (sProgram == nullptr)
-			return;
-
-		if (m_shader != nullptr && sProgram->m_shaderProgramID == m_shader->m_shaderProgramID)
-			return;
-
-		m_shader = sProgram;
+		m_bCreatedDescriptorSets = false;
 	}
 
 	virtual void DoComponentInterface() override
@@ -103,21 +101,11 @@ struct Sprite : public Renderable
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
 
-		if (m_shader == nullptr)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
-			ImGui::Text("No shader selected. Object won't render.");
-			ImGui::PopStyleColor();
-
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-		}
-
 		ImGui::BeginDisabled();
 		ImGui::Checkbox("On Screen", &m_bOnScreen);
 		ImGui::EndDisabled();
 
 		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_spriteTexture != nullptr ? m_spriteTexture->m_sLocalPath : "none"));
-		ChangeShaderProgram(ResourceManager::DoShaderProgramSelectInterface(m_shader != nullptr ? m_shader->m_shaderProgramID : ""));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

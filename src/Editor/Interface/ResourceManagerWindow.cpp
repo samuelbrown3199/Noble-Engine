@@ -115,22 +115,5 @@ void ResourceManagerWindow::DoInterface()
     }
     ImGui::EndChild();
 
-    ImGui::SeparatorText("Shader Programs");
-    std::vector<std::shared_ptr<ShaderProgram>>* shaderPrograms = ResourceManager::GetShaderPrograms();
-
-    for (int o = 0; o < shaderPrograms->size(); o++)
-    {
-        if (ImGui::Selectable(shaderPrograms->at(o)->m_shaderProgramID.c_str(), selectedShaderProg == o))
-        {
-            selectedShaderProg = o;
-        }
-    }
-
-    if (selectedShaderProg != -1)
-    {  
-        ImGui::Dummy(ImVec2(0.0f, 5.0f));
-        shaderPrograms->at(selectedShaderProg)->DoShaderProgramInterface();
-    }
-
     ImGui::End();
 }

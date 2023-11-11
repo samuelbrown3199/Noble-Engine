@@ -1,10 +1,13 @@
 #include "Sprite.h"
 #include "../Core/Application.h"
-#include "../ECS/Entity.hpp"
 #include "../Core/Graphics/Renderer.h"
+#include "../Core/Graphics/BufferHelper.h"
+#include "../Core/Graphics/GraphicsPipeline.h"
+#include "../ECS/Entity.hpp"
 
-GLuint Sprite::m_iQuadVAO;
 bool Sprite::m_bInitializedSpriteQuad = false;
+GraphicsBuffer Sprite::m_vertexBuffer;
+GraphicsBuffer Sprite::m_indexBuffer;
 
 std::vector<Vertex> Sprite::vertices =
 {
@@ -27,33 +30,21 @@ std::vector<uint32_t> Sprite::indices =
 	0, 1, 2, 2, 3, 0
 };
 
+void Sprite::ClearSpriteBuffers()
+{
+	if (m_bInitializedSpriteQuad)
+	{
+		m_vertexBuffer.~GraphicsBuffer();
+		m_indexBuffer.~GraphicsBuffer();
+	}
+}
+
 void Sprite::PreRender()
 {
 	if (!m_bInitializedSpriteQuad)
 	{
-		glGenVertexArrays(1, &m_iQuadVAO);
-		glBindVertexArray(m_iQuadVAO);
-
-		unsigned int VBO, EBO;
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		// normals attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-
-		// texture coord attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
+		BufferHelper::CreateVertexBuffer(m_vertexBuffer, vertices);
+		BufferHelper::CreateIndexBuffer(m_indexBuffer, indices);
 
 		m_bInitializedSpriteQuad = true;
 	}
@@ -61,9 +52,6 @@ void Sprite::PreRender()
 
 void Sprite::OnRender()
 {
-	if (m_shader == nullptr)
-		return;
-
 	m_vertices = &vertices;
 	m_boundingBox = &boundingBox;
 	m_indices = &indices;
@@ -80,19 +68,28 @@ void Sprite::OnRender()
 	if (m_spriteTexture == nullptr)
 		return;
 
-	glBindVertexArray(m_iQuadVAO);
+	if (!m_bCreatedDescriptorSets)
+	{
+		BufferHelper::CreateUniformBuffers(m_uniformBuffers, m_uniformBuffersMapped);
+		Renderer::GetGraphicsPipeline()->CreateDescriptorSets(m_descriptorSets, m_uniformBuffers, m_spriteTexture);
 
-	glm::vec3 scale = transform->m_scale;
-	float heightRat = (float)m_spriteTexture->m_iWidth / (float)m_spriteTexture->m_iHeight;
-	transform->m_scale = glm::normalize(glm::vec3(m_spriteTexture->m_iWidth * heightRat, m_spriteTexture->m_iHeight * heightRat, scale.z));
-	transform->m_scale.x = scale.x;
-	transform->m_scale.y = scale.y;
-	
-	m_shader->UseProgram();
-	glBindTexture(GL_TEXTURE_2D, m_spriteTexture->m_iTextureID);
+		m_bCreatedDescriptorSets = true;
+	}
 
-	m_shader->BindMat4("transMat", transform->m_transformMat);
-	m_shader->BindVector4("colour", m_colour);
+	UniformBufferObject ubo{};
+	ubo.model = transform->m_transformMat; //This is worth moving to a push descriptor I think.
+	ubo.view = Renderer::GenerateViewMatrix(); //Probably worth having UBO for Projection and View, bound once per frame.
+	ubo.proj = Renderer::GenerateProjMatrix();
 
-	glDrawElements(Renderer::GetRenderMode(), 6, GL_UNSIGNED_INT, 0);
+	memcpy(m_uniformBuffersMapped[Renderer::GetCurrentFrame()], &ubo, sizeof(ubo)); //Not the most efficient way to do this, refer back to conclusion of https://vulkan-tutorial.com/Uniform_buffers/Descriptor_layout_and_buffer
+
+	//Bind vertex memory buffer to our command buffer, then draw it.
+	VkBuffer vertexBuffers[] = { m_vertexBuffer.m_buffer };
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(Renderer::GetCurrentCommandBuffer(), 0, 1, vertexBuffers, offsets);
+
+	vkCmdBindIndexBuffer(Renderer::GetCurrentCommandBuffer(), m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+	vkCmdBindDescriptorSets(Renderer::GetCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::GetGraphicsPipeline()->GetPipelineLayout(), 0, 1, &m_descriptorSets[Renderer::GetCurrentFrame()], 0, nullptr);
+	vkCmdDrawIndexed(Renderer::GetCurrentCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 }

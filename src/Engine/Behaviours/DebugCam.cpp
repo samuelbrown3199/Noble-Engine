@@ -124,7 +124,6 @@ void DebugCam::UpdateControls()
 			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();
 			mr->m_model = ResourceManager::LoadResource<Model>("\\GameData\\Models\\cube.obj");
 			mr->m_texture = ResourceManager::LoadResource<Texture>("\\GameData\\Textures\\cottage_diffuse.png");
-			mr->m_shader = ResourceManager::GetShaderProgram("Standard");
 		}
 	}
 }

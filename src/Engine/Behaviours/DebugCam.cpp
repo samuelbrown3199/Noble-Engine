@@ -109,23 +109,6 @@ void DebugCam::UpdateControls()
 		else
 			ca->m_viewMode = orthographic;
 	}
-
-	if (InputManager::GetKeybindDown("LeftMouse"))
-	{
-		Ray mouseRay = Raycaster::GetRayToInDirection(camTransform->m_position, camTransform->m_rotation);
-
-		if (mouseRay.m_hitObject)
-		{
-			Logger::LogInformation(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
-
-			Entity* ent = Application::CreateEntity();
-			ent->AddComponent<Transform>(mouseRay.m_hitPosition);
-
-			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();
-			mr->m_model = ResourceManager::LoadResource<Model>("\\GameData\\Models\\cube.obj");
-			mr->m_texture = ResourceManager::LoadResource<Texture>("\\GameData\\Textures\\cottage_diffuse.png");
-		}
-	}
 }
 
 void DebugCam::UpdateCameraRotation()

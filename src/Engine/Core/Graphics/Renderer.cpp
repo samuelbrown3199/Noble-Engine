@@ -31,9 +31,6 @@ int Renderer::m_iScreenWidth = 500;
 int Renderer::m_iScreenHeight = 500;
 float Renderer::m_fNearPlane = 0.1f;
 float Renderer::m_fFarPlane = 1000.0f;
-float Renderer::m_fScale = 3000;
-
-float Renderer::m_fFov = 90.0f;
 const float Renderer::m_fMaxScale = 1000;
 const float Renderer::m_fMinScale = 3;
 
@@ -976,16 +973,6 @@ VkImageView Renderer::CreateImageView(VkImage image, uint32_t mipLevels, VkForma
 	return imageView;
 }
 
-
-void Renderer::AdjustScale(const float& _amount)
-{
-	m_fScale += _amount;
-	if (m_fScale > m_fMaxScale)
-		m_fScale = m_fMaxScale;
-	else if (m_fScale < m_fMinScale)
-		m_fScale = m_fMinScale;
-}
-
 void Renderer::UpdateScreenSize()
 {
 	int newWidth, newHeight;
@@ -1060,7 +1047,7 @@ glm::mat4 Renderer::GenerateProjMatrix()
 
 glm::mat4 Renderer::GenerateProjectionMatrix()
 {
-	glm::mat4 projMatrix = glm::perspective(glm::radians(m_fFov), (float)m_swapChainExtent.width / (float)m_swapChainExtent.height, m_fNearPlane, m_fFarPlane);
+	glm::mat4 projMatrix = glm::perspective(glm::radians(m_camera->m_fov), (float)m_swapChainExtent.width / (float)m_swapChainExtent.height, m_fNearPlane, m_fFarPlane);
 	projMatrix[1][1] *= -1;
 
 	return projMatrix;
@@ -1068,7 +1055,7 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(-1.0f, (m_fScale / m_iScreenHeight), (m_fScale / m_iScreenWidth), -1.0f, m_fNearPlane, m_fFarPlane); //need to readd scale and ratio is properly to screen size
+	glm::mat4 orthoMatrix = glm::ortho(-1.0f, (m_camera->m_scale / m_iScreenHeight), (m_camera->m_scale / m_iScreenWidth), -1.0f, m_fNearPlane, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 

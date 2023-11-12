@@ -170,12 +170,9 @@ private:
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
-	static float m_fScale;
+	static const float m_fMaxScale, m_fMinScale;
 
 	static Camera* m_camera;
-
-	static float m_fFov;
-	static const float m_fMaxScale, m_fMinScale;
 
 	const std::vector<const char*> m_vValidationLayers = {
 		"VK_LAYER_KHRONOS_validation"
@@ -265,12 +262,8 @@ public:
 	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	static glm::vec3 GetClearColour() { return m_clearColour; }
 
-	//Adds the amount onto scale. The larger the scale the larger the world.
-	static void AdjustScale(const float& _amount);
-
 	static void SetCamera(Camera* cam) { m_camera = cam; }
 	static Camera* GetCamera() { return m_camera; };
-	static float GetScale() { return m_fScale; };
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
 	static glm::mat4 GenerateProjMatrix();
@@ -279,9 +272,6 @@ public:
 
 	static std::string GetWindowTitle();
 	static void UpdateWindowTitle(const std::string& _windowTitle) { SDL_SetWindowTitle(m_gameWindow, _windowTitle.c_str()); };
-
-	static void SetFov(float value) { m_fFov = value; }
-	static float GetFov() { return m_fFov; }
 
 	static VkQueue GetGraphicsQueue() { return m_graphicsQueue; }
 

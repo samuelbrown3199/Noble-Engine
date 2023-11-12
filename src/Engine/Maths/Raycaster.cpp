@@ -9,7 +9,7 @@
 
 std::deque<Ray> Raycaster::m_vRays;
 
-Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction)
+Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, float maxDistance)
 {
     Ray ray;
 
@@ -20,7 +20,7 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
     for (int i = 0; i < screenObjects->size(); i++)
     {
         int vert = 0;
-        float closestHit = 1000; //1000 for now should be enough, this should probably be a max distance parameter in the future
+        float closestHit = maxDistance;
         while (vert < screenObjects->at(i)->m_indices->size()) // probably some smart ways to optimise this, checking every triangle is probably not necessary.
         {
             glm::vec2 baryPos;

@@ -20,7 +20,7 @@ class Raycaster
 {
 public:
 
-	static Ray GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction);
+	static Ray GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, float maxDistance = 1000);
 	static Ray GetRayToMousePosition(const glm::vec3& origin);
 
 	void SetDrawRays(bool val) { m_bDrawRays = val; }

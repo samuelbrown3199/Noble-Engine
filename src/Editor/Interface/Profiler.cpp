@@ -27,6 +27,8 @@ void Profiler::DoInterface()
         return;
     }
 
+    float maxFrameTime = 0;
+
     for (int i = 0; i < m_vFrameTimeStats.size(); i++)
     {
         m_vFrameTimeStats[i].m_frameTimeArray[m_iMaxSamples] = {0};
@@ -46,9 +48,12 @@ void Profiler::DoInterface()
                 m_vFrameTimeStats[i].m_fMaxFrameTime = m_vFrameTimeStats[i].m_qTimes[o];
         }
         m_vFrameTimeStats[i].m_fAvgFrameTime /= m_vFrameTimeStats[i].m_qTimes.size();
-        m_vFrameTimeStats[i].m_fMaxFrameTime = m_vFrameTimeStats[i].m_fMaxFrameTime > 16.0f ? m_vFrameTimeStats[i].m_fMaxFrameTime : 16.0f;
+
+        if (m_vFrameTimeStats[i].m_fMaxFrameTime > maxFrameTime)
+            maxFrameTime = m_vFrameTimeStats[i].m_fMaxFrameTime;
     }
 
+    maxFrameTime = maxFrameTime > 20.0f ? maxFrameTime : 20.0f;
 
     m_qFrameRates.push_back(m_pStats->m_dFPS);
     if (m_qFrameRates.size() > m_iMaxSamples)
@@ -78,7 +83,7 @@ void Profiler::DoInterface()
 
         ImPlot::SetupAxes(nullptr, nullptr, flags, flags);
         ImPlot::SetupAxisLimits(ImAxis_X1, 0, m_iMaxSamples, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 20);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, maxFrameTime);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
         float fill_ref = 0;

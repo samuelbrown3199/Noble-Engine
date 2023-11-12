@@ -71,8 +71,8 @@ void Profiler::DoInterface()
     std::string overlay = FormatString("Avg Frame Rate: %.2f", avgFrameRate);
     ImGui::PlotLines("", frameRateArray, IM_ARRAYSIZE(frameRateArray), 0, overlay.c_str(), 0, maxFrameRate, ImVec2(495.0f, 80.0f));
 
-
-    if (ImPlot::BeginPlot("Frame Times"))
+    ImPlotFlags plotFlags = ImPlotFlags_NoInputs;
+    if (ImPlot::BeginPlot("Frame Times", ImVec2(-1,0), plotFlags))
     {
         ImPlotShadedFlags flags = 0;
 
@@ -84,10 +84,12 @@ void Profiler::DoInterface()
         float fill_ref = 0;
         int shade_mode = 1;
 
-        for (int i = 0; i < m_vFrameTimeStats.size(); i++)
+        ImPlot::PlotShaded(m_vFrameTimeStats[0].m_sName.c_str(), m_vFrameTimeStats[0].m_frameTimeArrayX, m_vFrameTimeStats[0].m_frameTimeArray, 100);
+
+        for (int i = 1; i < m_vFrameTimeStats.size(); i++)
         {
             ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-            ImPlot::PlotShaded(m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_frameTimeArrayX, m_vFrameTimeStats[i].m_frameTimeArray, 100);
+            ImPlot::PlotLine(m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_frameTimeArrayX, m_vFrameTimeStats[i].m_frameTimeArray, 100);
         }
         ImPlot::EndPlot();
     }

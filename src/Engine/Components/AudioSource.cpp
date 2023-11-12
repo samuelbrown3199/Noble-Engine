@@ -12,7 +12,7 @@ void AudioSource::OnUpdate()
 
 		if (m_transformIndex == -1)
 		{
-			m_transformIndex == NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+			m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
 			return;
 		}
 

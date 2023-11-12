@@ -6,6 +6,7 @@
 #include <Engine\ECS\Component.h>
 
 #include "ResourceManagerWindow.h"
+#include "Profiler.h"
 
 class ProjectFile;
 
@@ -26,6 +27,7 @@ class EditorUI : public DebugUI
 	std::string m_sWindowName;
 
 	std::shared_ptr<ResourceManagerWindow> m_resourceManagerWind;
+	std::shared_ptr<Profiler> m_profilerWind;
 
 	void ChangeEditorMode();
 
@@ -33,6 +35,7 @@ class EditorUI : public DebugUI
 	void UpdateEditorWindowTitle();
 
 	void OpenResourceManager();
+	void OpenProfiler();
 
 	ImVec4 ambientColour;
 	float ambientStrength;

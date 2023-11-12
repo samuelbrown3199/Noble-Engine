@@ -2,60 +2,52 @@
 #include "Application.h"
 #include "../Useful.h"
 
-int PerformanceStats::currentFrameCount = 0;
-
-double PerformanceStats::deltaT = 0;
-double PerformanceStats::avgFPS = 0;
-double PerformanceStats::frameTime = 0;
-double PerformanceStats::preUpdateTime = 0;
-double PerformanceStats::updateTime = 0;
-double PerformanceStats::renderTime = 0;
-double PerformanceStats::cleanupTime = 0;
-bool PerformanceStats::printPerformance = false;
-
-std::vector< std::pair<std::string, Uint32>> PerformanceStats::m_mSystemUpdateTimes;
-std::vector< std::pair<std::string, Uint32>> PerformanceStats::m_mSystemRenderTimes;
+double PerformanceStats::m_dDeltaT;
 
 void PerformanceStats::ResetPerformanceStats()
 {
 	frameStart = SDL_GetTicks();
 	preUpdateStart = 0;
-	updateTime = 0;
-	renderTime = 0;
-	cleanupTime = 0;
+	m_dPreviousRenderTime = m_frameTimes[3];
+	m_dPreviousFrameTime = m_frameTimes[0];
+
+	for (int i = 0; i < 5; i++)
+	{
+		m_frameTimes[i] = 0;
+	}
 }
 
 void PerformanceStats::UpdatePerformanceStats()
 {
-	frameTime = SDL_GetTicks() - frameStart;
-	fps = 1000.0f / frameTime;
-	deltaT = 1.0f / fps;
-	framerateList.push_back(fps);
+	m_frameTimes[0] = SDL_GetTicks() - frameStart;
+	m_dFPS = 1000.0f / m_frameTimes[0];
+	m_dDeltaT = 1.0f / m_dFPS;
+	framerateList.push_back(m_dFPS);
 	currentFrameCount++;
 
 	if (avgFrameRateCount == currentFrameCount)
 	{
-		avgFPS = 0;
+		m_dAvgFPS = 0;
 		for (int i = 0; i < framerateList.size(); i++)
 		{
-			avgFPS += framerateList.at(i);
+			m_dAvgFPS += framerateList.at(i);
 		}
 		framerateList.clear();
-		avgFPS /= avgFrameRateCount;
+		m_dAvgFPS /= avgFrameRateCount;
 		currentFrameCount = 0;
 	}
 }
 
 void PerformanceStats::PrintOutPerformanceStats()
 {
-	if (!printPerformance)
+	if (!m_bPrintPerformance)
 		return;
 
 	if (currentFrameCount != 0)
 		return;
 
 	std::string performanceStatsString = FormatString("AVG FPS: %2f | Frame Time: %2f | Pre Update Time: %2f | Update Time: %2f | Render Time: %2f | Cleanup Time: %2f\n", 
-		avgFPS, frameTime, preUpdateTime, updateTime, renderTime, cleanupTime);
+		m_dAvgFPS, m_frameTimes[0], m_frameTimes[1], m_frameTimes[2], m_frameTimes[3], m_frameTimes[4]);
 
 	for (int i = 0; i < m_mSystemUpdateTimes.size(); i++)
 	{

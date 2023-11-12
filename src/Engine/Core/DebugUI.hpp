@@ -1,9 +1,9 @@
 #pragma once
-#ifndef DEBUGUI_H_
-#define DEBUGUI_H_
 
 #include "../Useful.h"
 #include "../imgui/imgui.h"
+#include "../imgui/implot.h"
+#include "../imgui/implot_internal.h"
 #include "../imgui/imgui_stdlib.h"
 
 class DebugUI
@@ -45,5 +45,3 @@ public:
 		ImGui::End();
 	}
 };
-
-#endif

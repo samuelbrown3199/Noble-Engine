@@ -62,6 +62,11 @@ void EditorUI::OpenResourceManager()
 	m_resourceManagerWind->m_uiOpen = !m_resourceManagerWind->m_uiOpen;
 }
 
+void EditorUI::OpenProfiler()
+{
+	m_profilerWind->m_uiOpen = !m_profilerWind->m_uiOpen;
+}
+
 void EditorUI::UpdateLightingWidgets()
 {
 	clearColour = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
@@ -84,6 +89,7 @@ void EditorUI::InitializeInterface()
 	m_sWindowName = Renderer::GetWindowTitle();
 
 	m_resourceManagerWind = Application::BindDebugUI<ResourceManagerWindow>();
+	m_profilerWind = Application::BindDebugUI<Profiler>();
 
 	UpdateLightingWidgets();
 }
@@ -243,7 +249,10 @@ void EditorUI::DoInterface()
 	ImGui::End();
 
 	if (show_demo_window)
+	{
 		ImGui::ShowDemoWindow();
+		ImPlot::ShowDemoWindow();
+	}
 }
 
 
@@ -254,6 +263,9 @@ void EditorUI::HandleShortcutInputs()
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_r))
 		OpenResourceManager();
+
+	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_p))
+		OpenProfiler();
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_RETURN))
 		ChangeEditorMode();
@@ -436,6 +448,11 @@ void EditorUI::DoToolMenu()
 	if (ImGui::MenuItem(camButton.c_str(), "(Ctrl+Q)"))
 	{
 		CreateEditorCam();
+	}
+
+	if (ImGui::MenuItem("Profiler", "(CTRL+P)"))
+	{
+		OpenProfiler();
 	}
 }
 

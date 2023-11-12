@@ -47,6 +47,12 @@ set (
 	src/Engine/imgui/backends/imgui_impl_vulkan.h
 	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
 
+	src/Engine/imgui/implot.h
+	src/Engine/imgui/implot.cpp
+	src/Engine/imgui/implot_demo.cpp
+	src/Engine/imgui/implot_internal.h
+	src/Engine/imgui/implot_items.cpp
+
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
 
@@ -246,6 +252,9 @@ set (
 
 	src/Editor/Interface/ResourceManagerWindow.h
 	src/Editor/Interface/ResourceManagerWindow.cpp
+
+	src/Editor/Interface/Profiler.h
+	src/Editor/Interface/Profiler.cpp
 
 	src/Editor/EditorManagement/ProjectFile.h
 	src/Editor/EditorManagement/ProjectFile.cpp

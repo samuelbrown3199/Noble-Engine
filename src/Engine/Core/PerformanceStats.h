@@ -17,14 +17,13 @@ struct PerformanceStats
 
 private:
 	Uint32 frameStart, preUpdateStart, renderStart, updateStart, cleanupStart;
-	double fps = 0;
 
-	const static int avgFrameRateCount = 1440;
+	const int avgFrameRateCount = 1440;
 	std::vector<int> framerateList;
-	static int currentFrameCount;
+	int currentFrameCount;
 
-	static std::vector< std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
-	static std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;
+	std::vector<std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
+	std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;
 
 	/**
 	*Resets the performance stats. Done every frame by the engine.
@@ -37,21 +36,22 @@ private:
 
 public:
 
-	static bool printPerformance;
+	bool m_bPrintPerformance;
 
-	static double deltaT;
-
-	static double avgFPS;
-	static double frameTime;
-	static double preUpdateTime;
-	static double updateTime;
-	static double renderTime;
-	static double cleanupTime;
+	static double m_dDeltaT;
+	double m_dFPS = 0;
+	double m_dAvgFPS;
+	double m_dPreviousRenderTime;
+	double m_dPreviousFrameTime;
+	double m_frameTimes[5];
 
 	/**
 	*Prints out perfomance information for the current frame.
 	*/
-	static void PrintOutPerformanceStats();
+	void PrintOutPerformanceStats();
+
+	std::vector<std::pair<std::string, Uint32>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
+	std::vector<std::pair<std::string, Uint32>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
 };
 
 #endif

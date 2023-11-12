@@ -17,12 +17,15 @@
 #include "../Behaviours/DebugCam.h"
 
 #include "../imgui/imgui.h"
+#include "../imgui/implot.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_vulkan.h"
 
 bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
 bool Application::m_bPlayMode = true;
+
+PerformanceStats* Application::m_pStats;
 
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
@@ -121,7 +124,7 @@ void Application::LoadSettings()
 	m_audioManager->AddMixerOption("master", m_mainIniFile->GetFloatSetting("Audio", "MasterVolume", 1.0f));
 	m_audioManager->AddMixerOption("ambience", m_mainIniFile->GetFloatSetting("Audio", "AmbientVolume", 1.0f));
 
-	m_pStats->printPerformance = m_mainIniFile->GetBooleanSetting("Debug", "PrintPerformance", false);
+	m_pStats->m_bPrintPerformance = m_mainIniFile->GetBooleanSetting("Debug", "PrintPerformance", false);
 	m_logger->m_bUseLogging = m_mainIniFile->GetBooleanSetting("Debug", "UseLogging", false);
 }
 
@@ -146,7 +149,7 @@ void Application::MainLoop()
 
 		ImGui::NewFrame();
 
-		m_pStats->preUpdateTime = SDL_GetTicks() - m_pStats->preUpdateStart;
+		m_pStats->m_frameTimes[1] = SDL_GetTicks() - m_pStats->preUpdateStart;
 
 		//update start
 		m_pStats->updateStart = SDL_GetTicks();
@@ -183,7 +186,7 @@ void Application::MainLoop()
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
 		ThreadingManager::WaitForTasksToClear();
-		m_pStats->updateTime = SDL_GetTicks() - m_pStats->updateStart;
+		m_pStats->m_frameTimes[2] = SDL_GetTicks() - m_pStats->updateStart;
 		//update end
 
 		//Render Start
@@ -206,14 +209,14 @@ void Application::MainLoop()
 		}
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->EndDrawFrame();
-		m_pStats->renderTime = SDL_GetTicks() - m_pStats->renderStart;
+		m_pStats->m_frameTimes[3] = SDL_GetTicks() - m_pStats->renderStart;
 		//Render End
 
 		m_pStats->cleanupStart = SDL_GetTicks();
 		CleanupDeletionEntities();
 		InputManager::ClearFrameInputs();
 		ResourceManager::UnloadUnusedResources();
-		m_pStats->cleanupTime = SDL_GetTicks() - m_pStats->cleanupStart;
+		m_pStats->m_frameTimes[4] = SDL_GetTicks() - m_pStats->cleanupStart;
 
 		m_pStats->UpdatePerformanceStats();
 		m_pStats->PrintOutPerformanceStats();
@@ -231,6 +234,7 @@ void Application::CleanupApplication()
 	m_gameRenderer->SetCamera(nullptr);
 
 	vkDestroyDescriptorPool(Renderer::GetLogicalDevice(), m_imguiPool, nullptr);
+	ImPlot::DestroyContext();
 	ImGui_ImplVulkan_Shutdown();
 
 	Sprite::ClearSpriteBuffers();
@@ -284,6 +288,7 @@ void Application::InitializeImGui()
 
 	//this initializes the core structures of imgui
 	ImGui::CreateContext();
+	ImPlot::CreateContext();
 
 	//this initializes imgui for SDL
 	ImGui_ImplSDL2_InitForVulkan(Renderer::GetWindow());

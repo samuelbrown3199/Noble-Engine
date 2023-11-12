@@ -44,7 +44,7 @@ private:
 
     static bool m_bLoop;
 
-    PerformanceStats* m_pStats;
+    static PerformanceStats* m_pStats;
 
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
@@ -66,6 +66,8 @@ public:
     void LoadSettings();
     void MainLoop();
     void CleanupApplication();
+
+	static PerformanceStats* GetPerformanceStats() { return m_pStats; }
 
 	static Entity* CreateEntity();
 	static Entity* CreateEntity(std::string _desiredID, std::string _name);

@@ -78,29 +78,29 @@ void DebugCam::UpdateControls()
 
 	if (InputManager::GetKeybind("Forward"))
 	{
-		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * camTransform->m_rotation;
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * camTransform->m_rotation;
 	}
 	if (InputManager::GetKeybind("Back"))
 	{
-		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * camTransform->m_rotation;
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * camTransform->m_rotation;
 	}
 	if (InputManager::GetKeybind("Left"))
 	{
 		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
-		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * direction;
 	}
 	if (InputManager::GetKeybind("Right"))
 	{
 		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
-		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * direction;
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * direction;
 	}
 	if (InputManager::GetKey(SDLK_SPACE))
 	{
-		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * up;
 	}
 	if (InputManager::GetKey(SDLK_x))
 	{
-		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::deltaT) * up;
+		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * up;
 	}
 	if (InputManager::GetKeyDown(SDLK_p))
 	{

@@ -74,7 +74,7 @@ void Profiler::DoInterface()
     maxFrameRate = maxFrameRate > m_dMaxFPS ? maxFrameRate : m_dMaxFPS;
 
     std::string overlay = FormatString("Avg Frame Rate: %.2f", avgFrameRate);
-    ImGui::PlotLines("", frameRateArray, IM_ARRAYSIZE(frameRateArray), 0, overlay.c_str(), 0, maxFrameRate, ImVec2(495.0f, 80.0f));
+    ImGui::PlotLines("", frameRateArray, IM_ARRAYSIZE(frameRateArray), 0, overlay.c_str(), 0, maxFrameRate, ImVec2(-1, 80.0f));
 
     ImPlotFlags plotFlags = ImPlotFlags_NoInputs;
     if (ImPlot::BeginPlot("Frame Times", ImVec2(-1,0), plotFlags))

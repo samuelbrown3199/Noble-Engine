@@ -8,7 +8,7 @@
 #include "Application.h"
 #include "../ECS/Component.h"
 #include "../ECS/ComponentList.hpp"
-#include "../Resource/Resource.h"
+#include "../Core/EngineResources/Resource.h"
 
 struct ComponentRegistry
 {	

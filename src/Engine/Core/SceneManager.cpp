@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Registry.h"
 #include "ResourceManager.h"
-#include "..\Resource\Scene.h"
+#include "../Core/EngineResources\Scene.h"
 
 #include "../imgui/imgui.h"
 

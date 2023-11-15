@@ -9,7 +9,7 @@
 #include <vulkan/vulkan.h>
 
 #include "GraphicsBuffer.h"
-#include "../../Resource/Texture.h"
+#include "../../Core/EngineResources/Texture.h"
 
 class GraphicsPipeline
 {

@@ -5,7 +5,7 @@
 
 #include "../Core/ResourceManager.h"
 #include "../Lua/NobleLuaState.h"
-#include "../Resource/Script.h"
+#include "../Core/EngineResources/Script.h"
 
 struct ScriptEmbedder : public Component
 {

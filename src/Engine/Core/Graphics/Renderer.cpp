@@ -15,8 +15,8 @@
 //temp includes
 #include "../ResourceManager.h"
 #include "BufferHelper.h"
-#include "../../Resource/Texture.h"
-#include "../../Resource/Model.h"
+#include "../EngineResources/Texture.h"
+#include "../EngineResources/Model.h"
 
 SDL_Window* Renderer::m_gameWindow;
 

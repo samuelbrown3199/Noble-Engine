@@ -15,7 +15,7 @@
 #include "../imgui/imgui_stdlib.h"
 
 #include "../Useful.h"
-#include "../Resource/Resource.h"
+#include "../Core/EngineResources/Resource.h"
 #include "Logger.h"
 
 /**

@@ -11,7 +11,7 @@
 #include "Logger.h"
 
 #include "ResourceManager.h"
-#include "../Resource/IniFile.h"
+#include "../Core/EngineResources/IniFile.h"
 
 #include "../ECS/Behaviour.hpp"
 

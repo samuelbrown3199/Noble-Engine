@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../ECS/Renderable.hpp"
-#include "../Resource/Model.h"
-#include "../Resource/Texture.h"
+#include "../Core/EngineResources/Model.h"
+#include "../Core/EngineResources/Texture.h"
 
 #include "../Core/ResourceManager.h"
 

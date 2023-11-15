@@ -3,7 +3,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include "sol.hpp"
 
-#include "../Resource/Script.h"
+#include "../Core/EngineResources/Script.h"
 
 #include <memory>
 

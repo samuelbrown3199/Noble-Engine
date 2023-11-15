@@ -2,10 +2,10 @@
 
 #include <Engine/Core/ResourceManager.h>
 #include <Engine/Core/Registry.h>
-#include <Engine/Resource/AudioClip.h>
-#include <Engine/Resource/Texture.h>
-#include <Engine/Resource/Model.h>
-#include <Engine/Resource/Script.h>
+#include <Engine/Core/EngineResources/AudioClip.h>
+#include <Engine/Core/EngineResources/Texture.h>
+#include <Engine/Core/EngineResources/Model.h>
+#include <Engine/Core/EngineResources/Script.h>
 
 void ResourceManagerWindow::InitializeInterface()
 {

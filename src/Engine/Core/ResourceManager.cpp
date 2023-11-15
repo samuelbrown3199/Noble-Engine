@@ -3,10 +3,10 @@
 
 #include "Registry.h"
 
-#include "../Resource/AudioClip.h"
-#include "../Resource/Texture.h"
-#include "../Resource/Model.h"
-#include "../Resource/Script.h"
+#include "../Core/EngineResources/AudioClip.h"
+#include "../Core/EngineResources/Texture.h"
+#include "../Core/EngineResources/Model.h"
+#include "../Core/EngineResources/Script.h"
 
 FT_Library ResourceManager::m_fontLibrary;
 

@@ -170,25 +170,25 @@ set (
 
 	#Resource Handling
 	
-	src/Engine/Resource/Resource.h
+	src/Engine/Core/EngineResources/Resource.h
 
-	src/Engine/Resource/Texture.h
-	src/Engine/Resource/Texture.cpp
+	src/Engine/Core/EngineResources/Texture.h
+	src/Engine/Core/EngineResources/Texture.cpp
 
-	src/Engine/Resource/IniFile.h
-	src/Engine/Resource/IniFile.cpp
+	src/Engine/Core/EngineResources/IniFile.h
+	src/Engine/Core/EngineResources/IniFile.cpp
 
-	src/Engine/Resource/AudioClip.h
-	src/Engine/Resource/AudioClip.cpp
+	src/Engine/Core/EngineResources/AudioClip.h
+	src/Engine/Core/EngineResources/AudioClip.cpp
 
-	src/Engine/Resource/Model.h
-	src/Engine/Resource/Model.cpp
+	src/Engine/Core/EngineResources/Model.h
+	src/Engine/Core/EngineResources/Model.cpp
 
-	src/Engine/Resource/Scene.h
-	src/Engine/Resource/Scene.cpp
+	src/Engine/Core/EngineResources/Scene.h
+	src/Engine/Core/EngineResources/Scene.cpp
 
-	src/Engine/Resource/Script.h
-	src/Engine/Resource/Script.cpp
+	src/Engine/Core/EngineResources/Script.h
+	src/Engine/Core/EngineResources/Script.cpp
 
 	#Systems & components
 

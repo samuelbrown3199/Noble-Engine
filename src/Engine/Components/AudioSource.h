@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ECS/Component.h"
-#include "../Resource/AudioClip.h"
+#include "../Core/EngineResources/AudioClip.h"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
 

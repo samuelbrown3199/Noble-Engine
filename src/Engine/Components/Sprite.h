@@ -4,7 +4,7 @@
 #include "../ECS/ComponentList.hpp"
 #include "Transform.h"
 #include "../Core/ResourceManager.h"
-#include "../Resource/Texture.h"
+#include "../Core/EngineResources/Texture.h"
 #include "../Core/Graphics/GraphicsBuffer.h"
 
 #include <glm/glm.hpp>

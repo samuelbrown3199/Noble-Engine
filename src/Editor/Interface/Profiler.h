@@ -28,7 +28,7 @@ class Profiler : public DebugUI
 {
 private:
 
-	PerformanceStats* m_pStats;
+	PerformanceStats* m_pStats = nullptr;
 	std::deque<float> m_qFrameRates;
 	std::vector<FrameTimeStat> m_vFrameTimeStats;
 

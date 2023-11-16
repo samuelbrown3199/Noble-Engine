@@ -12,7 +12,7 @@
 struct Sprite : public Renderable
 {
 	std::shared_ptr<Texture> m_spriteTexture = nullptr;
-	glm::vec4 m_colour;
+	glm::vec4 m_colour = glm::vec4();
 
 	bool m_bCreatedDescriptorSets = false;
 	std::vector<GraphicsBuffer> m_uniformBuffers;

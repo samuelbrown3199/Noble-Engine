@@ -4,10 +4,10 @@
 #include <Engine\Core\Application.h>
 #include <Engine\Core\Graphics\Renderer.h>
 #include <Engine\Core\SceneManager.h>
-#include <Engine\Behaviours\DebugCam.h>
+#include <Engine\Core\EngineBehaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
 
-#include <Engine\ECS\Entity.hpp>
+#include <Engine\Core\ECS\Entity.hpp>
 
 #include <Engine\Core\EngineResources\AudioClip.h>
 #include <Engine\Core\EngineResources\Model.h>

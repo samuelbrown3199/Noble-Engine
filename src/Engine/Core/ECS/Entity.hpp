@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Registry.h"
+#include "../Registry.h"
 #include "Behaviour.hpp"
 
 struct Component;

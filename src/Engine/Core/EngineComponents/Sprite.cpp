@@ -1,8 +1,8 @@
 #include "Sprite.h"
-#include "../Core/Application.h"
-#include "../Core/Graphics/Renderer.h"
-#include "../Core/Graphics/BufferHelper.h"
-#include "../Core/Graphics/GraphicsPipeline.h"
+#include "../Application.h"
+#include "../Graphics/Renderer.h"
+#include "../Graphics/BufferHelper.h"
+#include "../Graphics/GraphicsPipeline.h"
 #include "../ECS/Entity.hpp"
 
 bool Sprite::m_bInitializedSpriteQuad = false;

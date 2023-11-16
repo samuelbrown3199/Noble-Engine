@@ -6,10 +6,10 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../Core/Logger.h"
+#include "../Logger.h"
 
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_stdlib.h"
+#include "../../imgui/imgui.h"
+#include "../../imgui/imgui_stdlib.h"
 
 struct Component
 {

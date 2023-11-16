@@ -19,7 +19,7 @@
 
 #include "GraphicsPipeline.h"
 #include "GraphicsBuffer.h"
-#include "..\..\Components\Camera.h"
+#include "..\EngineComponents\Camera.h"
 
 struct Vertex
 {

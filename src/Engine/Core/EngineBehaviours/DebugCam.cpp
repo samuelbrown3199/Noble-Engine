@@ -1,15 +1,15 @@
 #include "DebugCam.h"
 
-#include "../Core/Application.h"
-#include "../Core/InputManager.h"
-#include "../Components/Transform.h"
-#include "../Core/Graphics/Renderer.h"
-#include "../Core/PerformanceStats.h"
-#include "../Components/Camera.h"
-#include "../Components/AudioListener.h"
-#include "../Components/MeshRenderer.h" //temp for ray debugging.
+#include "../Application.h"
+#include "../InputManager.h"
+#include "../EngineComponents/Transform.h"
+#include "../Graphics/Renderer.h"
+#include "../PerformanceStats.h"
+#include "../EngineComponents/Camera.h"
+#include "../EngineComponents/AudioListener.h"
+#include "../EngineComponents/MeshRenderer.h" //temp for ray debugging.
 
-#include "../Maths/Raycaster.h"
+#include "../../Maths/Raycaster.h"
 
 #include "../ECS/Entity.hpp"
 

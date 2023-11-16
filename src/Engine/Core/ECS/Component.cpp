@@ -1,6 +1,6 @@
 #include "Component.h"
 
-#include "../Core/Registry.h"
+#include "../Registry.h"
 
 int Component::GetComponentIndex(std::string entityID)
 {

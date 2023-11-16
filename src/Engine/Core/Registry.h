@@ -6,9 +6,9 @@
 #include <typeinfo>
 
 #include "Application.h"
-#include "../ECS/Component.h"
-#include "../ECS/ComponentList.hpp"
-#include "../Core/EngineResources/Resource.h"
+#include "ECS/Component.h"
+#include "ECS/ComponentList.hpp"
+#include "EngineResources/Resource.h"
 
 struct ComponentRegistry
 {	
@@ -16,9 +16,9 @@ struct ComponentRegistry
 	bool m_bUseThreads = false;
 	int m_iMaxComponentsPerThread = 1024;
 
-	bool m_bUpdateInEditor, m_bRenderInEditor;
+	bool m_bUpdateInEditor = false, m_bRenderInEditor = false;
 
-	Datalist* m_componentDatalist;
+	Datalist* m_componentDatalist = nullptr;
 
 	ComponentRegistry()
 	{
@@ -56,7 +56,7 @@ public:
 		ComponentDatalist<T>* complist = new ComponentDatalist<T>();
 
 		ComponentRegistry reg(comp, complist, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
-		m_mComponentRegistry[m_mComponentRegistry.size()] = std::make_pair(ID, reg);
+		m_mComponentRegistry[(int)m_mComponentRegistry.size()] = std::make_pair(ID, reg);
 	}
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
 	static Datalist* GetComponentList(std::string ID);

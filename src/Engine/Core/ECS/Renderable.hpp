@@ -2,12 +2,12 @@
 
 #include "Component.h"
 
-#include "../Core/Application.h"
-#include "../Core/Graphics/Renderer.h"
+#include "../Application.h"
+#include "../Graphics/Renderer.h"
 #include "../ECS/Entity.hpp"
 
-#include "../Components/Camera.h"
-#include "../Components/Transform.h"
+#include "../EngineComponents/Camera.h"
+#include "../EngineComponents/Transform.h"
 
 struct Renderable : public Component
 {

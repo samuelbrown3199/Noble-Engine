@@ -187,7 +187,7 @@ struct ResourceManager
 		{
 			ImGui::InputText("Search", &searchVal);
 
-			for (int i = displayResources.size() - 1; i >= 0; i--)
+			for (size_t i = displayResources.size() - 1; i >= 0; i--)
 			{
 				if (!searchVal.empty())
 				{

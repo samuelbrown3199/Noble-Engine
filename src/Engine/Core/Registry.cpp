@@ -6,7 +6,7 @@ std::map<int, std::pair<std::string, Behaviour*>> NobleRegistry::m_mBehaviourReg
 
 void NobleRegistry::RegisterResource(std::string ID, Resource* resource)
 {
-	m_mResourceRegistry[m_mResourceRegistry.size()] = std::make_pair(ID, resource);
+	m_mResourceRegistry[(int)m_mResourceRegistry.size()] = std::make_pair(ID, resource);
 }
 
 Datalist* NobleRegistry::GetComponentList(std::string ID)
@@ -18,9 +18,10 @@ Datalist* NobleRegistry::GetComponentList(std::string ID)
 	}
 
 	Logger::LogError(FormatString("Trying to get component list %s, but it hasn't been registered.", ID.c_str()), 2);
+	return nullptr;
 }
 
 void NobleRegistry::RegisterBehaviour(std::string ID, Behaviour* comp)
 {
-	m_mBehaviourRegistry[m_mBehaviourRegistry.size()] = std::make_pair(ID, comp);
+	m_mBehaviourRegistry[(int)m_mBehaviourRegistry.size()] = std::make_pair(ID, comp);
 }

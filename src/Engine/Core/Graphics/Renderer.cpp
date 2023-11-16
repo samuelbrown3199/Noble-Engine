@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include "../../ECS/Renderable.hpp"
+#include "../ECS/Renderable.hpp"
 
 #include <set>
 
@@ -844,6 +844,8 @@ VkFormat Renderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
 	}
 
 	Logger::LogError("Failed to find supported format.", 2);
+	VkFormat error;
+	return error;
 }
 
 VkFormat Renderer::FindDepthFormat()

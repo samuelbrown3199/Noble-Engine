@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-#include "../Core/Application.h"
+#include "../Application.h"
 #include "../ECS/Entity.hpp"
 
 #include <glm/ext.hpp>

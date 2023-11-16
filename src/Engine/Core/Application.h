@@ -13,7 +13,7 @@
 #include "ResourceManager.h"
 #include "../Core/EngineResources/IniFile.h"
 
-#include "../ECS/Behaviour.hpp"
+#include "ECS/Behaviour.hpp"
 
 #include "DebugUI.hpp"
 

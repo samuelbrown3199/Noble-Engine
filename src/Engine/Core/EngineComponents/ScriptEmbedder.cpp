@@ -1,5 +1,5 @@
 #include "ScriptEmbedder.h"
-#include "../Core/Application.h"
+#include "../Application.h"
 #include "../ECS/Entity.hpp"
 
 void ScriptEmbedder::OnUpdate()

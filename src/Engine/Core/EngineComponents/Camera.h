@@ -22,8 +22,8 @@ struct Camera : Component
 	CameraState m_state = inactive;
 	ViewMode m_viewMode = projection;
 
-	float m_fov;
-	float m_scale;
+	float m_fov = 90.0f;
+	float m_scale = 50.0f;
 
 	std::string GetComponentID() override
 	{

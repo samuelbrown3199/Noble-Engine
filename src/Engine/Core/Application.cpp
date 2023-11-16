@@ -4,17 +4,17 @@
 
 #include "../Game/GameRegister.h"
 
-#include "../Components/Transform.h"
-#include "../Components/AudioListener.h"
-#include "../Components/AudioSource.h"
-#include "../Components/Camera.h"
-#include "../Components/MeshRenderer.h"
-#include "../Components/ScriptEmbedder.h"
-#include "../Components/Sprite.h"
+#include "EngineComponents/Transform.h"
+#include "EngineComponents/AudioListener.h"
+#include "EngineComponents/AudioSource.h"
+#include "EngineComponents/Camera.h"
+#include "EngineComponents/MeshRenderer.h"
+#include "EngineComponents/ScriptEmbedder.h"
+#include "EngineComponents/Sprite.h"
 
-#include "../ECS/Entity.hpp"
+#include "ECS/Entity.hpp"
 
-#include "../Behaviours/DebugCam.h"
+#include "EngineBehaviours/DebugCam.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/implot.h"
@@ -39,7 +39,7 @@ std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
 
 std::shared_ptr<Application> Application::StartApplication(const std::string _windowName)
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
 

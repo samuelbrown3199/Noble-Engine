@@ -3,9 +3,9 @@
 #include "../ECS/Component.h"
 #include "../ECS/ComponentList.hpp"
 
-#include "../Core/ResourceManager.h"
-#include "../Lua/NobleLuaState.h"
-#include "../Core/EngineResources/Script.h"
+#include "../ResourceManager.h"
+#include "../../Lua/NobleLuaState.h"
+#include "../EngineResources/Script.h"
 
 struct ScriptEmbedder : public Component
 {

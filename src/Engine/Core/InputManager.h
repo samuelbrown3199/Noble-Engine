@@ -46,6 +46,8 @@ public:
 
 		if(other.m_iMouseButton != -1)
 			return other.m_iMouseButton == m_iMouseButton;
+
+		return false;
 	}
 
 	Input(SDL_Keycode keycode, int mouseButton)

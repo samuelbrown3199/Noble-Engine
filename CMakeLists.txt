@@ -103,8 +103,8 @@ set (
 	src/Engine/Lua/NobleLuaState.cpp
 
 	#Behaviours
-	src/Engine/Behaviours/DebugCam.h
-	src/Engine/Behaviours/DebugCam.cpp
+	src/Engine/Core/EngineBehaviours/DebugCam.h
+	src/Engine/Core/EngineBehaviours/DebugCam.cpp
 
 	#Core
 	src/Engine/Core/Application.h
@@ -158,15 +158,15 @@ set (
 
 	#ECS
 
-	src/Engine/ECS/Entity.hpp
+	src/Engine/Core/ECS/Entity.hpp
 
-	src/Engine/ECS/Component.h
-	src/Engine/ECS/Component.cpp
+	src/Engine/Core/ECS/Component.h
+	src/Engine/Core/ECS/Component.cpp
 
-	src/Engine/ECS/Renderable.hpp
-	src/Engine/ECS/ComponentList.hpp
+	src/Engine/Core/ECS/Renderable.hpp
+	src/Engine/Core/ECS/ComponentList.hpp
 
-	src/Engine/ECS/Behaviour.hpp
+	src/Engine/Core/ECS/Behaviour.hpp
 
 	#Resource Handling
 	
@@ -192,26 +192,26 @@ set (
 
 	#Systems & components
 
-	src/Engine/Components/AudioListener.h
-	src/Engine/Components/AudioListener.cpp
+	src/Engine/Core/EngineComponents/AudioListener.h
+	src/Engine/Core/EngineComponents/AudioListener.cpp
 
-	src/Engine/Components/AudioSource.h
-	src/Engine/Components/AudioSource.cpp
+	src/Engine/Core/EngineComponents/AudioSource.h
+	src/Engine/Core/EngineComponents/AudioSource.cpp
 
-	src/Engine/Components/Camera.h
-	src/Engine/Components/Camera.cpp
+	src/Engine/Core/EngineComponents/Camera.h
+	src/Engine/Core/EngineComponents/Camera.cpp
 
-	src/Engine/Components/Transform.h
-	src/Engine/Components/Transform.cpp
+	src/Engine/Core/EngineComponents/Transform.h
+	src/Engine/Core/EngineComponents/Transform.cpp
 
-	src/Engine/Components/MeshRenderer.h
-	src/Engine/Components/MeshRenderer.cpp
+	src/Engine/Core/EngineComponents/MeshRenderer.h
+	src/Engine/Core/EngineComponents/MeshRenderer.cpp
 
-	src/Engine/Components/Sprite.h
-	src/Engine/Components/Sprite.cpp
+	src/Engine/Core/EngineComponents/Sprite.h
+	src/Engine/Core/EngineComponents/Sprite.cpp
 
-	src/Engine/Components/ScriptEmbedder.h
-	src/Engine/Components/ScriptEmbedder.cpp
+	src/Engine/Core/EngineComponents/ScriptEmbedder.h
+	src/Engine/Core/EngineComponents/ScriptEmbedder.cpp
 )
 
 set (

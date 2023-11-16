@@ -2,8 +2,8 @@
 
 #include <Engine\Core\Registry.h>
 #include <Engine\Core\DebugUI.hpp>
-#include <Engine\ECS\Entity.hpp>
-#include <Engine\ECS\Component.h>
+#include <Engine\Core\ECS\Entity.hpp>
+#include <Engine\Core\ECS\Component.h>
 
 #include "ResourceManagerWindow.h"
 #include "Profiler.h"

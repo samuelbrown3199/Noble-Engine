@@ -3,9 +3,9 @@
 #include "../ECS/Renderable.hpp"
 #include "../ECS/ComponentList.hpp"
 #include "Transform.h"
-#include "../Core/ResourceManager.h"
-#include "../Core/EngineResources/Texture.h"
-#include "../Core/Graphics/GraphicsBuffer.h"
+#include "../ResourceManager.h"
+#include "../EngineResources/Texture.h"
+#include "../Graphics/GraphicsBuffer.h"
 
 #include <glm/glm.hpp>
 

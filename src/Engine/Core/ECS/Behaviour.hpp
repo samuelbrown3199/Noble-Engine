@@ -5,7 +5,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
-#include "../imgui/imgui.h"
+#include "../../imgui/imgui.h"
 
 struct Behaviour
 {

@@ -6,15 +6,15 @@
 
 struct Transform : Component
 {
-	glm::vec3 m_prevPosition;
-	glm::vec3 m_prevRotation;
-	glm::vec3 m_prevScale;
+	glm::vec3 m_prevPosition = glm::vec3();
+	glm::vec3 m_prevRotation = glm::vec3();
+	glm::vec3 m_prevScale = glm::vec3();
 
-	glm::vec3 m_position;
-	glm::vec3 m_rotation;
-	glm::vec3 m_scale;
+	glm::vec3 m_position = glm::vec3();
+	glm::vec3 m_rotation = glm::vec3();
+	glm::vec3 m_scale = glm::vec3();
 
-	glm::mat4 m_transformMat;
+	glm::mat4 m_transformMat = glm::mat4();
 
 	std::string GetComponentID() override
 	{

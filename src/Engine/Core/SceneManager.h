@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-#include "../ECS/Entity.hpp"
+#include "ECS/Entity.hpp"
 
 class Scene;
 

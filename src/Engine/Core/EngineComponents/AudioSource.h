@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../ECS/Component.h"
-#include "../Core/EngineResources/AudioClip.h"
+#include "../EngineResources/AudioClip.h"
 #include "Transform.h"
-#include "../Core/ResourceManager.h"
+#include "../ResourceManager.h"
 
-#include "../Core/Application.h"
+#include "../Application.h"
 
 #include <FMOD/fmod.h>
 #include <FMOD/fmod_common.h>
@@ -108,9 +108,9 @@ struct AudioSource : public Component
 		ImGui::DragFloat3("Velocity", vel);
 		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
 
-		ImGui::DragInt("Loop Count", &m_iLoopCount, 1, -1, 50);
-		ImGui::DragFloat("Pitch", &m_fPitch, 0.1, 0, 3);
-		ImGui::DragFloat("Volume", &m_fVolume, 0.1, 0, 10);
+		ImGui::DragInt("Loop Count", &m_iLoopCount, 1.0f, -1.0f, 50.0f);
+		ImGui::DragFloat("Pitch", &m_fPitch, 0.1f, 0.0f, 3.0f);
+		ImGui::DragFloat("Volume", &m_fVolume, 0.1f, 0.0f, 10.0f);
 		ImGui::Checkbox("Paused", &m_bPaused);
 		ImGui::Checkbox("3D Sound", &m_b3DSound);
 	}

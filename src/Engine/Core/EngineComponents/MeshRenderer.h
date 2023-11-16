@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../ECS/Renderable.hpp"
-#include "../Core/EngineResources/Model.h"
-#include "../Core/EngineResources/Texture.h"
+#include "../EngineResources/Model.h"
+#include "../EngineResources/Texture.h"
 
-#include "../Core/ResourceManager.h"
+#include "../ResourceManager.h"
 
 #include "Transform.h"
 

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "../ECS/Entity.hpp"
+#include "../Core/ECS/Entity.hpp"
 
 struct Ray
 {
@@ -20,8 +20,8 @@ class Raycaster
 {
 public:
 
-	static Ray GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, float maxDistance = 1000);
-	static Ray GetRayToMousePosition(const glm::vec3& origin);
+	static Ray GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, const float maxDistance = 1000.0f);
+	static Ray GetRayToMousePosition(const float maxDistance = 1000.0f);
 
 	void SetDrawRays(bool val) { m_bDrawRays = val; }
 	static void DrawRays();

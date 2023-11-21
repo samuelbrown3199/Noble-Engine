@@ -9,11 +9,11 @@ struct Ray
 	bool m_hitObject = false;
 
 	Entity* m_hitEntity = nullptr;
-	glm::vec3 m_hitPosition;
-	float m_hitDistance;
+	glm::vec3 m_hitPosition = glm::vec3();
+	float m_hitDistance = 0.0f;
 
-	glm::vec3 m_rayOrigin;
-	glm::vec3 m_rayDirection;
+	glm::vec3 m_rayOrigin = glm::vec3();
+	glm::vec3 m_rayDirection = glm::vec3();
 };
 
 class Raycaster
@@ -28,8 +28,6 @@ public:
 
 private:
 
-	const int m_iRayLifetime;
-	bool m_bDrawRays;
-
+	bool m_bDrawRays = false;
 	static std::deque<Ray> m_vRays;
 };

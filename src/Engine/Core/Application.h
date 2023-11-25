@@ -70,7 +70,9 @@ public:
 	static PerformanceStats* GetPerformanceStats() { return m_pStats; }
 
 	static Entity* CreateEntity();
-	static Entity* CreateEntity(std::string _desiredID, std::string _name);
+	static Entity* CreateEntity(std::string _desiredID, std::string _name, std::string _parentID);
+
+	static void LinkChildEntities();
 
 	static int GetEntityIndex(std::string _ID);
 	static void DeleteEntity(int index);

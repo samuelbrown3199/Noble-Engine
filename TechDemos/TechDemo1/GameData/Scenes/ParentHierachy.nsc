@@ -119,14 +119,14 @@
 			},
 			"lgyqOKCrcEpgAT66R9iEqW5w2": {
 				"position": [
-					-56.71034622192383,
-					116.39466094970703,
-					55.55805969238281
+					5.0,
+					0.0,
+					0.0
 				],
 				"rotation": [
-					0.2544039487838745,
-					-0.5475631952285767,
-					-0.7971531748771668
+					0.0,
+					0.0,
+					-1.0
 				],
 				"scale": [
 					1.0,
@@ -148,6 +148,10 @@
 		"Xo63yMidIvBdie1FXMb3gAMIM": {
 			"EntityName": "IronMan",
 			"ParentID": ""
+		},
+		"aixKOEv7fBLb4qj7f9IQZtwsO": {
+			"EntityName": "New Entity",
+			"ParentID": "Xo63yMidIvBdie1FXMb3gAMIM"
 		},
 		"lgyqOKCrcEpgAT66R9iEqW5w2": {
 			"EntityName": "Editor Cam",

@@ -62,7 +62,8 @@ void SceneManager::SaveScene(std::string scenePath)
 		if (entities.at(i).m_bAvailableForUse)
 			continue;
 
-		data["Entities"][entities.at(i).m_sEntityID] = entities.at(i).m_sEntityName;
+		data["Entities"][entities.at(i).m_sEntityID]["EntityName"] = entities.at(i).m_sEntityName;
+		data["Entities"][entities.at(i).m_sEntityID]["ParentID"] = entities.at(i).m_sEntityParentID;
 
 		for (int o = 0; o < behRegistry->size(); o++)
 		{
@@ -81,6 +82,8 @@ void SceneManager::SaveScene(std::string scenePath)
 	std::fstream sceneFile(scenePath, 'w');
 	sceneFile << data.dump();
 	sceneFile.close();
+
+	Application::LinkChildEntities();
 
 	Logger::LogInformation("Saved Scene " + scenePath);
 }

@@ -351,7 +351,7 @@ Entity* Application::CreateEntity() //this will need optimisation
 	return &m_vEntities.at(m_vEntities.size() - 1);
 }
 
-Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
+Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std::string _parentID)
 {
 	if (!m_vDeletionEntities.empty())
 	{
@@ -360,6 +360,7 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
 		if (targetEntity->m_bAvailableForUse && targetEntity->m_sEntityID == _desiredID)
 		{
 			targetEntity->m_bAvailableForUse = false;
+			targetEntity->m_sEntityParentID = _parentID;
 			m_vDeletionEntities.pop_front();
 			return targetEntity;
 		}
@@ -369,13 +370,31 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name)
 	{
 		if (m_vEntities.at(i).m_sEntityID == _desiredID)
 		{
+			Logger::LogError(FormatString("Tried to create entity with duplicate ID. %s", _desiredID), 2);
 			return nullptr;
 		}
 	}
 
-	m_vEntities.push_back(_desiredID);
+	Entity newEnt(_desiredID);
+	newEnt.m_sEntityParentID = _parentID;
+
+	m_vEntities.push_back(newEnt);
 	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = _name;
 	return &m_vEntities.at(m_vEntities.size() - 1);
+}
+
+void Application::LinkChildEntities()
+{
+	for(int i = 0; i < m_vEntities.size(); i++)
+	{
+		if (m_vEntities.at(i).m_sEntityParentID == "")
+			continue;
+
+		int parentIndex = GetEntityIndex(m_vEntities.at(i).m_sEntityParentID);
+		Entity* parentEntity = GetEntity(parentIndex);
+
+		parentEntity->AddChildObject(m_vEntities.at(i).m_sEntityID);
+	}
 }
 
 int Application::GetEntityIndex(std::string _ID)
@@ -435,6 +454,15 @@ void Application::CleanupDeletionEntities()
 			compRegistry->at(i).second.m_comp->RemoveComponent(currentEntity->m_sEntityID);
 		}
 		currentEntity->m_bAvailableForUse = true;
+
+		if (currentEntity->m_sEntityParentID != "")
+		{
+			int parentIndex = GetEntityIndex(currentEntity->m_sEntityParentID);
+			GetEntity(parentIndex)->RemoveChildObject(currentEntity->m_sEntityID);
+		}
+
+		currentEntity->m_sEntityParentID = "";
+		currentEntity->m_vChildEntityIDs.clear();
 	}
 
 	for (int i = 0; i < m_vEntities.size(); i++)

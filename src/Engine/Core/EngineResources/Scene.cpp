@@ -64,9 +64,11 @@ void Scene::LoadSceneIntoApplication()
 
 		for (auto it : entities.items())
 		{
-			Entity* ent = Application::CreateEntity(it.key(), it.value());
+			Entity* ent = Application::CreateEntity(it.key(), entities[it.key()]["EntityName"], entities[it.key()]["ParentID"]);
 			ent->GetAllComponents();
 		}
+
+		Application::LinkChildEntities();
 	}
 	if (m_sceneData.find("Behaviours") != m_sceneData.end())
 	{

@@ -110,7 +110,7 @@ void DebugCam::UpdateControls()
 			ca->m_viewMode = orthographic;
 	}
 
-	if (InputManager::GetKeybindDown("LeftMouse"))
+	if (InputManager::GetKeybindDown("LeftMouse") && InputManager::GetKey(SDLK_r))
 	{
 		Ray mouseRay = Raycaster::GetRayToMousePosition();
 		if (mouseRay.m_hitObject)

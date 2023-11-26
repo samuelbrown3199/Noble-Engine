@@ -30,7 +30,12 @@ struct Transform : Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"position",{m_position.x, m_position.y, m_position.z}}, {"rotation",{m_rotation.x, m_rotation.y, m_rotation.z}}, {"scale",{m_scale.x, m_scale.y, m_scale.z}} };
+		nlohmann::json data;
+		if(m_parentTransformIndex == -1)
+			data = { {"position",{m_position.x, m_position.y, m_position.z}}, {"rotation",{m_rotation.x, m_rotation.y, m_rotation.z}}, {"scale",{m_scale.x, m_scale.y, m_scale.z}} };
+		else
+			data = { {"position",{m_localPosition.x, m_localPosition.y, m_localPosition.z}}, {"rotation",{m_localRotation.x, m_localRotation.y, m_localRotation.z}}, {"scale",{m_localScale.x, m_localScale.y, m_localScale.z}} };
+
 		return data;
 	}
 

@@ -461,6 +461,12 @@ void Application::CleanupDeletionEntities()
 			GetEntity(parentIndex)->RemoveChildObject(currentEntity->m_sEntityID);
 		}
 
+		for (int i = 0; i < currentEntity->m_vChildEntityIDs.size(); i++)
+		{
+			int childIndex = GetEntityIndex(currentEntity->m_vChildEntityIDs.at(i));
+			DeleteEntity(childIndex);
+		}
+
 		currentEntity->m_sEntityParentID = "";
 		currentEntity->m_vChildEntityIDs.clear();
 	}

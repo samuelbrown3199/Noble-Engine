@@ -57,13 +57,13 @@ bool IniFile::GetBooleanSetting(const std::string& _sectionName, const std::stri
 	int integerValue = GetIntSetting(_sectionName, _settingName, _defaultValue);
 	if (integerValue > 1 || integerValue < 0)
 	{
-		Logger::LogError(FormatString("Trying to load boolean %s %s as an invalid value %d", _sectionName.c_str(), _settingName.c_str(), integerValue), 0);
+		Logger::LogError(FormatString("Trying to load boolean [%s] %s as an invalid value %d", _sectionName.c_str(), _settingName.c_str(), integerValue), 0);
 		return settingValue;
 	}
 
 	settingValue = integerValue == 1 ? true : false;
 
-	Logger::LogInformation(FormatString("Loading %s %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
+	Logger::LogInformation(FormatString("Loading [%s] %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 
@@ -74,7 +74,7 @@ std::string IniFile::GetStringSetting(const std::string& _sectionName, const std
 	if (splitSetting.size() == 2)
 		settingValue = splitSetting.at(1);
 
-	Logger::LogInformation(FormatString("Loading %s %s as %s", _sectionName.c_str(), _settingName.c_str(), settingValue.c_str()));
+	Logger::LogInformation(FormatString("Loading [%s] %s as %s", _sectionName.c_str(), _settingName.c_str(), settingValue.c_str()));
 	return settingValue;
 }
 
@@ -85,7 +85,7 @@ int IniFile::GetIntSetting(const std::string& _sectionName, const std::string& _
 	if (splitSetting.size() == 2)
 		settingValue = std::stoi(splitSetting.at(1));
 
-	Logger::LogInformation(FormatString("Loading %s %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
+	Logger::LogInformation(FormatString("Loading [%s] %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 
@@ -96,7 +96,7 @@ float IniFile::GetFloatSetting(const std::string& _sectionName, const std::strin
 	if (splitSetting.size() == 2)
 		settingValue = std::stof(splitSetting.at(1));
 
-	Logger::LogInformation(FormatString("Loading %s %s as %1f", _sectionName.c_str(), _settingName.c_str(), settingValue));
+	Logger::LogInformation(FormatString("Loading [%s] %s as %1f", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 

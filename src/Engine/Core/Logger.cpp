@@ -30,7 +30,7 @@ void Logger::LogInformation(const std::string& _logString)
 	if (!m_bUseLogging)
 		return;
 
-	std::string writtenLine = FormatString("[%s] - ", GetTimeString("%H:%M:%S"));
+	std::string writtenLine = FormatString("[%s] - ", GetDateTimeString("%H:%M:%S"));
 	writtenLine += _logString + "\n";
 	
 	std::cout << writtenLine;

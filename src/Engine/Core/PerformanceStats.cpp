@@ -38,9 +38,9 @@ void PerformanceStats::UpdatePerformanceStats()
 	}
 }
 
-void PerformanceStats::PrintOutPerformanceStats()
+void PerformanceStats::LogPerformanceStats()
 {
-	if (!m_bPrintPerformance)
+	if (!m_bLogPerformance)
 		return;
 
 	if (currentFrameCount != 0)

@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <ctime>
 #include <filesystem>
+#include <chrono>
 
 //--------------------STRINGS----------------------------
 
@@ -54,22 +55,17 @@ std::string RemoveCharacterFromString(const std::string& _input, const char _tar
 
 std::string GetDateTimeString(std::string format)
 {
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+    auto now = std::chrono::system_clock::now();
+
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    auto timer = std::chrono::system_clock::to_time_t(now);
+    std::tm bt = *std::localtime(&timer);
 
     std::ostringstream dateString;
-    dateString << std::put_time(&tm, format.c_str());
+    dateString << std::put_time(&bt, format.c_str());
 
-    return dateString.str();
-}
-
-std::string GetTimeString(std::string format)
-{
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
-
-    std::ostringstream dateString;
-    dateString << std::put_time(&tm, format.c_str());
+    if(format.find("%S") != std::string::npos)
+        dateString << '.' << std::setfill('0') << std::setw(3) << ms.count();
 
     return dateString.str();
 }

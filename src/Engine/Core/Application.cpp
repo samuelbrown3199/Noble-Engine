@@ -124,7 +124,7 @@ void Application::LoadSettings()
 	m_audioManager->AddMixerOption("master", m_mainIniFile->GetFloatSetting("Audio", "MasterVolume", 1.0f));
 	m_audioManager->AddMixerOption("ambience", m_mainIniFile->GetFloatSetting("Audio", "AmbientVolume", 1.0f));
 
-	m_pStats->m_bPrintPerformance = m_mainIniFile->GetBooleanSetting("Debug", "PrintPerformance", false);
+	m_pStats->m_bLogPerformance = m_mainIniFile->GetBooleanSetting("Debug", "LogPerformance", false);
 	m_logger->m_bUseLogging = m_mainIniFile->GetBooleanSetting("Debug", "UseLogging", false);
 }
 
@@ -219,7 +219,7 @@ void Application::MainLoop()
 		m_pStats->m_frameTimes[4] = SDL_GetTicks() - m_pStats->cleanupStart;
 
 		m_pStats->UpdatePerformanceStats();
-		m_pStats->PrintOutPerformanceStats();
+		m_pStats->LogPerformanceStats();
 		m_pStats->m_mSystemUpdateTimes.clear();
 		m_pStats->m_mSystemRenderTimes.clear();
 	}

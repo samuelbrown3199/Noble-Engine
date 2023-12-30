@@ -36,7 +36,7 @@ private:
 
 public:
 
-	bool m_bPrintPerformance;
+	bool m_bLogPerformance;
 
 	static double m_dDeltaT;
 	double m_dFPS = 0;
@@ -46,9 +46,9 @@ public:
 	double m_frameTimes[5];
 
 	/**
-	*Prints out perfomance information for the current frame.
+	*Logs perfomance information for the current frame.
 	*/
-	void PrintOutPerformanceStats();
+	void LogPerformanceStats();
 
 	std::vector<std::pair<std::string, Uint32>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
 	std::vector<std::pair<std::string, Uint32>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }

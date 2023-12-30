@@ -1093,6 +1093,8 @@ void Renderer::GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount)
 	for (int i = 0; i < m_onScreenObjects.size(); i++)
 	{
 		vertCount += m_onScreenObjects.at(i)->m_vertices->size();
-		triCount += m_onScreenObjects.at(i)->m_indices->size() / 3;
+		triCount += m_onScreenObjects.at(i)->m_indices->size();
 	}
+
+	triCount /= 3;
 }

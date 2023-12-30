@@ -174,6 +174,9 @@ private:
 
 	static Camera* m_camera;
 
+	static std::vector<Renderable*> m_onScreenObjects;
+	static int m_iRenderableCount;
+
 	const std::vector<const char*> m_vValidationLayers = {
 		"VK_LAYER_KHRONOS_validation"
 	};
@@ -238,8 +241,6 @@ private:
 	void CreateColourResources();
 	void CreateDepthResources();
 
-	static std::vector<Renderable*> m_onScreenObjects;
-
 public:
 
 	Renderer(const std::string _windowName);
@@ -293,6 +294,11 @@ public:
 	static GraphicsPipeline* GetGraphicsPipeline() { return m_graphicsPipeline; }
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
+
+	static void IncrementRenderables() { m_iRenderableCount++; }
+	static int GetRenderableCount() { return m_iRenderableCount; }
+	static size_t GetOnScreenRenderableCount() { return m_onScreenObjects.size(); }
+	static void GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount);
 
 	//-------------------------------BUFFER STUFFS-------------------------------------
 

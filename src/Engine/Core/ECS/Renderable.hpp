@@ -27,6 +27,8 @@ struct Renderable : public Component
 	virtual void PreRender() {};
 	virtual void OnRender() 
 	{
+		Renderer::IncrementRenderables();
+
 		if (m_transformIndex == -1)
 		{
 			m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);

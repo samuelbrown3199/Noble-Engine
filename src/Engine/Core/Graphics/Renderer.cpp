@@ -50,6 +50,7 @@ VkQueue Renderer::m_graphicsQueue;
 GraphicsPipeline* Renderer::m_graphicsPipeline;
 
 std::vector<Renderable*> Renderer::m_onScreenObjects;
+int Renderer::m_iRenderableCount = 0;
 
 FrameInformation::~FrameInformation()
 {
@@ -879,6 +880,8 @@ void Renderer::StartDrawFrame()
 	vkWaitForFences(m_device, 1, &m_vFrames[m_iCurrentFrame].m_renderFence, VK_TRUE, UINT64_MAX);
 	m_currentCommandBuffer = m_vFrames[m_iCurrentFrame].m_commandBuffer;
 
+	m_iRenderableCount = 0;
+
 	VkResult result = vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_vFrames[m_iCurrentFrame].m_imageAvailable, VK_NULL_HANDLE, &imageIndex);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -1083,4 +1086,13 @@ glm::mat4 Renderer::GenerateViewMatrix()
 void Renderer::AddOnScreenObject(Renderable* comp)
 {
 	m_onScreenObjects.push_back(comp);
+}
+
+void Renderer::GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount)
+{
+	for (int i = 0; i < m_onScreenObjects.size(); i++)
+	{
+		vertCount += m_onScreenObjects.at(i)->m_vertices->size();
+		triCount += m_onScreenObjects.at(i)->m_indices->size() / 3;
+	}
 }

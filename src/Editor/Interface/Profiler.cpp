@@ -99,5 +99,12 @@ void Profiler::DoInterface()
         ImPlot::EndPlot();
     }
 
+    ImGui::Text(FormatString("Scene Render Objects: %d. On Screen Objects: %d.", Renderer::GetRenderableCount(), Renderer::GetOnScreenRenderableCount()).c_str());
+
+    int vertCount = 0;
+    int triCount = 0;
+    Renderer::GetOnScreenVerticesAndTriangles(vertCount, triCount);
+    ImGui::Text(FormatString("Rendered Vertices: %d. Rendered Triangles: %d.", vertCount, triCount).c_str());
+
     ImGui::End();
 }

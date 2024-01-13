@@ -191,7 +191,6 @@ void Application::MainLoop()
 
 		//Render Start
 		m_pStats->renderStart = SDL_GetTicks();
-		ImGui::Render();
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();
 		for (int i = 0; i < compRegistry->size(); i++)

@@ -903,7 +903,7 @@ void Renderer::StartDrawFrame()
 	StartRecordingCommandBuffer(m_currentCommandBuffer, imageIndex);
 }
 
-void Renderer::EndDrawFrame()
+void Renderer::EndDrawFrame() //function is super slow, not sure why yet.
 {
 	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_currentCommandBuffer);
 	EndRecordingCommandBuffer(m_currentCommandBuffer);
@@ -943,7 +943,7 @@ void Renderer::EndDrawFrame()
 	presentInfo.pResults = nullptr; // Optional
 
 	VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result != VK_SUBOPTIMAL_KHR)
+	if (result == VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR)
 	{
 		RecreateSwapchain();
 	}

@@ -57,6 +57,9 @@ public:
 
 		ComponentRegistry reg(comp, complist, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
 		m_mComponentRegistry[(int)m_mComponentRegistry.size()] = std::make_pair(ID, reg);
+
+		PerformanceStats* pStats = Application::GetPerformanceStats();
+		pStats->AddComponentMeasurement(ID);
 	}
 	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
 	static Datalist* GetComponentList(std::string ID);

@@ -105,6 +105,8 @@ void Renderer::InitializeVulkan()
 
 	CreateDescriptorPool();
 
+	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
+
 	Logger::LogInformation("Initialized Vulkan");
 }
 

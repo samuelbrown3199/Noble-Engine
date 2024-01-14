@@ -83,8 +83,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	Logger::LogInformation("Engine started successfully");
 
-	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
-
 	return rtn;
 }
 
@@ -172,13 +170,12 @@ void Application::MainLoop()
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bUpdateInEditor)
 				continue;
 
-			Uint32 updateStart = SDL_GetTicks();
+			m_pStats->StartComponentMeasurement(compRegistry->at(i).first, true);
+
 			compRegistry->at(i).second.m_comp->PreUpdate();
 			compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
-			Uint32 updateEnd = SDL_GetTicks() - updateStart;
 
-			std::pair<std::string, Uint32> pair(compRegistry->at(i).first, updateEnd);
-			m_pStats->m_mSystemUpdateTimes.push_back(pair);
+			m_pStats->EndComponentMeasurement(compRegistry->at(i).first, true);
 		}
 		ThreadingManager::WaitForTasksToClear();
 		m_pStats->EndPerformanceMeasurement("Update");
@@ -193,13 +190,12 @@ void Application::MainLoop()
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bRenderInEditor)
 				continue;
 
-			Uint32 renderStart = SDL_GetTicks();
+			m_pStats->StartComponentMeasurement(compRegistry->at(i).first, false);
+
 			compRegistry->at(i).second.m_comp->PreRender();
 			compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
-			Uint32 renderEnd = SDL_GetTicks() - renderStart;
 
-			std::pair<std::string, Uint32> pair(compRegistry->at(i).first, renderEnd);
-			m_pStats->m_mSystemRenderTimes.push_back(pair);
+			m_pStats->EndComponentMeasurement(compRegistry->at(i).first, false);
 		}
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->EndDrawFrame();
@@ -215,8 +211,6 @@ void Application::MainLoop()
 		m_pStats->UpdatePerformanceStats();
 		m_pStats->EndPerformanceMeasurement("Frame");
 		m_pStats->LogPerformanceStats();
-		m_pStats->m_mSystemUpdateTimes.clear();
-		m_pStats->m_mSystemRenderTimes.clear();
 	}
 
 	CleanupApplication();

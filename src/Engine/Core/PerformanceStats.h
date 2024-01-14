@@ -40,10 +40,10 @@ private:
 	std::vector<int> framerateList;
 	int currentFrameCount = 0;
 
-	std::vector<std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
-	std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;
+	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemUpdateTimes;
+	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemRenderTimes;
 
-	std::vector < std::pair<std::string, PerformanceMeasurement>> m_mPerformanceMeasurements;
+	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mPerformanceMeasurements;
 
 	/**
 	*Updates the performance stats. Done every frame by the engine.
@@ -57,8 +57,6 @@ public:
 	static double m_dDeltaT;
 	double m_dFPS = 0;
 	double m_dAvgFPS;
-	double m_dPreviousRenderTime;
-	double m_dPreviousFrameTime;
 
 	PerformanceStats();
 
@@ -67,13 +65,17 @@ public:
 	*/
 	void LogPerformanceStats();
 
-	std::vector<std::pair<std::string, Uint32>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
-	std::vector<std::pair<std::string, Uint32>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
+	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
+	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
 
 	void AddPerformanceMeasurement(std::string name);
 	void StartPerformanceMeasurement(std::string name);
 	void EndPerformanceMeasurement(std::string name);
 	double GetPerformanceMeasurementInMicroSeconds(std::string name);
+
+	void AddComponentMeasurement(std::string name);
+	void StartComponentMeasurement(std::string name, bool update);
+	void EndComponentMeasurement(std::string name, bool update);
 };
 
 #endif

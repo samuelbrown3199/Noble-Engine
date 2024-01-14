@@ -9,11 +9,11 @@ void Profiler::InitializeInterface()
 {
     m_pStats = Application::GetPerformanceStats();
 
-    m_vFrameTimeStats.push_back(FrameTimeStat("Frame", &m_pStats->m_dPreviousFrameTime));
-    m_vFrameTimeStats.push_back(FrameTimeStat("Pre-Update", &m_pStats->m_frameTimes[1]));
-    m_vFrameTimeStats.push_back(FrameTimeStat("Update", &m_pStats->m_frameTimes[2]));
-    m_vFrameTimeStats.push_back(FrameTimeStat("Render", &m_pStats->m_dPreviousRenderTime));
-    m_vFrameTimeStats.push_back(FrameTimeStat("Cleanup", &m_pStats->m_frameTimes[4]));
+    m_vFrameTimeStats.push_back(FrameTimeStat("Frame"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("Pre-Update"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("Update"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("Render"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("Cleanup"));
 }
 
 void Profiler::DoInterface()
@@ -34,7 +34,7 @@ void Profiler::DoInterface()
         m_vFrameTimeStats[i].m_frameTimeArray[m_iMaxSamples] = {0};
         m_vFrameTimeStats[i].m_frameTimeArrayX[m_iMaxSamples] = { 0 };
 
-        m_vFrameTimeStats[i].m_qTimes.push_back(*m_vFrameTimeStats[i].m_targetValue);
+        m_vFrameTimeStats[i].m_qTimes.push_back(m_pStats->GetPerformanceMeasurementInMicroSeconds(m_vFrameTimeStats[i].m_sName) / 1000);
         if (m_vFrameTimeStats[i].m_qTimes.size() > m_iMaxSamples)
             m_vFrameTimeStats[i].m_qTimes.pop_front();
 

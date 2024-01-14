@@ -5,8 +5,27 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <chrono>
 
 #include <SDL/SDL.h>
+
+struct PerformanceMeasurement
+{
+	std::chrono::time_point<std::chrono::high_resolution_clock> m_measurementStart;
+	std::chrono::time_point<std::chrono::high_resolution_clock> m_measurementEnd;
+	std::chrono::duration<double, std::micro> m_measurementTime;
+
+	void StartMeasurement()
+	{
+		m_measurementStart = std::chrono::high_resolution_clock::now();
+	}
+
+	void EndMeasurement()
+	{
+		m_measurementEnd = std::chrono::high_resolution_clock::now();
+		m_measurementTime = std::chrono::duration_cast<std::chrono::microseconds>(m_measurementEnd - m_measurementStart);
+	}
+};
 
 /**
 *Stores engine performance stats.
@@ -16,19 +35,16 @@ struct PerformanceStats
 	friend class Application;
 
 private:
-	Uint32 frameStart, preUpdateStart, renderStart, updateStart, cleanupStart;
 
 	const int avgFrameRateCount = 1440;
 	std::vector<int> framerateList;
-	int currentFrameCount;
+	int currentFrameCount = 0;
 
 	std::vector<std::pair<std::string, Uint32>> m_mSystemUpdateTimes;
 	std::vector<std::pair<std::string, Uint32>> m_mSystemRenderTimes;
 
-	/**
-	*Resets the performance stats. Done every frame by the engine.
-	*/
-	void ResetPerformanceStats();
+	std::vector < std::pair<std::string, PerformanceMeasurement>> m_mPerformanceMeasurements;
+
 	/**
 	*Updates the performance stats. Done every frame by the engine.
 	*/
@@ -43,7 +59,8 @@ public:
 	double m_dAvgFPS;
 	double m_dPreviousRenderTime;
 	double m_dPreviousFrameTime;
-	double m_frameTimes[5];
+
+	PerformanceStats();
 
 	/**
 	*Logs perfomance information for the current frame.
@@ -52,6 +69,11 @@ public:
 
 	std::vector<std::pair<std::string, Uint32>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
 	std::vector<std::pair<std::string, Uint32>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
+
+	void AddPerformanceMeasurement(std::string name);
+	void StartPerformanceMeasurement(std::string name);
+	void EndPerformanceMeasurement(std::string name);
+	double GetPerformanceMeasurementInMicroSeconds(std::string name);
 };
 
 #endif

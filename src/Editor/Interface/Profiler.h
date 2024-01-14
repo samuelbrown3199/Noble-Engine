@@ -15,12 +15,9 @@ struct FrameTimeStat
 	double m_fMaxFrameTime = 0;
 	double m_fAvgFrameTime = 0;
 
-	double* m_targetValue;
-
-	FrameTimeStat(std::string name, double* targetValue)
+	FrameTimeStat(std::string name)
 	{
 		m_sName = name;
-		m_targetValue = targetValue;
 	}
 };
 

@@ -4,23 +4,10 @@
 
 double PerformanceStats::m_dDeltaT;
 
-void PerformanceStats::ResetPerformanceStats()
-{
-	frameStart = SDL_GetTicks();
-	preUpdateStart = 0;
-	m_dPreviousRenderTime = m_frameTimes[3];
-	m_dPreviousFrameTime = m_frameTimes[0];
-
-	for (int i = 0; i < 5; i++)
-	{
-		m_frameTimes[i] = 0;
-	}
-}
-
 void PerformanceStats::UpdatePerformanceStats()
 {
-	m_frameTimes[0] = SDL_GetTicks() - frameStart;
-	m_dFPS = 1000.0f / m_frameTimes[0];
+	double frameMilliseconds = GetPerformanceMeasurementInMicroSeconds("Frame") / 1000;
+	m_dFPS = 1000.0f / frameMilliseconds;
 	m_dDeltaT = 1.0f / m_dFPS;
 	framerateList.push_back(m_dFPS);
 	currentFrameCount++;
@@ -38,6 +25,17 @@ void PerformanceStats::UpdatePerformanceStats()
 	}
 }
 
+PerformanceStats::PerformanceStats()
+{
+	AddPerformanceMeasurement("Frame");
+	AddPerformanceMeasurement("Pre-Update");
+	AddPerformanceMeasurement("Update");
+	AddPerformanceMeasurement("Render");
+	AddPerformanceMeasurement("Cleanup");
+
+	currentFrameCount = 0;
+}
+
 void PerformanceStats::LogPerformanceStats()
 {
 	if (!m_bLogPerformance)
@@ -46,13 +44,60 @@ void PerformanceStats::LogPerformanceStats()
 	if (currentFrameCount != 0)
 		return;
 
-	std::string performanceStatsString = FormatString("AVG FPS: %2f | Frame Time: %2f | Pre Update Time: %2f | Update Time: %2f | Render Time: %2f | Cleanup Time: %2f\n", 
-		m_dAvgFPS, m_frameTimes[0], m_frameTimes[1], m_frameTimes[2], m_frameTimes[3], m_frameTimes[4]);
+	std::string performanceStatsString = FormatString("FPS: %.2f | Delta Time: %.5f", m_dFPS, m_dDeltaT);
+	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
+	{
+		if (i != m_mPerformanceMeasurements.size())
+			performanceStatsString += " | ";
 
+		performanceStatsString += FormatString("%s: %.2f", m_mPerformanceMeasurements.at(i).first, GetPerformanceMeasurementInMicroSeconds(m_mPerformanceMeasurements.at(i).first) / 1000);
+	}
+	performanceStatsString += "\n";
 	for (int i = 0; i < m_mSystemUpdateTimes.size(); i++)
 	{
-		performanceStatsString += FormatString("%s Update Time: %2f | Render Time: %2f\n", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second, m_mSystemRenderTimes.at(i).second);
+		performanceStatsString += FormatString("%s Update Time: %.2f | Render Time: %.2f\n", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second, m_mSystemRenderTimes.at(i).second);
 	}
 
 	Logger::LogInformation(performanceStatsString);
+}
+
+void PerformanceStats::AddPerformanceMeasurement(std::string name)
+{
+	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
+	{
+		if (m_mPerformanceMeasurements.at(i).first == name)
+			Logger::LogError("Tried to add duplicate performance measurement.", 2);
+	}
+
+	m_mPerformanceMeasurements.push_back(std::make_pair(name, PerformanceMeasurement()));
+}
+
+void PerformanceStats::StartPerformanceMeasurement(std::string name)
+{
+	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
+	{
+		if (m_mPerformanceMeasurements.at(i).first == name)
+			m_mPerformanceMeasurements.at(i).second.StartMeasurement();
+	}
+}
+
+void PerformanceStats::EndPerformanceMeasurement(std::string name)
+{
+	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
+	{
+		if (m_mPerformanceMeasurements.at(i).first == name)
+			m_mPerformanceMeasurements.at(i).second.EndMeasurement();
+	}
+}
+
+double PerformanceStats::GetPerformanceMeasurementInMicroSeconds(std::string name)
+{
+	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
+	{
+		if (m_mPerformanceMeasurements.at(i).first == name)
+		{
+			int returnVal = m_mPerformanceMeasurements.at(i).second.m_measurementTime.count();
+			return returnVal;
+		}
+	}
 }

@@ -134,10 +134,10 @@ void Application::MainLoop()
 
 	while (m_bLoop)
 	{
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
+		m_pStats->StartPerformanceMeasurement("Frame");
+		m_pStats->StartPerformanceMeasurement("Pre-Update");
 
-		m_pStats->ResetPerformanceStats();
-		m_pStats->preUpdateStart = SDL_GetTicks();
+		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 		InputManager::HandleGeneralInput();
 
 		Uint32 windowFlags = SDL_GetWindowFlags(m_gameRenderer->GetWindow());
@@ -148,14 +148,11 @@ void Application::MainLoop()
 		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
 
 		ImGui::NewFrame();
-
-		m_pStats->m_frameTimes[1] = SDL_GetTicks() - m_pStats->preUpdateStart;
+		m_pStats->EndPerformanceMeasurement("Pre-Update");
 
 		//update start
-		m_pStats->updateStart = SDL_GetTicks();
-
+		m_pStats->StartPerformanceMeasurement("Update");
 		AudioManager::UpdateSystem();
-
 		for (int i = 0; i < m_vDebugUIs.size(); i++)
 		{
 			if (m_vDebugUIs.at(i)->m_uiOpen)
@@ -163,7 +160,6 @@ void Application::MainLoop()
 				m_vDebugUIs.at(i)->DoInterface();
 			}
 		}
-
 		for (int i = 0; i < m_vEntities.size(); i++)
 		{
 			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
@@ -171,7 +167,6 @@ void Application::MainLoop()
 				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
 			}
 		}
-
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bUpdateInEditor)
@@ -186,11 +181,11 @@ void Application::MainLoop()
 			m_pStats->m_mSystemUpdateTimes.push_back(pair);
 		}
 		ThreadingManager::WaitForTasksToClear();
-		m_pStats->m_frameTimes[2] = SDL_GetTicks() - m_pStats->updateStart;
+		m_pStats->EndPerformanceMeasurement("Update");
 		//update end
 
 		//Render Start
-		m_pStats->renderStart = SDL_GetTicks();
+		m_pStats->StartPerformanceMeasurement("Render");
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->StartDrawFrame();
 		for (int i = 0; i < compRegistry->size(); i++)
@@ -208,16 +203,17 @@ void Application::MainLoop()
 		}
 		ThreadingManager::WaitForTasksToClear();
 		m_gameRenderer->EndDrawFrame();
-		m_pStats->m_frameTimes[3] = SDL_GetTicks() - m_pStats->renderStart;
+		m_pStats->EndPerformanceMeasurement("Render");
 		//Render End
 
-		m_pStats->cleanupStart = SDL_GetTicks();
+		m_pStats->StartPerformanceMeasurement("Cleanup");
 		CleanupDeletionEntities();
 		InputManager::ClearFrameInputs();
 		ResourceManager::UnloadUnusedResources();
-		m_pStats->m_frameTimes[4] = SDL_GetTicks() - m_pStats->cleanupStart;
+		m_pStats->EndPerformanceMeasurement("Cleanup");
 
 		m_pStats->UpdatePerformanceStats();
+		m_pStats->EndPerformanceMeasurement("Frame");
 		m_pStats->LogPerformanceStats();
 		m_pStats->m_mSystemUpdateTimes.clear();
 		m_pStats->m_mSystemRenderTimes.clear();

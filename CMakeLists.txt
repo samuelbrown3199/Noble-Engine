@@ -296,3 +296,27 @@ set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SO
 target_compile_features(TechDemo1 PRIVATE cxx_std_17)
 
 ]===]
+
+set (
+	vulkan_testground
+	
+	src/Vulkan-TestGround/main.cpp
+)
+
+add_executable(Vulkan-Test
+
+	${vulkan_testground}
+
+)
+target_link_libraries(Vulkan-Test vulkan-1)
+set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+set_property(TARGET Vulkan-Test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Vulkan")
+
+target_compile_features(Vulkan-Test PRIVATE cxx_std_17)
+
+foreach(source IN LISTS vulkan_testground)
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+    source_group("${source_path_msvc}" FILES "${source}")
+endforeach()

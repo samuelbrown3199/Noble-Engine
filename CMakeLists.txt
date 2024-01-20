@@ -301,6 +301,26 @@ set (
 	vulkan_testground
 	
 	src/Vulkan-TestGround/main.cpp
+
+	src/Vulkan-TestGround/Renderer.h
+	src/Vulkan-TestGround/Renderer.cpp
+
+	src/Vulkan-TestGround/VulkanInitialisers.h
+	src/Vulkan-TestGround/VulkanInitialisers.cpp
+
+	src/Vulkan-TestGround/VulkanTypes.h
+
+	src/Vulkan-TestGround/VulkanLoader.h
+	src/Vulkan-TestGround/VulkanLoader.cpp
+
+	src/Vulkan-TestGround/VulkanImages.h
+	src/Vulkan-TestGround/VulkanImages.cpp
+
+	src/Vulkan-TestGround/VulkanDescriptors.h
+	src/Vulkan-TestGround/VulkanDescriptors.cpp
+
+	src/Vulkan-TestGround/VulkanPipelines.h
+	src/Vulkan-TestGround/VulkanPipelines.cpp
 )
 
 add_executable(Vulkan-Test
@@ -308,7 +328,7 @@ add_executable(Vulkan-Test
 	${vulkan_testground}
 
 )
-target_link_libraries(Vulkan-Test vulkan-1)
+target_link_libraries(Vulkan-Test vulkan-1 SDL2)
 set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 set_property(TARGET Vulkan-Test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Vulkan")

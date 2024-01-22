@@ -302,6 +302,10 @@ set (
 	
 	src/Vulkan-TestGround/main.cpp
 
+	src/Vulkan-TestGround/VkBootstrap.h
+	src/Vulkan-TestGround/VkBootstrap.cpp
+	src/Vulkan-TestGround/VkBootstrapDispatch.h
+
 	src/Vulkan-TestGround/Renderer.h
 	src/Vulkan-TestGround/Renderer.cpp
 
@@ -333,7 +337,7 @@ set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOL
 set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 set_property(TARGET Vulkan-Test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Vulkan")
 
-target_compile_features(Vulkan-Test PRIVATE cxx_std_17)
+target_compile_features(Vulkan-Test PRIVATE cxx_std_20)
 
 foreach(source IN LISTS vulkan_testground)
     get_filename_component(source_path "${source}" PATH)

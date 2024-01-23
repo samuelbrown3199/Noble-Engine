@@ -4,6 +4,7 @@
 #pragma once
 
 #include "VulkanTypes.h"
+#include "VulkanDescriptors.h"
 
 struct DeletionQueue
 {
@@ -64,6 +65,14 @@ public:
 	AllocatedImage m_drawImage;
 	VkExtent2D m_drawExtent;
 
+	DescriptorAllocator m_globalDescriptorAllocator;
+
+	VkDescriptorSet m_drawImageDescriptors;
+	VkDescriptorSetLayout m_drawImageDescriptorLayout;
+
+	VkPipeline m_gradientPipeline;
+	VkPipelineLayout m_gradientPipelineLayout;
+
 	bool m_bIsInitialized{ false };
 	bool m_bUseValidationLayer = true;
 	int m_iFrameNumber{ 0 };
@@ -98,4 +107,7 @@ private:
 	void InitializeSwapchain();
 	void InitializeCommands();
 	void InitializeSyncStructures();
+	void InitializeDescriptors();
+	void InitializePipelines();
+	void InitializeBackgroundPipelines();
 };

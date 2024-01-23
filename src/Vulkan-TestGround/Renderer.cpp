@@ -7,6 +7,7 @@
 #include "VulkanInitialisers.h"
 #include "VulkanTypes.h"
 #include "VulkanImages.h"
+#include "VulkanPipelines.h"
 
 #include <chrono>
 #include <thread>
@@ -42,6 +43,8 @@ void Renderer::init()
     InitializeSwapchain();
     InitializeCommands();
     InitializeSyncStructures();
+    InitializeDescriptors();
+    InitializePipelines();
 
     // everything went fine
     m_bIsInitialized = true;
@@ -277,7 +280,15 @@ void Renderer::DrawBackground(VkCommandBuffer cmd)
     clearValue = { { 0.0f, 0.0f, flash, 1.0f } };
 
     VkImageSubresourceRange clearRange = vkinit::ImageSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
-    vkCmdClearColorImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_GENERAL, &clearValue, 1, &clearRange);
+    
+    //Bind gradient drawing compute pipeline
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, m_gradientPipeline);
+
+    // bind the descriptor set containing the draw image for the compute pipeline
+    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, m_gradientPipelineLayout, 0, 1, &m_drawImageDescriptors, 0, nullptr);
+
+    // execute the compute pipeline dispatch. We are using 16x16 workgroup size so we need to divide by it
+    vkCmdDispatch(cmd, std::ceil(m_drawExtent.width / 16.0), std::ceil(m_drawExtent.height / 16.0), 1);
 }
 
 void Renderer::InitializeSwapchain()
@@ -356,4 +367,86 @@ void Renderer::InitializeSyncStructures()
         if (vkCreateSemaphore(m_device, &semaphoreCreateInfo, nullptr, &m_frames[i].m_renderSemaphore) != VK_SUCCESS)
             throw std::exception();
     }
+}
+
+void Renderer::InitializeDescriptors()
+{
+    std::vector<DescriptorAllocator::PoolSizeRatio> sizes =
+    {
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1 }
+    };
+
+    m_globalDescriptorAllocator.InitializePool(m_device, 10, sizes);
+
+    {
+        DescriptorLayoutBuilder builder;
+        builder.AddBinding(0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+
+        m_drawImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_COMPUTE_BIT);
+    }
+
+    m_drawImageDescriptors = m_globalDescriptorAllocator.Allocate(m_device, m_drawImageDescriptorLayout);
+
+    VkDescriptorImageInfo imgInfo = {};
+    imgInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+    imgInfo.imageView = m_drawImage.m_imageView;
+
+    VkWriteDescriptorSet drawImageWrite = {};
+    drawImageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    drawImageWrite.pNext = nullptr;
+
+    drawImageWrite.dstBinding = 0;
+    drawImageWrite.dstSet = m_drawImageDescriptors;
+    drawImageWrite.descriptorCount = 1;
+    drawImageWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    drawImageWrite.pImageInfo = &imgInfo;
+
+    vkUpdateDescriptorSets(m_device, 1, &drawImageWrite, 0, nullptr);
+}
+
+void Renderer::InitializePipelines()
+{
+    InitializeBackgroundPipelines();
+}
+
+void Renderer::InitializeBackgroundPipelines()
+{
+    VkPipelineLayoutCreateInfo computeLayout{};
+    computeLayout.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    computeLayout.pNext = nullptr;
+    computeLayout.pSetLayouts = &m_drawImageDescriptorLayout;
+    computeLayout.setLayoutCount = 1;
+
+    if (vkCreatePipelineLayout(m_device, &computeLayout, nullptr, &m_gradientPipelineLayout) != VK_SUCCESS)
+        throw std::exception();
+
+    VkShaderModule computeDrawShader;
+    if (!vkutil::LoadShaderModule("compute.spv", m_device, &computeDrawShader))
+    {
+        throw std::exception();
+    }
+
+    VkPipelineShaderStageCreateInfo stageInfo{};
+    stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stageInfo.pNext = nullptr;
+    stageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+    stageInfo.module = computeDrawShader;
+    stageInfo.pName = "main";
+
+    VkComputePipelineCreateInfo computePipelineCreateInfo{};
+    computePipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+    computePipelineCreateInfo.pNext = nullptr;
+    computePipelineCreateInfo.layout = m_gradientPipelineLayout;
+    computePipelineCreateInfo.stage = stageInfo;
+
+    if (vkCreateComputePipelines(m_device, VK_NULL_HANDLE, 1, &computePipelineCreateInfo, nullptr, &m_gradientPipeline) != VK_SUCCESS)
+        throw std::exception();
+
+    vkDestroyShaderModule(m_device, computeDrawShader, nullptr);
+
+    m_mainDeletionQueue.push_function([&]()
+        {
+            vkDestroyPipelineLayout(m_device, m_gradientPipelineLayout, nullptr);
+            vkDestroyPipeline(m_device, m_gradientPipeline, nullptr);
+        });
 }

@@ -297,6 +297,7 @@ target_compile_features(TechDemo1 PRIVATE cxx_std_17)
 
 ]===]
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Vulkan>)
 set (
 	vulkan_testground
 	

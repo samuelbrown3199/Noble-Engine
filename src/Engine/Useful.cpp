@@ -91,7 +91,7 @@ std::string GenerateRandomString(size_t _length)
 
 std::string GetVersionInfoString()
 {
-    std::string versionString = FormatString("%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+    std::string versionString = FormatString("%s-%d.%d.%d", VERSION_STAGE, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     return versionString;
 }
 

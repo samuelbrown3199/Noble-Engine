@@ -17,6 +17,10 @@
 
 #include "VkBootstrap.h"
 
+#include "../src/Engine/imgui/imgui.h"
+#include "../src/Engine/imgui/backends/imgui_impl_sdl2.h"
+#include "../src/Engine/imgui/backends/imgui_impl_vulkan.h"
+
 Renderer* loadedEngine = nullptr;
 
 Renderer& Renderer::Get() { return *loadedEngine; }
@@ -45,6 +49,8 @@ void Renderer::init()
     InitializeSyncStructures();
     InitializeDescriptors();
     InitializePipelines();
+
+    InitializeImgui();
 
     // everything went fine
     m_bIsInitialized = true;
@@ -113,10 +119,14 @@ void Renderer::draw()
     vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent);
+    vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
+
+    vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+    DrawImGui(cmd, m_swapchainImageViews[swapchainImageIndex]);
 
     // set swapchain image layout to Present so we can show it on the screen
-    vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
     if (vkEndCommandBuffer(cmd) != VK_SUCCESS)
         throw std::exception();
@@ -149,6 +159,18 @@ void Renderer::draw()
     m_iFrameNumber++;
 }
 
+void Renderer::DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView)
+{
+    VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(targetImageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+    VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_swapchainExtent, &colorAttachment, nullptr);
+
+    vkCmdBeginRendering(cmd, &renderInfo);
+
+    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
+
+    vkCmdEndRendering(cmd);
+}
+
 void Renderer::run()
 {
     SDL_Event e;
@@ -172,12 +194,26 @@ void Renderer::run()
             }
         }
 
+        //send SDL event to imgui for handling
+        ImGui_ImplSDL2_ProcessEvent(&e);
+
         // do not draw if we are minimized
         if (m_bStopRendering) {
             // throttle the speed to avoid the endless spinning
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             continue;
         }
+
+        // imgui new frame
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplSDL2_NewFrame(m_window);
+        ImGui::NewFrame();
+
+        //some imgui UI to test
+        ImGui::ShowDemoWindow();
+
+        //make imgui calculate internal draw structures
+        ImGui::Render();
 
         draw();
     }
@@ -346,6 +382,17 @@ void Renderer::InitializeCommands()
         if (vkAllocateCommandBuffers(m_device, &cmdAllocInfo, &m_frames[i].m_mainCommandBuffer) != VK_SUCCESS)
             throw std::exception();
     }
+
+    if (vkCreateCommandPool(m_device, &commandPoolInfo, nullptr, &m_immediateCommandPool) != VK_SUCCESS)
+        throw std::exception();
+
+    VkCommandBufferAllocateInfo cmdAllocInfo = vkinit::CommandBufferAllocateInfo(m_immediateCommandPool, 1);
+    if (vkAllocateCommandBuffers(m_device, &cmdAllocInfo, &m_immediateCommandBuffer) != VK_SUCCESS)
+        throw std::exception();
+
+    m_mainDeletionQueue.push_function([=]() {
+        vkDestroyCommandPool(m_device, m_immediateCommandPool, nullptr);
+    });
 }
 
 void Renderer::InitializeSyncStructures()
@@ -367,6 +414,11 @@ void Renderer::InitializeSyncStructures()
         if (vkCreateSemaphore(m_device, &semaphoreCreateInfo, nullptr, &m_frames[i].m_renderSemaphore) != VK_SUCCESS)
             throw std::exception();
     }
+
+    if (vkCreateFence(m_device, &fenceCreateInfo, nullptr, &m_immediateFence) != VK_SUCCESS)
+        throw std::exception();
+
+    m_mainDeletionQueue.push_function([=]() { vkDestroyFence(m_device, m_immediateFence, nullptr); });
 }
 
 void Renderer::InitializeDescriptors()
@@ -449,4 +501,94 @@ void Renderer::InitializeBackgroundPipelines()
             vkDestroyPipelineLayout(m_device, m_gradientPipelineLayout, nullptr);
             vkDestroyPipeline(m_device, m_gradientPipeline, nullptr);
         });
+}
+
+void Renderer::InitializeImgui()
+{
+    // 1: create descriptor pool for IMGUI
+    //  the size of the pool is very oversize, but it's copied from imgui demo
+    //  itself.
+    VkDescriptorPoolSize pool_sizes[] = { { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 } };
+
+    VkDescriptorPoolCreateInfo pool_info = {};
+    pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    pool_info.maxSets = 1000;
+    pool_info.poolSizeCount = (uint32_t)std::size(pool_sizes);
+    pool_info.pPoolSizes = pool_sizes;
+
+    VkDescriptorPool imguiPool;
+    if (vkCreateDescriptorPool(m_device, &pool_info, nullptr, &imguiPool) != VK_SUCCESS)
+        throw std::exception();
+
+    // 2: initialize imgui library
+
+    // this initializes the core structures of imgui
+    ImGui::CreateContext();
+
+    // this initializes imgui for SDL
+    ImGui_ImplSDL2_InitForVulkan(m_window);
+
+    // this initializes imgui for Vulkan
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.Instance = m_instance;
+    init_info.PhysicalDevice = m_physicalDevice;
+    init_info.Device = m_device;
+    init_info.Queue = m_graphicsQueue;
+    init_info.DescriptorPool = imguiPool;
+    init_info.MinImageCount = 3;
+    init_info.ImageCount = 3;
+    init_info.UseDynamicRendering = true;
+    init_info.ColorAttachmentFormat = m_swapchainImageFormat;
+
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+    ImGui_ImplVulkan_Init(&init_info, VK_NULL_HANDLE);
+
+    // execute a gpu command to upload imgui font textures
+    ImGui_ImplVulkan_CreateFontsTexture();
+
+    // add the destroy the imgui created structures
+    m_mainDeletionQueue.push_function([=]() {
+        vkDestroyDescriptorPool(m_device, imguiPool, nullptr);
+        ImGui_ImplVulkan_Shutdown();
+    });
+}
+
+void Renderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function)
+{
+    if (vkResetFences(m_device, 1, &m_immediateFence) != VK_SUCCESS)
+        throw std::exception();
+    if (vkResetCommandBuffer(m_immediateCommandBuffer, 0) != VK_SUCCESS)
+        throw std::exception();
+
+    VkCommandBuffer cmd = m_immediateCommandBuffer;
+
+    VkCommandBufferBeginInfo cmdBeginInfo = vkinit::CommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+    if (vkBeginCommandBuffer(cmd, &cmdBeginInfo) != VK_SUCCESS)
+        throw std::exception();
+
+    function(cmd);
+
+    if (vkEndCommandBuffer(cmd) != VK_SUCCESS)
+        throw std::exception();
+
+    VkCommandBufferSubmitInfo cmdInfo = vkinit::CommandBufferSubmitInfo(cmd);
+    VkSubmitInfo2 submit = vkinit::SubmitInfo(&cmdInfo, nullptr, nullptr);
+
+    if (vkQueueSubmit2(m_graphicsQueue, 1, &submit, m_immediateFence) != -VK_SUCCESS)
+        throw std::exception();
+
+    if (vkWaitForFences(m_device, 1, &m_immediateFence, true, 99999999) != VK_SUCCESS)
+        throw std::exception();
 }

@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 2.6)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 project(NobleEngine)
 
-include_directories(
-        src
+include_directories (
+    src
 )
 
 if(MSVC)
@@ -24,7 +25,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "../bin")
 set (
 
 	source_list
-
+	
+	src/Engine/Core/VersionInformation.h
+	
 	src/Engine/Useful.h
 	src/Engine/Useful.cpp
 
@@ -326,6 +329,34 @@ set (
 
 	src/Vulkan-TestGround/VulkanPipelines.h
 	src/Vulkan-TestGround/VulkanPipelines.cpp
+
+	src/Engine/imgui/imconfig.h
+	src/Engine/imgui/imgui.h
+	src/Engine/imgui/imgui.cpp
+	src/Engine/imgui/imgui_demo.cpp
+	src/Engine/imgui/imgui_draw.cpp
+	src/Engine/imgui/imgui_internal.h
+	src/Engine/imgui/imgui_tables.cpp
+	src/Engine/imgui/imgui_widgets.cpp
+	src/Engine/imgui/imstb_rectpack.h
+	src/Engine/imgui/imstb_textedit.h
+	src/Engine/imgui/imstb_truetype.h
+	src/Engine/imgui/imgui_stdlib.h
+	src/Engine/imgui/imgui_stdlib.cpp
+
+	src/Engine/imgui/imgui.h
+	src/Engine/imgui/imgui.cpp
+	src/Engine/imgui/backends/imgui_impl_vulkan.h
+	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
+
+	src/Engine/imgui/implot.h
+	src/Engine/imgui/implot.cpp
+	src/Engine/imgui/implot_demo.cpp
+	src/Engine/imgui/implot_internal.h
+	src/Engine/imgui/implot_items.cpp
+
+	src/Engine/imgui/backends/imgui_impl_sdl2.h
+	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
 )
 
 add_executable(Vulkan-Test

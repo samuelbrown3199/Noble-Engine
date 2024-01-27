@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "../VersionInformation.h"
+
 #include "../ECS/Renderable.hpp"
 
 #include <set>
@@ -148,7 +150,7 @@ void Renderer::CreateInstance()
 	appInfo.pApplicationName = GetWindowTitle().c_str();
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.pEngineName = "Noble Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	appInfo.engineVersion = VK_MAKE_VERSION(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo{};

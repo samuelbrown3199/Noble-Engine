@@ -2,6 +2,8 @@
 #include "Core/Logger.h"
 #include "Core/ResourceManager.h"
 
+#include "Core/VersionInformation.h"
+
 #include <Windows.h>
 
 #include <cstdio>
@@ -85,6 +87,12 @@ std::string GenerateRandomString(size_t _length)
     }
 
     return tmp_s;
+}
+
+std::string GetVersionInfoString()
+{
+    std::string versionString = FormatString("%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+    return versionString;
 }
 
 //--------------------FILES AND DIRECTORIES----------------------------

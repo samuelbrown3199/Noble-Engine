@@ -36,6 +36,7 @@ std::string RemoveCharacterFromString(const std::string& _input, const char _tar
 std::string GetDateTimeString(std::string format);
 
 std::string GenerateRandomString(size_t _length);
+std::string GetVersionInfoString();
 
 //--------------------FILES AND DIRECTORIES----------------------------
 

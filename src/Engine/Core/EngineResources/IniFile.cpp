@@ -62,8 +62,6 @@ bool IniFile::GetBooleanSetting(const std::string& _sectionName, const std::stri
 	}
 
 	settingValue = integerValue == 1 ? true : false;
-
-	Logger::LogInformation(FormatString("Loading [%s] %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 

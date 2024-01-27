@@ -51,6 +51,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_logger->m_bUseLogging = true;
 #endif
 
+	Logger::LogInformation("Starting Engine, Version: " + GetVersionInfoString());
+
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 
 	rtn->m_gameRenderer = new Renderer(_windowName);
@@ -298,14 +300,7 @@ void Application::InitializeImGui()
 	init_info.MSAASamples = Renderer::GetMSAALevel();
 
 	ImGui_ImplVulkan_Init(&init_info, Renderer::GetGraphicsPipeline()->GetRenderPass());
-
-	//execute a gpu command to upload imgui font textures
-	VkCommandBuffer fontBuffer = Renderer::BeginSingleTimeCommand();
-	ImGui_ImplVulkan_CreateFontsTexture(fontBuffer);
-	Renderer::EndSingleTimeCommands(fontBuffer);
-
-	//clear font textures from cpu data
-	ImGui_ImplVulkan_DestroyFontUploadObjects();
+	ImGui_ImplVulkan_CreateFontsTexture();
 }
 
 std::string Application::GetUniqueEntityID()

@@ -153,6 +153,27 @@ set (
 
 	src/Engine/Core/Graphics/GraphicsBuffer.h
 	src/Engine/Core/Graphics/GraphicsBuffer.cpp
+	
+	src/Engine/Core/Graphics/VkBootstrap.h
+	src/Engine/Core/Graphics/VkBootstrap.cpp
+	src/Engine/Core/Graphics/VkBootstrapDispatch.h
+
+	src/Engine/Core/Graphics/VulkanInitialisers.h
+	src/Engine/Core/Graphics/VulkanInitialisers.cpp
+
+	src/Engine/Core/Graphics/VulkanTypes.h
+
+	src/Engine/Core/Graphics/VulkanLoader.h
+	src/Engine/Core/Graphics/VulkanLoader.cpp
+
+	src/Engine/Core/Graphics/VulkanImages.h
+	src/Engine/Core/Graphics/VulkanImages.cpp
+
+	src/Engine/Core/Graphics/VulkanDescriptors.h
+	src/Engine/Core/Graphics/VulkanDescriptors.cpp
+
+	src/Engine/Core/Graphics/VulkanPipelines.h
+	src/Engine/Core/Graphics/VulkanPipelines.cpp
 
 	#Maths
 
@@ -230,7 +251,7 @@ add_library(Engine ${SRC_IMGUI}
 	${game_source}
 )
 target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc freetype vulkan-1)
-target_compile_features(Engine PRIVATE cxx_std_17)
+target_compile_features(Engine PRIVATE cxx_std_20)
 
 foreach(source IN LISTS source_list)
     get_filename_component(source_path "${source}" PATH)
@@ -275,7 +296,7 @@ set_target_properties(Editor PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 set_target_properties(Editor PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 set_property(TARGET Editor PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Editor")
 
-target_compile_features(Editor PRIVATE cxx_std_17)
+target_compile_features(Editor PRIVATE cxx_std_20)
 
 foreach(source IN LISTS editor_source)
     get_filename_component(source_path "${source}" PATH)
@@ -296,7 +317,7 @@ set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
 set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1")
 
-target_compile_features(TechDemo1 PRIVATE cxx_std_17)
+target_compile_features(TechDemo1 PRIVATE cxx_std_20)
 
 ]===]
 

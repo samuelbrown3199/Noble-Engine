@@ -35,6 +35,24 @@ struct FrameData
 	DeletionQueue m_deletionQueue;
 };
 
+struct ComputePushConstants
+{
+	glm::vec4 data1;
+	glm::vec4 data2;
+	glm::vec4 data3;
+	glm::vec4 data4;
+};
+
+struct ComputeEffect
+{
+	const char* name;
+
+	VkPipeline pipeline;
+	VkPipelineLayout layout;
+
+	ComputePushConstants data;
+};
+
 constexpr unsigned int FRAME_OVERLAP = 2;
 
 class Renderer {
@@ -82,6 +100,10 @@ public:
 	int m_iFrameNumber{ 0 };
 	bool m_bStopRendering{ false };
 	VkExtent2D m_windowExtent{ 1700 , 900 };
+
+	//To be deleted.
+	std::vector<ComputeEffect> backgroundEffects;
+	int currentBackgroundEffect{ 0 };
 
 	struct SDL_Window* m_window{ nullptr };
 	FrameData& GetCurrentFrame() { return m_frames[m_iFrameNumber % FRAME_OVERLAP]; }

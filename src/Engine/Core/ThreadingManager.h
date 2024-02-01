@@ -1,3 +1,4 @@
+#pragma once
 #ifndef THREADINGMANAGER_H_
 #define THREADINGMANAGER_H_
 

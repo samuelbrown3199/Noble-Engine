@@ -5,6 +5,8 @@
 #include <vector>
 #include <deque>
 
+#include "../../Core/ThreadingManager.h"
+
 struct Component;
 
 struct Datalist

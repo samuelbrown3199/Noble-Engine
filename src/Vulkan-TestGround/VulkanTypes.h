@@ -25,3 +25,32 @@ struct AllocatedImage
     VkExtent3D m_imageExtent;
     VkFormat m_imageFormat;
 };
+
+struct AllocatedBuffer
+{
+    VkBuffer m_buffer;
+    VmaAllocation m_allocation;
+    VmaAllocationInfo m_info;
+};
+
+struct Vertex
+{
+    glm::vec3 m_position;
+    float m_uvX;
+    glm::vec3 m_normal;
+    float m_uvY;
+    glm::vec4 m_colour;
+};
+
+struct GPUMeshBuffers
+{
+    AllocatedBuffer m_indexBuffer;
+    AllocatedBuffer m_vertexBuffer;
+    VkDeviceAddress m_vertexBufferAddress;
+};
+
+struct GPUDrawPushConstants
+{
+    glm::mat4 m_worldMatrix;
+    VkDeviceAddress m_vertexBuffer;
+};

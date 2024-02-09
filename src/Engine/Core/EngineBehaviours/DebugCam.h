@@ -3,7 +3,6 @@
 #define DEBUGCAMSYSTEM_H_
 
 #include "../ECS/Behaviour.hpp"
-#include "DebugCam.h"
 
 #include <glm/glm.hpp>
 

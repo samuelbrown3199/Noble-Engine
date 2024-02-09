@@ -13,7 +13,7 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
 {
     Ray ray;
 
-    ray.m_rayOrigin = origin;
+    /*ray.m_rayOrigin = origin;
     ray.m_rayDirection = direction;
 
     std::vector<Renderable*>* screenObjects = Renderer::GetOnScreenObjects();
@@ -52,13 +52,13 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
             break;
     }
 
-    m_vRays.push_back(ray);
+    m_vRays.push_back(ray);*/
     return ray;
 }
 
 Ray Raycaster::GetRayToMousePosition(float maxDistance)
 {
-    glm::vec2 screenSize = Renderer::GetScreenSize();
+/*    glm::vec2 screenSize = Renderer::GetScreenSize();
 
     // converts a position from the 2d xpos, ypos to a normalized 3d direction
     float x = (2.0f * InputManager::m_iMouseX) / screenSize.x - 1.0f;
@@ -86,6 +86,9 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
         camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
         return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
     }
+    */
+
+    return Ray(); //temp line
 }
 
 

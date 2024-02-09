@@ -16,7 +16,7 @@ struct MeshRenderer : public Renderable
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	bool m_bCreatedDescriptorSets = false;
-	std::vector<GraphicsBuffer> m_uniformBuffers;
+	//std::vector<GraphicsBuffer> m_uniformBuffers;
 	std::vector<void*> m_uniformBuffersMapped;
 	std::vector<VkDescriptorSet> m_descriptorSets;
 
@@ -57,7 +57,7 @@ struct MeshRenderer : public Renderable
 		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
 			return;
 
-		m_uniformBuffers.clear();
+		//m_uniformBuffers.clear();
 		m_descriptorSets.clear();
 
 		m_texture = texture;

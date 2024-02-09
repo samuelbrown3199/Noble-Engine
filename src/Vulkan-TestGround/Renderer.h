@@ -91,6 +91,14 @@ public:
 	VkPipeline m_gradientPipeline;
 	VkPipelineLayout m_gradientPipelineLayout;
 
+	VkPipelineLayout m_trianglePipelineLayout;
+	VkPipeline m_trianglePipeline;
+
+	VkPipelineLayout m_meshPipelineLayout;
+	VkPipeline m_meshPipeline;
+
+	GPUMeshBuffers m_rectangle;
+
 	VkFence m_immediateFence;
 	VkCommandBuffer m_immediateCommandBuffer;
 	VkCommandPool m_immediateCommandPool;
@@ -119,8 +127,6 @@ public:
 	//draw loop
 	void draw();
 
-	void DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
-
 	//run main loop
 	void run();
 
@@ -132,6 +138,8 @@ private:
 	void DestroySwapchain();
 
 	void DrawBackground(VkCommandBuffer cmd);
+	void DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
+	void DrawGeometry(VkCommandBuffer cmd);
 
 	void InitializeVulkan();
 	void InitializeSwapchain();
@@ -140,6 +148,15 @@ private:
 	void InitializeDescriptors();
 	void InitializePipelines();
 	void InitializeBackgroundPipelines();
+	void InitializeTrianglePipelines();
+	void InitializeMeshPipelines();
+
+	void InitializeDefaultData();
 
 	void InitializeImgui();
+
+	AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+	void DestroyBuffer(const AllocatedBuffer& buffer);
+
+	GPUMeshBuffers UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
 };

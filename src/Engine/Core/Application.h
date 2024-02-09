@@ -32,13 +32,11 @@ private:
 	static bool m_bPlayMode;
 
 	NobleRegistry* m_registry;
-    Renderer* m_gameRenderer;
+    static Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
     ThreadingManager* m_threadManager;
     ResourceManager* m_resourceManager;
     Logger* m_logger;
-
-	VkDescriptorPool m_imguiPool;
 
     std::shared_ptr<IniFile> m_mainIniFile;
 
@@ -52,7 +50,6 @@ private:
 	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
 
 	std::string GetUniqueEntityID();
-	void InitializeImGui();
 
 public:
 
@@ -81,6 +78,8 @@ public:
 
 	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
 	static void ClearLoadedScene();
+
+	static Renderer* GetRenderer() { return m_gameRenderer; }
 
 	template<typename T>
 	static std::shared_ptr<T> BindDebugUI()

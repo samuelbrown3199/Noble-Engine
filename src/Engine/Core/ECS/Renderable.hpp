@@ -16,6 +16,9 @@ struct Renderable : public Component
 	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
 
+	GPUMeshBuffers m_meshBuffers;
+	GPUDrawPushConstants m_drawConstants;
+
 	bool m_bOnScreen = false;
 	float m_fDistanceToCam;
 
@@ -55,6 +58,8 @@ struct Renderable : public Component
 			Renderer::AddOnScreenObject(this);
 		else
 			return;
+
+		m_drawConstants.m_vertexBuffer = m_meshBuffers.m_vertexBufferAddress;
 
 		Camera* cam = Renderer::GetCamera();
 		if (cam != nullptr)

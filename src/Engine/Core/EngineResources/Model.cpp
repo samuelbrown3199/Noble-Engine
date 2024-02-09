@@ -1,7 +1,8 @@
 #include "Model.h"
 #include "../../Core/Logger.h"
-#include "../../Core/Graphics/BufferHelper.h"
 
+
+#include "../../Core/Graphics/VulkanTypes.h"
 #include "../../Core/ResourceManager.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -39,46 +40,53 @@ void Model::OnLoad()
 
     float xMin = 0, xMax = 0, yMin = 0, yMax = 0, zMin = 0, zMax = 0;
 
-    for (const auto& shape : shapes) {
-        for (const auto& index : shape.mesh.indices) {
+    for (const auto& shape : shapes)
+    {
+        for (const auto& index : shape.mesh.indices)
+        {
             Vertex vertex{};
 
-            vertex.pos = {
+            vertex.m_position = {
                 attrib.vertices[3 * index.vertex_index + 0],
                 attrib.vertices[3 * index.vertex_index + 1],
                 attrib.vertices[3 * index.vertex_index + 2]
             };
 
-            if (vertex.pos.x < xMin)
-                xMin = vertex.pos.x;
-            else if (vertex.pos.x > xMax)
-                xMax = vertex.pos.x;
+            if (vertex.m_position.x < xMin)
+                xMin = vertex.m_position.x;
+            else if (vertex.m_position.x > xMax)
+                xMax = vertex.m_position.x;
 
-            if (vertex.pos.z < zMin)
-                zMin = vertex.pos.z;
-            else if (vertex.pos.z > zMax)
-                zMax = vertex.pos.z;
+            if (vertex.m_position.z < zMin)
+                zMin = vertex.m_position.z;
+            else if (vertex.m_position.z > zMax)
+                zMax = vertex.m_position.z;
 
-            if (vertex.pos.y < yMin)
-                yMin = vertex.pos.y;
-            else if (vertex.pos.y > yMax)
-                yMax = vertex.pos.y;
+            if (vertex.m_position.y < yMin)
+                yMin = vertex.m_position.y;
+            else if (vertex.m_position.y > yMax)
+                yMax = vertex.m_position.y;
 
-            vertex.texCoord = 
-            {
-                attrib.texcoords[2 * index.texcoord_index + 0],
-                1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-            };
+            vertex.m_uvX = attrib.texcoords[2 * index.texcoord_index + 0];
+            vertex.m_uvY = 1.0f - attrib.texcoords[2 * index.texcoord_index + 1];
 
-            vertex.normal = 
+            vertex.m_normal = 
             {
                 attrib.normals[3 * index.normal_index + 0],
                 attrib.normals[3 * index.normal_index + 1],
                 attrib.normals[3 * index.normal_index + 2]
             };
 
+            vertex.m_colour =
+            {
+                1,
+                1,
+                1,
+                1
+            };
 
-            if (uniqueVertices.count(vertex) == 0) {
+            if (uniqueVertices.count(vertex) == 0)
+            {
                 uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
                 m_vertices.push_back(vertex);
             }
@@ -101,9 +109,7 @@ void Model::OnLoad()
         m_modelBoundingBox.push_back(bbox[i]);
     }
 
-    BufferHelper::CreateVertexBuffer(m_vertexBuffer, m_vertices);
-    BufferHelper::CreateIndexBuffer(m_indexBuffer, m_indices);
-
+    m_meshBuffer = Renderer::UploadMesh(m_indices, m_vertices);
     m_bIsLoaded = true;
 }
 
@@ -112,8 +118,6 @@ void Model::OnUnload()
     if (!m_bIsLoaded)
         return;
 
-    m_vertexBuffer.~GraphicsBuffer();
-    m_indexBuffer.~GraphicsBuffer();
     m_bIsLoaded = false;
 }
 

@@ -50,6 +50,8 @@ void Renderer::init()
     InitializeDescriptors();
     InitializePipelines();
 
+    InitializeDefaultData();
+
     InitializeImgui();
 
     // everything went fine
@@ -116,7 +118,11 @@ void Renderer::draw()
 
     DrawBackground(cmd);
 
-    vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+    DrawGeometry(cmd);
+
+    vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
@@ -169,6 +175,52 @@ void Renderer::DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView)
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
 
     vkCmdEndRendering(cmd);
+}
+
+void Renderer::DrawGeometry(VkCommandBuffer cmd)
+{
+    //Begin a render pass connected to our draw image. 
+    VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(m_drawImage.m_imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+
+    VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_drawExtent, &colorAttachment, nullptr);
+    vkCmdBeginRendering(cmd, &renderInfo);
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_trianglePipeline);
+
+    //set dynamic viewport and scissor
+    VkViewport viewport = {};
+    viewport.x = 0;
+    viewport.y = 0;
+    viewport.width = m_drawExtent.width;
+    viewport.height = m_drawExtent.height;
+    viewport.minDepth = 0.f;
+    viewport.maxDepth = 1.f;
+
+    vkCmdSetViewport(cmd, 0, 1, &viewport);
+
+    VkRect2D scissor = {};
+    scissor.offset.x = 0;
+    scissor.offset.y = 0;
+    scissor.extent.width = m_drawExtent.width;
+    scissor.extent.height = m_drawExtent.height;
+
+    vkCmdSetScissor(cmd, 0, 1, &scissor);
+
+	//launch a draw command to draw 3 vertices
+	vkCmdDraw(cmd, 3, 1, 0, 0);
+
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipeline);
+
+    GPUDrawPushConstants pushConstants;
+    pushConstants.m_worldMatrix = glm::mat4(1.0f);
+    pushConstants.m_vertexBuffer = m_rectangle.m_vertexBufferAddress;
+
+    vkCmdPushConstants(cmd, m_meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &pushConstants);
+    vkCmdBindIndexBuffer(cmd, m_rectangle.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+    vkCmdDrawIndexed(cmd, 6, 1, 0, 0, 0);
+
+	vkCmdEndRendering(cmd);
 }
 
 void Renderer::run()
@@ -477,6 +529,8 @@ void Renderer::InitializeDescriptors()
 void Renderer::InitializePipelines()
 {
     InitializeBackgroundPipelines();
+    InitializeTrianglePipelines();
+    InitializeMeshPipelines();
 }
 
 void Renderer::InitializeBackgroundPipelines()
@@ -562,6 +616,141 @@ void Renderer::InitializeBackgroundPipelines()
         });
 }
 
+void Renderer::InitializeTrianglePipelines()
+{
+    VkShaderModule triangleFragShader;
+    if (!vkutil::LoadShaderModule("colouredTriFrag.spv", m_device, &triangleFragShader))
+        throw std::exception();
+
+    VkShaderModule triangleVertShader;
+    if (!vkutil::LoadShaderModule("colouredTriVert.spv", m_device, &triangleVertShader))
+        throw std::exception();
+
+    //build the pipeline layout that controls the inputs/outputs of the shader
+    //we are not using descriptor sets or other systems yet, so no need to use anything other than empty default
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
+    if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_trianglePipelineLayout) != VK_SUCCESS)
+        throw std::exception();
+
+    PipelineBuilder pipelineBuilder;
+    //use the triangle layout we created
+    pipelineBuilder.m_pipelineLayout = m_trianglePipelineLayout;
+    //connecting the vertex and pixel shaders to the pipeline
+    pipelineBuilder.SetShaders(triangleVertShader, triangleFragShader);
+    //it will draw triangles
+    pipelineBuilder.SetInputTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+    //filled triangles
+    pipelineBuilder.SetPolygonMode(VK_POLYGON_MODE_FILL);
+    //no backface culling
+    pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE);
+    //no multisampling
+    pipelineBuilder.SetMultisamplingNone();
+    //no blending
+    pipelineBuilder.DisableBlending();
+    //no depth testing
+    pipelineBuilder.DisableDepthTest();
+
+    //connect the image format we will draw into, from draw image
+    pipelineBuilder.SetColorAttachmentFormat(m_drawImage.m_imageFormat);
+    pipelineBuilder.SetDepthFormat(VK_FORMAT_UNDEFINED);
+
+    //finally build the pipeline
+    m_trianglePipeline = pipelineBuilder.BuildPipeline(m_device);
+
+    //clean structures
+    vkDestroyShaderModule(m_device, triangleFragShader, nullptr);
+    vkDestroyShaderModule(m_device, triangleVertShader, nullptr);
+
+    m_mainDeletionQueue.push_function([&]() {
+        vkDestroyPipelineLayout(m_device, m_trianglePipelineLayout, nullptr);
+        vkDestroyPipeline(m_device, m_trianglePipeline, nullptr);
+    });
+}
+
+void Renderer::InitializeMeshPipelines()
+{
+    VkShaderModule triangleFragShader;
+    if (!vkutil::LoadShaderModule("colouredTriFrag.spv", m_device, &triangleFragShader))
+        throw std::exception();
+
+    VkShaderModule triangleVertShader;
+    if (!vkutil::LoadShaderModule("colouredRectVert.spv", m_device, &triangleVertShader))
+        throw std::exception();
+
+    VkPushConstantRange bufferRange{};
+    bufferRange.offset = 0;
+    bufferRange.size = sizeof(GPUDrawPushConstants);
+    bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
+    pipelineLayoutInfo.pPushConstantRanges = &bufferRange;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+
+    if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_meshPipelineLayout) != VK_SUCCESS)
+        throw std::exception();
+
+    PipelineBuilder pipelineBuilder;
+    //use the triangle layout we created
+    pipelineBuilder.m_pipelineLayout = m_meshPipelineLayout;
+    //connecting the vertex and pixel shaders to the pipeline
+    pipelineBuilder.SetShaders(triangleVertShader, triangleFragShader);
+    //it will draw triangles
+    pipelineBuilder.SetInputTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+    //filled triangles
+    pipelineBuilder.SetPolygonMode(VK_POLYGON_MODE_FILL);
+    //no backface culling
+    pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE);
+    //no multisampling
+    pipelineBuilder.SetMultisamplingNone();
+    //no blending
+    pipelineBuilder.DisableBlending();
+    //no depth testing
+    pipelineBuilder.DisableDepthTest();
+
+    //connect the image format we will draw into, from draw image
+    pipelineBuilder.SetColorAttachmentFormat(m_drawImage.m_imageFormat);
+    pipelineBuilder.SetDepthFormat(VK_FORMAT_UNDEFINED);
+
+    //finally build the pipeline
+    m_meshPipeline = pipelineBuilder.BuildPipeline(m_device);
+
+    //clean structures
+    vkDestroyShaderModule(m_device, triangleFragShader, nullptr);
+    vkDestroyShaderModule(m_device, triangleVertShader, nullptr);
+
+    m_mainDeletionQueue.push_function([&]() {
+        vkDestroyPipelineLayout(m_device, m_meshPipelineLayout, nullptr);
+        vkDestroyPipeline(m_device, m_meshPipeline, nullptr);
+    });
+}
+
+void Renderer::InitializeDefaultData()
+{
+    std::array<Vertex, 4> rect_vertices;
+
+    rect_vertices[0].m_position = { 0.5,-0.5, 0 };
+    rect_vertices[1].m_position = { 0.5,0.5, 0 };
+    rect_vertices[2].m_position = { -0.5,-0.5, 0 };
+    rect_vertices[3].m_position = { -0.5,0.5, 0 };
+
+    rect_vertices[0].m_colour = { 0,0, 0,1 };
+    rect_vertices[1].m_colour = { 0.5,0.5,0.5 ,1 };
+    rect_vertices[2].m_colour = { 1,0, 0,1 };
+    rect_vertices[3].m_colour = { 0,1, 0,1 };
+
+    std::array<uint32_t, 6> rect_indices;
+
+    rect_indices[0] = 0;
+    rect_indices[1] = 1;
+    rect_indices[2] = 2;
+
+    rect_indices[3] = 2;
+    rect_indices[4] = 1;
+    rect_indices[5] = 3;
+
+    m_rectangle = UploadMesh(rect_indices, rect_vertices);
+}
+
 void Renderer::InitializeImgui()
 {
     // 1: create descriptor pool for IMGUI
@@ -622,6 +811,74 @@ void Renderer::InitializeImgui()
         vkDestroyDescriptorPool(m_device, imguiPool, nullptr);
         ImGui_ImplVulkan_Shutdown();
     });
+}
+
+AllocatedBuffer Renderer::CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+{
+    VkBufferCreateInfo bufferInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+    bufferInfo.pNext = nullptr;
+    bufferInfo.size = allocSize;
+
+    bufferInfo.usage = usage;
+
+    VmaAllocationCreateInfo vmaAllocInfo = {};
+    vmaAllocInfo.usage = memoryUsage;
+    vmaAllocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+    AllocatedBuffer newBuffer;
+
+    if (vmaCreateBuffer(m_allocator, &bufferInfo, &vmaAllocInfo, &newBuffer.m_buffer, &newBuffer.m_allocation, &newBuffer.m_info) != VK_SUCCESS)
+        throw std::exception();
+
+    return newBuffer;
+}
+
+void Renderer::DestroyBuffer(const AllocatedBuffer& buffer)
+{
+    vmaDestroyBuffer(m_allocator, buffer.m_buffer, buffer.m_allocation);
+}
+
+GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices)
+{
+    const size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
+    const size_t indexBufferSize = indices.size() * sizeof(uint32_t);
+
+    GPUMeshBuffers newSurface;
+
+    newSurface.m_vertexBuffer = CreateBuffer(vertexBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+        VMA_MEMORY_USAGE_GPU_ONLY);
+
+    //Get buffer device address here.
+    VkBufferDeviceAddressInfo deviceAddressInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, .buffer = newSurface.m_vertexBuffer.m_buffer };
+    newSurface.m_vertexBufferAddress = vkGetBufferDeviceAddress(m_device, &deviceAddressInfo);
+
+    newSurface.m_indexBuffer = CreateBuffer(indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_GPU_ONLY);
+
+    AllocatedBuffer staging = CreateBuffer(vertexBufferSize + indexBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+    void* data = staging.m_allocation->GetMappedData();
+
+    //Copy into start of memory block, vertices
+    memcpy(data, vertices.data(), vertexBufferSize);
+    //Copy into the memory block, where the vertex buffer data ends.
+    memcpy((char*)data + vertexBufferSize, indices.data(), indexBufferSize);
+
+    ImmediateSubmit([&](VkCommandBuffer cmd) {
+        VkBufferCopy vertexCopy{ 0 };
+        vertexCopy.dstOffset = 0;
+        vertexCopy.srcOffset = 0;
+        vertexCopy.size = vertexBufferSize;
+
+        vkCmdCopyBuffer(cmd, staging.m_buffer, newSurface.m_vertexBuffer.m_buffer, 1, &vertexCopy);
+
+        VkBufferCopy indexCopy{ 0 };
+        indexCopy.dstOffset = 0;
+        indexCopy.srcOffset = vertexBufferSize;
+        indexCopy.size = indexBufferSize;
+
+        vkCmdCopyBuffer(cmd, staging.m_buffer, newSurface.m_indexBuffer.m_buffer, 1, &indexCopy);
+    });
+
+    DestroyBuffer(staging);
+    return newSurface;
 }
 
 void Renderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function)

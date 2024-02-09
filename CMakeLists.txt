@@ -144,15 +144,6 @@ set (
 
 	src/Engine/Core/Graphics/Renderer.h
 	src/Engine/Core/Graphics/Renderer.cpp
-
-	src/Engine/Core/Graphics/GraphicsPipeline.h
-	src/Engine/Core/Graphics/GraphicsPipeline.cpp
-
-	src/Engine/Core/Graphics/BufferHelper.h
-	src/Engine/Core/Graphics/BufferHelper.cpp
-
-	src/Engine/Core/Graphics/GraphicsBuffer.h
-	src/Engine/Core/Graphics/GraphicsBuffer.cpp
 	
 	src/Engine/Core/Graphics/VkBootstrap.h
 	src/Engine/Core/Graphics/VkBootstrap.cpp
@@ -162,9 +153,6 @@ set (
 	src/Engine/Core/Graphics/VulkanInitialisers.cpp
 
 	src/Engine/Core/Graphics/VulkanTypes.h
-
-	src/Engine/Core/Graphics/VulkanLoader.h
-	src/Engine/Core/Graphics/VulkanLoader.cpp
 
 	src/Engine/Core/Graphics/VulkanImages.h
 	src/Engine/Core/Graphics/VulkanImages.cpp

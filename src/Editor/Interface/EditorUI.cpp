@@ -144,10 +144,16 @@ void EditorUI::DoInterface()
 		ImGui::TreePop();
 	}
 
+	Renderer* renderer = Application::GetRenderer();
+
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 	ImGui::ColorEdit3("Clear Colour", (float*)&clearColour);
 	Renderer::SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
+
+	static float renderScale = renderer->GetRenderScale();
+	ImGui::DragFloat("Render Scale", &renderScale, 0.1f, 0.1f, 1.0f, "%.2f");
+	renderer->SetRenderScale(renderScale);
 
 	ImGui::End();
 

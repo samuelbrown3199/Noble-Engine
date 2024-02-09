@@ -2,7 +2,6 @@
 #include "../../Useful.h"
 #include "../../Core/Logger.h"
 #include "../../Core/Graphics/Renderer.h"
-#include "../../Core/Graphics/BufferHelper.h"
 
 #include "../../Core/ResourceManager.h"
 
@@ -24,7 +23,7 @@ void Texture::OnLoad()
         Logger::LogError("Failed to load texture image.", 2);
     }
 
-    GraphicsBuffer stagingBuffer;
+    /*GraphicsBuffer stagingBuffer;
     BufferHelper::CreateGraphicsBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer);
 
     //Buffer texture memory into Vulkan staging buffer.
@@ -42,7 +41,7 @@ void Texture::OnLoad()
     GenerateMipmaps(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, m_iWidth, m_iHeight, m_iMipLevels);
 
     CreateTextureImageView();
-    CreateTextureSampler(m_textureFilter);
+    CreateTextureSampler(m_textureFilter);*/
     m_bIsLoaded = true;
 }
 
@@ -77,7 +76,7 @@ void Texture::SetResourceToDefaults(std::shared_ptr<Resource> res)
 
 void Texture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
-    VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
+/*    VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
 
     VkFormatProperties formatProperties;
     vkGetPhysicalDeviceFormatProperties(Renderer::GetPhysicalDevice(), imageFormat, &formatProperties);
@@ -161,12 +160,12 @@ void Texture::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWi
         0, nullptr,
         1, &barrier);
 
-    Renderer::EndSingleTimeCommands(commandBuffer);
+    Renderer::EndSingleTimeCommands(commandBuffer);*/
 }
 
 void Texture::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 {
-    VkImageCreateInfo imageInfo{};
+    /*VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
     imageInfo.extent.width = width;
@@ -199,12 +198,12 @@ void Texture::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, V
         Logger::LogError("Failed to allocate image memory.", 2);
     }
 
-    vkBindImageMemory(Renderer::GetLogicalDevice(), image, imageMemory, 0);
+    vkBindImageMemory(Renderer::GetLogicalDevice(), image, imageMemory, 0);*/
 }
 
 void Texture::TransitionImageLayout(VkImage image, uint32_t mipLevels, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-    VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
+    /*VkCommandBuffer commandBuffer = Renderer::BeginSingleTimeCommand();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -274,7 +273,7 @@ void Texture::TransitionImageLayout(VkImage image, uint32_t mipLevels, VkFormat 
         1, &barrier
     );
 
-    Renderer::EndSingleTimeCommands(commandBuffer);
+    Renderer::EndSingleTimeCommands(commandBuffer);*/
 }
 
 void Texture::CreateTextureImageView()

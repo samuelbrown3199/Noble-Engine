@@ -6,16 +6,16 @@
 #include "../ECS/Entity.hpp"
 
 bool Sprite::m_bInitializedSpriteQuad = false;
-GraphicsBuffer Sprite::m_vertexBuffer;
-GraphicsBuffer Sprite::m_indexBuffer;
+//GraphicsBuffer Sprite::m_vertexBuffer;
+//GraphicsBuffer Sprite::m_indexBuffer;
 
-std::vector<Vertex> Sprite::vertices =
+/*std::vector<Vertex> Sprite::vertices =
 {
 	{{0.0f, 0.0f, 0.0}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
 	{{1.0f, 0.0f, 0.0}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
 	{{1.0f, 1.0f, 0.0}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
 	{{0.0f, 1.0f, 0.0}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-};
+};*/
 
 std::vector<glm::vec3> Sprite::boundingBox =
 {
@@ -32,27 +32,23 @@ std::vector<uint32_t> Sprite::indices =
 
 void Sprite::ClearSpriteBuffers()
 {
-	if (m_bInitializedSpriteQuad)
-	{
-		m_vertexBuffer.~GraphicsBuffer();
-		m_indexBuffer.~GraphicsBuffer();
-	}
+
 }
 
 void Sprite::PreRender()
 {
-	if (!m_bInitializedSpriteQuad)
+	/*if (!m_bInitializedSpriteQuad)
 	{
 		BufferHelper::CreateVertexBuffer(m_vertexBuffer, vertices);
 		BufferHelper::CreateIndexBuffer(m_indexBuffer, indices);
 
 		m_bInitializedSpriteQuad = true;
-	}
+	}*/
 }
 
 void Sprite::OnRender()
 {
-	m_vertices = &vertices;
+	/*m_vertices = &vertices;
 	m_boundingBox = &boundingBox;
 	m_indices = &indices;
 
@@ -91,5 +87,5 @@ void Sprite::OnRender()
 	vkCmdBindIndexBuffer(Renderer::GetCurrentCommandBuffer(), m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
 
 	vkCmdBindDescriptorSets(Renderer::GetCurrentCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::GetGraphicsPipeline()->GetPipelineLayout(), 0, 1, &m_descriptorSets[Renderer::GetCurrentFrame()], 0, nullptr);
-	vkCmdDrawIndexed(Renderer::GetCurrentCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+	vkCmdDrawIndexed(Renderer::GetCurrentCommandBuffer(), static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);*/
 }

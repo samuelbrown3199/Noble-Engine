@@ -21,85 +21,39 @@
 #include "GraphicsBuffer.h"
 #include "..\EngineComponents\Camera.h"
 
-struct Vertex
+#include "VulkanTypes.h"
+#include "VulkanDescriptors.h"
+
+struct DeletionQueue
 {
-	glm::vec3 pos;
-	glm::vec3 normal;
-	glm::vec2 texCoord;
+	std::deque<std::function<void()>> deletors;
 
-	bool operator==(const Vertex& other) const
-	{
-		return pos == other.pos && normal == other.normal && texCoord == other.texCoord;
+	void push_function(std::function<void()>&& function) {
+		deletors.push_back(function);
 	}
 
-	static VkVertexInputBindingDescription GetBindingDescription()
-	{
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	void flush() {
+		// reverse iterate the deletion queue to execute all the functions
+		for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+			(*it)(); //call functors
+		}
 
-		return bindingDescription;
+		deletors.clear();
 	}
+};
 
-	static std::array<VkVertexInputAttributeDescription, 3> GetAttributeDescriptions()
-	{
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+struct FrameData
+{
+	VkCommandPool m_commandPool;
+	VkCommandBuffer m_mainCommandBuffer;
 
-		//Vertex info here.
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+	VkSemaphore m_swapchainSemaphore, m_renderSemaphore;
+	VkFence m_renderFence;
 
-		//Color info here.
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, normal);
-
-		//UV info here.
-		attributeDescriptions[2].binding = 0;
-		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-		return attributeDescriptions;
-	}
+	DeletionQueue m_deletionQueue;
 };
 
 struct Renderable;
-
-namespace std
-{
-	template<> struct hash<Vertex>
-	{
-		size_t operator()(Vertex const& vertex) const
-		{
-			return ((hash<glm::vec3>()(vertex.pos) ^
-				(hash<glm::vec3>()(vertex.normal) << 1)) >> 1) ^
-				(hash<glm::vec2>()(vertex.texCoord) << 1);
-		}
-	};
-}
-
-struct UniformBufferObject
-{
-	glm::mat4 model;
-	glm::mat4 view;
-	glm::mat4 proj;
-};
-
-struct QueueFamilyIndices
-{
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-
-	bool IsComplete()
-	{
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
 
 struct SwapChainSupportDetails
 {
@@ -108,23 +62,13 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-struct FrameInformation
-{
-	VkSemaphore m_imageAvailable, m_renderFinished;
-	VkFence m_renderFence;
-
-	VkCommandPool m_commandPool;
-	VkCommandBuffer m_commandBuffer;
-
-	~FrameInformation();
-};
-
 struct Texture;
 struct Model;
 
-
 class Renderer
 {
+	friend class Application;
+
 private:
 	static SDL_Window* m_gameWindow;
 
@@ -135,7 +79,6 @@ private:
 	static VkSampleCountFlagBits m_msaaSamples;
 
 	static bool m_bVsync;
-
 	static glm::vec3 m_clearColour;
 
 	static VkInstance m_vulkanInstance;
@@ -143,30 +86,44 @@ private:
 	static VkPhysicalDevice m_physicalDevice;
 	static VkDevice m_device;
 	VkSurfaceKHR m_surface;
-	VkSwapchainKHR m_swapChain;
-	static VkFormat m_swapChainImageFormat;
-	static VkExtent2D m_swapChainExtent;
-	std::vector<VkImageView> m_vSwapChainImageViews;
-	std::vector<VkFramebuffer> m_vSwapchainFramebuffers;
 
-	static VkCommandBuffer m_currentCommandBuffer;
-	static std::vector<FrameInformation> m_vFrames;
+	//draw resources
+	AllocatedImage m_drawImage;
+	static VkExtent2D m_drawExtent;
+	float m_fRenderScale = 1.0f;
+
+	DescriptorAllocator m_globalDescriptorAllocator;
+
+	VkDescriptorSet m_drawImageDescriptors;
+	VkDescriptorSetLayout m_drawImageDescriptorLayout;
+
+	VkSwapchainKHR m_swapchain;
+	VkFormat m_swapchainImageFormat;
+	std::vector<VkImage> m_swapchainImages;
+	std::vector<VkImageView> m_swapchainImageViews;
+	VkExtent2D m_swapchainExtent;
+
+	FrameData m_frames[MAX_FRAMES_IN_FLIGHT];
 
 	static VkDescriptorPool m_descriptorPool;
 
 	static VkQueue m_graphicsQueue;
-	VkQueue m_presentQueue;
+	uint32_t m_graphicsQueueFamily;
 
 	VkImage m_colorImage;
 	VkDeviceMemory m_colorImageMemory;
 	VkImageView m_colorImageView;
 
-	std::vector<VkImage> m_vSwapChainImages;
-	static GraphicsPipeline* m_graphicsPipeline;
-
 	VkImage m_depthImage;
 	VkDeviceMemory m_depthImageMemory;
 	VkImageView m_depthImageView;
+
+	DeletionQueue m_mainDeletionQueue;
+	static VmaAllocator m_allocator;
+
+	static VkFence m_immediateFence;
+	static VkCommandBuffer m_immediateCommandBuffer;
+	static VkCommandPool m_immediateCommandPool;
 
 	static int m_iScreenWidth, m_iScreenHeight;
 	static float m_fNearPlane, m_fFarPlane;
@@ -176,6 +133,11 @@ private:
 
 	static std::vector<Renderable*> m_onScreenObjects;
 	static int m_iRenderableCount;
+
+	VkPipelineLayout m_meshPipelineLayout; //to be removed
+	VkPipeline m_meshPipeline;
+
+	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
 	const std::vector<const char*> m_vValidationLayers = {
 		"VK_LAYER_KHRONOS_validation"
@@ -192,54 +154,43 @@ private:
 	const bool m_bEnableValidationLayers = true;
 #endif
 
-	static glm::mat4 GenerateProjectionMatrix();
-	static glm::mat4 GenerateOrthographicMatrix();
-
 	void InitializeVulkan();
 	void CleanupVulkan();
 	void CreateInstance();
-	bool CheckValidationLayerSupport();
-	std::vector<const char*> GetRequiredExtensions();
-
-	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-	void SetupDebugMessenger();
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData);
 
-	void CreateSurface();
-
-	bool IsDeviceSuitable(VkPhysicalDevice device);
-	bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-	void PickPhysicalDevice();
-	QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-	VkSampleCountFlagBits GetMaxUsableSampleCount();
-
-	void CreateLogicalDevice();
+	void InitializeSwapchain();
+	void InitializeCommands();
+	void InitializeSyncStructures();
+	void InitializeDescriptors();
 
 	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-	void CreateSwapChain();
 
-	void CreateImageViews();
-	void CreateGraphicsPipeline();
-	void CreateFrameBuffers();
-	void StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-	void EndRecordingCommandBuffer(VkCommandBuffer commandBuffer);
-
-	void CreateFrameInformation();
-
-	void CleanupSwapchain();
+	void CreateSwapchain(uint32_t width, uint32_t height);
+	void DestroySwapchain();
 	void RecreateSwapchain();
 
 	static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 	void CreateColourResources();
 	void CreateDepthResources();
+	void InitializeImgui();
+
+	void ResetForNextFrame();
+	void DrawFrame();
+	void DrawBackground(VkCommandBuffer cmd);
+	void DrawGeometry(VkCommandBuffer cmd);
+	void DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
+
+	void InitializePipelines();
+	void InitializeMeshPipelines();
 
 public:
 
@@ -249,9 +200,6 @@ public:
 	static void AddOnScreenObject(Renderable* comp);
 	static std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
 
-	static uint32_t GetCurrentFrame() { return m_iCurrentFrame; }
-	static int GetFrameCount() { return MAX_FRAMES_IN_FLIGHT; }
-
 	static void UpdateScreenSize();
 	static void UpdateScreenSize(const int& _height, const int& _width);
 	static SDL_Window* GetWindow() { return m_gameWindow; }
@@ -259,6 +207,8 @@ public:
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
 	void SetWindowFullScreen(const int& _mode);
 	void SetVSyncMode(const int& _mode);
+	void SetRenderScale(const float& value);
+	float GetRenderScale() { return m_fRenderScale; }
 
 	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	static glm::vec3 GetClearColour() { return m_clearColour; }
@@ -268,6 +218,8 @@ public:
 	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
 	static glm::mat4 GenerateProjMatrix();
+	static glm::mat4 GenerateProjectionMatrix();
+	static glm::mat4 GenerateOrthographicMatrix();
 	static glm::mat4 GenerateUIOrthographicMatrix();
 	static glm::mat4 GenerateViewMatrix();
 
@@ -279,19 +231,10 @@ public:
 	static VkInstance GetVulkanInstance() { return m_vulkanInstance; }
 	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 	static VkDevice GetLogicalDevice() { return m_device; }
-	static VkFormat GetSwapchainImageFormat() { return m_swapChainImageFormat; }
-	static VkExtent2D GetSwapchainExtent() { return m_swapChainExtent; }
-
-	static VkCommandPool GetCurrentCommandPool() { return m_vFrames.at(m_iCurrentFrame).m_commandPool; }
-	static VkCommandBuffer GetCurrentCommandBuffer() { return m_currentCommandBuffer; }
-
-	void StartDrawFrame();
-	void EndDrawFrame();
 
 	static VkFormat FindDepthFormat();
 	static bool HasStencilComponent(VkFormat format);
 
-	static GraphicsPipeline* GetGraphicsPipeline() { return m_graphicsPipeline; }
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
 
@@ -300,14 +243,12 @@ public:
 	static size_t GetOnScreenRenderableCount() { return m_onScreenObjects.size(); }
 	static void GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount);
 
-	//-------------------------------BUFFER STUFFS-------------------------------------
+	static void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
 
-	static VkCommandBuffer BeginSingleTimeCommand();
-	static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+	static AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
+	static void DestroyBuffer(const AllocatedBuffer& buffer);
 
-	void CreateDescriptorPool();
-
-	//---------------------------------------------------------------------------------
+	static GPUMeshBuffers UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
 

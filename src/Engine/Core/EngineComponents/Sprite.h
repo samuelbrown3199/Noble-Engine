@@ -5,7 +5,6 @@
 #include "Transform.h"
 #include "../ResourceManager.h"
 #include "../EngineResources/Texture.h"
-#include "../Graphics/GraphicsBuffer.h"
 
 #include <glm/glm.hpp>
 
@@ -15,7 +14,7 @@ struct Sprite : public Renderable
 	glm::vec4 m_colour = glm::vec4();
 
 	bool m_bCreatedDescriptorSets = false;
-	std::vector<GraphicsBuffer> m_uniformBuffers;
+	//std::vector<GraphicsBuffer> m_uniformBuffers;
 	std::vector<void*> m_uniformBuffersMapped;
 	std::vector<VkDescriptorSet> m_descriptorSets;
 
@@ -23,8 +22,8 @@ struct Sprite : public Renderable
 	static std::vector<Vertex> vertices;
 	static std::vector<glm::vec3> boundingBox;
 	static std::vector<uint32_t> indices;
-	static GraphicsBuffer m_vertexBuffer;
-	static GraphicsBuffer m_indexBuffer;
+	/*static GraphicsBuffer m_vertexBuffer;
+	static GraphicsBuffer m_indexBuffer;*/
 
 	static void ClearSpriteBuffers();
 
@@ -83,7 +82,7 @@ struct Sprite : public Renderable
 		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
 			return;
 
-		m_uniformBuffers.clear();
+		//m_uniformBuffers.clear();
 		m_descriptorSets.clear();
 
 		m_spriteTexture = sprite;

@@ -29,10 +29,15 @@ public:
     void SetPolygonMode(VkPolygonMode mode);
     void SetCullMode(VkCullModeFlags cullMode, VkFrontFace frontFace);
     void SetMultisamplingNone();
+
     void DisableBlending();
+    void EnableBlendingAdditive();
+    void EnableBlendingAlphaBlend();
+
     void SetColorAttachmentFormat(VkFormat format);
     void SetDepthFormat(VkFormat format);
     void DisableDepthTest();
+    void EnableDepthTest(bool depthWriteEnable, VkCompareOp op);
 
     VkPipeline BuildPipeline(VkDevice device);
 };

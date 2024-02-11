@@ -10,13 +10,6 @@
 #include <SDL/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/ext.hpp>
-#include <glm/gtx/hash.hpp>
-
 #include "GraphicsPipeline.h"
 #include "GraphicsBuffer.h"
 #include "..\EngineComponents\Camera.h"
@@ -51,6 +44,17 @@ struct FrameData
 	VkFence m_renderFence;
 
 	DeletionQueue m_deletionQueue;
+	DescriptorAllocatorGrowable m_frameDescriptors;
+};
+
+struct GPUSceneData 
+{
+	glm::mat4 view;
+	glm::mat4 proj;
+	glm::mat4 viewproj;
+	glm::vec4 ambientColor;
+	glm::vec4 sunlightDirection;
+	glm::vec4 sunlightColor;
 };
 
 struct Renderable;
@@ -74,7 +78,6 @@ private:
 
 	uint32_t imageIndex;
 	static uint32_t m_iCurrentFrame;
-	const static int MAX_OBJECTS = 2048; //TEMPORARY
 	const static int MAX_FRAMES_IN_FLIGHT = 2;
 	static VkSampleCountFlagBits m_msaaSamples;
 
@@ -89,8 +92,10 @@ private:
 
 	//draw resources
 	AllocatedImage m_drawImage;
+	AllocatedImage m_depthImage;
 	static VkExtent2D m_drawExtent;
 	float m_fRenderScale = 1.0f;
+	VkFilter m_drawFilter = VK_FILTER_LINEAR;
 
 	DescriptorAllocator m_globalDescriptorAllocator;
 
@@ -110,13 +115,10 @@ private:
 	static VkQueue m_graphicsQueue;
 	uint32_t m_graphicsQueueFamily;
 
-	VkImage m_colorImage;
-	VkDeviceMemory m_colorImageMemory;
-	VkImageView m_colorImageView;
+	GPUSceneData m_sceneData;
+	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 
-	VkImage m_depthImage;
-	VkDeviceMemory m_depthImageMemory;
-	VkImageView m_depthImageView;
+	VkDescriptorSetLayout m_singleImageDescriptorLayout;
 
 	DeletionQueue m_mainDeletionQueue;
 	static VmaAllocator m_allocator;
@@ -136,6 +138,11 @@ private:
 
 	VkPipelineLayout m_meshPipelineLayout; //to be removed
 	VkPipeline m_meshPipeline;
+
+	AllocatedImage m_errorCheckerboardImage;
+
+	VkSampler m_defaultSamplerLinear;
+	VkSampler m_defaultSamplerNearest;
 
 	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
@@ -171,7 +178,6 @@ private:
 	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 	void CreateSwapchain(uint32_t width, uint32_t height);
 	void DestroySwapchain();
@@ -179,8 +185,6 @@ private:
 
 	static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
-	void CreateColourResources();
-	void CreateDepthResources();
 	void InitializeImgui();
 
 	void ResetForNextFrame();
@@ -191,6 +195,8 @@ private:
 
 	void InitializePipelines();
 	void InitializeMeshPipelines();
+
+	void InitializeDefaultData();
 
 public:
 
@@ -209,6 +215,7 @@ public:
 	void SetVSyncMode(const int& _mode);
 	void SetRenderScale(const float& value);
 	float GetRenderScale() { return m_fRenderScale; }
+	void SetDrawImageFilter(const int& val);
 
 	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	static glm::vec3 GetClearColour() { return m_clearColour; }
@@ -232,9 +239,6 @@ public:
 	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 	static VkDevice GetLogicalDevice() { return m_device; }
 
-	static VkFormat FindDepthFormat();
-	static bool HasStencilComponent(VkFormat format);
-
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
 
@@ -245,10 +249,14 @@ public:
 
 	static void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
 
+	//Functions below here likely to be moved/removed at some point
 	static AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
 	static void DestroyBuffer(const AllocatedBuffer& buffer);
-
 	static GPUMeshBuffers UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
+	AllocatedImage CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
+	AllocatedImage CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
+	void DestroyImage(const AllocatedImage& img);
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
 

@@ -116,6 +116,30 @@ void PipelineBuilder::DisableBlending()
     m_colorBlendAttachment.blendEnable = VK_FALSE;
 }
 
+void PipelineBuilder::EnableBlendingAdditive()
+{
+    m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    m_colorBlendAttachment.blendEnable = VK_TRUE;
+    m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+    m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+    m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+}
+
+void PipelineBuilder::EnableBlendingAlphaBlend()
+{
+    m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    m_colorBlendAttachment.blendEnable = VK_TRUE;
+    m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+    m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+    m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+    m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+}
+
 void PipelineBuilder::SetColorAttachmentFormat(VkFormat format)
 {
     m_colorAttachmentFormat = format;
@@ -137,8 +161,21 @@ void PipelineBuilder::DisableDepthTest()
     m_depthStencil.stencilTestEnable = VK_FALSE;
     m_depthStencil.front = {};
     m_depthStencil.back = {};
-    m_depthStencil.minDepthBounds = 0.f;
-    m_depthStencil.maxDepthBounds = 1.f;
+    m_depthStencil.minDepthBounds = 0.0f;
+    m_depthStencil.maxDepthBounds = 1.0f;
+}
+
+void PipelineBuilder::EnableDepthTest(bool depthWriteEnable, VkCompareOp op)
+{
+    m_depthStencil.depthTestEnable = VK_TRUE;
+    m_depthStencil.depthWriteEnable = depthWriteEnable;
+    m_depthStencil.depthCompareOp = op;
+    m_depthStencil.depthBoundsTestEnable = VK_FALSE;
+    m_depthStencil.stencilTestEnable = VK_FALSE;
+    m_depthStencil.front = {};
+    m_depthStencil.back = {};
+    m_depthStencil.minDepthBounds = 0.0f;
+    m_depthStencil.maxDepthBounds = 1.0f;
 }
 
 VkPipeline PipelineBuilder::BuildPipeline(VkDevice device)

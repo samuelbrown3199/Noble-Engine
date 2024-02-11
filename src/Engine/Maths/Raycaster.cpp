@@ -13,7 +13,7 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
 {
     Ray ray;
 
-    /*ray.m_rayOrigin = origin;
+    ray.m_rayOrigin = origin;
     ray.m_rayDirection = direction;
 
     std::vector<Renderable*>* screenObjects = Renderer::GetOnScreenObjects();
@@ -30,9 +30,9 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
             if (transform == nullptr)
                 continue;
 
-            glm::vec3 pos1 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert)).pos, 1);
-            glm::vec3 pos2 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+1)).pos, 1);
-            glm::vec3 pos3 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+2)).pos, 1);
+            glm::vec3 pos1 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert)).m_position, 1);
+            glm::vec3 pos2 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+1)).m_position, 1);
+            glm::vec3 pos3 = transform->m_transformMat * glm::vec4(screenObjects->at(i)->m_vertices->at(screenObjects->at(i)->m_indices->at(vert+2)).m_position, 1);
 
             bool hit = glm::intersectRayTriangle(ray.m_rayOrigin, ray.m_rayDirection, pos1, pos2, pos3, baryPos, hitDis);
 
@@ -52,13 +52,13 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
             break;
     }
 
-    m_vRays.push_back(ray);*/
+    m_vRays.push_back(ray);
     return ray;
 }
 
 Ray Raycaster::GetRayToMousePosition(float maxDistance)
 {
-/*    glm::vec2 screenSize = Renderer::GetScreenSize();
+    glm::vec2 screenSize = Renderer::GetScreenSize();
 
     // converts a position from the 2d xpos, ypos to a normalized 3d direction
     float x = (2.0f * InputManager::m_iMouseX) / screenSize.x - 1.0f;
@@ -86,9 +86,6 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
         camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
         return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
     }
-    */
-
-    return Ray(); //temp line
 }
 
 

@@ -29,7 +29,7 @@ void vkutil::TransitionImage(VkCommandBuffer cmd, VkImage image, VkImageLayout c
     vkCmdPipelineBarrier2(cmd, &depInfo);
 }
 
-void vkutil::CopyImageToImage(VkCommandBuffer cmd, VkImage source, VkImage destination, VkExtent2D srcSize, VkExtent2D dstSize)
+void vkutil::CopyImageToImage(VkCommandBuffer cmd, VkImage source, VkImage destination, VkExtent2D srcSize, VkExtent2D dstSize, VkFilter filter)
 {
 	VkImageBlit2 blitRegion{ .sType = VK_STRUCTURE_TYPE_IMAGE_BLIT_2, .pNext = nullptr };
 
@@ -56,7 +56,7 @@ void vkutil::CopyImageToImage(VkCommandBuffer cmd, VkImage source, VkImage desti
 	blitInfo.dstImageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	blitInfo.srcImage = source;
 	blitInfo.srcImageLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-	blitInfo.filter = VK_FILTER_LINEAR;
+	blitInfo.filter = filter;
 	blitInfo.regionCount = 1;
 	blitInfo.pRegions = &blitRegion;
 

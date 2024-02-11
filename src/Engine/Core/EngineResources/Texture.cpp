@@ -50,10 +50,10 @@ void Texture::OnUnload()
     if (!m_bIsLoaded)
         return;
 
-    vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
-    vkDestroyImageView(Renderer::GetLogicalDevice(), m_textureImageView, nullptr);
-    vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);
-    vkFreeMemory(Renderer::GetLogicalDevice(), m_textureImageMemory, nullptr);
+    //vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
+    //vkDestroyImageView(Renderer::GetLogicalDevice(), m_textureImageView, nullptr);
+    //vkDestroyImage(Renderer::GetLogicalDevice(), m_textureImage, nullptr);
+    //vkFreeMemory(Renderer::GetLogicalDevice(), m_textureImageMemory, nullptr);
     m_bIsLoaded = false;
 }
 

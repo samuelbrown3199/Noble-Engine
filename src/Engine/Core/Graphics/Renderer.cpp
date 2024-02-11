@@ -21,11 +21,12 @@
 
 #include "../Registry.h"
 
-//temp includes
-#include "../ResourceManager.h"
-#include "BufferHelper.h"
-#include "../EngineResources/Texture.h"
-#include "../EngineResources/Model.h"
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtx/hash.hpp>
 
 #define VMA_IMPLEMENTATION
 #include "vma/vk_mem_alloc.h"
@@ -102,6 +103,8 @@ void Renderer::InitializeVulkan()
 	InitializeSyncStructures();
 	InitializeDescriptors();
 	InitializePipelines(); //too be removed
+
+	InitializeDefaultData();
 
 	InitializeImgui();
 
@@ -236,7 +239,7 @@ void Renderer::InitializeSwapchain()
 	drawImageUsages |= VK_IMAGE_USAGE_STORAGE_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	VkImageCreateInfo rimgInfo = vkinit::ImageCreateInfo(m_drawImage.m_imageFormat, drawImageUsages, drawImageExtent);
+	VkImageCreateInfo rimgInfo = vkinit::ImageCreateInfo(m_drawImage.m_imageFormat, drawImageUsages, m_drawImage.m_imageExtent);
 
 	VmaAllocationCreateInfo rimgAllocInfo = {};
 	rimgAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -247,12 +250,32 @@ void Renderer::InitializeSwapchain()
 	VkImageViewCreateInfo rviewInfo = vkinit::ImageViewCreateInfo(m_drawImage.m_imageFormat, m_drawImage.m_image, VK_IMAGE_ASPECT_COLOR_BIT);
 
 	if (vkCreateImageView(m_device, &rviewInfo, nullptr, &m_drawImage.m_imageView) != VK_SUCCESS)
-		throw std::exception();
+		Logger::LogError("Failed to create draw texture image view.", 2);
+
+	m_depthImage.m_imageFormat = VK_FORMAT_D32_SFLOAT;
+	m_depthImage.m_imageExtent = drawImageExtent;
+
+	VkImageUsageFlags depthImageUsages{};
+	depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+	VkImageCreateInfo dimg_info = vkinit::ImageCreateInfo(m_depthImage.m_imageFormat, depthImageUsages, drawImageExtent);
+
+	//allocate and create the image
+	vmaCreateImage(m_allocator, &dimg_info, &rimgAllocInfo, &m_depthImage.m_image, &m_depthImage.m_allocation, nullptr);
+
+	//build a image-view for the draw image to use for rendering
+	VkImageViewCreateInfo dview_info = vkinit::ImageViewCreateInfo(m_depthImage.m_imageFormat, m_depthImage.m_image, VK_IMAGE_ASPECT_DEPTH_BIT);
+
+	if (vkCreateImageView(m_device, &dview_info, nullptr, &m_depthImage.m_imageView) != VK_SUCCESS)
+		Logger::LogError("Failed to create depth texture image view.", 2);
 
 	m_mainDeletionQueue.push_function([=]()
 	{
 		vkDestroyImageView(m_device, m_drawImage.m_imageView, nullptr);
 		vmaDestroyImage(m_allocator, m_drawImage.m_image, m_drawImage.m_allocation);
+
+		vkDestroyImageView(m_device, m_depthImage.m_imageView, nullptr);
+		vmaDestroyImage(m_allocator, m_depthImage.m_image, m_depthImage.m_allocation);
 	});
 }
 
@@ -335,21 +358,40 @@ void Renderer::InitializeDescriptors()
 
 	m_drawImageDescriptors = m_globalDescriptorAllocator.Allocate(m_device, m_drawImageDescriptorLayout);
 
-	VkDescriptorImageInfo imgInfo = {};
-	imgInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-	imgInfo.imageView = m_drawImage.m_imageView;
+	DescriptorWriter writer;
+	writer.WriteImage(0, m_drawImage.m_imageView, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_GENERAL, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+	writer.UpdateSet(m_device, m_drawImageDescriptors);
 
-	VkWriteDescriptorSet drawImageWrite = {};
-	drawImageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	drawImageWrite.pNext = nullptr;
+	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		std::vector<DescriptorAllocatorGrowable::PoolSizeRatio> frameSizes =
+		{
+			{VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 3},
+			{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3 },
+			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3 },
+			{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4 },
+		};
 
-	drawImageWrite.dstBinding = 0;
-	drawImageWrite.dstSet = m_drawImageDescriptors;
-	drawImageWrite.descriptorCount = 1;
-	drawImageWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	drawImageWrite.pImageInfo = &imgInfo;
+		m_frames[i].m_frameDescriptors = DescriptorAllocatorGrowable{};
+		m_frames[i].m_frameDescriptors.Initialize(m_device, 1000, frameSizes);
 
-	vkUpdateDescriptorSets(m_device, 1, &drawImageWrite, 0, nullptr);
+		m_mainDeletionQueue.push_function([&, i]()
+			{
+				m_frames[i].m_frameDescriptors.DestroyPools(m_device);
+			});
+	}
+
+	{
+		DescriptorLayoutBuilder builder;
+		builder.AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+		m_gpuSceneDataDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		DescriptorLayoutBuilder builder;
+		builder.AddBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+		m_singleImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
 }
 
 SwapChainSupportDetails Renderer::QuerySwapChainSupport(VkPhysicalDevice device)
@@ -411,27 +453,6 @@ VkPresentModeKHR Renderer::ChooseSwapPresentMode(const std::vector<VkPresentMode
 	return VK_PRESENT_MODE_MAILBOX_KHR;
 }
 
-VkExtent2D Renderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-		return capabilities.currentExtent;
-	}
-	else {
-		int width, height;
-		SDL_Vulkan_GetDrawableSize(m_gameWindow, &width, &height);
-
-		VkExtent2D actualExtent = {
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
-		};
-
-		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-		return actualExtent;
-	}
-}
-
 void Renderer::CreateSwapchain(uint32_t width, uint32_t height)
 {
 	vkb::SwapchainBuilder swapchainBuilder{ m_physicalDevice, m_device, m_surface };
@@ -465,11 +486,6 @@ void Renderer::DestroySwapchain()
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-bool Renderer::HasStencilComponent(VkFormat format)
-{
-	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-}
-
 VkFormat Renderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
 	for (VkFormat format : candidates)
@@ -490,31 +506,6 @@ VkFormat Renderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
 	Logger::LogError("Failed to find supported format.", 2);
 	VkFormat error;
 	return error;
-}
-
-VkFormat Renderer::FindDepthFormat()
-{
-	return FindSupportedFormat(
-		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
-}
-
-void Renderer::CreateColourResources()
-{
-	VkFormat colorFormat = m_swapchainImageFormat;
-
-	Texture::CreateImage(m_swapchainExtent.width, m_swapchainExtent.height, 1, m_msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_colorImage, m_colorImageMemory);
-	m_colorImageView = CreateImageView(m_colorImage, 1, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT);
-}
-
-void Renderer::CreateDepthResources()
-{
-	VkFormat depthFormat = FindDepthFormat();
-	Texture::CreateImage(m_swapchainExtent.width, m_swapchainExtent.height, 1, m_msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory);
-	m_depthImageView = CreateImageView(m_depthImage, 1, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-	Texture::TransitionImageLayout(m_depthImage, 1, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
 void Renderer::InitializeImgui()
@@ -583,6 +574,7 @@ void Renderer::InitializeImgui()
 
 void Renderer::ResetForNextFrame()
 {
+	m_iRenderableCount = 0;
 	m_onScreenObjects.clear();
 
 	//make imgui calculate internal draw structures
@@ -595,6 +587,7 @@ void Renderer::DrawFrame()
 		throw std::exception();
 
 	GetCurrentFrame().m_deletionQueue.flush();
+	GetCurrentFrame().m_frameDescriptors.ClearPools(m_device);
 
 	if (vkResetFences(m_device, 1, &GetCurrentFrame().m_renderFence) != VK_SUCCESS)
 		throw std::exception();
@@ -606,6 +599,9 @@ void Renderer::DrawFrame()
 	VkCommandBuffer cmd = GetCurrentFrame().m_mainCommandBuffer;
 	if (vkResetCommandBuffer(cmd, 0) != VK_SUCCESS)
 		throw std::exception();
+
+	if (m_fRenderScale == 0)
+		Logger::LogError("Render scale is set to 0. This should never happen.", 2);
 
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
 	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
@@ -619,13 +615,14 @@ void Renderer::DrawFrame()
 	DrawBackground(cmd);
 
 	vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	vkutil::TransitionImage(cmd, m_depthImage.m_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
 	DrawGeometry(cmd);
 
 	vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-	vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
+	vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
 
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
@@ -683,10 +680,25 @@ void Renderer::DrawBackground(VkCommandBuffer cmd)
 
 void Renderer::DrawGeometry(VkCommandBuffer cmd)
 {
+	AllocatedBuffer gpuSceneDataBuffer = CreateBuffer(sizeof(GPUSceneData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU);
+	GetCurrentFrame().m_deletionQueue.push_function([=, this]()
+		{
+			DestroyBuffer(gpuSceneDataBuffer);
+		});
+
+	GPUSceneData* sceneUniformData = (GPUSceneData*)gpuSceneDataBuffer.m_allocation->GetMappedData();
+	*sceneUniformData = m_sceneData;
+
+	VkDescriptorSet globalDescriptor = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_gpuSceneDataDescriptorLayout);
+
+	DescriptorWriter writer;
+	writer.WriteBuffer(0, gpuSceneDataBuffer.m_buffer, sizeof(GPUSceneData), 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+	writer.UpdateSet(m_device, globalDescriptor);
+
 	//Begin a render pass connected to our draw image. 
 	VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(m_drawImage.m_imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
-
-	VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_drawExtent, &colorAttachment, nullptr);
+	VkRenderingAttachmentInfo depthAttachment = vkinit::DepthAttachmentInfo(m_depthImage.m_imageView, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
+	VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_drawExtent, &colorAttachment, &depthAttachment);
 	vkCmdBeginRendering(cmd, &renderInfo);
 
 	//set dynamic viewport and scissor
@@ -695,8 +707,8 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	viewport.y = 0;
 	viewport.width = m_drawExtent.width;
 	viewport.height = m_drawExtent.height;
-	viewport.minDepth = 0.f;
-	viewport.maxDepth = 1.f;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
 
 	vkCmdSetViewport(cmd, 0, 1, &viewport);
 
@@ -709,6 +721,14 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	vkCmdSetScissor(cmd, 0, 1, &scissor);
 
 	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipeline);
+
+	VkDescriptorSet imageSet = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_singleImageDescriptorLayout);
+	{
+		DescriptorWriter writer;
+		writer.WriteImage(0, m_errorCheckerboardImage.m_imageView, m_defaultSamplerNearest, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+		writer.UpdateSet(m_device, imageSet);
+	}
+	vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipelineLayout, 0, 1, &imageSet, 0, nullptr);
 
 	for (int i = 0; i < m_onScreenObjects.size(); i++)
 	{
@@ -755,6 +775,8 @@ void Renderer::InitializeMeshPipelines()
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
 	pipelineLayoutInfo.pPushConstantRanges = &bufferRange;
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &m_singleImageDescriptorLayout;
+	pipelineLayoutInfo.setLayoutCount = 1;
 
 	if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_meshPipelineLayout) != VK_SUCCESS)
 		throw std::exception();
@@ -774,12 +796,11 @@ void Renderer::InitializeMeshPipelines()
 	pipelineBuilder.SetMultisamplingNone();
 	//no blending
 	pipelineBuilder.DisableBlending();
-	//no depth testing
-	pipelineBuilder.DisableDepthTest();
+	pipelineBuilder.EnableDepthTest(true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
 	//connect the image format we will draw into, from draw image
 	pipelineBuilder.SetColorAttachmentFormat(m_drawImage.m_imageFormat);
-	pipelineBuilder.SetDepthFormat(VK_FORMAT_UNDEFINED);
+	pipelineBuilder.SetDepthFormat(m_depthImage.m_imageFormat);
 
 	//finally build the pipeline
 	m_meshPipeline = pipelineBuilder.BuildPipeline(m_device);
@@ -794,134 +815,39 @@ void Renderer::InitializeMeshPipelines()
 	});
 }
 
-/*void Renderer::StartDrawFrame()
+void Renderer::InitializeDefaultData()
 {
-	m_onScreenObjects.clear();
-	vkWaitForFences(m_device, 1, &m_frames[m_iCurrentFrame].m_renderFence, VK_TRUE, UINT64_MAX);
-	m_currentCommandBuffer = m_frames[m_iCurrentFrame].m_mainCommandBuffer;
-
-	m_iRenderableCount = 0;
-
-	VkResult result = vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_frames[m_iCurrentFrame].m_imageAvailable, VK_NULL_HANDLE, &imageIndex);
-	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	//checkerboard image
+	glm::ivec3 black = glm::ivec3(0,0,0);
+	glm::ivec3 magenta = glm::ivec3(83, 0, 99);
+	char* pixelColours = new char[(16*16)*4];
+	for (int x = 0; x < 16; x++)
 	{
-		RecreateSwapchain();
-		return;
+		for (int y = 0; y < 16; y++)
+		{
+			int pixelPos = (x + 16 * y) * 4;
+			pixelColours[pixelPos] = ((x % 2) ^ (y % 2)) ? magenta.x : black.x;
+			pixelColours[pixelPos+1] = ((x % 2) ^ (y % 2)) ? magenta.y : black.y;
+			pixelColours[pixelPos + 2] = ((x % 2) ^ (y % 2)) ? magenta.z : black.z;
+			pixelColours[pixelPos + 3] = 255;
+		}
 	}
-	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-	{
-		Logger::LogError("Failed to acquire swap chain image.", 2);
-	}
+	m_errorCheckerboardImage = CreateImage(pixelColours, VkExtent3D{ 16, 16, 1 }, VK_FORMAT_R8G8B8A8_UNORM,
+		VK_IMAGE_USAGE_SAMPLED_BIT);
 
-	vkResetFences(m_device, 1, &m_vFrames[m_iCurrentFrame].m_renderFence);
+	delete[] pixelColours;
 
-	//Frame rendering wants to start with this stuff.
-	vkResetCommandBuffer(m_currentCommandBuffer, 0);
+	VkSamplerCreateInfo sampl = { .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 
-	ImGui::Render();
+	sampl.magFilter = VK_FILTER_NEAREST;
+	sampl.minFilter = VK_FILTER_NEAREST;
 
-	StartRecordingCommandBuffer(m_currentCommandBuffer, imageIndex);
+	vkCreateSampler(m_device, &sampl, nullptr, &m_defaultSamplerNearest);
+
+	sampl.magFilter = VK_FILTER_LINEAR;
+	sampl.minFilter = VK_FILTER_LINEAR;
+	vkCreateSampler(m_device, &sampl, nullptr, &m_defaultSamplerLinear);
 }
-
-void Renderer::StartRecordingCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
-{
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0; // Optional
-	beginInfo.pInheritanceInfo = nullptr; // Optional
-
-	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-	{
-		Logger::LogError("Failed to begin recording command buffer.", 2);
-	}
-
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_graphicsPipeline->GetRenderPass();
-	renderPassInfo.framebuffer = m_vSwapchainFramebuffers[imageIndex];
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = m_swapChainExtent;
-
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = { {m_clearColour.x, m_clearColour.y, m_clearColour.z, 1.0f} };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	//Render pass is now beginnning.
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-	//Bind our graphics pipeline
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline->GetGraphicsPipeline());
-
-	//Dynamic setting of viewport and scissor, as setup in the pipeline.
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(m_swapChainExtent.width);
-	viewport.height = static_cast<float>(m_swapChainExtent.height);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = m_swapChainExtent;
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-}
-
-void Renderer::EndDrawFrame() //function is super slow, not sure why yet.
-{
-	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_currentCommandBuffer);
-	EndRecordingCommandBuffer(m_currentCommandBuffer);
-
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-	VkSemaphore waitSemaphores[] = { m_vFrames[m_iCurrentFrame].m_imageAvailable };
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &m_currentCommandBuffer;
-
-	VkSemaphore signalSemaphores[] = { m_vFrames[m_iCurrentFrame].m_renderFinished };
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
-
-	//Submit command buffer to queue.
-	if (vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, m_vFrames[m_iCurrentFrame].m_renderFence) != VK_SUCCESS)
-	{
-		Logger::LogError("Failed to submit draw command buffer.", 2);
-	}
-
-	//Present the rendered stuff to screen.
-	VkPresentInfoKHR presentInfo{};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphores;
-
-	VkSwapchainKHR swapChains[] = { m_swapChain };
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
-	presentInfo.pImageIndices = &imageIndex;
-	presentInfo.pResults = nullptr; // Optional
-
-	VkResult result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
-	if (result == VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR)
-	{
-		RecreateSwapchain();
-	}
-	else if (result != VK_SUCCESS)
-	{
-		Logger::LogError("Failed to present swap chain image.", 2);
-	}
-
-	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-}*/
-
 
 
 VkImageView Renderer::CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags)
@@ -1015,6 +941,16 @@ void Renderer::SetRenderScale(const float& value)
 	Logger::LogInformation(FormatString("Set render scale to %.2f", m_fRenderScale));
 }
 
+void Renderer::SetDrawImageFilter(const int& val)
+{ 
+	if (val != 0 && val != 1)
+	{
+		Logger::LogError(FormatString("Tried to set draw image filter to wrong value %d. Expected a value of either 0 or 1.", val), 0);
+		return;
+	}
+	m_drawFilter = (VkFilter)val;
+}
+
 glm::mat4 Renderer::GenerateProjMatrix()
 {
 	if (m_camera == nullptr)
@@ -1036,7 +972,7 @@ glm::mat4 Renderer::GenerateProjectionMatrix()
 
 glm::mat4 Renderer::GenerateOrthographicMatrix()
 {
-	glm::mat4 orthoMatrix = glm::ortho(-1.0f, (m_camera->m_scale / m_iScreenHeight), (m_camera->m_scale / m_iScreenWidth), -1.0f, m_fNearPlane, m_fFarPlane); //need to readd scale and ratio is properly to screen size
+	glm::mat4 orthoMatrix = glm::ortho(-1.0f, (m_camera->m_scale / m_drawExtent.width), (m_camera->m_scale / m_drawExtent.height), -1.0f, m_fNearPlane, m_fFarPlane); //need to readd scale and ratio is properly to screen size
 	return orthoMatrix;
 }
 
@@ -1141,6 +1077,85 @@ GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Verte
 
 	DestroyBuffer(staging);
 	return newSurface;
+}
+
+AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped)
+{
+	AllocatedImage newImage;
+	newImage.m_imageFormat = format;
+	newImage.m_imageExtent = size;
+
+	VkImageCreateInfo img_info = vkinit::ImageCreateInfo(format, usage, size);
+	if (mipmapped) {
+		img_info.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(size.width, size.height)))) + 1;
+	}
+
+	// always allocate images on dedicated GPU memory
+	VmaAllocationCreateInfo allocinfo = {};
+	allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+	allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+	// allocate and create the image
+	if (vmaCreateImage(m_allocator, &img_info, &allocinfo, &newImage.m_image, &newImage.m_allocation, nullptr) != VK_SUCCESS)
+		Logger::LogError("Failed to allocate image.", 2);
+
+	// if the format is a depth format, we will need to have it use the correct
+	// aspect flag
+	VkImageAspectFlags aspectFlag = VK_IMAGE_ASPECT_COLOR_BIT;
+	if (format == VK_FORMAT_D32_SFLOAT) {
+		aspectFlag = VK_IMAGE_ASPECT_DEPTH_BIT;
+	}
+
+	// build a image-view for the image
+	VkImageViewCreateInfo view_info = vkinit::ImageViewCreateInfo(format, newImage.m_image, aspectFlag);
+	view_info.subresourceRange.levelCount = img_info.mipLevels;
+
+	if (vkCreateImageView(m_device, &view_info, nullptr, &newImage.m_imageView) != VK_SUCCESS)
+		Logger::LogError("Failed to create image view.", 2);
+
+	return newImage;
+}
+
+AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped)
+{
+	size_t data_size = size.depth * size.width * size.height * 4;
+	AllocatedBuffer uploadbuffer = CreateBuffer(data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU);
+
+	memcpy(uploadbuffer.m_info.pMappedData, data, data_size);
+
+	AllocatedImage new_image = CreateImage(size, format, usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, mipmapped);
+
+	ImmediateSubmit([&](VkCommandBuffer cmd)
+	{
+		vkutil::TransitionImage(cmd, new_image.m_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		VkBufferImageCopy copyRegion = {};
+		copyRegion.bufferOffset = 0;
+		copyRegion.bufferRowLength = 0;
+		copyRegion.bufferImageHeight = 0;
+
+		copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		copyRegion.imageSubresource.mipLevel = 0;
+		copyRegion.imageSubresource.baseArrayLayer = 0;
+		copyRegion.imageSubresource.layerCount = 1;
+		copyRegion.imageExtent = size;
+
+		// copy the buffer into the image
+		vkCmdCopyBufferToImage(cmd, uploadbuffer.m_buffer, new_image.m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
+			&copyRegion);
+
+		vkutil::TransitionImage(cmd, new_image.m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	});
+
+	DestroyBuffer(uploadbuffer);
+	return new_image;
+}
+
+void Renderer::DestroyImage(const AllocatedImage& img)
+{
+	vkDestroyImageView(m_device, img.m_imageView, nullptr);
+	vmaDestroyImage(m_allocator, img.m_image, img.m_allocation);
 }
 
 

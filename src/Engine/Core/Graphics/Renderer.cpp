@@ -798,7 +798,7 @@ void Renderer::InitializeMeshPipelines()
 	//filled triangles
 	pipelineBuilder.SetPolygonMode(VK_POLYGON_MODE_FILL);
 	//no backface culling
-	pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE);
+	pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
 	//no multisampling
 	pipelineBuilder.SetMultisamplingNone();
 	//no blending

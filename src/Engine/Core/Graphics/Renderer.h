@@ -239,6 +239,8 @@ public:
 	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
 	static VkDevice GetLogicalDevice() { return m_device; }
 
+	VmaAllocator GetAllocator() { return m_allocator; }
+
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
 

@@ -11,7 +11,6 @@
 struct MeshRenderer : public Renderable
 {
 	std::shared_ptr<Model> m_model = nullptr;
-	std::shared_ptr<Texture> m_texture = nullptr;
 
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -90,8 +89,8 @@ struct MeshRenderer : public Renderable
 		ImGui::Checkbox("On Screen", &m_bOnScreen);
 		ImGui::EndDisabled();
 
-		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
+		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

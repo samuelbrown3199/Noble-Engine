@@ -16,6 +16,8 @@ struct Renderable : public Component
 	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
 
+	std::shared_ptr<Texture> m_texture = nullptr;
+
 	GPUMeshBuffers m_meshBuffers;
 	GPUDrawPushConstants m_drawConstants;
 

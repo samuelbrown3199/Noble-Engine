@@ -722,16 +722,23 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 
 	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipeline);
 
-	VkDescriptorSet imageSet = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_singleImageDescriptorLayout);
-	{
-		DescriptorWriter writer;
-		writer.WriteImage(0, m_errorCheckerboardImage.m_imageView, m_defaultSamplerNearest, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-		writer.UpdateSet(m_device, imageSet);
-	}
-	vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipelineLayout, 0, 1, &imageSet, 0, nullptr);
-
 	for (int i = 0; i < m_onScreenObjects.size(); i++)
 	{
+		VkDescriptorSet imageSet = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_singleImageDescriptorLayout);
+
+		DescriptorWriter writer;
+		if (m_onScreenObjects.at(i)->m_texture != nullptr)
+		{
+			writer.WriteImage(0, m_onScreenObjects.at(i)->m_texture->m_texture.m_imageView, m_onScreenObjects.at(i)->m_texture->m_textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+			writer.UpdateSet(m_device, imageSet);
+		}
+		else
+		{
+			writer.WriteImage(0, m_errorCheckerboardImage.m_imageView, m_defaultSamplerNearest, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+			writer.UpdateSet(m_device, imageSet);
+		}
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipelineLayout, 0, 1, &imageSet, 0, nullptr);
+
 		vkCmdPushConstants(cmd, m_meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_onScreenObjects.at(i)->m_drawConstants);
 		vkCmdBindIndexBuffer(cmd, m_onScreenObjects.at(i)->m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
 

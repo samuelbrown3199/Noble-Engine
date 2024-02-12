@@ -3,6 +3,7 @@
 #define TEXTURE_H_
 
 #include "Resource.h"
+#include "../../Core/Graphics/VulkanTypes.h"
 
 #include<vulkan/vulkan.h>
 
@@ -18,9 +19,7 @@ struct Texture : public Resource
     uint32_t m_iMipLevels;
     VkFilter m_textureFilter = VK_FILTER_LINEAR;
 
-    VkImage m_textureImage;
-    VkDeviceMemory m_textureImageMemory;
-    VkImageView m_textureImageView;
+    AllocatedImage m_texture;
     VkSampler m_textureSampler;
 
     void OnLoad() override;

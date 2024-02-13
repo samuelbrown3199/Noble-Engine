@@ -1151,8 +1151,15 @@ AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat forma
 		vkCmdCopyBufferToImage(cmd, uploadbuffer.m_buffer, new_image.m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
 			&copyRegion);
 
-		vkutil::TransitionImage(cmd, new_image.m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		if (mipmapped)
+		{
+			vkutil::GenerateMipmaps(cmd, new_image.m_image, VkExtent2D{ new_image.m_imageExtent.width,new_image.m_imageExtent.height });
+		}
+		else
+		{
+			vkutil::TransitionImage(cmd, new_image.m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
 	});
 
 	DestroyBuffer(uploadbuffer);

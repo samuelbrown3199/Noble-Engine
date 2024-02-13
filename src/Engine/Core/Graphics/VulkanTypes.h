@@ -46,6 +46,17 @@ struct Vertex
     {
         return m_position == other.m_position && m_normal == other.m_normal && m_uvX == other.m_uvX && m_uvY == other.m_uvY && m_colour == other.m_colour;
     }
+
+    Vertex() {};
+    Vertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 normal, glm::vec4 colour)
+    {
+        m_position = pos;
+        m_normal = normal;
+        m_colour = colour;
+
+        m_uvX = uv.x;
+        m_uvY = uv.y;
+    }
 };
 
 namespace std

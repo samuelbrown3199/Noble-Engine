@@ -13,6 +13,7 @@
 
 #include "../Logger.h"
 #include "../../Useful.h"
+#include "../EngineComponents/Sprite.h"
 
 #include "../../imgui/imgui.h"
 #include "../../imgui/backends/imgui_impl_vulkan.h"
@@ -238,6 +239,7 @@ void Renderer::InitializeSwapchain()
 	drawImageUsages |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_STORAGE_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	drawImageUsages |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
 	VkImageCreateInfo rimgInfo = vkinit::ImageCreateInfo(m_drawImage.m_imageFormat, drawImageUsages, m_drawImage.m_imageExtent);
 
@@ -576,9 +578,6 @@ void Renderer::ResetForNextFrame()
 {
 	m_iRenderableCount = 0;
 	m_onScreenObjects.clear();
-
-	//make imgui calculate internal draw structures
-	ImGui::Render();
 }
 
 void Renderer::DrawFrame()
@@ -622,11 +621,20 @@ void Renderer::DrawFrame()
 	vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-	vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
+	if(!drawToWindow)
+		vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
 
-	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	if (drawToWindow)
+	{
+		if (m_drawWindowSet == VK_NULL_HANDLE)
+			m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-	DrawImGui(cmd, m_swapchainImageViews[swapchainImageIndex]);
+		ImGui::Begin("Test");
+		ImGui::Image(m_drawWindowSet, ImVec2((m_swapchainExtent.width / 2), (m_swapchainExtent.height / 2)));
+		ImGui::End();
+	}
+
+	DrawImGui(cmd, m_swapchainImages[swapchainImageIndex], m_swapchainImageViews[swapchainImageIndex]);
 
 	// set swapchain image layout to Present so we can show it on the screen
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
@@ -747,10 +755,22 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 
 	vkCmdEndRendering(cmd);
 }
-void Renderer::DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView)
+void Renderer::DrawImGui(VkCommandBuffer cmd, VkImage targetImage, VkImageView targetImageView)
 {
+	//make imgui calculate internal draw structures
+	ImGui::Render();
+
 	VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(targetImageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 	VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_swapchainExtent, &colorAttachment, nullptr);
+
+	if (drawToWindow)
+	{
+		VkClearColorValue clearValue;
+		clearValue = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		VkImageSubresourceRange clearRange = vkinit::ImageSubresourceRange(VK_IMAGE_ASPECT_COLOR_BIT);
+		vkCmdClearColorImage(cmd, targetImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &clearValue, 1, &clearRange);
+	}
+	vkutil::TransitionImage(cmd, targetImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 	vkCmdBeginRendering(cmd, &renderInfo);
 
@@ -801,7 +821,6 @@ void Renderer::InitializeMeshPipelines()
 	pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
 	//no multisampling
 	pipelineBuilder.SetMultisamplingNone();
-	//no blending
 	pipelineBuilder.DisableBlending();
 	pipelineBuilder.EnableDepthTest(true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
@@ -854,6 +873,8 @@ void Renderer::InitializeDefaultData()
 	sampl.magFilter = VK_FILTER_LINEAR;
 	sampl.minFilter = VK_FILTER_LINEAR;
 	vkCreateSampler(m_device, &sampl, nullptr, &m_defaultSamplerLinear);
+
+	m_spriteQuad = UploadMesh(Sprite::spriteQuadIndices, Sprite::spriteQuadVertices);
 }
 
 

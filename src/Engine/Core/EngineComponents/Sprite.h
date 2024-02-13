@@ -10,22 +10,11 @@
 
 struct Sprite : public Renderable
 {
-	std::shared_ptr<Texture> m_spriteTexture = nullptr;
 	glm::vec4 m_colour = glm::vec4();
 
-	bool m_bCreatedDescriptorSets = false;
-	//std::vector<GraphicsBuffer> m_uniformBuffers;
-	std::vector<void*> m_uniformBuffersMapped;
-	std::vector<VkDescriptorSet> m_descriptorSets;
-
-	static bool m_bInitializedSpriteQuad;
-	static std::vector<Vertex> vertices;
+	static std::vector<uint32_t> spriteQuadIndices;
+	static std::vector<Vertex> spriteQuadVertices;
 	static std::vector<glm::vec3> boundingBox;
-	static std::vector<uint32_t> indices;
-	/*static GraphicsBuffer m_vertexBuffer;
-	static GraphicsBuffer m_indexBuffer;*/
-
-	static void ClearSpriteBuffers();
 
 	std::string GetComponentID() override
 	{
@@ -36,8 +25,8 @@ struct Sprite : public Renderable
 	{ 
 		nlohmann::json data;
 
-		if (m_spriteTexture != nullptr)
-			data["spritePath"] = m_spriteTexture->m_sLocalPath;
+		if (m_texture != nullptr)
+			data["spritePath"] = m_texture->m_sLocalPath;
 
 		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
 
@@ -47,7 +36,7 @@ struct Sprite : public Renderable
 	void FromJson(const nlohmann::json& j)
 	{
 		if(j.find("spritePath") != j.end())
-			m_spriteTexture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
+			m_texture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
 		if(j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 	}
@@ -64,13 +53,13 @@ struct Sprite : public Renderable
 
 	void OnInitialize(std::string _sheetPath, glm::vec4 _colour)
 	{
-		m_spriteTexture = ResourceManager::LoadResource<Texture>(_sheetPath);
+		m_texture = ResourceManager::LoadResource<Texture>(_sheetPath);
 		m_colour = _colour;
 	}
 
 	void OnInitialize(std::string _sheetPath)
 	{
-		m_spriteTexture = ResourceManager::LoadResource<Texture>(_sheetPath);
+		m_texture = ResourceManager::LoadResource<Texture>(_sheetPath);
 		m_colour = glm::vec4(1.0f);
 	}
 
@@ -79,14 +68,10 @@ struct Sprite : public Renderable
 		if (sprite == nullptr)
 			return;
 
-		if (m_spriteTexture != nullptr && sprite->m_sLocalPath == m_spriteTexture->m_sLocalPath)
+		if (m_texture != nullptr && sprite->m_sLocalPath == m_texture->m_sLocalPath)
 			return;
 
-		//m_uniformBuffers.clear();
-		m_descriptorSets.clear();
-
-		m_spriteTexture = sprite;
-		m_bCreatedDescriptorSets = false;
+		m_texture = sprite;
 	}
 
 	virtual void DoComponentInterface() override
@@ -104,14 +89,12 @@ struct Sprite : public Renderable
 		ImGui::Checkbox("On Screen", &m_bOnScreen);
 		ImGui::EndDisabled();
 
-		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_spriteTexture != nullptr ? m_spriteTexture->m_sLocalPath : "none"));
+		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);
 		m_colour = glm::vec4(color.x, color.y, color.z, color.w);
 	}
 
-
-	virtual void PreRender() override;
 	virtual void OnRender() override;
 };

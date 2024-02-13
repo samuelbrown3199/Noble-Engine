@@ -72,6 +72,7 @@ struct Model;
 class Renderer
 {
 	friend class Application;
+	friend struct Sprite;
 
 private:
 	static SDL_Window* m_gameWindow;
@@ -120,6 +121,10 @@ private:
 
 	VkDescriptorSetLayout m_singleImageDescriptorLayout;
 
+	//temp values here for future editor update.
+	bool drawToWindow = true;
+	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
+
 	DeletionQueue m_mainDeletionQueue;
 	static VmaAllocator m_allocator;
 
@@ -139,10 +144,15 @@ private:
 	VkPipelineLayout m_meshPipelineLayout; //to be removed
 	VkPipeline m_meshPipeline;
 
+	//Default Data
 	AllocatedImage m_errorCheckerboardImage;
 
 	VkSampler m_defaultSamplerLinear;
 	VkSampler m_defaultSamplerNearest;
+	
+	GPUMeshBuffers m_spriteQuad;
+
+	//Default Data end
 
 	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
@@ -191,12 +201,14 @@ private:
 	void DrawFrame();
 	void DrawBackground(VkCommandBuffer cmd);
 	void DrawGeometry(VkCommandBuffer cmd);
-	void DrawImGui(VkCommandBuffer cmd, VkImageView targetImageView);
+	void DrawImGui(VkCommandBuffer cmd, VkImage targetImage, VkImageView targetImageView);
 
 	void InitializePipelines();
 	void InitializeMeshPipelines();
 
 	void InitializeDefaultData();
+
+	GPUMeshBuffers GetSpriteQuadBuffer() { return m_spriteQuad; }
 
 public:
 

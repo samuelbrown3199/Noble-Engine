@@ -227,8 +227,6 @@ void Application::CleanupApplication()
 
 	m_gameRenderer->SetCamera(nullptr);
 
-	Sprite::ClearSpriteBuffers();
-
 	ThreadingManager::StopThreads();
 	ClearLoadedScene();
 

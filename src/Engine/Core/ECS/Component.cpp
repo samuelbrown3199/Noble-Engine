@@ -44,10 +44,10 @@ void Component::Update(bool useThreads, int maxComponentsPerThread)
 	dataList->Update(useThreads, maxComponentsPerThread);
 }
 
-void Component::Render(bool useThreads, int maxComponentsPerThread)
+void Component::PreRender(bool useThreads, int maxComponentsPerThread)
 {
 	Datalist* dataList = NobleRegistry::GetComponentList(GetComponentID());
-	dataList->Render(useThreads, maxComponentsPerThread);
+	dataList->PreRender(useThreads, maxComponentsPerThread);
 }
 
 void Component::LoadComponentDataFromJson(nlohmann::json& j)

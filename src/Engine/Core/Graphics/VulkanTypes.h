@@ -36,10 +36,10 @@ struct AllocatedBuffer
 
 struct Vertex
 {
-    glm::vec3 m_position;
-    float m_uvX;
-    glm::vec3 m_normal;
-    float m_uvY;
+    glm::vec3 m_position = glm::vec3(0,0,0);
+    float m_uvX = 0;
+    glm::vec3 m_normal = glm::vec3(0, 0, 0);
+    float m_uvY = 0;
     glm::vec4 m_colour = { 1,1,1,1 };
 
     bool operator==(const Vertex& other) const

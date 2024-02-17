@@ -11,6 +11,8 @@
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_stdlib.h"
 
+#include <vulkan/vulkan.h>
+
 struct Component
 {
 	/**
@@ -55,9 +57,9 @@ struct Component
 	virtual void Update(bool useThreads, int maxComponentsPerThread);
 	virtual void OnUpdate() {}
 
-	virtual void PreRender() {};
-	virtual void Render(bool useThreads, int maxComponentsPerThread);
-	virtual void OnRender() {}
+	virtual void PreRender(bool useThreads, int maxComponentsPerThread);
+	virtual void OnPreRender() {};
+	virtual void OnRender(VkCommandBuffer cmd) {}
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j);
 	virtual nlohmann::json WriteComponentDataToJson();

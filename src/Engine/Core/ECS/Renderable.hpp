@@ -29,8 +29,7 @@ struct Renderable : public Component
 		m_transformIndex = -1;
 	}
 
-	virtual void PreRender() {};
-	virtual void OnRender() 
+	virtual void OnPreRender() 
 	{
 		Renderer::IncrementRenderables();
 
@@ -69,5 +68,30 @@ struct Renderable : public Component
 			Transform* camTransform = NobleRegistry::GetComponent<Transform>(cam->m_camTransformIndex);
 			m_fDistanceToCam = glm::length(camTransform->m_position - transform->m_position);
 		}
+	};
+
+	virtual void OnRender(VkCommandBuffer cmd)
+	{
+		Renderer* renderer = Application::GetRenderer();
+
+		VkDescriptorSet imageSet = renderer->GetCurrentFrame().m_frameDescriptors.AllocateSet(renderer->GetLogicalDevice(), renderer->m_singleImageDescriptorLayout);
+
+		DescriptorWriter writer;
+		if (m_texture != nullptr)
+		{
+			writer.WriteImage(0, m_texture->m_texture.m_imageView, m_texture->m_textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
+		}
+		else
+		{
+			writer.WriteImage(0, renderer->GetCheckerboardErrorTexture().m_imageView, renderer->GetDefaultSampler(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
+		}
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->m_meshPipelineLayout, 0, 1, &imageSet, 0, nullptr);
+
+		vkCmdPushConstants(cmd, renderer->m_meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
+		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+		vkCmdDrawIndexed(cmd, m_indices->size(), 1, 0, 0, 0);
 	}
 };

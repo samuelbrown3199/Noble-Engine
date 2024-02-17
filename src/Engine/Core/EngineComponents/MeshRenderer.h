@@ -97,5 +97,5 @@ struct MeshRenderer : public Renderable
 		m_colour = glm::vec4(color.x, color.y, color.z, color.w);
 	}
 
-	virtual void OnRender() override;
+	virtual void OnPreRender() override;
 };

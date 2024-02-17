@@ -6,7 +6,7 @@
 #include "../Graphics/GraphicsPipeline.h"
 #include "../ECS/Entity.hpp"
 
-void MeshRenderer::OnRender() 
+void MeshRenderer::OnPreRender() 
 {
 	if (m_model == nullptr)
 		return;
@@ -17,7 +17,7 @@ void MeshRenderer::OnRender()
 
 	m_meshBuffers = m_model->m_meshBuffer;
 
-	Renderable::OnRender();
+	Renderable::OnPreRender();
 
 	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
 	if (transform == nullptr)

@@ -19,8 +19,8 @@ struct Datalist
 	virtual Component* GetComponent(int index) = 0;
 	virtual void Update(bool useThreads, int maxComponentsPerThread) = 0;
 	virtual void ThreadUpdate(int _buffer, int _amount) = 0;
-	virtual void Render(bool useThreads, int maxComponentsPerThread) = 0;
-	virtual void ThreadRender(int _buffer, int _amount) = 0;
+	virtual void PreRender(bool useThreads, int maxComponentsPerThread) = 0;
+	virtual void ThreadPreRender(int _buffer, int _amount) = 0;
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
 	virtual nlohmann::json WriteComponentDataToJson() = 0;
 };
@@ -31,7 +31,7 @@ struct ComponentDatalist : public Datalist
 	std::vector<T> m_componentData;
 	std::deque<T*> m_deletedComponents;
 
-	void ComponentDatalist::AddComponent(Component* comp) override
+	void AddComponent(Component* comp) override
 	{
 		if (!m_deletedComponents.empty())
 		{
@@ -46,7 +46,7 @@ struct ComponentDatalist : public Datalist
 		m_componentData.push_back(*dynamic_cast<T*>(comp));
 	}
 
-	void ComponentDatalist::AddComponentToEntity(std::string entityID) override
+	void AddComponentToEntity(std::string entityID) override
 	{
 		T comp;
 		comp.m_sEntityID = entityID;
@@ -54,7 +54,7 @@ struct ComponentDatalist : public Datalist
 		comp.AddComponent();
 	}
 
-	void ComponentDatalist::RemoveComponent(std::string entityID) override
+	void RemoveComponent(std::string entityID) override
 	{
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
@@ -68,13 +68,13 @@ struct ComponentDatalist : public Datalist
 		}
 	}
 
-	void ComponentDatalist::RemoveAllComponents() override
+	void RemoveAllComponents() override
 	{
 		m_componentData.clear();
 		m_deletedComponents.clear();
 	}
 
-	int ComponentDatalist::GetComponentIndex(std::string entityID) override
+	int GetComponentIndex(std::string entityID) override
 	{
 		for (int i = 0; i < m_componentData.size(); i++)
 		{
@@ -85,7 +85,7 @@ struct ComponentDatalist : public Datalist
 		return -1;
 	}
 
-	Component* ComponentDatalist::GetComponent(int index) override
+	Component* GetComponent(int index) override
 	{
 		if (index > m_componentData.size() - 1 || index < 0)
 			return nullptr;
@@ -93,7 +93,7 @@ struct ComponentDatalist : public Datalist
 		return &m_componentData.at(index);
 	}
 
-	void ComponentDatalist::Update(bool useThreads, int maxComponentsPerThread) override
+	void Update(bool useThreads, int maxComponentsPerThread) override
 	{
 		if (!useThreads)
 		{
@@ -114,7 +114,7 @@ struct ComponentDatalist : public Datalist
 		}
 	}
 
-	void ComponentDatalist::ThreadUpdate(int _buffer, int _amount) override
+	void ThreadUpdate(int _buffer, int _amount) override
 	{
 		int maxCap = _buffer + _amount;
 		for (size_t co = _buffer; co < maxCap; co++)
@@ -127,14 +127,14 @@ struct ComponentDatalist : public Datalist
 		}
 	}
 
-	void ComponentDatalist::Render(bool useThreads, int maxComponentsPerThread) override
+	void PreRender(bool useThreads, int maxComponentsPerThread) override
 	{
 		if (!useThreads)
 		{
 			for (int i = 0; i < m_componentData.size(); i++)
 			{
 				if (!m_componentData.at(i).m_bAvailableForReuse)
-					m_componentData.at(i).OnRender();
+					m_componentData.at(i).OnPreRender();
 			}
 		}
 		else
@@ -143,12 +143,12 @@ struct ComponentDatalist : public Datalist
 			for (int i = 0; i < amountOfThreads; i++)
 			{
 				int buffer = maxComponentsPerThread * i;
-				auto th = ThreadingManager::EnqueueTask([&] { ThreadRender(buffer, maxComponentsPerThread); });
+				auto th = ThreadingManager::EnqueueTask([&] { ThreadPreRender(buffer, maxComponentsPerThread); });
 			}
 		}
 	}
 
-	void ComponentDatalist::ThreadRender(int _buffer, int _amount) override
+	void ThreadPreRender(int _buffer, int _amount) override
 	{
 		int maxCap = _buffer + _amount;
 		for (size_t co = _buffer; co < maxCap; co++)
@@ -157,11 +157,11 @@ struct ComponentDatalist : public Datalist
 				break;
 
 			if (!m_componentData.at(co).m_bAvailableForReuse)
-				m_componentData.at(co).OnRender();
+				m_componentData.at(co).OnPreRender();
 		}
 	}
 
-	void ComponentDatalist::LoadComponentDataFromJson(nlohmann::json& j) override
+	void LoadComponentDataFromJson(nlohmann::json& j) override
 	{
 		for (auto it : j.items())
 		{
@@ -174,7 +174,7 @@ struct ComponentDatalist : public Datalist
 		}
 	}
 
-	nlohmann::json ComponentDatalist::WriteComponentDataToJson() override
+	nlohmann::json WriteComponentDataToJson() override
 	{
 		nlohmann::json data;
 

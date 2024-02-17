@@ -119,8 +119,6 @@ private:
 	GPUSceneData m_sceneData;
 	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 
-	VkDescriptorSetLayout m_singleImageDescriptorLayout;
-
 	//temp values here for future editor update.
 	bool drawToWindow = true;
 	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
@@ -141,9 +139,6 @@ private:
 	static std::vector<Renderable*> m_onScreenObjects;
 	static int m_iRenderableCount;
 
-	VkPipelineLayout m_meshPipelineLayout; //to be removed
-	VkPipeline m_meshPipeline;
-
 	//Default Data
 	AllocatedImage m_errorCheckerboardImage;
 
@@ -153,8 +148,6 @@ private:
 	GPUMeshBuffers m_spriteQuad;
 
 	//Default Data end
-
-	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
 	const std::vector<const char*> m_vValidationLayers = {
 		"VK_LAYER_KHRONOS_validation"
@@ -212,8 +205,17 @@ private:
 
 public:
 
+	//to be removed
+	VkPipelineLayout m_meshPipelineLayout;
+	VkPipeline m_meshPipeline;
+
+	VkDescriptorSetLayout m_singleImageDescriptorLayout;
+	//end of to be removed...
+
 	Renderer(const std::string _windowName);
 	~Renderer();
+
+	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
 	static void AddOnScreenObject(Renderable* comp);
 	static std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
@@ -271,6 +273,9 @@ public:
 	AllocatedImage CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
 	AllocatedImage CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
 	void DestroyImage(const AllocatedImage& img);
+
+	AllocatedImage GetCheckerboardErrorTexture() { return m_errorCheckerboardImage; }
+	VkSampler GetDefaultSampler() { return m_defaultSamplerNearest; }
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
 

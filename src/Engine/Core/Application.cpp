@@ -93,12 +93,12 @@ void Application::SetPlayMode(bool play)
 { 
 	m_bPlayMode = play;
 	
-	//loop over components and do one more tick of update and render. This allows any components that need to stop themselves
+	//loop over components and do one more tick of update and render. This allows any components that need to stop themselves to do so.
 	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
 	for (int i = 0; i < compRegistry->size(); i++)
 	{
 		compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
-		compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
+		compRegistry->at(i).second.m_comp->PreRender(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
 	}
 }
 
@@ -197,8 +197,7 @@ void Application::MainLoop()
 
 			m_pStats->StartComponentMeasurement(compRegistry->at(i).first, false);
 
-			compRegistry->at(i).second.m_comp->PreRender();
-			compRegistry->at(i).second.m_comp->Render(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
+			compRegistry->at(i).second.m_comp->PreRender(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
 
 			m_pStats->EndComponentMeasurement(compRegistry->at(i).first, false);
 		}

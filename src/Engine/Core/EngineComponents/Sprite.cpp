@@ -22,7 +22,7 @@ std::vector<glm::vec3> Sprite::boundingBox =
 	glm::vec3(0.0f, 1.0f, 0.0),
 };
 
-void Sprite::OnRender()
+void Sprite::OnPreRender()
 {
 	Renderer* renderer = Application::GetRenderer();
 
@@ -31,7 +31,7 @@ void Sprite::OnRender()
 	m_boundingBox = &boundingBox;
 	m_indices = &spriteQuadIndices;
 
-	Renderable::OnRender();
+	Renderable::OnPreRender();
 
 	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
 	if (transform == nullptr)

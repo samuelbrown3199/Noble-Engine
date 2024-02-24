@@ -36,7 +36,11 @@ void AudioSource::OnUpdate()
 			FMOD_Channel_SetLoopCount(channel, loopCount);
 		}
 
-		FMOD_Channel_SetVolume(channel, m_fVolume);
+		float volumeMixerValue = AudioManager::GetAudioMixerOption(m_sMixerOption);
+		if (m_sMixerOption != "Master")
+			volumeMixerValue *= AudioManager::GetAudioMixerOption("Master");
+
+		FMOD_Channel_SetVolume(channel, m_fVolume * volumeMixerValue);
 		FMOD_Channel_SetPitch(channel, m_fPitch);
 		if (m_b3DSound)
 		{

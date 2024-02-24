@@ -113,6 +113,24 @@ struct AudioSource : public Component
 		ImGui::DragFloat("Volume", &m_fVolume, 0.1f, 0.0f, 10.0f);
 		ImGui::Checkbox("Paused", &m_bPaused);
 		ImGui::Checkbox("3D Sound", &m_b3DSound);
+
+		std::map<std::string, float> mixerOptions = AudioManager::GetMixerOptions();
+		if (ImGui::BeginListBox("Mixer Option"))
+		{
+			std::map<std::string, float>::iterator itr;
+			for (itr = mixerOptions.begin(); itr != mixerOptions.end(); itr++)
+			{
+				const bool is_selected = (m_sMixerOption == itr->first);
+				ImGui::Selectable(itr->first.c_str(), is_selected);
+
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus();
+					m_sMixerOption = itr->first;
+				}
+			}
+			ImGui::EndListBox();
+		}
 	}
 
 	virtual void OnUpdate() override;

@@ -38,6 +38,7 @@ public:
 	*/
 	static float GetAudioMixerOption(std::string _optionName);
 	static void UpdateAudioMixerOption(std::string _optionName, float _newValue);
+	static std::map<std::string, float> GetMixerOptions() { return m_mMixerOptions; }
 
 	static FMOD_SYSTEM* GetFMODSystem() { return m_fmodSystem; }
 	static void UpdateSystem() { FMOD_System_Update(m_fmodSystem); }

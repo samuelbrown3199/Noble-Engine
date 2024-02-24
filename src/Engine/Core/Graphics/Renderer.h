@@ -120,7 +120,7 @@ private:
 	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 
 	//temp values here for future editor update.
-	bool drawToWindow = true;
+	bool drawToWindow = false;
 	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
 
 	DeletionQueue m_mainDeletionQueue;

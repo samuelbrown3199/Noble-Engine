@@ -6,6 +6,7 @@
 #include "../Core/EngineResources/AudioClip.h"
 #include "../Core/EngineResources/Texture.h"
 #include "../Core/EngineResources/Model.h"
+#include "../Core/EngineResources/Pipeline.h"
 #include "../Core/EngineResources/Script.h"
 
 FT_Library ResourceManager::m_fontLibrary;
@@ -35,10 +36,12 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::RegisterResourceTypes()
 {
-	NobleRegistry::RegisterResource("AudioClip", new AudioClip());
-	NobleRegistry::RegisterResource("Texture", new Texture());
-	NobleRegistry::RegisterResource("Model", new Model());
-	NobleRegistry::RegisterResource("Script", new Script());
+	NobleRegistry::RegisterResource("AudioClip", new AudioClip(), true);
+	NobleRegistry::RegisterResource("Texture", new Texture(), true);
+	NobleRegistry::RegisterResource("Model", new Model(), true);
+	NobleRegistry::RegisterResource("Pipeline", new Pipeline(), false);
+	NobleRegistry::RegisterResource("Script", new Script(), true);
+	NobleRegistry::RegisterResource("Shader", new Shader(), true);
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
@@ -63,14 +66,14 @@ void ResourceManager::RemoveResourceFromDatabase(std::string path)
 
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
-	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
 	bool foundRegistryRes = false;
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
 		if (resourceRegistry->at(i).first == res->m_resourceType)
 		{
-			resourceRegistry->at(i).second->SetResourceToDefaults(res);
+			resourceRegistry->at(i).second.m_resource->SetResourceToDefaults(res);
 			foundRegistryRes = true;
 			break;
 		}
@@ -95,7 +98,7 @@ void ResourceManager::LoadResourceDatabase()
 		database.close();
 	}
 
-	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
 	if (m_resourceDatabaseJson.find("Defaults") != m_resourceDatabaseJson.end())
 	{
@@ -105,7 +108,7 @@ void ResourceManager::LoadResourceDatabase()
 		{
 			if (def.find(resourceRegistry->at(i).first) != def.end())
 			{
-				resourceRegistry->at(i).second->SetDefaults(def[resourceRegistry->at(i).first]);
+				resourceRegistry->at(i).second.m_resource->SetDefaults(def[resourceRegistry->at(i).first]);
 			}
 		}
 	}
@@ -117,7 +120,7 @@ void ResourceManager::LoadResourceDatabase()
 			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(i).first);
 			for (auto it : ac.items())
 			{
-				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->LoadFromJson(it.key(), it.value());
+				std::shared_ptr<Resource> res = resourceRegistry->at(i).second.m_resource->LoadFromJson(it.key(), it.value());
 				m_vResourceDatabase.push_back(res);
 			}
 
@@ -134,10 +137,10 @@ void ResourceManager::WriteResourceDatabase()
 		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();
 	}
 
-	std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
-		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second->AddToDatabase();
+		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second.m_resource->AddToDatabase();
 	}
 
 	std::fstream database(m_sWorkingDirectory + "\\ResourceDatabase.nrd", 'w');

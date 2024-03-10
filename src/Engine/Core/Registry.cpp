@@ -1,12 +1,16 @@
 #include "Registry.h"
 
-std::map<int, std::pair<std::string, Resource*>> NobleRegistry::m_mResourceRegistry;
+std::map<int, std::pair<std::string, ResourceRegistry>> NobleRegistry::m_mResourceRegistry;
 std::map<int, std::pair<std::string, ComponentRegistry>> NobleRegistry::m_mComponentRegistry;
 std::map<int, std::pair<std::string, Behaviour*>> NobleRegistry::m_mBehaviourRegistry;
 
-void NobleRegistry::RegisterResource(std::string ID, Resource* resource)
+void NobleRegistry::RegisterResource(std::string ID, Resource* resource, bool requiresFile)
 {
-	m_mResourceRegistry[(int)m_mResourceRegistry.size()] = std::make_pair(ID, resource);
+	ResourceRegistry newRegistry;
+	newRegistry.m_resource = resource;
+	newRegistry.m_bRequiresFile = requiresFile;
+
+	m_mResourceRegistry[(int)m_mResourceRegistry.size()] = std::make_pair(ID, newRegistry);
 }
 
 Datalist* NobleRegistry::GetComponentList(std::string ID)

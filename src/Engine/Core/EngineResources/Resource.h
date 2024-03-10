@@ -7,6 +7,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Engine/Core/Logger.h"
+
 #include "../../Useful.h"
 #include "../../imgui/imgui.h"
 
@@ -29,7 +31,11 @@ public:
 	/**
 	*Loads the resource.
 	*/
-	virtual void OnLoad() = 0;
+	virtual void OnLoad()
+	{
+		if (!CheckResourceFileExists())
+			Logger::LogError(FormatString("Resource Path does not exist: %s", m_sResourcePath), 2);
+	};
 	/**
 	*Unloads the resource.
 	*/
@@ -68,5 +74,10 @@ public:
 	};
 	virtual std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) = 0;
 	virtual void SetDefaults(const nlohmann::json& data) {};
+
+	bool CheckResourceFileExists()
+	{
+		return PathExists(m_sResourcePath);
+	}
 };
 #endif

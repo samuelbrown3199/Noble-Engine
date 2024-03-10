@@ -28,7 +28,7 @@ void ResourceManagerWindow::DoInterface()
         return;
     }
 
-    std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+    std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
@@ -36,7 +36,7 @@ void ResourceManagerWindow::DoInterface()
 
         if (ImGui::Selectable(resourceRegistry->at(i).first.c_str(), selectedDefaultRes == res))
         {
-            defaultRes = resourceRegistry->at(i).second;
+            defaultRes = resourceRegistry->at(i).second.m_resource;
         }
 
         res++;
@@ -59,16 +59,22 @@ void ResourceManagerWindow::DoInterface()
 
     if (ImGui::BeginMenu("Add Resource"))
     {
-        std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
-
         for (int i = 0; i < resourceRegistry->size(); i++)
         {
             if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
             {
-                std::string path = OpenFileSelectDialog(".mp3");
-                if (path != "")
+                if (resourceRegistry->at(i).second.m_bRequiresFile)
                 {
-                    resourceRegistry->at(i).second->AddResource(path);
+                    std::string path = OpenFileSelectDialog(".mp3");
+                    if (path != "")
+                    {
+                        resourceRegistry->at(i).second.m_resource->AddResource(path);
+                    }
+                }
+                else
+                {
+                    m_bOpenNoFileResourceWindow = true;
+                    m_iNewResourceType = i;
                 }
             }
         }
@@ -79,10 +85,7 @@ void ResourceManagerWindow::DoInterface()
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
         ImGui::Text(resourceRegistry->at(i).first.c_str());
-        std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
-
-        if (selectedShaderProg != -1 && resourceRegistry->at(i).first == "Shader") //hack for now.
-            continue;
+        std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second.m_resource->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
 
         for (int o = 0; o < resources.size(); o++)
         {
@@ -116,4 +119,35 @@ void ResourceManagerWindow::DoInterface()
     ImGui::EndChild();
 
     ImGui::End();
+
+
+
+    if (m_bOpenNoFileResourceWindow)
+    {
+        ImGui::OpenPopup("New Resource");
+    }
+
+    // Always center this window when appearing
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowSize(ImVec2(500.0f, 150.0f));
+    if (ImGui::BeginPopupModal("New Resource"))
+    {
+        std::string newResourceName = "";
+        ImGui::InputText("New Resource Name", &newResourceName);
+
+        if (ImGui::Button("Create"))
+        {
+            resourceRegistry->at(m_iNewResourceType).second.m_resource->AddResource(newResourceName);
+            m_bOpenNoFileResourceWindow = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            m_bOpenNoFileResourceWindow = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }

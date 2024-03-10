@@ -325,7 +325,7 @@ void EditorUI::DoAssetMenu()
 	ImGui::MenuItem("Resources", NULL, false, false);
 	if (ImGui::BeginMenu("Add Resource"))
 	{
-		std::map<int, std::pair<std::string, Resource*>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+		std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
 		for (int i = 0; i < resourceRegistry->size(); i++)
 		{
@@ -334,7 +334,7 @@ void EditorUI::DoAssetMenu()
 				std::string path = OpenFileSelectDialog(".mp3");
 				if (path != "")
 				{
-					resourceRegistry->at(i).second->AddResource(path);
+					resourceRegistry->at(i).second.m_resource->AddResource(path);
 				}
 			}
 		}

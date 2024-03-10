@@ -16,6 +16,8 @@ void Texture::OnLoad()
     if (m_bIsLoaded)
         return;
 
+    Resource::OnLoad();
+
     stbi_uc* pixels = stbi_load(m_sResourcePath.c_str(), &m_iWidth, &m_iHeight, &m_iTexChannels, STBI_rgb_alpha);
 
     if (!pixels)

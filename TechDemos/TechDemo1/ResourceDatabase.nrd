@@ -1,1 +1,61 @@
-{"AudioClip":{"\\GameData\\Sounds\\birds.ogg":{"SoundMode":16},"\\GameData\\Sounds\\glass_smash.ogg":{"SoundMode":16},"\\GameData\\Sounds\\nukes.mp3":{"SoundMode":18}},"Defaults":{"AudioClip":{"SoundMode":16},"Model":null,"Script":null,"Texture":{"Filter":0}},"Model":{"\\GameData\\Models\\IronMan.obj":null,"\\GameData\\Models\\cottage_obj.obj":null,"\\GameData\\Models\\cube.obj":null},"Script":{"\\GameData\\Scripts\\TestScript.lua":null},"Texture":{"\\GameData\\Textures\\PlanetBase.png":{"Filter":0},"\\GameData\\Textures\\cottage_diffuse.png":{"Filter":1},"\\GameData\\Textures\\viking_room.png":{"Filter":0}}}
+{
+	"AudioClip": {
+		"\\GameData\\Sounds\\birds.ogg": {
+			"SoundMode": 16
+		},
+		"\\GameData\\Sounds\\glass_smash.ogg": {
+			"SoundMode": 16
+		},
+		"\\GameData\\Sounds\\nukes.mp3": {
+			"SoundMode": 18
+		}
+	},
+	"Defaults": {
+		"AudioClip": {
+			"SoundMode": 16
+		},
+		"Model": null,
+		"Pipeline": {
+			"PipelineType": 1142947840
+		},
+		"Script": null,
+		"Shader": {
+			"ShaderType": 0
+		},
+		"Texture": {
+			"Filter": 0
+		}
+	},
+	"Model": {
+		"\\GameData\\Models\\IronMan.obj": null,
+		"\\GameData\\Models\\cottage_obj.obj": null,
+		"\\GameData\\Models\\cube.obj": null
+	},
+	"Pipeline": {
+		"Standard": {
+			"PipelineType": 0
+		}
+	},
+	"Script": {
+		"\\GameData\\Scripts\\TestScript.lua": null
+	},
+	"Shader": {
+		"\\GameData\\Shaders\\frag.spv": {
+			"ShaderType": 4
+		},
+		"\\GameData\\Shaders\\vert.spv": {
+			"ShaderType": 0
+		}
+	},
+	"Texture": {
+		"\\GameData\\Textures\\PlanetBase.png": {
+			"Filter": 0
+		},
+		"\\GameData\\Textures\\cottage_diffuse.png": {
+			"Filter": 1
+		},
+		"\\GameData\\Textures\\viking_room.png": {
+			"Filter": 0
+		}
+	}
+}

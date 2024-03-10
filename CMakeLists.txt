@@ -202,6 +202,9 @@ set (
 	src/Engine/Core/EngineResources/Script.h
 	src/Engine/Core/EngineResources/Script.cpp
 
+	src/Engine/Core/EngineResources/Pipeline.h
+	src/Engine/Core/EngineResources/Pipeline.cpp
+
 	#Systems & components
 
 	src/Engine/Core/EngineComponents/AudioListener.h

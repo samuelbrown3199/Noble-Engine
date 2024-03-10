@@ -59,7 +59,7 @@ struct ResourceManager
 
 		std::shared_ptr<T> newResource = std::make_shared<T>();
 		newResource->m_sResourcePath = path;
-		newResource->m_sLocalPath = GetFolderLocationRelativeToGameData(path);
+		newResource->m_sLocalPath = GetFolderLocationRelativeToGameData(path) != "" ? GetFolderLocationRelativeToGameData(path) : path;
 
 		SetResourceToDefaults(newResource);
 
@@ -79,11 +79,6 @@ struct ResourceManager
 	template<typename T>
 	static std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)
 	{
-		if (!PathExists(_fileDirectory))
-		{
-			Logger::LogError(FormatString("%s could not be found!", _fileDirectory.c_str()), 2);
-		}
-
 		for (size_t re = 0; re < targetVector.size(); re++)
 		{
 			if (targetVector.at(re)->m_sResourcePath == _fileDirectory)

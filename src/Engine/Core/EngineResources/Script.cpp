@@ -12,6 +12,8 @@ Script::Script()
 
 void Script::OnLoad()
 {
+	Resource::OnLoad();
+
 	std::ifstream scriptFile(m_sResourcePath);
 	if (scriptFile.is_open())
 	{

@@ -38,16 +38,22 @@ struct ComponentRegistry
 	}
 };
 
+struct ResourceRegistry
+{
+	Resource* m_resource = nullptr;
+	bool m_bRequiresFile = true;
+};
+
 class NobleRegistry
 {
-	static std::map<int, std::pair<std::string, Resource*>> m_mResourceRegistry;
+	static std::map<int, std::pair<std::string, ResourceRegistry>> m_mResourceRegistry;
 	static std::map<int, std::pair<std::string, ComponentRegistry>> m_mComponentRegistry;
 	static std::map<int, std::pair<std::string, Behaviour*>> m_mBehaviourRegistry;
 
 public:
 
-	static void RegisterResource(std::string ID, Resource* resource);
-	static std::map<int, std::pair<std::string, Resource*>>* GetResourceRegistry() { return &m_mResourceRegistry; }
+	static void RegisterResource(std::string ID, Resource* resource, bool requiresFile);
+	static std::map<int, std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_mResourceRegistry; }
 
 	template<typename T>
 	static void RegisterComponent(std::string ID, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)

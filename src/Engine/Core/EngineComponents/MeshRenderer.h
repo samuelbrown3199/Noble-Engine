@@ -11,13 +11,7 @@
 struct MeshRenderer : public Renderable
 {
 	std::shared_ptr<Model> m_model = nullptr;
-
 	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	bool m_bCreatedDescriptorSets = false;
-	//std::vector<GraphicsBuffer> m_uniformBuffers;
-	std::vector<void*> m_uniformBuffersMapped;
-	std::vector<VkDescriptorSet> m_descriptorSets;
 
 	std::string GetComponentID() override
 	{
@@ -56,11 +50,7 @@ struct MeshRenderer : public Renderable
 		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
 			return;
 
-		//m_uniformBuffers.clear();
-		m_descriptorSets.clear();
-
 		m_texture = texture;
-		m_bCreatedDescriptorSets = false;
 	}
 
 	void ChangeModel(std::shared_ptr<Model> model)
@@ -72,6 +62,17 @@ struct MeshRenderer : public Renderable
 			return;
 
 		m_model = model;
+	}
+
+	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
+	{
+		if (pipeline == nullptr)
+			return;
+
+		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
+			return;
+
+		m_pipeline = pipeline;
 	}
 
 	virtual void DoComponentInterface() override
@@ -91,6 +92,7 @@ struct MeshRenderer : public Renderable
 
 		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
 		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		ChangePipeline(ResourceManager::DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

@@ -20,6 +20,8 @@ struct Renderable : public Component
 
 	std::shared_ptr<Texture> m_texture = nullptr;
 
+	std::shared_ptr<Pipeline> m_pipeline;
+
 	GPUMeshBuffers m_meshBuffers;
 	GPUDrawPushConstants m_drawConstants;
 
@@ -89,6 +91,12 @@ struct Renderable : public Component
 			writer.WriteImage(0, renderer->GetCheckerboardErrorTexture().m_imageView, renderer->GetDefaultSampler(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
 		}
+
+		if (m_pipeline == nullptr)
+			return;
+
+		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
+
 		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->m_meshPipeline->m_pipelineLayout, 0, 1, &imageSet, 0, nullptr);
 
 		vkCmdPushConstants(cmd, renderer->m_meshPipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);

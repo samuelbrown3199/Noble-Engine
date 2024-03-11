@@ -74,6 +74,17 @@ struct Sprite : public Renderable
 		m_texture = sprite;
 	}
 
+	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
+	{
+		if (pipeline == nullptr)
+			return;
+
+		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
+			return;
+
+		m_pipeline = pipeline;
+	}
+
 	virtual void DoComponentInterface() override
 	{
 		if (m_transformIndex == -1)
@@ -90,6 +101,7 @@ struct Sprite : public Renderable
 		ImGui::EndDisabled();
 
 		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		ChangePipeline(ResourceManager::DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

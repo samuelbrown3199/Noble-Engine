@@ -9,6 +9,8 @@
 #include "../EngineComponents/Camera.h"
 #include "../EngineComponents/Transform.h"
 
+#include "../EngineResources/Pipeline.h"
+
 struct Renderable : public Component
 {
 	int m_transformIndex = -1;
@@ -87,9 +89,9 @@ struct Renderable : public Component
 			writer.WriteImage(0, renderer->GetCheckerboardErrorTexture().m_imageView, renderer->GetDefaultSampler(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
 		}
-		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->m_meshPipelineLayout, 0, 1, &imageSet, 0, nullptr);
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->m_meshPipeline->m_pipelineLayout, 0, 1, &imageSet, 0, nullptr);
 
-		vkCmdPushConstants(cmd, renderer->m_meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
+		vkCmdPushConstants(cmd, renderer->m_meshPipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
 		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdDrawIndexed(cmd, m_indices->size(), 1, 0, 0, 0);

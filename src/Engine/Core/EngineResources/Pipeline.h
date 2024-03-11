@@ -37,12 +37,19 @@ struct Pipeline : public Resource
 	Pipeline();
 	~Pipeline();
 
+	VkPipelineLayout m_pipelineLayout;
+	VkPipeline m_pipeline;
+
 	enum PipelineType
 	{
 		Graphics,
 		Compute
 	};
 	PipelineType m_pipelineType;
+
+	//Currently only concerned about these shader types, will need extending in the future.
+	std::string m_vertexShaderPath;
+	std::string m_fragmentShaderPath;
 
 	void OnLoad() override;
 	void OnUnload() override;

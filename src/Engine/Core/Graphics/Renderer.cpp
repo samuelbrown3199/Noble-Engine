@@ -15,6 +15,8 @@
 #include "../../Useful.h"
 #include "../EngineComponents/Sprite.h"
 
+#include "../EngineResources/Pipeline.h"
+
 #include "../../imgui/imgui.h"
 #include "../../imgui/backends/imgui_impl_vulkan.h"
 #include "../../imgui/backends/imgui_impl_sdl2.h"
@@ -728,7 +730,7 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 
 	vkCmdSetScissor(cmd, 0, 1, &scissor);
 
-	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipeline);
+	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_meshPipeline->m_pipeline);
 
 	for (int i = 0; i < m_onScreenObjects.size(); i++)
 	{
@@ -768,7 +770,7 @@ void Renderer::InitializePipelines()
 
 void Renderer::InitializeMeshPipelines()
 {
-	VkShaderModule triangleFragShader;
+	/*VkShaderModule triangleFragShader;
 	if (!vkutil::LoadShaderModule("frag.spv", m_device, &triangleFragShader))
 		throw std::exception();
 
@@ -820,7 +822,9 @@ void Renderer::InitializeMeshPipelines()
 	m_mainDeletionQueue.push_function([&]() {
 		vkDestroyPipelineLayout(m_device, m_meshPipelineLayout, nullptr);
 		vkDestroyPipeline(m_device, m_meshPipeline, nullptr);
-	});
+	});*/
+
+	m_meshPipeline = ResourceManager::LoadResource<Pipeline>("Standard");
 }
 
 void Renderer::InitializeDefaultData()

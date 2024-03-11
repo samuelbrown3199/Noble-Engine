@@ -66,6 +66,8 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
+
+struct Pipeline;
 struct Texture;
 struct Model;
 
@@ -206,9 +208,7 @@ private:
 public:
 
 	//to be removed
-	VkPipelineLayout m_meshPipelineLayout;
-	VkPipeline m_meshPipeline;
-
+	std::shared_ptr<Pipeline> m_meshPipeline;
 	VkDescriptorSetLayout m_singleImageDescriptorLayout;
 	//end of to be removed...
 
@@ -276,6 +276,9 @@ public:
 
 	AllocatedImage GetCheckerboardErrorTexture() { return m_errorCheckerboardImage; }
 	VkSampler GetDefaultSampler() { return m_defaultSamplerNearest; }
+
+	VkFormat GetDrawImageFormat() { return m_drawImage.m_imageFormat; }
+	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
 

@@ -89,6 +89,7 @@ std::string Pipeline::ChangeShader(Shader::ShaderType type, std::string currentP
 Pipeline::Pipeline()
 {
     m_resourceType = "Pipeline";
+    m_bIsLoaded = false;
 }
 
 Pipeline::~Pipeline()
@@ -101,6 +102,8 @@ void Pipeline::OnLoad()
 {
     if (!m_bIsLoaded)
         CreatePipeline();
+
+    m_bIsLoaded = true;
 }
 
 void Pipeline::OnUnload()

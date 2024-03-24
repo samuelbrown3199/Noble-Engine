@@ -76,6 +76,15 @@ void Shader::SetDefaults(const nlohmann::json& data)
 
 
 
+std::string Pipeline::ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName)
+{
+    //Need to consider type here.
+    std::shared_ptr<Shader> shader = ResourceManager::DoResourceSelectInterface<Shader>(elementName, currentPath != "" ? currentPath : "none");
+    if (shader == nullptr || shader->m_shaderType != type)
+        return "";
+
+    return shader->m_sLocalPath;
+}
 
 Pipeline::Pipeline()
 {
@@ -90,6 +99,83 @@ Pipeline::~Pipeline()
 
 void Pipeline::OnLoad()
 {
+    if (!m_bIsLoaded)
+        CreatePipeline();
+}
+
+void Pipeline::OnUnload()
+{
+    if (!m_bIsLoaded)
+        return;
+
+    vkDestroyPipelineLayout(Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
+    vkDestroyPipeline(Renderer::GetLogicalDevice(), m_pipeline, nullptr);
+
+    m_bIsLoaded = false;
+}
+
+void Pipeline::DoResourceInterface()
+{
+    int val = m_pipelineType;
+    ImGui::DragInt("Pipeline Type", &val, 1, 0, 5); //should be a dropdown at some point.
+    m_pipelineType = (PipelineType)val;
+
+    if (m_pipelineType == Graphics)
+    {
+        std::string newPath = ChangeShader(Shader::vertex, m_vertexShaderPath, "Vertex Shader");
+        m_vertexShaderPath = newPath == "" ? m_vertexShaderPath : newPath;
+
+        newPath = ChangeShader(Shader::fragment, m_fragmentShaderPath, "Fragment Shader");
+        m_fragmentShaderPath = newPath == "" ? m_fragmentShaderPath : newPath;
+    }
+
+    if(ImGui::Button("Recreate Pipeline"))
+    {
+        CreatePipeline();
+    }
+}
+
+nlohmann::json Pipeline::AddToDatabase()
+{
+    nlohmann::json data;
+
+    data["PipelineType"] = m_pipelineType;
+    if (!m_vertexShaderPath.empty())
+        data["VertexShader"] = m_vertexShaderPath;
+    if (!m_fragmentShaderPath.empty())
+        data["FragmentShader"] = m_fragmentShaderPath;
+
+    return data;
+}
+
+void Pipeline::AddResource(std::string path)
+{
+    ResourceManager::AddNewResource<Pipeline>(path);
+}
+
+std::vector<std::shared_ptr<Resource>> Pipeline::GetResourcesOfType()
+{
+    return ResourceManager::GetAllResourcesOfType<Pipeline>();
+}
+
+std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const nlohmann::json& data)
+{
+    std::shared_ptr<Pipeline> res = std::make_shared<Pipeline>();
+
+    res->m_sLocalPath = path;
+    res->m_sResourcePath = path;
+
+    if (data.find("VertexShader") != data.end())
+        res->m_vertexShaderPath = data["VertexShader"];
+
+    if (data.find("FragmentShader") != data.end())
+        res->m_fragmentShaderPath = data["FragmentShader"];
+
+    return res;
+}
+
+void Pipeline::CreatePipeline()
+{
     Renderer* renderer = Application::GetRenderer();
 
     if (m_pipelineType == PipelineType::Graphics)
@@ -97,18 +183,19 @@ void Pipeline::OnLoad()
         std::shared_ptr<Shader> vertexShader = nullptr;
         std::shared_ptr<Shader> fragmentShader = nullptr;
 
-        if (!m_vertexShaderPath.empty())
+        if (m_vertexShaderPath.empty())
         {
-            vertexShader = ResourceManager::LoadResource<Shader>(m_vertexShaderPath);
             Logger::LogError(FormatString("Pipeline %s does not have a vertex shader set.", m_sResourcePath), 0);
             return;
         }
-        if (!m_fragmentShaderPath.empty())
+        if (m_fragmentShaderPath.empty())
         {
-            fragmentShader = ResourceManager::LoadResource<Shader>(m_fragmentShaderPath);
             Logger::LogError(FormatString("Pipeline %s does not have a fragment shader set.", m_sResourcePath), 0);
             return;
         }
+
+        vertexShader = ResourceManager::LoadResource<Shader>(m_vertexShaderPath);
+        fragmentShader = ResourceManager::LoadResource<Shader>(m_fragmentShaderPath);
 
         //Push constants and descriptor sets need to somehow be flexible.
         VkPushConstantRange bufferRange{};
@@ -148,61 +235,4 @@ void Pipeline::OnLoad()
         //finally build the pipeline
         m_pipeline = pipelineBuilder.BuildPipeline(Renderer::GetLogicalDevice());
     }
-}
-
-void Pipeline::OnUnload()
-{
-    if (!m_bIsLoaded)
-        return;
-
-    vkDestroyPipelineLayout(Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
-    vkDestroyPipeline(Renderer::GetLogicalDevice(), m_pipeline, nullptr);
-
-    m_bIsLoaded = false;
-}
-
-void Pipeline::DoResourceInterface()
-{
-    int val = m_pipelineType;
-    ImGui::DragInt("Pipeline Type", &val, 1, 0, 5); //should be a dropdown at some point.
-    m_pipelineType = (PipelineType)val;
-}
-
-nlohmann::json Pipeline::AddToDatabase()
-{
-    nlohmann::json data;
-
-    data["PipelineType"] = m_pipelineType;
-    if (!m_vertexShaderPath.empty())
-        data["VertexShader"] = m_vertexShaderPath;
-    if (!m_fragmentShaderPath.empty())
-        data["FragmentShader"] = m_fragmentShaderPath;
-
-    return data;
-}
-
-void Pipeline::AddResource(std::string path)
-{
-    ResourceManager::AddNewResource<Pipeline>(path);
-}
-
-std::vector<std::shared_ptr<Resource>> Pipeline::GetResourcesOfType()
-{
-    return ResourceManager::GetAllResourcesOfType<Pipeline>();
-}
-
-std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const nlohmann::json& data)
-{
-    std::shared_ptr<Pipeline> res = std::make_shared<Pipeline>();
-
-    res->m_sLocalPath = path;
-    res->m_sResourcePath = GetGameFolder() + path;
-
-    if (data.find("VertexShader") != data.end())
-        m_vertexShaderPath = data["VertexShader"];
-
-    if (data.find("FragmentShader") != data.end())
-        m_vertexShaderPath = data["FragmentShader"];
-
-    return res;
 }

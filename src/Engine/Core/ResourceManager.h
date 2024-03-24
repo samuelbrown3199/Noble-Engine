@@ -105,9 +105,19 @@ struct ResourceManager
 	}
 
 	template<typename T>
-	static std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory)
+	static std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory, const bool& requiresFile)
 	{
-		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(GetResourcePath(_fileDirectory), m_vResourceDatabase);
+		std::shared_ptr<T> oldResource = nullptr;
+
+		if (requiresFile)
+		{
+			oldResource = PrelimLoadResource<T>(GetResourcePath(_fileDirectory), m_vResourceDatabase);
+		}
+		else
+		{
+			oldResource = PrelimLoadResource<T>(_fileDirectory, m_vResourceDatabase);
+		}
+
 		return oldResource;
 	}
 
@@ -125,7 +135,23 @@ struct ResourceManager
 			return oldResource;
 		}
 
+		oldResource = PrelimLoadResource<T>(_fileDirectory, m_vLoadedResources);
+		if (oldResource != nullptr)
+		{
+			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			return oldResource;
+		}
+
 		oldResource = PrelimLoadResource<T>(searchPath, m_vResourceDatabase);
+		if (oldResource != nullptr)
+		{
+			oldResource->OnLoad();
+			m_vLoadedResources.push_back(oldResource);
+			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			return oldResource;
+		}
+
+		oldResource = PrelimLoadResource<T>(_fileDirectory, m_vResourceDatabase);
 		if (oldResource != nullptr)
 		{
 			oldResource->OnLoad();

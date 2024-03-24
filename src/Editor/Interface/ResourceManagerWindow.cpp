@@ -91,7 +91,7 @@ void ResourceManagerWindow::DoInterface()
         {
             if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
             {
-                selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath);
+                selResource = ResourceManager::GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bRequiresFile);
             }
         }
     }

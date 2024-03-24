@@ -27,6 +27,8 @@ struct Sprite : public Renderable
 
 		if (m_texture != nullptr)
 			data["spritePath"] = m_texture->m_sLocalPath;
+		if (m_pipeline != nullptr)
+			data["pipeline"] = m_pipeline->m_sLocalPath;
 
 		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
 
@@ -37,6 +39,8 @@ struct Sprite : public Renderable
 	{
 		if(j.find("spritePath") != j.end())
 			m_texture = ResourceManager::LoadResource<Texture>(j["spritePath"]);
+		if (j.find("pipeline") != j.end())
+			m_pipeline = ResourceManager::LoadResource<Pipeline>(j["pipeline"]);
 		if(j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 	}
@@ -63,28 +67,6 @@ struct Sprite : public Renderable
 		m_colour = glm::vec4(1.0f);
 	}
 
-	void ChangeSprite(std::shared_ptr<Texture> sprite)
-	{
-		if (sprite == nullptr)
-			return;
-
-		if (m_texture != nullptr && sprite->m_sLocalPath == m_texture->m_sLocalPath)
-			return;
-
-		m_texture = sprite;
-	}
-
-	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
-	{
-		if (pipeline == nullptr)
-			return;
-
-		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
-			return;
-
-		m_pipeline = pipeline;
-	}
-
 	virtual void DoComponentInterface() override
 	{
 		if (m_transformIndex == -1)
@@ -100,7 +82,7 @@ struct Sprite : public Renderable
 		ImGui::Checkbox("On Screen", &m_bOnScreen);
 		ImGui::EndDisabled();
 
-		ChangeSprite(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
 		ChangePipeline(ResourceManager::DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);

@@ -208,7 +208,6 @@ private:
 public:
 
 	//to be removed
-	std::shared_ptr<Pipeline> m_meshPipeline;
 	VkDescriptorSetLayout m_singleImageDescriptorLayout;
 	//end of to be removed...
 

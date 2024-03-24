@@ -34,6 +34,12 @@ struct Shader : public Resource
 
 struct Pipeline : public Resource
 {
+
+private:
+
+	std::string ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName);
+
+public:
 	Pipeline();
 	~Pipeline();
 
@@ -60,4 +66,6 @@ struct Pipeline : public Resource
 	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 	nlohmann::json AddToDatabase() override;
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
+
+	void CreatePipeline();
 };

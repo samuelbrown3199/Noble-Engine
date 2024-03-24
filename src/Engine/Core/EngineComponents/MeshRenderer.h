@@ -26,6 +26,8 @@ struct MeshRenderer : public Renderable
 			data["texturePath"] = m_texture->m_sLocalPath;
 		if(m_model != nullptr)
 			data["modelPath"] = m_model->m_sLocalPath;
+		if (m_pipeline != nullptr)
+			data["pipeline"] = m_pipeline->m_sLocalPath;
 
 		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
 
@@ -38,19 +40,10 @@ struct MeshRenderer : public Renderable
 			m_texture = ResourceManager::LoadResource<Texture>(j["texturePath"]);
 		if (j.find("modelPath") != j.end())
 			m_model = ResourceManager::LoadResource<Model>(j["modelPath"]);
+		if (j.find("pipeline") != j.end())
+			m_pipeline = ResourceManager::LoadResource<Pipeline>(j["pipeline"]);
 		if (j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
-	}
-
-	void ChangeTexture(std::shared_ptr<Texture> texture)
-	{
-		if (texture == nullptr)
-			return;
-
-		if (m_texture != nullptr && texture->m_sLocalPath == m_texture->m_sLocalPath)
-			return;
-
-		m_texture = texture;
 	}
 
 	void ChangeModel(std::shared_ptr<Model> model)
@@ -62,17 +55,6 @@ struct MeshRenderer : public Renderable
 			return;
 
 		m_model = model;
-	}
-
-	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
-	{
-		if (pipeline == nullptr)
-			return;
-
-		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
-			return;
-
-		m_pipeline = pipeline;
 	}
 
 	virtual void DoComponentInterface() override

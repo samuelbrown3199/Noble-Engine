@@ -33,6 +33,29 @@ struct Renderable : public Component
 		m_transformIndex = -1;
 	}
 
+	void ChangeTexture(std::shared_ptr<Texture> sprite)
+	{
+		if (sprite == nullptr)
+			return;
+
+		if (m_texture != nullptr && sprite->m_sLocalPath == m_texture->m_sLocalPath)
+			return;
+
+		m_texture = sprite;
+	}
+
+	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
+	{
+		if (pipeline == nullptr)
+			return;
+
+		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
+			return;
+
+		m_pipeline = pipeline;
+	}
+
+
 	virtual void OnPreRender() 
 	{
 		Renderer::IncrementRenderables();
@@ -76,8 +99,10 @@ struct Renderable : public Component
 
 	virtual void OnRender(VkCommandBuffer cmd)
 	{
-		Renderer* renderer = Application::GetRenderer();
+		if (m_pipeline == nullptr)
+			return;
 
+		Renderer* renderer = Application::GetRenderer();
 		VkDescriptorSet imageSet = renderer->GetCurrentFrame().m_frameDescriptors.AllocateSet(renderer->GetLogicalDevice(), renderer->m_singleImageDescriptorLayout);
 
 		DescriptorWriter writer;
@@ -92,14 +117,11 @@ struct Renderable : public Component
 			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
 		}
 
-		if (m_pipeline == nullptr)
-			return;
-
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
 
-		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, renderer->m_meshPipeline->m_pipelineLayout, 0, 1, &imageSet, 0, nullptr);
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, 1, &imageSet, 0, nullptr);
 
-		vkCmdPushConstants(cmd, renderer->m_meshPipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
+		vkCmdPushConstants(cmd, m_pipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
 		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdDrawIndexed(cmd, m_indices->size(), 1, 0, 0, 0);

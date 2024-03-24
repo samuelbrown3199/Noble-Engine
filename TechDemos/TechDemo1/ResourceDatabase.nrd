@@ -16,7 +16,8 @@
 		},
 		"Model": null,
 		"Pipeline": {
-			"PipelineType": 1142947840
+			"PipelineType": 1058766848,
+			"VertexShader": "C:\\Users\\samue\\Desktop\\Development\\Projects\\Noble-Engine\\TechDemos\\TechDemo1\\GameData\\Shaders\\frag.spv"
 		},
 		"Script": null,
 		"Shader": {
@@ -33,7 +34,9 @@
 	},
 	"Pipeline": {
 		"Standard": {
-			"PipelineType": 0
+			"FragmentShader": "\\GameData\\Shaders\\frag.spv",
+			"PipelineType": 0,
+			"VertexShader": "\\GameData\\Shaders\\vert.spv"
 		}
 	},
 	"Script": {

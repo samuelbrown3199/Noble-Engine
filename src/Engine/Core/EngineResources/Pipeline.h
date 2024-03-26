@@ -37,6 +37,8 @@ struct Pipeline : public Resource
 
 private:
 
+	std::vector<VkPushConstantRange> m_vPushConstants;
+
 	std::string ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName);
 
 public:

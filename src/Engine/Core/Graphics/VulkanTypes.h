@@ -40,19 +40,17 @@ struct Vertex
     float m_uvX = 0;
     glm::vec3 m_normal = glm::vec3(0, 0, 0);
     float m_uvY = 0;
-    glm::vec4 m_colour = { 1,1,1,1 };
 
     bool operator==(const Vertex& other) const
     {
-        return m_position == other.m_position && m_normal == other.m_normal && m_uvX == other.m_uvX && m_uvY == other.m_uvY && m_colour == other.m_colour;
+        return m_position == other.m_position && m_normal == other.m_normal && m_uvX == other.m_uvX && m_uvY == other.m_uvY;
     }
 
     Vertex() {};
-    Vertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 normal, glm::vec4 colour)
+    Vertex(glm::vec3 pos, glm::vec2 uv, glm::vec3 normal)
     {
         m_position = pos;
         m_normal = normal;
-        m_colour = colour;
 
         m_uvX = uv.x;
         m_uvY = uv.y;
@@ -68,8 +66,7 @@ namespace std
             return ((hash<glm::vec3>()(vertex.m_position) ^
                 (hash<glm::vec3>()(vertex.m_normal) << 1) >> 1 ^
                 (hash<float>()(vertex.m_uvX) << 1) >> 1 ^
-                (hash<float>()(vertex.m_uvY) << 1) >> 1 ^
-                (hash<glm::vec3>()(vertex.m_colour) << 1)));
+                (hash<float>()(vertex.m_uvY) << 1) >> 1));
         }
     };
 }

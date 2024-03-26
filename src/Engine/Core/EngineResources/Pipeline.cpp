@@ -168,9 +168,10 @@ std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const 
     res->m_sLocalPath = path;
     res->m_sResourcePath = path;
 
+    if (data.find("PipelineType") != data.end())
+        res->m_pipelineType = data["PipelineType"];
     if (data.find("VertexShader") != data.end())
         res->m_vertexShaderPath = data["VertexShader"];
-
     if (data.find("FragmentShader") != data.end())
         res->m_fragmentShaderPath = data["FragmentShader"];
 
@@ -201,15 +202,17 @@ void Pipeline::CreatePipeline()
         fragmentShader = ResourceManager::LoadResource<Shader>(m_fragmentShaderPath);
 
         //Push constants and descriptor sets need to somehow be flexible.
+
+        //Push constants can be put into a list, offset can be determined but the size of the last push constant + its offset, easy to iterate over before pipeline creation. Must be multiple of 4 as its in bytes so add check for this!!!
         VkPushConstantRange bufferRange{};
         bufferRange.offset = 0;
         bufferRange.size = sizeof(GPUDrawPushConstants);
         bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
-        pipelineLayoutInfo.pPushConstantRanges = &bufferRange;
-        pipelineLayoutInfo.pushConstantRangeCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &renderer->m_singleImageDescriptorLayout; //very temp
+        pipelineLayoutInfo.pPushConstantRanges = &bufferRange; //this needs to be the .data() of the vector of push constant ranges.
+        pipelineLayoutInfo.pushConstantRangeCount = 1; //the .size() of the push constant vector.
+        pipelineLayoutInfo.pSetLayouts = &renderer->m_singleImageDescriptorLayout; //very temp, to be worked out.
         pipelineLayoutInfo.setLayoutCount = 1;
 
         if (vkCreatePipelineLayout(renderer->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
@@ -235,7 +238,11 @@ void Pipeline::CreatePipeline()
         pipelineBuilder.SetColorAttachmentFormat(renderer->GetDrawImageFormat());
         pipelineBuilder.SetDepthFormat(renderer->GetDepthImageFormat());
 
+        //Some/all of these settings should be parameters to be changed in the pipeline resource. ^^
+
         //finally build the pipeline
         m_pipeline = pipelineBuilder.BuildPipeline(Renderer::GetLogicalDevice());
     }
+
+    Logger::LogInformation("Created pipeline " + m_sLocalPath);
 }

@@ -105,10 +105,8 @@ void Renderer::InitializeVulkan()
 	InitializeCommands();
 	InitializeSyncStructures();
 	InitializeDescriptors();
-	InitializePipelines(); //too be removed
 
 	InitializeDefaultData();
-
 	InitializeImgui();
 
 	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
@@ -759,70 +757,6 @@ void Renderer::DrawImGui(VkCommandBuffer cmd, VkImage targetImage, VkImageView t
 	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
 
 	vkCmdEndRendering(cmd);
-}
-
-void Renderer::InitializePipelines()
-{
-	InitializeMeshPipelines();
-}
-
-void Renderer::InitializeMeshPipelines()
-{
-	/*VkShaderModule triangleFragShader;
-	if (!vkutil::LoadShaderModule("frag.spv", m_device, &triangleFragShader))
-		throw std::exception();
-
-	VkShaderModule triangleVertShader;
-	if (!vkutil::LoadShaderModule("vert.spv", m_device, &triangleVertShader))
-		throw std::exception();
-
-	VkPushConstantRange bufferRange{};
-	bufferRange.offset = 0;
-	bufferRange.size = sizeof(GPUDrawPushConstants);
-	bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
-	pipelineLayoutInfo.pPushConstantRanges = &bufferRange;
-	pipelineLayoutInfo.pushConstantRangeCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &m_singleImageDescriptorLayout;
-	pipelineLayoutInfo.setLayoutCount = 1;
-
-	if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_meshPipelineLayout) != VK_SUCCESS)
-		throw std::exception();
-
-	PipelineBuilder pipelineBuilder;
-	//use the triangle layout we created
-	pipelineBuilder.m_pipelineLayout = m_meshPipelineLayout;
-	//connecting the vertex and pixel shaders to the pipeline
-	pipelineBuilder.SetShaders(triangleVertShader, triangleFragShader);
-	//it will draw triangles
-	pipelineBuilder.SetInputTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-	//filled triangles
-	pipelineBuilder.SetPolygonMode(VK_POLYGON_MODE_FILL);
-	//no backface culling
-	pipelineBuilder.SetCullMode(VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
-	//no multisampling
-	pipelineBuilder.SetMultisamplingNone();
-	pipelineBuilder.DisableBlending();
-	pipelineBuilder.EnableDepthTest(true, VK_COMPARE_OP_LESS_OR_EQUAL);
-
-	//connect the image format we will draw into, from draw image
-	pipelineBuilder.SetColorAttachmentFormat(m_drawImage.m_imageFormat);
-	pipelineBuilder.SetDepthFormat(m_depthImage.m_imageFormat);
-
-	//finally build the pipeline
-	m_meshPipeline = pipelineBuilder.BuildPipeline(m_device);
-
-	//clean structures
-	vkDestroyShaderModule(m_device, triangleFragShader, nullptr);
-	vkDestroyShaderModule(m_device, triangleVertShader, nullptr);
-
-	m_mainDeletionQueue.push_function([&]() {
-		vkDestroyPipelineLayout(m_device, m_meshPipelineLayout, nullptr);
-		vkDestroyPipeline(m_device, m_meshPipeline, nullptr);
-	});*/
-
-	//m_meshPipeline = ResourceManager::LoadResource<Pipeline>("Standard");
 }
 
 void Renderer::InitializeDefaultData()

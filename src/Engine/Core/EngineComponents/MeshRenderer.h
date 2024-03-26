@@ -11,7 +11,6 @@
 struct MeshRenderer : public Renderable
 {
 	std::shared_ptr<Model> m_model = nullptr;
-	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	std::string GetComponentID() override
 	{

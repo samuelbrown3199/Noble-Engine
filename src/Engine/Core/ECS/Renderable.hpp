@@ -25,6 +25,8 @@ struct Renderable : public Component
 	GPUMeshBuffers m_meshBuffers;
 	GPUDrawPushConstants m_drawConstants;
 
+	glm::vec4 m_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	bool m_bOnScreen = false;
 	float m_fDistanceToCam;
 
@@ -99,7 +101,7 @@ struct Renderable : public Component
 
 	virtual void OnRender(VkCommandBuffer cmd)
 	{
-		if (m_pipeline == nullptr)
+		if (m_pipeline == nullptr || !m_pipeline->m_bIsLoaded)
 			return;
 
 		Renderer* renderer = Application::GetRenderer();

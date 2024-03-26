@@ -10,8 +10,6 @@
 
 struct Sprite : public Renderable
 {
-	glm::vec4 m_colour = glm::vec4();
-
 	static std::vector<uint32_t> spriteQuadIndices;
 	static std::vector<Vertex> spriteQuadVertices;
 	static std::vector<glm::vec3> boundingBox;

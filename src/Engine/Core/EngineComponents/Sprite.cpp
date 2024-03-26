@@ -9,10 +9,10 @@ std::vector<uint32_t> Sprite::spriteQuadIndices =
 };
 std::vector<Vertex> Sprite::spriteQuadVertices =
 {
-	Vertex(glm::vec3{ 0.0f, 0.0f, 0.0 }, glm::vec2{ 0.0f, 0.0f }, glm::vec3{ 1.0f, 0.0f, 0.0f }, glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f }),
-	Vertex(glm::vec3{ 1.0f, 0.0f, 0.0 }, glm::vec2{ 1.0f, 0.0f }, glm::vec3{ 0.0f, 1.0f, 0.0f }, glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f }),
-	Vertex(glm::vec3{ 1.0f, 1.0f, 0.0 }, glm::vec2{ 1.0f, 1.0f }, glm::vec3{ 0.0f, 0.0f, 1.0f }, glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f }),
-	Vertex(glm::vec3{ 0.0f, 1.0f, 0.0 }, glm::vec2{ 0.0f, 1.0f }, glm::vec3{ 1.0f, 1.0f, 1.0f }, glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f })
+	Vertex(glm::vec3{ 0.0f, 0.0f, 0.0 }, glm::vec2{ 0.0f, 0.0f }, glm::vec3{ 1.0f, 0.0f, 0.0f }),
+	Vertex(glm::vec3{ 1.0f, 0.0f, 0.0 }, glm::vec2{ 1.0f, 0.0f }, glm::vec3{ 0.0f, 1.0f, 0.0f }),
+	Vertex(glm::vec3{ 1.0f, 1.0f, 0.0 }, glm::vec2{ 1.0f, 1.0f }, glm::vec3{ 0.0f, 0.0f, 1.0f }),
+	Vertex(glm::vec3{ 0.0f, 1.0f, 0.0 }, glm::vec2{ 0.0f, 1.0f }, glm::vec3{ 1.0f, 1.0f, 1.0f })
 };
 std::vector<glm::vec3> Sprite::boundingBox =
 {

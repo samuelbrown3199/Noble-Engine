@@ -79,14 +79,6 @@ void Model::OnLoad()
                 attrib.normals[3 * index.normal_index + 2]
             };
 
-            vertex.m_colour =
-            {
-                1,
-                1,
-                1,
-                1
-            };
-
             if (uniqueVertices.count(vertex) == 0)
             {
                 uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());

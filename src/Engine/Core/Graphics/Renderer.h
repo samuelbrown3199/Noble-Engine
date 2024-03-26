@@ -198,9 +198,6 @@ private:
 	void DrawGeometry(VkCommandBuffer cmd);
 	void DrawImGui(VkCommandBuffer cmd, VkImage targetImage, VkImageView targetImageView);
 
-	void InitializePipelines();
-	void InitializeMeshPipelines();
-
 	void InitializeDefaultData();
 
 	GPUMeshBuffers GetSpriteQuadBuffer() { return m_spriteQuad; }

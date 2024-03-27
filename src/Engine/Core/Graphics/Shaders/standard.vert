@@ -16,11 +16,13 @@ layout(buffer_reference, std430) readonly buffer VertexBuffer{
 layout( push_constant ) uniform constants
 {	
 	mat4 render_matrix;
+	vec4 colour;
 	VertexBuffer vertexBuffer;
 } PushConstants;
 
 layout (location = 0) out vec2 outUV;
 layout (location = 1) out vec3 normal;
+layout (location = 2) out vec4 colour;
 
 void main()
 {
@@ -31,4 +33,5 @@ void main()
 	outUV.x = v.uv_x;
 	outUV.y = v.uv_y;
 	normal = v.normal;
+	colour = PushConstants.colour;
 }

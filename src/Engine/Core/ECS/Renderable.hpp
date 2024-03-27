@@ -90,6 +90,7 @@ struct Renderable : public Component
 			return;
 
 		m_drawConstants.m_vertexBuffer = m_meshBuffers.m_vertexBufferAddress;
+		m_drawConstants.m_objectColour = m_colour;
 
 		Camera* cam = Renderer::GetCamera();
 		if (cam != nullptr)

@@ -13,6 +13,7 @@
 #include <direct.h>
 
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
 //--------------------STRINGS----------------------------
 
@@ -48,6 +49,8 @@ std::string OpenFileSelectDialog(std::string filter);
 
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
 void DeleteFilePath(std::string path);
+
+void AddVersionDataToFile(nlohmann::json& data);
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 

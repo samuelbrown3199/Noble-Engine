@@ -132,6 +132,9 @@ void ResourceManager::LoadResourceDatabase()
 void ResourceManager::WriteResourceDatabase()
 {
 	m_resourceDatabaseJson.clear();
+
+	AddVersionDataToFile(m_resourceDatabaseJson);
+
 	for (size_t re = 0; re < m_vResourceDatabase.size(); re++)
 	{
 		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();

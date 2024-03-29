@@ -191,6 +191,11 @@ void DeleteFilePath(std::string path)
     std::remove(path.c_str());
 }
 
+void AddVersionDataToFile(nlohmann::json& data)
+{
+    data["EngineVersion"] = GetVersionInfoString();
+}
+
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 
 std::string GetGameFolder()

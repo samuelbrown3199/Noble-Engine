@@ -53,6 +53,7 @@ void SceneManager::SaveScene(std::string scenePath)
 	std::map<int, std::pair<std::string, Behaviour*>>* behRegistry = NobleRegistry::GetBehaviourRegistry();
 
 	nlohmann::json data;
+	AddVersionDataToFile(data);
 
 	glm::vec3 clearColour = Renderer::GetClearColour();
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };

@@ -91,6 +91,7 @@ struct Renderable : public Component
 
 		m_drawConstants.m_vertexBuffer = m_meshBuffers.m_vertexBufferAddress;
 		m_drawConstants.m_objectColour = m_colour;
+		m_drawConstants.m_worldMatrix =  transform->m_transformMat;
 
 		Camera* cam = Renderer::GetCamera();
 		if (cam != nullptr)
@@ -106,7 +107,11 @@ struct Renderable : public Component
 			return;
 
 		Renderer* renderer = Application::GetRenderer();
+
 		VkDescriptorSet imageSet = renderer->GetCurrentFrame().m_frameDescriptors.AllocateSet(renderer->GetLogicalDevice(), renderer->m_singleImageDescriptorLayout);
+		std::vector<VkDescriptorSet> sets;
+		sets.push_back(imageSet);
+		sets.push_back(renderer->GetCurrentFrame().m_sceneDescriptor);
 
 		DescriptorWriter writer;
 		if (m_texture != nullptr)
@@ -122,7 +127,7 @@ struct Renderable : public Component
 
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
 
-		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, 1, &imageSet, 0, nullptr);
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, 2, sets.data(), 0, nullptr); //hardcoded to 2 sets currently, it should get this info from the pipeline
 
 		vkCmdPushConstants(cmd, m_pipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
 		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);

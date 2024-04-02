@@ -602,6 +602,10 @@ void Renderer::DrawFrame()
 	if (m_fRenderScale == 0)
 		Logger::LogError("Render scale is set to 0. This should never happen.", 2);
 
+	m_sceneData.proj = GenerateProjMatrix();
+	m_sceneData.view = GenerateViewMatrix();
+	m_sceneData.viewproj = m_sceneData.proj * m_sceneData.view;
+
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
 	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
 
@@ -697,11 +701,11 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	GPUSceneData* sceneUniformData = (GPUSceneData*)gpuSceneDataBuffer.m_allocation->GetMappedData();
 	*sceneUniformData = m_sceneData;
 
-	VkDescriptorSet globalDescriptor = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_gpuSceneDataDescriptorLayout);
+	GetCurrentFrame().m_sceneDescriptor = GetCurrentFrame().m_frameDescriptors.AllocateSet(m_device, m_gpuSceneDataDescriptorLayout);
 
 	DescriptorWriter writer;
 	writer.WriteBuffer(0, gpuSceneDataBuffer.m_buffer, sizeof(GPUSceneData), 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-	writer.UpdateSet(m_device, globalDescriptor);
+	writer.UpdateSet(m_device, GetCurrentFrame().m_sceneDescriptor);
 
 	//Begin a render pass connected to our draw image. 
 	VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(m_drawImage.m_imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);

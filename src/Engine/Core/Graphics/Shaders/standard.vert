@@ -24,12 +24,21 @@ layout (location = 0) out vec2 outUV;
 layout (location = 1) out vec3 normal;
 layout (location = 2) out vec4 colour;
 
+layout(set=1, binding=0) uniform  SceneData{   
+
+	mat4 view;
+	mat4 proj;
+	mat4 viewproj;
+	vec4 ambientColor;
+	vec4 sunlightDirection; //w for sun power
+	vec4 sunlightColor;
+} sceneData;
+
 void main()
 {
-	
 	Vertex v = PushConstants.vertexBuffer.vertices[gl_VertexIndex];
 	
-	gl_Position = PushConstants.render_matrix *vec4(v.position, 1.0f);
+	gl_Position = sceneData.viewproj * PushConstants.render_matrix * vec4(v.position, 1.0f);
 	outUV.x = v.uv_x;
 	outUV.y = v.uv_y;
 	normal = v.normal;

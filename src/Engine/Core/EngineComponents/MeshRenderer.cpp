@@ -18,13 +18,4 @@ void MeshRenderer::OnPreRender()
 	m_meshBuffers = m_model->m_meshBuffer;
 
 	Renderable::OnPreRender();
-
-	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
-	if (transform == nullptr)
-		return;
-
-	if (!m_bOnScreen)
-		return;
-
-	m_drawConstants.m_worldMatrix = Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix() * transform->m_transformMat;
 }

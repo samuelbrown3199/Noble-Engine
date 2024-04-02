@@ -45,16 +45,8 @@ struct FrameData
 
 	DeletionQueue m_deletionQueue;
 	DescriptorAllocatorGrowable m_frameDescriptors;
-};
 
-struct GPUSceneData 
-{
-	glm::mat4 view;
-	glm::mat4 proj;
-	glm::mat4 viewproj;
-	glm::vec4 ambientColor;
-	glm::vec4 sunlightDirection;
-	glm::vec4 sunlightColor;
+	VkDescriptorSet m_sceneDescriptor;
 };
 
 struct Renderable;
@@ -119,7 +111,6 @@ private:
 	uint32_t m_graphicsQueueFamily;
 
 	GPUSceneData m_sceneData;
-	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 
 	//temp values here for future editor update.
 	bool drawToWindow = false;
@@ -204,8 +195,9 @@ private:
 
 public:
 
-	//to be removed
+	//to be removed/reworked
 	VkDescriptorSetLayout m_singleImageDescriptorLayout;
+	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 	//end of to be removed...
 
 	Renderer(const std::string _windowName);

@@ -209,11 +209,15 @@ void Pipeline::CreatePipeline()
         bufferRange.size = sizeof(GPUDrawPushConstants);
         bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+        //temporary hack for now.
+        m_vDescriptorLayouts.push_back(renderer->m_singleImageDescriptorLayout);
+        m_vDescriptorLayouts.push_back(renderer->m_gpuSceneDataDescriptorLayout);
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
         pipelineLayoutInfo.pPushConstantRanges = &bufferRange; //this needs to be the .data() of the vector of push constant ranges.
         pipelineLayoutInfo.pushConstantRangeCount = 1; //the .size() of the push constant vector.
-        pipelineLayoutInfo.pSetLayouts = &renderer->m_singleImageDescriptorLayout; //very temp, to be worked out.
-        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = m_vDescriptorLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = m_vDescriptorLayouts.size();
 
         if (vkCreatePipelineLayout(renderer->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
             Logger::LogError(FormatString("Failed to create pipeline layout for pipeline %s", m_sResourcePath.c_str()), 2);

@@ -13,7 +13,7 @@
 struct ComponentRegistry
 {	
 	Component* m_comp = nullptr;
-	bool m_bUseThreads = false;
+	bool m_bUseThreads = false;	
 	int m_iMaxComponentsPerThread = 1024;
 
 	bool m_bUpdateInEditor = false, m_bRenderInEditor = false;

@@ -38,8 +38,9 @@ class EditorUI : public DebugUI
 	void OpenProfiler();
 
 	ImVec4 ambientColour;
-	float ambientStrength;
 	ImVec4 clearColour;
+	ImVec4 sunlightColour;
+
 	void UpdateLightingWidgets();
 
 	void LoadScene(std::string scenePath);

@@ -210,12 +210,13 @@ void Pipeline::CreatePipeline()
         bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
         //temporary hack for now.
+        m_vPushConstants.push_back(bufferRange);
         m_vDescriptorLayouts.push_back(renderer->m_singleImageDescriptorLayout);
         m_vDescriptorLayouts.push_back(renderer->m_gpuSceneDataDescriptorLayout);
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
-        pipelineLayoutInfo.pPushConstantRanges = &bufferRange; //this needs to be the .data() of the vector of push constant ranges.
-        pipelineLayoutInfo.pushConstantRangeCount = 1; //the .size() of the push constant vector.
+        pipelineLayoutInfo.pPushConstantRanges = m_vPushConstants.data();
+        pipelineLayoutInfo.pushConstantRangeCount = m_vPushConstants.size();
         pipelineLayoutInfo.pSetLayouts = m_vDescriptorLayouts.data();
         pipelineLayoutInfo.setLayoutCount = m_vDescriptorLayouts.size();
 

@@ -23,6 +23,7 @@ layout( push_constant ) uniform constants
 layout (location = 0) out vec2 outUV;
 layout (location = 1) out vec3 normal;
 layout (location = 2) out vec4 colour;
+layout (location = 3) out vec3 fragPos;
 
 layout(set=1, binding=0) uniform  SceneData{   
 
@@ -43,4 +44,5 @@ void main()
 	outUV.y = v.uv_y;
 	normal = v.normal;
 	colour = PushConstants.colour;
+	fragPos = vec3(PushConstants.render_matrix * vec4(v.position, 1.0));
 }

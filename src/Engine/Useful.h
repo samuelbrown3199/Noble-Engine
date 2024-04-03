@@ -50,7 +50,7 @@ std::string OpenFileSelectDialog(std::string filter);
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
 void DeleteFilePath(std::string path);
 
-void AddVersionDataToFile(nlohmann::json& data);
+void AddVersionDataToJson(nlohmann::json& data);
 
 //--------------------ENGINE FILES AND DIRECTORIES----------------------------
 

@@ -313,7 +313,7 @@ void Renderer::InitializeCommands()
 
 	m_mainDeletionQueue.push_function([=]() {
 		vkDestroyCommandPool(m_device, m_immediateCommandPool, nullptr);
-		});
+	});
 }
 
 void Renderer::InitializeSyncStructures()

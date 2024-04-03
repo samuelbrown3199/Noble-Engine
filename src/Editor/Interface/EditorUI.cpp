@@ -151,6 +151,18 @@ void EditorUI::DoInterface()
 	ImGui::ColorEdit3("Clear Colour", (float*)&clearColour);
 	Renderer::SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
 
+	ambientColour = ImVec4(renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y, renderer->m_sceneData.ambientColour.z, renderer->m_sceneData.ambientColour.w);
+	ImGui::ColorEdit4("Ambient Colour", (float*)&ambientColour);
+	renderer->m_sceneData.ambientColour = glm::vec4(ambientColour.x, ambientColour.y, ambientColour.z, ambientColour.w);
+
+	sunlightColour = ImVec4(renderer->m_sceneData.sunlightColour.x, renderer->m_sceneData.sunlightColour.y, renderer->m_sceneData.sunlightColour.z, renderer->m_sceneData.sunlightColour.w);
+	ImGui::ColorEdit3("Sunlight Colour", (float*)&sunlightColour);
+	renderer->m_sceneData.sunlightColour = glm::vec4(sunlightColour.x, sunlightColour.y, sunlightColour.z, 1.0f);
+
+	float sunDir[3] = { renderer->m_sceneData.sunlightDirection.x, renderer->m_sceneData.sunlightDirection.y, renderer->m_sceneData.sunlightDirection.z };
+	ImGui::DragFloat3("Sunlight Direction", sunDir, 0.01f);
+	renderer->m_sceneData.sunlightDirection = glm::vec4(sunDir[0], sunDir[1], sunDir[2], 1.0f);
+
 	static float renderScale = renderer->GetRenderScale();
 	ImGui::DragFloat("Render Scale", &renderScale, 0.1f, 0.1f, 1.0f, "%.2f");
 	renderer->SetRenderScale(renderScale);

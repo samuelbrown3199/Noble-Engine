@@ -40,6 +40,8 @@ void Scene::LoadSceneIntoApplication()
 	if (m_bSceneReady == false)
 		return;
 
+	Renderer* renderer = Application::GetRenderer();
+
 	//parse out JSON here. Should probably check that the file isnt malformed in some way as well.
 	if (m_sceneData.find("ComponentData") != m_sceneData.end())
 	{
@@ -101,5 +103,21 @@ void Scene::LoadSceneIntoApplication()
 
 		glm::vec3 clearColour = glm::vec3(lightingInfo["ClearColour"][0], lightingInfo["ClearColour"][1], lightingInfo["ClearColour"][2]);
 		Renderer::SetClearColour(clearColour);
+
+		if (lightingInfo.find("AmbientColour") != lightingInfo.end())
+		{
+			glm::vec4 ambientColour = glm::vec4(lightingInfo["AmbientColour"][0], lightingInfo["AmbientColour"][1], lightingInfo["AmbientColour"][2], lightingInfo["AmbientColour"][3]);
+			renderer->m_sceneData.ambientColour = ambientColour;
+		}
+		if (lightingInfo.find("SunlightDirection") != lightingInfo.end())
+		{
+			glm::vec4 sunlightDirection = glm::vec4(lightingInfo["SunlightDirection"][0], lightingInfo["SunlightDirection"][1], lightingInfo["SunlightDirection"][2], lightingInfo["SunlightDirection"][3]);
+			renderer->m_sceneData.sunlightDirection = sunlightDirection;
+		}
+		if (lightingInfo.find("SunlightColour") != lightingInfo.end())
+		{
+			glm::vec4 sunlightColour = glm::vec4(lightingInfo["SunlightColour"][0], lightingInfo["SunlightColour"][1], lightingInfo["SunlightColour"][2], lightingInfo["SunlightColour"][3]);
+			renderer->m_sceneData.sunlightColour = sunlightColour;
+		}
 	}
 }

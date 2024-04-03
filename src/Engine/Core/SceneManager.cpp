@@ -53,10 +53,15 @@ void SceneManager::SaveScene(std::string scenePath)
 	std::map<int, std::pair<std::string, Behaviour*>>* behRegistry = NobleRegistry::GetBehaviourRegistry();
 
 	nlohmann::json data;
-	AddVersionDataToFile(data);
+	AddVersionDataToJson(data);
+
+	Renderer* renderer = Application::GetRenderer();
 
 	glm::vec3 clearColour = Renderer::GetClearColour();
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };
+	data["LightingSettings"]["AmbientColour"] = { renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y , renderer->m_sceneData.ambientColour.z , renderer->m_sceneData.ambientColour.w };
+	data["LightingSettings"]["SunlightDirection"] = { renderer->m_sceneData.sunlightDirection.x,renderer->m_sceneData.sunlightDirection.y, renderer->m_sceneData.sunlightDirection.z, renderer->m_sceneData.sunlightDirection.w };
+	data["LightingSettings"]["SunlightColour"] = { renderer->m_sceneData.sunlightColour.x,renderer->m_sceneData.sunlightColour.y, renderer->m_sceneData.sunlightColour.z, renderer->m_sceneData.sunlightColour.w };
 
 	for (int i = 0; i < entities.size(); i++)
 	{

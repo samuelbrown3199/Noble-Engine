@@ -110,8 +110,6 @@ private:
 	static VkQueue m_graphicsQueue;
 	uint32_t m_graphicsQueueFamily;
 
-	GPUSceneData m_sceneData;
-
 	//temp values here for future editor update.
 	bool drawToWindow = false;
 	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
@@ -199,6 +197,8 @@ public:
 	VkDescriptorSetLayout m_singleImageDescriptorLayout;
 	VkDescriptorSetLayout m_gpuSceneDataDescriptorLayout;
 	//end of to be removed...
+
+	GPUSceneData m_sceneData;
 
 	Renderer(const std::string _windowName);
 	~Renderer();

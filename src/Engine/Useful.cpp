@@ -191,7 +191,7 @@ void DeleteFilePath(std::string path)
     std::remove(path.c_str());
 }
 
-void AddVersionDataToFile(nlohmann::json& data)
+void AddVersionDataToJson(nlohmann::json& data)
 {
     data["EngineVersion"] = GetVersionInfoString();
 }

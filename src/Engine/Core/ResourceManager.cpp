@@ -133,7 +133,7 @@ void ResourceManager::WriteResourceDatabase()
 {
 	m_resourceDatabaseJson.clear();
 
-	AddVersionDataToFile(m_resourceDatabaseJson);
+	AddVersionDataToJson(m_resourceDatabaseJson);
 
 	for (size_t re = 0; re < m_vResourceDatabase.size(); re++)
 	{

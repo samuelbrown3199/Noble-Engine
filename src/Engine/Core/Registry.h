@@ -46,6 +46,8 @@ struct ResourceRegistry
 
 class NobleRegistry
 {
+
+	//change these to vectors at some point, not sure why I made them maps.
 	static std::map<int, std::pair<std::string, ResourceRegistry>> m_mResourceRegistry;
 	static std::map<int, std::pair<std::string, ComponentRegistry>> m_mComponentRegistry;
 	static std::map<int, std::pair<std::string, Behaviour*>> m_mBehaviourRegistry;

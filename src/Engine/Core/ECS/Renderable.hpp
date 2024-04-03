@@ -127,7 +127,7 @@ struct Renderable : public Component
 
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
 
-		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, 2, sets.data(), 0, nullptr); //hardcoded to 2 sets currently, it should get this info from the pipeline
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, sets.size(), sets.data(), 0, nullptr); //hardcoded to 2 sets currently, it should get this info from the pipeline
 
 		vkCmdPushConstants(cmd, m_pipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
 		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);

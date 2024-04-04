@@ -68,7 +68,7 @@ struct PointLight : public LightInfo
 {
 	float m_constant = 1;
 	float m_linear = 0.09f;
-	float m_quadratic = 0.13f;
+	float m_quadratic = 0.032f;
 
 	virtual void DoLightInfoInterface()
 	{

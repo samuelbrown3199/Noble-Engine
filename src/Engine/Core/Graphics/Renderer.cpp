@@ -586,7 +586,13 @@ void Renderer::DrawFrame()
 	if (m_fRenderScale == 0)
 		Logger::LogError("Render scale is set to 0. This should never happen.", 2);
 
-	m_sceneData.viewPos = glm::vec3(0, 0, 0); //to be implemented for specular lighting...
+	glm::vec3 viewPos = glm::vec3(0, 0, 0);
+	if (m_camera != nullptr)
+	{
+		viewPos = NobleRegistry::GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
+	}
+
+	m_sceneData.viewPos = viewPos;
 	m_sceneData.proj = GenerateProjMatrix();
 	m_sceneData.view = GenerateViewMatrix();
 	m_sceneData.viewproj = m_sceneData.proj * m_sceneData.view;

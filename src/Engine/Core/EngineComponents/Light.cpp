@@ -58,9 +58,8 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 			renderer->m_sceneData.pointLights[i].diffuseLight = pointLight->m_diffuse;
 			renderer->m_sceneData.pointLights[i].specularLight = pointLight->m_specular;
 		}
-
-		renderer->m_sceneData.numberOfPointLights = closestLights.size();
 	}
+	renderer->m_sceneData.numberOfPointLights = closestLights.size();
 }
 
 void Light::OnUpdate()

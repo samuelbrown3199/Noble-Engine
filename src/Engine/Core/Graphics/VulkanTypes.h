@@ -80,15 +80,15 @@ struct GPUMeshBuffers
 
 struct GPUPointLight
 {
-    glm::vec3 position;
+    alignas(16) glm::vec3 position;
 
-    glm::vec3 diffuseLight;
-    glm::vec3 specularLight;
+    alignas(16) glm::vec3 diffuseLight;
+    alignas(16) glm::vec3 specularLight;
 
-    float constant;
-    float linear;
-    float quadratic;
-    float intensity;
+    alignas(4) float constant;
+    alignas(4) float linear;
+    alignas(4) float quadratic;
+    alignas(4) float intensity;
 };
 
 struct GPUSceneData
@@ -100,7 +100,7 @@ struct GPUSceneData
     glm::vec4 sunlightDirection;
     glm::vec4 sunlightColour;
 
-    glm::vec3 viewPos;
+    alignas(16) glm::vec3 viewPos;
 
     int numberOfPointLights;
     GPUPointLight pointLights[64];

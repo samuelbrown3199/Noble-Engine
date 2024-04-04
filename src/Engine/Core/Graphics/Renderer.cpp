@@ -368,6 +368,13 @@ void Renderer::InitializeDescriptors()
 		m_singleImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
+	NobleRegistry* registry = Application::GetRegistry();
+	registry->RegisterDescriptor("DrawImage", &m_drawImageDescriptorLayout, &m_drawImageDescriptors, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+	registry->RegisterDescriptor("SingleImage", &m_singleImageDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+	registry->RegisterDescriptor("GPUSceneData", &m_gpuSceneDataDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+
+	registry->RegisterPushConstant<GPUDrawPushConstants>("GPUDrawData", VK_SHADER_STAGE_VERTEX_BIT);
+
 	m_mainDeletionQueue.push_function([=]()
 	{
 		vkDestroyDescriptorSetLayout(m_device, m_drawImageDescriptorLayout, nullptr);
@@ -697,6 +704,9 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	DescriptorWriter writer;
 	writer.WriteBuffer(0, gpuSceneDataBuffer.m_buffer, sizeof(GPUSceneData), 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 	writer.UpdateSet(m_device, GetCurrentFrame().m_sceneDescriptor);
+
+	NobleRegistry* registry = Application::GetRegistry();
+	registry->GetDescriptorFromName("GPUSceneData")->m_set = &GetCurrentFrame().m_sceneDescriptor;
 
 	//Begin a render pass connected to our draw image. 
 	VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(m_drawImage.m_imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);

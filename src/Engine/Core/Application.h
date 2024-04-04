@@ -31,7 +31,7 @@ private:
 
 	static bool m_bPlayMode;
 
-	NobleRegistry* m_registry;
+	static NobleRegistry* m_registry;
     static Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
     ThreadingManager* m_threadManager;
@@ -79,6 +79,7 @@ public:
 	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
 	static void ClearLoadedScene();
 
+	static NobleRegistry* GetRegistry() { return m_registry; }
 	static Renderer* GetRenderer() { return m_gameRenderer; }
 
 	template<typename T>

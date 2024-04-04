@@ -108,28 +108,47 @@ struct Renderable : public Component
 
 		Renderer* renderer = Application::GetRenderer();
 
-		VkDescriptorSet imageSet = renderer->GetCurrentFrame().m_frameDescriptors.AllocateSet(renderer->GetLogicalDevice(), renderer->m_singleImageDescriptorLayout);
-		std::vector<VkDescriptorSet> sets;
-		sets.push_back(imageSet);
-		sets.push_back(renderer->GetCurrentFrame().m_sceneDescriptor);
-
-		DescriptorWriter writer;
-		if (m_texture != nullptr)
-		{
-			writer.WriteImage(0, m_texture->m_texture.m_imageView, m_texture->m_textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
-		}
-		else
-		{
-			writer.WriteImage(0, renderer->GetCheckerboardErrorTexture().m_imageView, renderer->GetDefaultSampler(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-			writer.UpdateSet(renderer->GetLogicalDevice(), imageSet);
-		}
-
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
 
-		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, sets.size(), sets.data(), 0, nullptr); //hardcoded to 2 sets currently, it should get this info from the pipeline
+		NobleRegistry* registry = Application::GetRegistry();
+		std::vector<VkDescriptorSet> sets;
+		for (int i = 0; i < m_pipeline->m_vDescriptors.size(); i++)
+		{
+			VkDescriptorSet targetSet;
 
-		vkCmdPushConstants(cmd, m_pipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
+			if (m_pipeline->m_vDescriptors.at(i).second->m_set != nullptr)
+			{
+				targetSet = *m_pipeline->m_vDescriptors.at(i).second->m_set;
+				sets.push_back(targetSet);
+			}
+			else
+			{
+				targetSet = renderer->GetCurrentFrame().m_frameDescriptors.AllocateSet(renderer->GetLogicalDevice(), *m_pipeline->m_vDescriptors.at(i).second->m_layout);
+				sets.push_back(targetSet);
+			}
+
+			if (m_pipeline->m_vDescriptors.at(i).second->m_type == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) //HARD CODED FOR NOW, MATERIAL SYSTEM WILL CHANGE THIS.
+			{
+				DescriptorWriter writer;
+				if (m_texture != nullptr)
+				{
+					writer.WriteImage(0, m_texture->m_texture.m_imageView, m_texture->m_textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+					writer.UpdateSet(renderer->GetLogicalDevice(), targetSet);
+				}
+				else
+				{
+					writer.WriteImage(0, renderer->GetCheckerboardErrorTexture().m_imageView, renderer->GetDefaultSampler(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+					writer.UpdateSet(renderer->GetLogicalDevice(), targetSet);
+				}
+			}
+		}
+
+		for (int i = 0; i < m_pipeline->m_vPushConstants.size(); i++) //HARD CODED FOR NOW, MATERIAL SYSTEM WILL CHANGE THIS.
+		{
+			vkCmdPushConstants(cmd, m_pipeline->m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(GPUDrawPushConstants), &m_drawConstants);
+		}
+
+		vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipelineLayout, 0, sets.size(), sets.data(), 0, nullptr);
 		vkCmdBindIndexBuffer(cmd, m_meshBuffers.m_indexBuffer.m_buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdDrawIndexed(cmd, m_indices->size(), 1, 0, 0, 0);

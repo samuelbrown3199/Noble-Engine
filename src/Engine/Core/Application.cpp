@@ -27,6 +27,7 @@ bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
 bool Application::m_bPlayMode = true;
 
+NobleRegistry* Application::m_registry;
 Renderer* Application::m_gameRenderer;
 PerformanceStats* Application::m_pStats;
 

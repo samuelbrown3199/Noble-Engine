@@ -3,6 +3,8 @@
 #include "Resource.h"
 #include "..\..\Core\Graphics\Renderer.h"
 
+#include "..\..\Core\Registry.h"
+
 struct Shader : public Resource
 {
 	Shader();
@@ -37,9 +39,6 @@ struct Pipeline : public Resource
 
 private:
 
-	std::vector<VkPushConstantRange> m_vPushConstants;
-	std::vector<VkDescriptorSetLayout> m_vDescriptorLayouts;
-
 	std::string ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName);
 
 public:
@@ -48,6 +47,9 @@ public:
 
 	VkPipelineLayout m_pipelineLayout;
 	VkPipeline m_pipeline;
+
+	std::vector<std::pair<std::string, PushConstantRegistry*>> m_vPushConstants;
+	std::vector<std::pair<std::string, DescriptorRegistry*>> m_vDescriptors;
 
 	enum PipelineType
 	{
@@ -62,6 +64,14 @@ public:
 
 	void OnLoad() override;
 	void OnUnload() override;
+
+	void AddDescriptor();
+	void AddDescriptor(std::string name);
+	void ChangeDescriptor(int index, std::string name);
+
+	void AddPushConstant();
+	void AddPushConstant(std::string name);
+	void ChangePushConstant(int index, std::string name);
 
 	virtual void DoResourceInterface() override;
 

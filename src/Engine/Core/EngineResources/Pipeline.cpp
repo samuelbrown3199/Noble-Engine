@@ -117,6 +117,38 @@ void Pipeline::OnUnload()
     m_bIsLoaded = false;
 }
 
+void Pipeline::AddDescriptor()
+{
+    m_vDescriptors.push_back(std::make_pair("None", nullptr));
+}
+
+void Pipeline::AddDescriptor(std::string name)
+{
+    m_vDescriptors.push_back(std::make_pair(name, Application::GetRegistry()->GetDescriptorFromName(name)));
+}
+
+void Pipeline::ChangeDescriptor(int index, std::string name)
+{
+    m_vDescriptors.at(index).first = name;
+    m_vDescriptors.at(index).second = Application::GetRegistry()->GetDescriptorFromName(name);
+}
+
+void Pipeline::AddPushConstant()
+{
+    m_vPushConstants.push_back(std::make_pair("None", nullptr));
+}
+
+void Pipeline::AddPushConstant(std::string name)
+{
+    m_vPushConstants.push_back(std::make_pair(name, Application::GetRegistry()->GetPushConstantFromName(name)));
+}
+
+void Pipeline::ChangePushConstant(int index, std::string name)
+{
+    m_vPushConstants.at(index).first = name;
+    m_vPushConstants.at(index).second = Application::GetRegistry()->GetPushConstantFromName(name);
+}
+
 void Pipeline::DoResourceInterface()
 {
     int val = m_pipelineType;
@@ -131,6 +163,43 @@ void Pipeline::DoResourceInterface()
         newPath = ChangeShader(Shader::fragment, m_fragmentShaderPath, "Fragment Shader");
         m_fragmentShaderPath = newPath == "" ? m_fragmentShaderPath : newPath;
     }
+
+    ImGui::Text("Pipeline Push Constants");
+    std::vector<std::pair<std::string, PushConstantRegistry>>* constantRegistry = Application::GetRegistry()->GetPushConstantRegistry();
+    for (int i = 0; i < m_vPushConstants.size(); i++)
+    {
+        if (ImGui::BeginMenu(m_vPushConstants.at(i).first.c_str()))
+        {
+            for (int o = 0; o < constantRegistry->size(); o++)
+            {
+                if (ImGui::Button(constantRegistry->at(o).first.c_str()))
+                    ChangePushConstant(i, constantRegistry->at(o).first);
+            }
+
+            ImGui::EndMenu();
+        }
+    }
+    if (ImGui::Button("Add Push Constant"))
+        AddPushConstant();
+
+    ImGui::Text("Pipeline Descriptors");
+    std::vector<std::pair<std::string, DescriptorRegistry>>* descriptorRegistry = Application::GetRegistry()->GetDescriptorRegistry();
+
+    for (int i = 0; i < m_vDescriptors.size(); i++)
+    {
+        if (ImGui::BeginMenu(m_vDescriptors.at(i).first.c_str()))
+        {
+            for (int o = 0; o < descriptorRegistry->size(); o++)
+            {
+                if (ImGui::Button(descriptorRegistry->at(o).first.c_str()))
+                    ChangeDescriptor(i, descriptorRegistry->at(o).first);
+            }
+
+            ImGui::EndMenu();
+        }
+    }
+    if (ImGui::Button("Add Descriptor"))
+        AddDescriptor();
 
     if(ImGui::Button("Recreate Pipeline"))
     {
@@ -147,6 +216,27 @@ nlohmann::json Pipeline::AddToDatabase()
         data["VertexShader"] = m_vertexShaderPath;
     if (!m_fragmentShaderPath.empty())
         data["FragmentShader"] = m_fragmentShaderPath;
+    if (m_vDescriptors.size() != 0)
+    {
+        std::vector<std::string> descriptors;
+        for (int i = 0; i < m_vDescriptors.size(); i++)
+        {
+            descriptors.push_back(m_vDescriptors.at(i).first);
+        }
+
+        data["Descriptors"] = descriptors;
+    }
+
+    if (m_vPushConstants.size() != 0)
+    {
+        std::vector<std::string> pushconstants;
+        for (int i = 0; i < m_vPushConstants.size(); i++)
+        {
+            pushconstants.push_back(m_vPushConstants.at(i).first);
+        }
+
+        data["PushConstants"] = pushconstants;
+    }
 
     return data;
 }
@@ -174,6 +264,20 @@ std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const 
         res->m_vertexShaderPath = data["VertexShader"];
     if (data.find("FragmentShader") != data.end())
         res->m_fragmentShaderPath = data["FragmentShader"];
+    if (data.find("Descriptors") != data.end())
+    {
+        for (int i = 0; i < data["Descriptors"].size(); i++)
+        {
+            res->AddDescriptor(data["Descriptors"][i]);
+        }
+    }
+    if (data.find("PushConstants") != data.end())
+    {
+        for (int i = 0; i < data["PushConstants"].size(); i++)
+        {
+            res->AddPushConstant(data["PushConstants"][i]);
+        }
+    }
 
     return res;
 }
@@ -201,24 +305,32 @@ void Pipeline::CreatePipeline()
         vertexShader = ResourceManager::LoadResource<Shader>(m_vertexShaderPath);
         fragmentShader = ResourceManager::LoadResource<Shader>(m_fragmentShaderPath);
 
-        //Push constants and descriptor sets need to somehow be flexible.
+        std::vector<VkPushConstantRange> pushConstants;
+        for (int i = 0; i < m_vPushConstants.size(); i++)
+        {
+            if (m_vPushConstants.at(i).second != nullptr)
+            {
+                pushConstants.push_back(m_vPushConstants.at(i).second->m_pushConstantRange);
 
-        //Push constants can be put into a list, offset can be determined but the size of the last push constant + its offset, easy to iterate over before pipeline creation. Must be multiple of 4 as its in bytes so add check for this!!!
-        VkPushConstantRange bufferRange{};
-        bufferRange.offset = 0;
-        bufferRange.size = sizeof(GPUDrawPushConstants);
-        bufferRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+                if (pushConstants.size() != 1)
+                {
+                    pushConstants.at(i).offset = pushConstants.at(i - 1).size;
+                }
+            }
+        }
 
-        //temporary hack for now.
-        m_vPushConstants.push_back(bufferRange);
-        m_vDescriptorLayouts.push_back(renderer->m_singleImageDescriptorLayout);
-        m_vDescriptorLayouts.push_back(renderer->m_gpuSceneDataDescriptorLayout);
+        std::vector<VkDescriptorSetLayout> descriptorLayouts;
+        for (int i = 0; i < m_vDescriptors.size(); i++)
+        {
+            if(m_vDescriptors.at(i).second != nullptr)
+                descriptorLayouts.push_back(*m_vDescriptors.at(i).second->m_layout);
+        }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = vkinit::PipelineLayoutCreateInfo();
-        pipelineLayoutInfo.pPushConstantRanges = m_vPushConstants.data();
-        pipelineLayoutInfo.pushConstantRangeCount = m_vPushConstants.size();
-        pipelineLayoutInfo.pSetLayouts = m_vDescriptorLayouts.data();
-        pipelineLayoutInfo.setLayoutCount = m_vDescriptorLayouts.size();
+        pipelineLayoutInfo.pPushConstantRanges = pushConstants.data();
+        pipelineLayoutInfo.pushConstantRangeCount = pushConstants.size();
+        pipelineLayoutInfo.pSetLayouts = descriptorLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = descriptorLayouts.size();
 
         if (vkCreatePipelineLayout(renderer->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
             Logger::LogError(FormatString("Failed to create pipeline layout for pipeline %s", m_sResourcePath.c_str()), 2);

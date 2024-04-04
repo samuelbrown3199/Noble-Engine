@@ -59,8 +59,6 @@ VkPhysicalDevice Renderer::m_physicalDevice = VK_NULL_HANDLE;
 VkDevice Renderer::m_device;
 
 VkExtent2D Renderer::m_drawExtent;
-
-VkDescriptorPool Renderer::m_descriptorPool;
 VkQueue Renderer::m_graphicsQueue;
 
 std::vector<Renderable*> Renderer::m_onScreenObjects;
@@ -97,6 +95,11 @@ Renderer::~Renderer()
 	CleanupVulkan();
 }
 
+void Renderer::WaitForRenderingToFinish()
+{
+	vkDeviceWaitIdle(m_device);
+}
+
 void Renderer::InitializeVulkan()
 {
 	Logger::LogInformation("Initializing Vulkan");
@@ -126,17 +129,25 @@ void Renderer::CleanupVulkan()
 {
 	vkDeviceWaitIdle(m_device);
 
-	m_mainDeletionQueue.flush();
+	DestroyImage(m_drawImage);
+	DestroyImage(m_depthImage);
 
-	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
 		vkDestroyCommandPool(m_device, m_frames[i].m_commandPool, nullptr);
 
 		vkDestroyFence(m_device, m_frames[i].m_renderFence, nullptr);
 		vkDestroySemaphore(m_device, m_frames[i].m_renderSemaphore, nullptr);
 		vkDestroySemaphore(m_device, m_frames[i].m_swapchainSemaphore, nullptr);
+
+		m_frames[i].m_deletionQueue.flush();
+		m_frames[i].m_frameDescriptors.DestroyPools(m_device);
 	}
 
+	m_mainDeletionQueue.flush();
 	DestroySwapchain();
+
+	vmaDestroyAllocator(m_allocator);
 
 	vkDestroySurfaceKHR(m_vulkanInstance, m_surface, nullptr);
 	vkDestroyDevice(m_device, nullptr);
@@ -203,10 +214,6 @@ void Renderer::CreateInstance()
 	allocatorInfo.instance = m_vulkanInstance;
 	allocatorInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
 	vmaCreateAllocator(&allocatorInfo, &m_allocator);
-
-	m_mainDeletionQueue.push_function([&]() {
-		vmaDestroyAllocator(m_allocator);
-	});
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Renderer::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -230,10 +237,6 @@ void Renderer::InitializeSwapchain()
 		1
 	};
 
-	//hardcoding the draw format to 32 bit float
-	m_drawImage.m_imageFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
-	m_drawImage.m_imageExtent = drawImageExtent;
-
 	VkImageUsageFlags drawImageUsages{};
 	drawImageUsages |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
@@ -241,49 +244,19 @@ void Renderer::InitializeSwapchain()
 	drawImageUsages |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	drawImageUsages |= VK_IMAGE_USAGE_SAMPLED_BIT;
 
-	VkImageCreateInfo rimgInfo = vkinit::ImageCreateInfo(m_drawImage.m_imageFormat, drawImageUsages, m_drawImage.m_imageExtent);
-
-	VmaAllocationCreateInfo rimgAllocInfo = {};
-	rimgAllocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-	rimgAllocInfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-	vmaCreateImage(m_allocator, &rimgInfo, &rimgAllocInfo, &m_drawImage.m_image, &m_drawImage.m_allocation, nullptr);
-
-	VkImageViewCreateInfo rviewInfo = vkinit::ImageViewCreateInfo(m_drawImage.m_imageFormat, m_drawImage.m_image, VK_IMAGE_ASPECT_COLOR_BIT);
-
-	if (vkCreateImageView(m_device, &rviewInfo, nullptr, &m_drawImage.m_imageView) != VK_SUCCESS)
-		Logger::LogError("Failed to create draw texture image view.", 2);
-
-	m_depthImage.m_imageFormat = VK_FORMAT_D32_SFLOAT;
-	m_depthImage.m_imageExtent = drawImageExtent;
+	m_drawImage = CreateImage(drawImageExtent, VK_FORMAT_R16G16B16A16_SFLOAT, drawImageUsages, false, "DrawImage");
 
 	VkImageUsageFlags depthImageUsages{};
 	depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-
-	VkImageCreateInfo dimg_info = vkinit::ImageCreateInfo(m_depthImage.m_imageFormat, depthImageUsages, drawImageExtent);
-
-	//allocate and create the image
-	vmaCreateImage(m_allocator, &dimg_info, &rimgAllocInfo, &m_depthImage.m_image, &m_depthImage.m_allocation, nullptr);
-
-	//build a image-view for the draw image to use for rendering
-	VkImageViewCreateInfo dview_info = vkinit::ImageViewCreateInfo(m_depthImage.m_imageFormat, m_depthImage.m_image, VK_IMAGE_ASPECT_DEPTH_BIT);
-
-	if (vkCreateImageView(m_device, &dview_info, nullptr, &m_depthImage.m_imageView) != VK_SUCCESS)
-		Logger::LogError("Failed to create depth texture image view.", 2);
-
-	m_mainDeletionQueue.push_function([=]()
-	{
-		vkDestroyImageView(m_device, m_drawImage.m_imageView, nullptr);
-		vmaDestroyImage(m_allocator, m_drawImage.m_image, m_drawImage.m_allocation);
-
-		vkDestroyImageView(m_device, m_depthImage.m_imageView, nullptr);
-		vmaDestroyImage(m_allocator, m_depthImage.m_image, m_depthImage.m_allocation);
-	});
+	m_depthImage = CreateImage(drawImageExtent, VK_FORMAT_D32_SFLOAT, depthImageUsages, false, "DepthImage");
 }
 
 void Renderer::RecreateSwapchain()
 {
 	vkDeviceWaitIdle(m_device);
+
+	DestroyImage(m_drawImage);
+	DestroyImage(m_depthImage);
 
 	DestroySwapchain();
 	InitializeSwapchain();
@@ -394,6 +367,16 @@ void Renderer::InitializeDescriptors()
 		builder.AddBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 		m_singleImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+
+	m_mainDeletionQueue.push_function([=]()
+	{
+		vkDestroyDescriptorSetLayout(m_device, m_drawImageDescriptorLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_device, m_gpuSceneDataDescriptorLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_device, m_singleImageDescriptorLayout, nullptr);
+
+		m_globalDescriptorAllocator.ClearDescriptors(m_device);
+		m_globalDescriptorAllocator.DestroyPool(m_device);
+	});
 }
 
 SwapChainSupportDetails Renderer::QuerySwapChainSupport(VkPhysicalDevice device)
@@ -568,9 +551,10 @@ void Renderer::InitializeImgui()
 
 	// add the destroy the imgui created structures
 	m_mainDeletionQueue.push_function([=]() {
-		vkDestroyDescriptorPool(m_device, imguiPool, nullptr);
 		ImPlot::DestroyContext();
 		ImGui_ImplVulkan_Shutdown();
+		
+		vkDestroyDescriptorPool(m_device, imguiPool, nullptr);
 	});
 }
 
@@ -602,6 +586,7 @@ void Renderer::DrawFrame()
 	if (m_fRenderScale == 0)
 		Logger::LogError("Render scale is set to 0. This should never happen.", 2);
 
+	m_sceneData.viewPos = glm::vec3(0, 0, 0); //to be implemented for specular lighting...
 	m_sceneData.proj = GenerateProjMatrix();
 	m_sceneData.view = GenerateViewMatrix();
 	m_sceneData.viewproj = m_sceneData.proj * m_sceneData.view;
@@ -692,11 +677,11 @@ void Renderer::DrawBackground(VkCommandBuffer cmd)
 
 void Renderer::DrawGeometry(VkCommandBuffer cmd)
 {
-	AllocatedBuffer gpuSceneDataBuffer = CreateBuffer(sizeof(GPUSceneData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU);
+	AllocatedBuffer gpuSceneDataBuffer = CreateBuffer(sizeof(GPUSceneData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU, "GPUSceneBuffer");
 	GetCurrentFrame().m_deletionQueue.push_function([=, this]()
-		{
-			DestroyBuffer(gpuSceneDataBuffer);
-		});
+	{
+		DestroyBuffer(gpuSceneDataBuffer);
+	});
 
 	GPUSceneData* sceneUniformData = (GPUSceneData*)gpuSceneDataBuffer.m_allocation->GetMappedData();
 	*sceneUniformData = m_sceneData;
@@ -781,7 +766,7 @@ void Renderer::InitializeDefaultData()
 		}
 	}
 	m_errorCheckerboardImage = CreateImage(pixelColours, VkExtent3D{ 16, 16, 1 }, VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_USAGE_SAMPLED_BIT);
+		VK_IMAGE_USAGE_SAMPLED_BIT, false, "CheckerboardErrorTexture");
 
 	delete[] pixelColours;
 
@@ -796,7 +781,14 @@ void Renderer::InitializeDefaultData()
 	sampl.minFilter = VK_FILTER_LINEAR;
 	vkCreateSampler(m_device, &sampl, nullptr, &m_defaultSamplerLinear);
 
-	m_spriteQuad = UploadMesh(Sprite::spriteQuadIndices, Sprite::spriteQuadVertices);
+	m_spriteQuad = UploadMesh(Sprite::spriteQuadIndices, Sprite::spriteQuadVertices, "SpriteQuad");
+
+	m_mainDeletionQueue.push_function([=]()
+	{
+		vkDestroySampler(m_device, m_defaultSamplerLinear, nullptr);
+		vkDestroySampler(m_device, m_defaultSamplerNearest, nullptr);
+		DestroyImage(m_errorCheckerboardImage);
+	});
 }
 
 
@@ -961,7 +953,7 @@ void Renderer::GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount)
 	triCount /= 3;
 }
 
-AllocatedBuffer Renderer::CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage)
+AllocatedBuffer Renderer::CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, std::string allocationName)
 {
 	VkBufferCreateInfo bufferInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
 	bufferInfo.pNext = nullptr;
@@ -977,6 +969,8 @@ AllocatedBuffer Renderer::CreateBuffer(size_t allocSize, VkBufferUsageFlags usag
 	if (vmaCreateBuffer(m_allocator, &bufferInfo, &vmaAllocInfo, &newBuffer.m_buffer, &newBuffer.m_allocation, &newBuffer.m_info) != VK_SUCCESS)
 		throw std::exception();
 
+	newBuffer.m_allocation->SetName(m_allocator, allocationName.c_str());
+
 	return newBuffer;
 }
 
@@ -985,7 +979,7 @@ void Renderer::DestroyBuffer(const AllocatedBuffer& buffer)
 	vmaDestroyBuffer(m_allocator, buffer.m_buffer, buffer.m_allocation);
 }
 
-GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices)
+GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices, std::string meshName)
 {
 	const size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
 	const size_t indexBufferSize = indices.size() * sizeof(uint32_t);
@@ -993,15 +987,15 @@ GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Verte
 	GPUMeshBuffers newSurface;
 
 	newSurface.m_vertexBuffer = CreateBuffer(vertexBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-		VMA_MEMORY_USAGE_GPU_ONLY);
+		VMA_MEMORY_USAGE_GPU_ONLY, meshName+"Vertex");
 
 	//Get buffer device address here.
 	VkBufferDeviceAddressInfo deviceAddressInfo = { .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, .buffer = newSurface.m_vertexBuffer.m_buffer };
 	newSurface.m_vertexBufferAddress = vkGetBufferDeviceAddress(m_device, &deviceAddressInfo);
 
-	newSurface.m_indexBuffer = CreateBuffer(indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_GPU_ONLY);
+	newSurface.m_indexBuffer = CreateBuffer(indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VMA_MEMORY_USAGE_GPU_ONLY, meshName+"Index");
 
-	AllocatedBuffer staging = CreateBuffer(vertexBufferSize + indexBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_ONLY);
+	AllocatedBuffer staging = CreateBuffer(vertexBufferSize + indexBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_ONLY, meshName + "Staging");
 	void* data = staging.m_allocation->GetMappedData();
 
 	//Copy into start of memory block, vertices
@@ -1025,11 +1019,17 @@ GPUMeshBuffers Renderer::UploadMesh(std::span<uint32_t> indices, std::span<Verte
 	vkCmdCopyBuffer(cmd, staging.m_buffer, newSurface.m_indexBuffer.m_buffer, 1, &indexCopy);
 		});
 
+	m_mainDeletionQueue.push_function([=]()
+	{
+		DestroyBuffer(newSurface.m_vertexBuffer);
+		DestroyBuffer(newSurface.m_indexBuffer);
+	});
+
 	DestroyBuffer(staging);
 	return newSurface;
 }
 
-AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped)
+AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName)
 {
 	AllocatedImage newImage;
 	newImage.m_imageFormat = format;
@@ -1063,17 +1063,18 @@ AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUs
 	if (vkCreateImageView(m_device, &view_info, nullptr, &newImage.m_imageView) != VK_SUCCESS)
 		Logger::LogError("Failed to create image view.", 2);
 
+	newImage.m_allocation->SetName(m_allocator, imageName.c_str());
 	return newImage;
 }
 
-AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped)
+AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName)
 {
 	size_t data_size = size.depth * size.width * size.height * 4;
-	AllocatedBuffer uploadbuffer = CreateBuffer(data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU);
+	AllocatedBuffer uploadbuffer = CreateBuffer(data_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU, imageName + "ImageUploadBuffer");
 
 	memcpy(uploadbuffer.m_info.pMappedData, data, data_size);
 
-	AllocatedImage new_image = CreateImage(size, format, usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, mipmapped);
+	AllocatedImage new_image = CreateImage(size, format, usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, mipmapped, imageName);
 
 	ImmediateSubmit([&](VkCommandBuffer cmd)
 	{
@@ -1109,7 +1110,7 @@ AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat forma
 	return new_image;
 }
 
-void Renderer::DestroyImage(const AllocatedImage& img)
+void Renderer::DestroyImage(AllocatedImage& img)
 {
 	vkDestroyImageView(m_device, img.m_imageView, nullptr);
 	vmaDestroyImage(m_allocator, img.m_image, img.m_allocation);

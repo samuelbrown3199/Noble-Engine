@@ -27,8 +27,11 @@ void Texture::OnLoad()
 
     Renderer* renderer = Application::GetRenderer();
 
-    m_texture = renderer->CreateImage(pixels, VkExtent3D(m_iWidth, m_iHeight, 1), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_SAMPLED_BIT, true);
+    m_texture = renderer->CreateImage(pixels, VkExtent3D(m_iWidth, m_iHeight, 1), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_SAMPLED_BIT, true, m_sLocalPath);
     CreateTextureSampler(m_textureFilter);
+
+    free(pixels);
+
     m_bIsLoaded = true;
 }
 

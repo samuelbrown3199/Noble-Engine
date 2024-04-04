@@ -105,8 +105,6 @@ private:
 
 	FrameData m_frames[MAX_FRAMES_IN_FLIGHT];
 
-	static VkDescriptorPool m_descriptorPool;
-
 	static VkQueue m_graphicsQueue;
 	uint32_t m_graphicsQueueFamily;
 
@@ -203,6 +201,8 @@ public:
 	Renderer(const std::string _windowName);
 	~Renderer();
 
+	void WaitForRenderingToFinish();
+
 	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
 	static void AddOnScreenObject(Renderable* comp);
@@ -244,7 +244,6 @@ public:
 	VmaAllocator GetAllocator() { return m_allocator; }
 
 	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
-	static VkDescriptorPool GetDescriptorPool() { return m_descriptorPool; }
 
 	static void IncrementRenderables() { m_iRenderableCount++; }
 	static int GetRenderableCount() { return m_iRenderableCount; }
@@ -254,13 +253,13 @@ public:
 	static void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
 
 	//Functions below here likely to be moved/removed at some point
-	static AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage);
-	static void DestroyBuffer(const AllocatedBuffer& buffer);
-	static GPUMeshBuffers UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+	AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, std::string allocationName);
+	void DestroyBuffer(const AllocatedBuffer& buffer);
+	GPUMeshBuffers UploadMesh(std::span<uint32_t> indices, std::span<Vertex> vertices, std::string meshName);
 
-	AllocatedImage CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
-	AllocatedImage CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped = false);
-	void DestroyImage(const AllocatedImage& img);
+	AllocatedImage CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName);
+	AllocatedImage CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName);
+	void DestroyImage(AllocatedImage& img);
 
 	AllocatedImage GetCheckerboardErrorTexture() { return m_errorCheckerboardImage; }
 	VkSampler GetDefaultSampler() { return m_defaultSamplerNearest; }

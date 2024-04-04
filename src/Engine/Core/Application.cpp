@@ -11,6 +11,7 @@
 #include "EngineComponents/MeshRenderer.h"
 #include "EngineComponents/ScriptEmbedder.h"
 #include "EngineComponents/Sprite.h"
+#include "EngineComponents/Light.h"
 
 #include "ECS/Entity.hpp"
 
@@ -70,6 +71,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_registry->RegisterComponent<MeshRenderer>("MeshRenderer", false, 1024, true, true);
 	rtn->m_registry->RegisterComponent<ScriptEmbedder>("ScriptEmbedder", false, 1024, false, false);
 	rtn->m_registry->RegisterComponent<Sprite>("Sprite", false, 1024, true, true);
+	rtn->m_registry->RegisterComponent<Light>("Light", false, 1024, true, true);
 
 	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 
@@ -224,6 +226,7 @@ void Application::CleanupApplication()
 {
 	Logger::LogInformation("Starting cleanup and closing engine!");
 
+	m_gameRenderer->WaitForRenderingToFinish();
 	m_gameRenderer->SetCamera(nullptr);
 
 	ThreadingManager::StopThreads();

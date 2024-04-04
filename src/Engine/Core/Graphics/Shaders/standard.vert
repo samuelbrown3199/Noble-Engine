@@ -25,7 +25,20 @@ layout (location = 1) out vec3 normal;
 layout (location = 2) out vec4 colour;
 layout (location = 3) out vec3 fragPos;
 
-layout(set=1, binding=0) uniform  SceneData{   
+struct PointLight
+{
+    vec3 position;
+
+    vec3 diffuseLight;
+    vec3 specularLight;
+
+    float constant;
+    float linear;
+    float quadratic;
+    float intensity;
+};
+
+layout(set=1, binding=0, std140) uniform  SceneData{   
 
 	mat4 view;
 	mat4 proj;
@@ -33,6 +46,11 @@ layout(set=1, binding=0) uniform  SceneData{
 	vec4 ambientColor;
 	vec4 sunlightDirection; //w for sun power
 	vec4 sunlightColor;
+		
+	vec3 viewPos;
+	
+	int numberOfPointLights;
+	PointLight pointLights[64];
 } sceneData;
 
 void main()

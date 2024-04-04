@@ -205,7 +205,7 @@ set (
 	src/Engine/Core/EngineResources/Pipeline.h
 	src/Engine/Core/EngineResources/Pipeline.cpp
 
-	#Systems & components
+	#Components
 
 	src/Engine/Core/EngineComponents/AudioListener.h
 	src/Engine/Core/EngineComponents/AudioListener.cpp
@@ -216,8 +216,8 @@ set (
 	src/Engine/Core/EngineComponents/Camera.h
 	src/Engine/Core/EngineComponents/Camera.cpp
 
-	src/Engine/Core/EngineComponents/Transform.h
-	src/Engine/Core/EngineComponents/Transform.cpp
+	src/Engine/Core/EngineComponents/Light.h
+	src/Engine/Core/EngineComponents/Light.cpp
 
 	src/Engine/Core/EngineComponents/MeshRenderer.h
 	src/Engine/Core/EngineComponents/MeshRenderer.cpp
@@ -227,6 +227,9 @@ set (
 
 	src/Engine/Core/EngineComponents/ScriptEmbedder.h
 	src/Engine/Core/EngineComponents/ScriptEmbedder.cpp
+
+	src/Engine/Core/EngineComponents/Transform.h
+	src/Engine/Core/EngineComponents/Transform.cpp
 )
 
 set (

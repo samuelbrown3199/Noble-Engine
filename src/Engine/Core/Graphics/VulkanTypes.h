@@ -78,6 +78,19 @@ struct GPUMeshBuffers
     VkDeviceAddress m_vertexBufferAddress;
 };
 
+struct GPUPointLight
+{
+    glm::vec3 position;
+
+    glm::vec3 diffuseLight;
+    glm::vec3 specularLight;
+
+    float constant;
+    float linear;
+    float quadratic;
+    float intensity;
+};
+
 struct GPUSceneData
 {
     glm::mat4 view;
@@ -86,6 +99,11 @@ struct GPUSceneData
     glm::vec4 ambientColour;
     glm::vec4 sunlightDirection;
     glm::vec4 sunlightColour;
+
+    glm::vec3 viewPos;
+
+    int numberOfPointLights;
+    GPUPointLight pointLights[64];
 };
 
 struct GPUDrawPushConstants

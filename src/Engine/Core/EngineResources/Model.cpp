@@ -1,7 +1,7 @@
 #include "Model.h"
 #include "../../Core/Logger.h"
 
-
+#include "../../Core/Application.h"
 #include "../../Core/Graphics/VulkanTypes.h"
 #include "../../Core/ResourceManager.h"
 
@@ -103,7 +103,9 @@ void Model::OnLoad()
         m_modelBoundingBox.push_back(bbox[i]);
     }
 
-    m_meshBuffer = Renderer::UploadMesh(m_indices, m_vertices);
+    Renderer* renderer = Application::GetRenderer();
+
+    m_meshBuffer = renderer->UploadMesh(m_indices, m_vertices, m_sLocalPath);
     m_bIsLoaded = true;
 }
 

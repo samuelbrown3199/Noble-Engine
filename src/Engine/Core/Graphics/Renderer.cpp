@@ -599,13 +599,13 @@ void Renderer::DrawFrame()
 		viewPos = NobleRegistry::GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
 	}
 
+	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
+	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
+
 	m_sceneData.viewPos = viewPos;
 	m_sceneData.proj = GenerateProjMatrix();
 	m_sceneData.view = GenerateViewMatrix();
 	m_sceneData.viewproj = m_sceneData.proj * m_sceneData.view;
-
-	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
-	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
 
 	VkCommandBufferBeginInfo cmdBeginInfo = vkinit::CommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 	if (vkBeginCommandBuffer(cmd, &cmdBeginInfo) != VK_SUCCESS)

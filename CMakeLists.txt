@@ -265,6 +265,9 @@ set (
 	
 	src/Editor/main.cpp
 	
+	src/Editor/resource.h
+	src/Editor/Editor.rc
+
 	src/Editor/Interface/EditorUI.h
 	src/Editor/Interface/EditorUI.cpp
 
@@ -298,9 +301,8 @@ foreach(source IN LISTS editor_source)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
-#[===[
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>)
 add_executable(TechDemo1
     src/Game/main.cpp
 
@@ -312,8 +314,6 @@ set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOW
 set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1")
 
 target_compile_features(TechDemo1 PRIVATE cxx_std_20)
-
-]===]
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Vulkan>)
 set (

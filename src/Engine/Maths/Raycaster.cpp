@@ -17,10 +17,10 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
     ray.m_rayDirection = direction;
 
     std::vector<Renderable*>* screenObjects = Renderer::GetOnScreenObjects();
+    float closestHit = maxDistance;
     for (int i = 0; i < screenObjects->size(); i++)
     {
         int vert = 0;
-        float closestHit = maxDistance;
         while (vert < screenObjects->at(i)->m_indices->size()) // probably some smart ways to optimise this, checking every triangle is probably not necessary.
         {
             glm::vec2 baryPos;
@@ -47,9 +47,6 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
 
             vert += 3;
         }
-
-        if (ray.m_hitObject)
-            break;
     }
 
     m_vRays.push_back(ray);

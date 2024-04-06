@@ -1,0 +1,93 @@
+#pragma once
+
+#include "Logger.h"
+
+#include "../Useful.h"
+#include "../imgui/imgui.h"
+#include "../imgui/implot.h"
+#include "../imgui/implot_internal.h"
+#include "../imgui/imgui_stdlib.h"
+
+class Editor;
+class ToolUI;
+
+class ToolModalWindow
+{
+	friend class ToolUI;
+protected:
+
+	std::string m_sID;
+
+	ToolUI* m_pParentUI;
+	bool m_bToggled = false;
+
+	void CheckIfToggled()
+	{
+		if (m_bToggled)
+			ImGui::OpenPopup(m_sID.c_str());
+
+		m_bToggled = false;
+	}
+
+public:
+
+	virtual void DoModal() = 0;
+};
+
+class ToolUI
+{
+protected:
+
+	std::map<std::string, std::shared_ptr<ToolModalWindow>> m_mModalWindows;
+
+	template<typename T>
+	void AddModal(std::string ID)
+	{
+		std::shared_ptr<T> sys = std::make_shared<T>();
+		sys->m_pParentUI = this;
+		sys->m_sID = ID;
+
+		m_mModalWindows[ID] = sys;
+	}
+
+public:
+
+	bool m_uiOpen = false;
+	ImGuiWindowFlags m_windowFlags = 0;
+
+	virtual void InitializeInterface() {}
+	virtual void DoInterface() = 0;
+
+	virtual void HandleShortcutInputs() {}
+
+	void DoModal(std::string ID)
+	{
+		if (m_mModalWindows.count(ID) == 0)
+			Logger::LogError(FormatString("Tried to open a modal window that doesnt exist, %s", ID.c_str()), 2);
+
+		m_mModalWindows[ID]->m_bToggled = true;
+	}
+
+	void DoModals()
+	{
+		std::map<std::string, std::shared_ptr<ToolModalWindow>>::iterator uiItr;
+		for (uiItr = m_mModalWindows.begin(); uiItr != m_mModalWindows.end(); uiItr++)
+		{
+			uiItr->second->CheckIfToggled();
+			uiItr->second->DoModal();
+		}
+	}
+};
+
+class EditorToolUI : public ToolUI
+{
+
+public:
+
+	Editor* m_pEditor;
+
+	virtual void InitializeInterface() {}
+	virtual void DoInterface() = 0;
+
+	virtual void HandleShortcutInputs() {}
+};

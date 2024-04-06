@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine\Core\DebugUI.hpp>
+#include <Engine\Core\ToolUI.hpp>
 #include <Engine\Core\PerformanceStats.h>
 
 #include <deque>
@@ -21,7 +21,7 @@ struct FrameTimeStat
 	}
 };
 
-class Profiler : public DebugUI
+class Profiler : public EditorToolUI
 {
 private:
 

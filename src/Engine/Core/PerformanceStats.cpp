@@ -31,6 +31,8 @@ PerformanceStats::PerformanceStats()
 	AddPerformanceMeasurement("Pre-Update");
 	AddPerformanceMeasurement("Update");
 	AddPerformanceMeasurement("Render");
+	AddPerformanceMeasurement("EditorUpdate");
+	AddPerformanceMeasurement("EditorRender");
 	AddPerformanceMeasurement("Cleanup");
 
 	m_mSystemUpdateTimes = std::vector<std::pair<std::string, PerformanceMeasurement>>();

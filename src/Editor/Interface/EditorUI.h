@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine\Core\Registry.h>
-#include <Engine\Core\DebugUI.hpp>
+#include <Engine\Core\ToolUI.hpp>
 #include <Engine\Core\ECS\Entity.hpp>
 #include <Engine\Core\ECS\Component.h>
 
@@ -10,40 +10,20 @@
 
 class ProjectFile;
 
-class EditorUI : public DebugUI
+class EditorUI : public EditorToolUI
 {
-	ProjectFile* m_projectFile;
-
-	bool show_demo_window = false;
 	static int m_iSelEntity;
 	static int m_iSelSystem;
 
 	Component* m_selComponent;
-
-	bool m_bOpenNewProj = false;
-
 	static Entity* m_DebugCam;
 
-	std::string m_sWindowName;
-
-	std::shared_ptr<ResourceManagerWindow> m_resourceManagerWind;
-	std::shared_ptr<Profiler> m_profilerWind;
-
 	void ChangeEditorMode();
-
 	void CreateEditorCam();
-	void UpdateEditorWindowTitle();
-
-	void OpenResourceManager();
-	void OpenProfiler();
 
 	ImVec4 ambientColour;
 	ImVec4 clearColour;
 	ImVec4 sunlightColour;
-
-	void UpdateLightingWidgets();
-
-	void LoadScene(std::string scenePath);
 
 public:
 
@@ -51,13 +31,4 @@ public:
 	void DoInterface() override;
 
 	void HandleShortcutInputs();
-
-	void DoMainMenuBar();
-
-	void DoFileMenu();
-	void DoAssetMenu();
-	void DoToolMenu();
-	void DoDebugMenu();
-
-	void DoNewProjectModal();
 };

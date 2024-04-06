@@ -34,7 +34,7 @@ PerformanceStats* Application::m_pStats;
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
 
-std::vector<std::shared_ptr<DebugUI>> Application::m_vDebugUIs;
+std::vector<std::shared_ptr<ToolUI>> Application::m_vToolUIs;
 
 //----------------- Private Functions ----------------------
 
@@ -105,6 +105,11 @@ void Application::SetPlayMode(bool play)
 	}
 }
 
+void Application::BindEditor(Editor* editor)
+{
+	m_editor = editor;
+}
+
 void Application::RegisterCoreKeybinds()
 {
 	InputManager::AddKeybind(Keybind("Forward", { Input(SDLK_w, -1), Input(SDLK_UP, -1) }));
@@ -159,11 +164,12 @@ void Application::MainLoop()
 		//update start
 		m_pStats->StartPerformanceMeasurement("Update");
 		AudioManager::UpdateSystem();
-		for (int i = 0; i < m_vDebugUIs.size(); i++)
+		for (int i = 0; i < m_vToolUIs.size(); i++)
 		{
-			if (m_vDebugUIs.at(i)->m_uiOpen)
+			if (m_vToolUIs.at(i)->m_uiOpen)
 			{
-				m_vDebugUIs.at(i)->DoInterface();
+				m_vToolUIs.at(i)->DoInterface();
+				m_vToolUIs.at(i)->DoModals();
 			}
 		}
 		for (int i = 0; i < m_vEntities.size(); i++)
@@ -189,10 +195,25 @@ void Application::MainLoop()
 		m_pStats->EndPerformanceMeasurement("Update");
 		//update end
 
+		if (m_editor != nullptr)
+		{
+			m_pStats->StartPerformanceMeasurement("EditorUpdate");
+			m_editor->OnUpdate();
+			m_pStats->EndPerformanceMeasurement("EditorUpdate");
+		}
+
 		//Render Start
 		m_pStats->StartPerformanceMeasurement("Render");
 		m_gameRenderer->UpdateScreenSize();
 		m_gameRenderer->ResetForNextFrame();
+
+		if (m_editor != nullptr)
+		{
+			m_pStats->StartPerformanceMeasurement("EditorRender");
+			m_editor->OnRender();
+			m_pStats->EndPerformanceMeasurement("EditorRender");
+		}
+
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bRenderInEditor)

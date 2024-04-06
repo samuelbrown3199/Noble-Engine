@@ -1,5 +1,6 @@
 #include <Engine/Core/Application.h>
-#include "Interface/EditorUI.h"
+
+#include "EditorManagement/EditorManager.h"
 
 #include <Windows.h>
 
@@ -15,8 +16,8 @@ void StartupEditor()
 
     app->SetPlayMode(false);
 
-    std::shared_ptr<EditorUI> ui = Application::BindDebugUI<EditorUI>();
-    ui->m_uiOpen = true;
+    EditorManager* editor = new EditorManager();
+    app->BindEditor(editor);
 
     app->MainLoop();
 }

@@ -13,6 +13,8 @@ void Profiler::InitializeInterface()
     m_vFrameTimeStats.push_back(FrameTimeStat("Pre-Update"));
     m_vFrameTimeStats.push_back(FrameTimeStat("Update"));
     m_vFrameTimeStats.push_back(FrameTimeStat("Render"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("EditorUpdate"));
+    m_vFrameTimeStats.push_back(FrameTimeStat("EditorRender"));
     m_vFrameTimeStats.push_back(FrameTimeStat("Cleanup"));
 }
 

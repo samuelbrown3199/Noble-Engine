@@ -59,7 +59,7 @@ set (
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
 
-	src/Engine/Core/DebugUI.hpp
+	src/Engine/Core/ToolUI.hpp
 
 	#lua
 	
@@ -268,6 +268,12 @@ set (
 	src/Editor/resource.h
 	src/Editor/Editor.rc
 
+	src/Editor/EditorManagement/EditorManager.h
+	src/Editor/EditorManagement/EditorManager.cpp
+
+	src/Editor/Interface/MainMenuBar.h
+	src/Editor/Interface/MainMenuBar.cpp
+
 	src/Editor/Interface/EditorUI.h
 	src/Editor/Interface/EditorUI.cpp
 
@@ -314,80 +320,3 @@ set_target_properties(TechDemo1 PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOW
 set_property(TARGET TechDemo1 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1")
 
 target_compile_features(TechDemo1 PRIVATE cxx_std_20)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Vulkan>)
-set (
-	vulkan_testground
-	
-	src/Vulkan-TestGround/main.cpp
-
-	src/Vulkan-TestGround/VkBootstrap.h
-	src/Vulkan-TestGround/VkBootstrap.cpp
-	src/Vulkan-TestGround/VkBootstrapDispatch.h
-
-	src/Vulkan-TestGround/Renderer.h
-	src/Vulkan-TestGround/Renderer.cpp
-
-	src/Vulkan-TestGround/VulkanInitialisers.h
-	src/Vulkan-TestGround/VulkanInitialisers.cpp
-
-	src/Vulkan-TestGround/VulkanTypes.h
-
-	src/Vulkan-TestGround/VulkanLoader.h
-	src/Vulkan-TestGround/VulkanLoader.cpp
-
-	src/Vulkan-TestGround/VulkanImages.h
-	src/Vulkan-TestGround/VulkanImages.cpp
-
-	src/Vulkan-TestGround/VulkanDescriptors.h
-	src/Vulkan-TestGround/VulkanDescriptors.cpp
-
-	src/Vulkan-TestGround/VulkanPipelines.h
-	src/Vulkan-TestGround/VulkanPipelines.cpp
-
-	src/Engine/imgui/imconfig.h
-	src/Engine/imgui/imgui.h
-	src/Engine/imgui/imgui.cpp
-	src/Engine/imgui/imgui_demo.cpp
-	src/Engine/imgui/imgui_draw.cpp
-	src/Engine/imgui/imgui_internal.h
-	src/Engine/imgui/imgui_tables.cpp
-	src/Engine/imgui/imgui_widgets.cpp
-	src/Engine/imgui/imstb_rectpack.h
-	src/Engine/imgui/imstb_textedit.h
-	src/Engine/imgui/imstb_truetype.h
-	src/Engine/imgui/imgui_stdlib.h
-	src/Engine/imgui/imgui_stdlib.cpp
-
-	src/Engine/imgui/imgui.h
-	src/Engine/imgui/imgui.cpp
-	src/Engine/imgui/backends/imgui_impl_vulkan.h
-	src/Engine/imgui/backends/imgui_impl_vulkan.cpp
-
-	src/Engine/imgui/implot.h
-	src/Engine/imgui/implot.cpp
-	src/Engine/imgui/implot_demo.cpp
-	src/Engine/imgui/implot_internal.h
-	src/Engine/imgui/implot_items.cpp
-
-	src/Engine/imgui/backends/imgui_impl_sdl2.h
-	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
-)
-
-add_executable(Vulkan-Test
-
-	${vulkan_testground}
-
-)
-target_link_libraries(Vulkan-Test vulkan-1 SDL2)
-set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
-set_target_properties(Vulkan-Test PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-set_property(TARGET Vulkan-Test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Vulkan")
-
-target_compile_features(Vulkan-Test PRIVATE cxx_std_20)
-
-foreach(source IN LISTS vulkan_testground)
-    get_filename_component(source_path "${source}" PATH)
-    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
-    source_group("${source_path_msvc}" FILES "${source}")
-endforeach()

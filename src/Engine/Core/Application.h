@@ -15,10 +15,18 @@
 
 #include "ECS/Behaviour.hpp"
 
-#include "DebugUI.hpp"
+#include "ToolUI.hpp"
 
 struct Entity;
 class NobleRegistry;
+
+class Editor
+{
+public:
+
+	virtual void OnUpdate() = 0;
+	virtual void OnRender() = 0;
+};
 
 class Application
 {
@@ -38,6 +46,8 @@ private:
     ResourceManager* m_resourceManager;
     Logger* m_logger;
 
+	Editor* m_editor;
+
     std::shared_ptr<IniFile> m_mainIniFile;
 
     static bool m_bLoop;
@@ -47,7 +57,7 @@ private:
 	static std::deque<Entity*> m_vDeletionEntities;
 	static std::vector<Entity> m_vEntities;
 
-	static std::vector<std::shared_ptr<DebugUI>> m_vDebugUIs;
+	static std::vector<std::shared_ptr<ToolUI>> m_vToolUIs;
 
 	std::string GetUniqueEntityID();
 
@@ -58,6 +68,8 @@ public:
 
 	static void SetPlayMode(bool play);
 	static bool GetPlayMode() { return m_bPlayMode; }
+
+	void BindEditor(Editor* editor);
 
 	void RegisterCoreKeybinds();
     void LoadSettings();
@@ -87,7 +99,7 @@ public:
 	{
 		std::shared_ptr<T> sys = std::make_shared<T>();
 		sys->InitializeInterface();
-		m_vDebugUIs.push_back(sys);
+		m_vToolUIs.push_back(sys);
 		return sys;
 	}
 };

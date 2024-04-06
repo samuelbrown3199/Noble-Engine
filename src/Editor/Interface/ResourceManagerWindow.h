@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Engine\Core\DebugUI.hpp>
+#include <Engine/Core/ToolUI.hpp>
 #include <Engine/Core/ResourceManager.h>
 
-class ResourceManagerWindow : public DebugUI
+class ResourceManagerWindow : public EditorToolUI
 {
 private:
 

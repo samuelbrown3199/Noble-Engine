@@ -52,7 +52,6 @@ void EditorManager::UpdateEditorWindowTitle()
 void EditorManager::LoadScene(std::string scenePath)
 {
 	SceneManager::LoadScene(scenePath);
-
 	UpdateEditorWindowTitle();
 }
 

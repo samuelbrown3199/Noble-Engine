@@ -76,7 +76,13 @@ Renderer::Renderer(const std::string _windowName)
 {
 	Logger::LogInformation("Creating engine renderer.");
 
-	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), 50, 50, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+	SDL_DisplayMode displayMode;
+	SDL_GetDesktopDisplayMode(0, &displayMode);
+
+	m_iScreenHeight = displayMode.h;
+	m_iScreenWidth = displayMode.w;
+
+	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), 50, 50, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_MAXIMIZED);
 	if (!m_gameWindow)
 	{
 		Logger::LogInformation("Failed to create game window");

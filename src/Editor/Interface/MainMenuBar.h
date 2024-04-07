@@ -9,6 +9,13 @@ public:
 	void DoModal() override;
 };
 
+class QuitWarningModal : public ToolModalWindow
+{
+public:
+
+	void DoModal() override;
+};
+
 class MainMenuBar : public EditorToolUI
 {
 	friend class NewProjectModal;
@@ -17,7 +24,8 @@ private:
 
 	void DoMainMenuBar();
 
-	void DoFileMenu();
+	void DoEditorMenu();
+	void DoSceneMenu();
 	void DoAssetMenu();
 	void DoToolMenu();
 	void DoDebugMenu();

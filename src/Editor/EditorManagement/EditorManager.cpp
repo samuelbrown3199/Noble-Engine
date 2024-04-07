@@ -78,3 +78,8 @@ void EditorManager::OnUpdate()
 void EditorManager::OnRender() 
 {
 }
+
+void EditorManager::HandleQuit()
+{
+	m_mEditorUIs["MainMenuBar"]->DoModal("Quit Noble Editor?");
+}

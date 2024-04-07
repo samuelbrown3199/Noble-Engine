@@ -38,6 +38,8 @@ public:
 
 	void LoadScene(std::string scenePath);
 
-	void OnUpdate();
-	void OnRender();
+	void OnUpdate() override;
+	void OnRender() override;
+
+	void HandleQuit() override;
 };

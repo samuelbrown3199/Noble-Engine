@@ -15,11 +15,12 @@ void NewProjectModal::DoModal()
 	MainMenuBar* mainmenuBar = dynamic_cast<MainMenuBar*>(m_pParentUI);
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(mainmenuBar->m_pEditor);
 
+	CheckIfToggled();
+
 	// Always center this window when appearing
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(500.0f, 150.0f));
-	if (ImGui::BeginPopupModal("NewProject"))
+	if (ImGui::BeginPopupModal("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		static char buf1[64] = ""; ImGui::InputText("Project Name", buf1, 64);
 		static char buf2[256] = ""; ImGui::InputText("Project Directory", buf2, 256);
@@ -46,6 +47,33 @@ void NewProjectModal::DoModal()
 	}
 }
 
+void QuitWarningModal::DoModal()
+{
+	MainMenuBar* mainmenuBar = dynamic_cast<MainMenuBar*>(m_pParentUI);
+
+	CheckIfToggled();
+
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	if (ImGui::BeginPopupModal("Quit Noble Editor?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::Text("Are you sure you want to quit Noble Editor?\n\nAny unsaved work will be lost!");
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+		if (ImGui::Button("Yes"))
+		{
+			Application::ForceQuit();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
 
 void MainMenuBar::DoMainMenuBar()
 {
@@ -53,14 +81,19 @@ void MainMenuBar::DoMainMenuBar()
 	{
 		EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
-		if (ImGui::BeginMenu("File"))
+		if (ImGui::BeginMenu("Editor"))
 		{
-			DoFileMenu();
+			DoEditorMenu();
 			ImGui::EndMenu();
 		}
 
 		if (editorManager->m_projectFile)
 		{
+			if (ImGui::BeginMenu("Scenes"))
+			{
+				DoSceneMenu();
+				ImGui::EndMenu();
+			}
 			if (ImGui::BeginMenu("Resources"))
 			{
 				DoAssetMenu();
@@ -84,15 +117,16 @@ void MainMenuBar::DoMainMenuBar()
 	}
 }
 
-void MainMenuBar::DoFileMenu()
+void MainMenuBar::DoEditorMenu()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
 	ImGui::MenuItem("Project", NULL, false, false);
 	if (ImGui::MenuItem("New Project"))
 	{
-		DoModal("NewProject");
+		DoModal("New Project");
 	}
+	ImGui::SetItemTooltip("Create a new project.");
 
 	if (ImGui::BeginMenu("Load Project"))
 	{
@@ -111,78 +145,95 @@ void MainMenuBar::DoFileMenu()
 
 		ImGui::EndMenu();
 	}
-
-	ImGui::MenuItem("Scene", NULL, false, false);
+	ImGui::SetItemTooltip("Load an existing project.");
 	if (editorManager->m_projectFile)
 	{
-		if (ImGui::MenuItem("New Scene"))
+		if (ImGui::MenuItem("Project Details"))
 		{
-			//m_selComponent = nullptr;
-			SceneManager::ClearLoadedScene();
+			//tbd
 		}
-		if (ImGui::BeginMenu("Open Scene"))
-		{
-			std::string path = GetGameDataFolder();
-			std::vector<std::string> scenes = GetAllFilesOfType(path, ".nsc");
-			for (int n = 0; n < scenes.size(); n++)
-			{
-				if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
-				{
-					editorManager->LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
-				}
-			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::MenuItem("Save Scene", "(CTRL+S)"))
-		{
-			if (Application::GetPlayMode())
-			{
-				return;
-			}
-
-			SceneManager::SaveLoadedScene();
-		}
-
-		if (ImGui::BeginMenu("Save Scene As..."))
-		{
-			if (Application::GetPlayMode())
-			{
-				return;
-			}
-
-			std::string newSceneName;
-			ImGui::InputText("Scene Name", &newSceneName);
-
-			static std::string path = "";
-			if (!newSceneName.empty())
-			{
-				path = ResourceManager::GetResourceManagerWorkingDirectory() + "\\GameData\\" + newSceneName + ".nsc";
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Create"))
-			{
-				SceneManager::SaveScene(path);
-			}
-
-			ImGui::EndMenu();
-		}
+		ImGui::SetItemTooltip("View and change project details. NYI");
 	}
 	else
-	{
-		ImGui::MenuItem("New Scene", NULL, false, false);
-		ImGui::BeginMenu("Open Scene", false);
-		ImGui::MenuItem("Save Scene", NULL, false, false);
-		ImGui::MenuItem("Save Scene As...", NULL, false, false);
-	}
+		ImGui::MenuItem("Project Details", NULL, false, false);
 
+	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 	ImGui::MenuItem("Settings", NULL, false, false);
+	if (ImGui::MenuItem("Editor Settings"))
+	{
+		//tbd
+	}
+	ImGui::SetItemTooltip("Open the Settings Interface. NYI");
 	if (ImGui::MenuItem("Quit Editor"))
 	{
-		Application::StopApplication();
+		DoModal("Quit Noble Editor?");
 	}
+	ImGui::SetItemTooltip("Quit the Noble Editor.");
+}
+
+void MainMenuBar::DoSceneMenu()
+{
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+	ImGui::MenuItem("Scene", NULL, false, false);
+	if (ImGui::MenuItem("New Scene"))
+	{
+		//m_selComponent = nullptr; something will be needed to be done with this.
+		SceneManager::ClearLoadedScene();
+	}
+	ImGui::SetItemTooltip("Create a new Scene.");
+
+	if (ImGui::BeginMenu("Open Scene"))
+	{
+		std::string path = GetGameDataFolder();
+		std::vector<std::string> scenes = GetAllFilesOfType(path, ".nsc");
+		for (int n = 0; n < scenes.size(); n++)
+		{
+			if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
+			{
+				editorManager->LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
+			}
+		}
+
+		ImGui::EndMenu();
+	}
+	ImGui::SetItemTooltip("Open an already existing scene from the project.");
+
+	if (ImGui::MenuItem("Save Scene", "(CTRL+S)"))
+	{
+		if (Application::GetPlayMode())
+		{
+			return;
+		}
+
+		SceneManager::SaveLoadedScene();
+	}
+	ImGui::SetItemTooltip("Save the currently open scene.");
+
+	if (ImGui::BeginMenu("Save Scene As..."))
+	{
+		if (Application::GetPlayMode())
+		{
+			return;
+		}
+
+		std::string newSceneName;
+		ImGui::InputText("Scene Name", &newSceneName);
+
+		static std::string path = "";
+		if (!newSceneName.empty())
+		{
+			path = ResourceManager::GetResourceManagerWorkingDirectory() + "\\GameData\\" + newSceneName + ".nsc";
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Create"))
+		{
+			SceneManager::SaveScene(path);
+		}
+
+		ImGui::EndMenu();
+	}
+	ImGui::SetItemTooltip("Save the currently open scene as a new file.");
 }
 
 void MainMenuBar::DoAssetMenu()
@@ -236,7 +287,8 @@ void MainMenuBar::DoDebugMenu()
 
 void MainMenuBar::InitializeInterface()
 {
-	AddModal<NewProjectModal>("NewProject");
+	AddModal<NewProjectModal>("New Project");
+	AddModal<QuitWarningModal>("Quit Noble Editor?");
 }
 
 void MainMenuBar::DoInterface()

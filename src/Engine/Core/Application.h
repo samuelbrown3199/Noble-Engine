@@ -26,6 +26,8 @@ public:
 
 	virtual void OnUpdate() = 0;
 	virtual void OnRender() = 0;
+
+	virtual void HandleQuit() = 0;
 };
 
 class Application
@@ -64,7 +66,8 @@ private:
 public:
 
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
-	static void StopApplication() { m_bLoop = false; }
+	static void StopApplication();
+	static void ForceQuit();
 
 	static void SetPlayMode(bool play);
 	static bool GetPlayMode() { return m_bPlayMode; }

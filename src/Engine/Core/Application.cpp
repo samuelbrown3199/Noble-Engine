@@ -92,6 +92,21 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	return rtn;
 }
 
+void Application::StopApplication()
+{
+	if(m_self.lock()->m_editor == nullptr)
+		m_bLoop = false;
+	else
+	{
+		m_self.lock()->m_editor->HandleQuit();
+	}
+}
+
+void Application::ForceQuit()
+{
+	m_bLoop = false;
+}
+
 void Application::SetPlayMode(bool play)
 { 
 	m_bPlayMode = play;
@@ -126,7 +141,7 @@ void Application::LoadSettings()
 {
 	Logger::LogInformation("Loading game.ini settings");
 	
-	m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 1000), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 2000));
+	//m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 1000), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 2000)); //does this setting make sense? Currently this sets window size, but it should probably set draw size.
 	m_gameRenderer->SetWindowFullScreen(m_mainIniFile->GetIntSetting("Video", "Fullscreen", 0));
 	m_gameRenderer->SetVSyncMode(m_mainIniFile->GetIntSetting("Video", "VSync", 1));
 	m_gameRenderer->SetRenderScale(m_mainIniFile->GetFloatSetting("Video", "RenderScale", 1.0f));

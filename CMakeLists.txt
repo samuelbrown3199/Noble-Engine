@@ -59,6 +59,10 @@ set (
 	src/Engine/imgui/backends/imgui_impl_sdl2.h
 	src/Engine/imgui/backends/imgui_impl_sdl2.cpp
 
+	src/Engine/imgui/ImGuiFileDialog.h
+	src/Engine/imgui/ImGuiFileDialog.cpp
+	src/Engine/imgui/ImGuiFileDialogConfig.h
+
 	src/Engine/Core/ToolUI.hpp
 
 	#lua
@@ -268,8 +272,7 @@ set (
 	src/Editor/resource.h
 	src/Editor/Editor.rc
 
-	src/Editor/EditorManagement/EditorManager.h
-	src/Editor/EditorManagement/EditorManager.cpp
+	#Interfaces
 
 	src/Editor/Interface/MainMenuBar.h
 	src/Editor/Interface/MainMenuBar.cpp
@@ -283,8 +286,19 @@ set (
 	src/Editor/Interface/Profiler.h
 	src/Editor/Interface/Profiler.cpp
 
+	src/Editor/Interface/EditorSettingsWindow.h
+	src/Editor/Interface/EditorSettingsWindow.cpp
+
+	src/Editor/Interface/ProjectDetailsWindow.h
+	src/Editor/Interface/ProjectDetailsWindow.cpp
+
+	#Editor management
+
 	src/Editor/EditorManagement/ProjectFile.h
 	src/Editor/EditorManagement/ProjectFile.cpp
+	
+	src/Editor/EditorManagement/EditorManager.h
+	src/Editor/EditorManagement/EditorManager.cpp
 	
 )
 

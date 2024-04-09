@@ -83,6 +83,8 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
         camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
         return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
     }
+
+    return Ray();
 }
 
 

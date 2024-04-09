@@ -39,7 +39,7 @@ public:
 
 	Input() {}
 
-	bool operator==(Input& other) const
+	bool operator==(Input& other)
 	{
 		if (other.m_keycode != SDLK_UNKNOWN)
 			return other.m_keycode == m_keycode;

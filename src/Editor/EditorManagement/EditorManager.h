@@ -34,6 +34,11 @@ public:
 	EditorManager();
 
 	void ToggleUI(std::string ID);
+	void CloseUI(std::string ID);
+	void OpenUI(std::string ID);
+
+	ToolUI* GetEditorUI(std::string ID);
+
 	void UpdateEditorWindowTitle();
 
 	void LoadScene(std::string scenePath);
@@ -42,4 +47,6 @@ public:
 	void OnRender() override;
 
 	void HandleQuit() override;
+
+	void SetProjectFile(ProjectFile* projectFile);
 };

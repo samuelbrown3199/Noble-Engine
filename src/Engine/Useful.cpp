@@ -121,6 +121,7 @@ std::string GetWorkingDirectory()
     return (getcwd(temp, sizeof(temp)) ? std::string(temp) : std::string(""));
 }
 
+//convert this function into a platform agnostic one
 std::string OpenFileSelectDialog(std::string filter)
 {
     char filename[MAX_PATH];

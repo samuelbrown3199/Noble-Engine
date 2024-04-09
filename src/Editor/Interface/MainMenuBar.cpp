@@ -6,6 +6,7 @@
 #include <Engine\Core\SceneManager.h>
 #include <Engine\Core\EngineBehaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
+#include <Engine\Useful.h>
 
 #include "../EditorManagement/EditorManager.h"
 #include "../EditorManagement/ProjectFile.h"
@@ -74,6 +75,30 @@ void QuitWarningModal::DoModal()
 	}
 }
 
+void AboutNobleModal::DoModal()
+{
+	MainMenuBar* mainmenuBar = dynamic_cast<MainMenuBar*>(m_pParentUI);
+
+	CheckIfToggled();
+
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	if (ImGui::BeginPopupModal("About Noble Engine", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	{
+		std::string versionString = GetVersionInfoString();
+		std::string aboutString = "Noble Engine\n\nVersion: " + versionString + "\n\nDeveloped by : Samuel Brown";
+		ImGui::Text(aboutString.c_str());
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+		if (ImGui::Button("Close"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
 
 void MainMenuBar::DoMainMenuBar()
 {
@@ -107,6 +132,12 @@ void MainMenuBar::DoMainMenuBar()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Help"))
+		{
+			DoHelpMenu();
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::BeginMenu("Debug"))
 		{
 			DoDebugMenu();
@@ -135,11 +166,10 @@ void MainMenuBar::DoEditorMenu()
 		{
 			if (ImGui::Button(projects.at(n).c_str()))
 			{
-				if (editorManager->m_projectFile == nullptr)
-					editorManager->m_projectFile = new ProjectFile();
+				ProjectFile* projectFile = new ProjectFile();
+				projectFile->LoadProjectFile(projects.at(n));
 
-				editorManager->m_projectFile->LoadProjectFile(projects.at(n));
-				editorManager->UpdateEditorWindowTitle();
+				editorManager->SetProjectFile(projectFile);
 			}
 		}
 
@@ -150,7 +180,7 @@ void MainMenuBar::DoEditorMenu()
 	{
 		if (ImGui::MenuItem("Project Details"))
 		{
-			//tbd
+			editorManager->ToggleUI("ProjectDetails");
 		}
 		ImGui::SetItemTooltip("View and change project details. NYI");
 	}
@@ -161,9 +191,9 @@ void MainMenuBar::DoEditorMenu()
 	ImGui::MenuItem("Settings", NULL, false, false);
 	if (ImGui::MenuItem("Editor Settings"))
 	{
-		//tbd
+		editorManager->ToggleUI("EditorSettings");
 	}
-	ImGui::SetItemTooltip("Open the Settings Interface. NYI");
+	ImGui::SetItemTooltip("Open the Settings Interface.");
 	if (ImGui::MenuItem("Quit Editor"))
 	{
 		DoModal("Quit Noble Editor?");
@@ -276,6 +306,16 @@ void MainMenuBar::DoToolMenu()
 	}
 }
 
+void MainMenuBar::DoHelpMenu()
+{
+	ImGui::MenuItem("Help", NULL, false, false);
+
+	if (ImGui::MenuItem("About Noble Engine"))
+	{
+		DoModal("About Noble Engine");
+	}
+}
+
 void MainMenuBar::DoDebugMenu()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
@@ -289,6 +329,7 @@ void MainMenuBar::InitializeInterface()
 {
 	AddModal<NewProjectModal>("New Project");
 	AddModal<QuitWarningModal>("Quit Noble Editor?");
+	AddModal<AboutNobleModal>("About Noble Engine");
 }
 
 void MainMenuBar::DoInterface()

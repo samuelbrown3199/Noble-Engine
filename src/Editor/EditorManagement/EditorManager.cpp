@@ -8,6 +8,11 @@
 
 #include "../Interface/MainMenuBar.h"
 #include "../Interface/EditorUI.h"
+#include "../Interface/EditorSettingsWindow.h"
+#include "../Interface/ResourceManagerWindow.h"
+#include "../Interface/Profiler.h"
+#include "../Interface/ProjectDetailsWindow.h"
+
 #include "ProjectFile.h"
 
 void EditorManager::InitializeEditor()
@@ -18,6 +23,8 @@ void EditorManager::InitializeEditor()
 	BindEditorUI<EditorUI>("Editor"); //this UI will probably be removed long term
 	BindEditorUI<ResourceManagerWindow>("ResourceManager");
 	BindEditorUI<Profiler>("Profiler");
+	BindEditorUI<EditorSettingsWindow>("EditorSettings");
+	BindEditorUI<ProjectDetailsWindow>("ProjectDetails");
 
 	ToggleUI("MainMenuBar");
 	ToggleUI("Editor");
@@ -26,13 +33,34 @@ void EditorManager::InitializeEditor()
 void EditorManager::ToggleUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
-		Logger::LogError(FormatString("Trying to open UI %s that doesnt exist.", ID.c_str()), 2);
+		Logger::LogError(FormatString("Trying to toggle UI %s that doesnt exist.", ID.c_str()), 2);
 
 	m_mEditorUIs.at(ID)->m_uiOpen = !m_mEditorUIs.at(ID)->m_uiOpen;
 }
 
+void EditorManager::CloseUI(std::string ID)
+{
+	if (m_mEditorUIs.count(ID) == 0)
+		Logger::LogError(FormatString("Trying to close UI %s that doesnt exist.", ID.c_str()), 2);
 
+	m_mEditorUIs.at(ID)->m_uiOpen = false;
+}
 
+void EditorManager::OpenUI(std::string ID)
+{
+	if (m_mEditorUIs.count(ID) == 0)
+		Logger::LogError(FormatString("Trying to open UI %s that doesnt exist.", ID.c_str()), 2);
+
+	m_mEditorUIs.at(ID)->m_uiOpen = true;
+}
+
+ToolUI* EditorManager::GetEditorUI(std::string ID)
+{
+	if (m_mEditorUIs.count(ID) == 0)
+		Logger::LogError(FormatString("Trying to get UI %s that doesnt exist.", ID.c_str()), 2);
+
+	return m_mEditorUIs.at(ID).get();
+}
 
 EditorManager::EditorManager()
 {
@@ -81,4 +109,14 @@ void EditorManager::OnRender()
 void EditorManager::HandleQuit()
 {
 	m_mEditorUIs["MainMenuBar"]->DoModal("Quit Noble Editor?");
+}
+
+void EditorManager::SetProjectFile(ProjectFile* projectFile)
+{
+	if (m_projectFile != nullptr)
+		delete m_projectFile;
+
+	m_projectFile = projectFile;
+	dynamic_cast<ProjectDetailsWindow*>(m_mEditorUIs["ProjectDetails"].get())->SetProjectFile(projectFile);
+	UpdateEditorWindowTitle();
 }

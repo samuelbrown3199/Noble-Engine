@@ -16,6 +16,12 @@ public:
 	void DoModal() override;
 };
 
+class AboutNobleModal : public ToolModalWindow
+{
+public:
+	void DoModal() override;
+};
+
 class MainMenuBar : public EditorToolUI
 {
 	friend class NewProjectModal;
@@ -28,6 +34,7 @@ private:
 	void DoSceneMenu();
 	void DoAssetMenu();
 	void DoToolMenu();
+	void DoHelpMenu();
 	void DoDebugMenu();
 
 public:

@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "InputManager.h"
 #include "Registry.h"
+#include "ProjectFile.h"
 
 #include "../Game/GameRegister.h"
 
@@ -33,6 +34,8 @@ PerformanceStats* Application::m_pStats;
 
 std::deque<Entity*> Application::m_vDeletionEntities;
 std::vector<Entity> Application::m_vEntities;
+
+ProjectFile* Application::m_projectFile;
 
 std::vector<std::shared_ptr<ToolUI>> Application::m_vToolUIs;
 
@@ -86,6 +89,16 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	rtn->LoadSettings();
 	rtn->m_self = rtn;
+
+	std::vector<std::string> projectFiles = GetAllFilesOfType(GetWorkingDirectory(), ".npj");
+	if (projectFiles.size() != 0)
+	{
+		rtn->SetProjectFile(projectFiles.at(0));
+	}
+	else
+	{
+		Logger::LogInformation("No project files found in working directory. Engine is running in editor mode.");
+	}
 
 	Logger::LogInformation("Engine started successfully");
 
@@ -404,6 +417,20 @@ void Application::ClearLoadedScene()
 	{
 		compRegistry->at(i).second.m_comp->RemoveAllComponents();
 	}
+}
+
+void Application::SetProjectFile(std::string path)
+{
+	std::shared_ptr<Application> app = m_self.lock();
+
+	if(app->m_projectFile != nullptr)
+		delete app->m_projectFile;
+
+	app->m_projectFile = new ProjectFile();
+	app->m_projectFile->LoadProjectFile(path);
+
+	if(app->m_editor != nullptr)
+		app->m_editor->SetProjectFile(app->m_projectFile);
 }
 
 void Application::CleanupDeletionEntities()

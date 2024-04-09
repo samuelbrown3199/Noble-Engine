@@ -14,8 +14,6 @@
 #include <Engine\Core\EngineResources\Texture.h>
 #include <Engine\Core\EngineResources\Script.h>
 
-#include "../EditorManagement/ProjectFile.h"
-
 int EditorUI::m_iSelEntity = -1;
 int EditorUI::m_iSelSystem = -1;
 

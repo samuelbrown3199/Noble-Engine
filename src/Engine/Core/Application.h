@@ -19,15 +19,20 @@
 
 struct Entity;
 class NobleRegistry;
+class ProjectFile;
 
 class Editor
 {
 public:
 
+	ProjectFile* m_projectFile = nullptr;
+
 	virtual void OnUpdate() = 0;
 	virtual void OnRender() = 0;
 
 	virtual void HandleQuit() = 0;
+
+	virtual void SetProjectFile(ProjectFile* projectFile) = 0;
 };
 
 class Application
@@ -49,6 +54,8 @@ private:
     Logger* m_logger;
 
 	Editor* m_editor;
+
+	static ProjectFile* m_projectFile;
 
     std::shared_ptr<IniFile> m_mainIniFile;
 
@@ -96,6 +103,9 @@ public:
 
 	static NobleRegistry* GetRegistry() { return m_registry; }
 	static Renderer* GetRenderer() { return m_gameRenderer; }
+
+	static void SetProjectFile(std::string path);
+	static ProjectFile* GetProjectFile() { return m_projectFile; }
 
 	template<typename T>
 	static std::shared_ptr<T> BindDebugUI()

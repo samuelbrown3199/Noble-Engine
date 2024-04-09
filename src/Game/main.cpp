@@ -8,7 +8,7 @@ int main()
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
 
-    SceneManager::LoadScene("\\GameData\\Lmao.nsc");
+    SceneManager::LoadScene("\\GameData\\Scenes\\Lmao.nsc");
 
     app->MainLoop();
     return 0;
@@ -18,7 +18,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLin
 {
     std::shared_ptr<Application> app = Application::StartApplication("Tech Demo 1");
 
-    SceneManager::LoadScene("\\GameData\\Lmao.nsc");
+    SceneManager::LoadScene("\\GameData\\Scenes\\Lmao.nsc");
 
     app->MainLoop();
     return 0;

@@ -73,7 +73,7 @@ struct ResourceManager
 
 	static void SetResourceToDefaults(std::shared_ptr<Resource> res);
 	
-	static void LoadResourceDatabase();
+	static void LoadResourceDatabase(nlohmann::json resourceDatabase);
 	static void WriteResourceDatabase();
 	
 	template<typename T>

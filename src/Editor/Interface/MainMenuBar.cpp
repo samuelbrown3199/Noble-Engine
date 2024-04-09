@@ -8,8 +8,9 @@
 #include <Engine\Core\InputManager.h>
 #include <Engine\Useful.h>
 
+#include <Engine\Core\ProjectFile.h>
+
 #include "../EditorManagement/EditorManager.h"
-#include "../EditorManagement/ProjectFile.h"
 
 void NewProjectModal::DoModal()
 {
@@ -159,23 +160,24 @@ void MainMenuBar::DoEditorMenu()
 	}
 	ImGui::SetItemTooltip("Create a new project.");
 
-	if (ImGui::BeginMenu("Load Project"))
+	if (ImGui::Button("Load Project"))
 	{
-		std::vector<std::string> projects = GetAllFilesOfType(GetWorkingDirectory() + "\\Projects", ".npj");
-		for (int n = 0; n < projects.size(); n++)
-		{
-			if (ImGui::Button(projects.at(n).c_str()))
-			{
-				ProjectFile* projectFile = new ProjectFile();
-				projectFile->LoadProjectFile(projects.at(n));
-
-				editorManager->SetProjectFile(projectFile);
-			}
-		}
-
-		ImGui::EndMenu();
+		IGFD::FileDialogConfig config;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseProject", "Choose Project", ".npj", config);
 	}
 	ImGui::SetItemTooltip("Load an existing project.");
+
+	if (ImGuiFileDialog::Instance()->Display("ChooseProject"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk())
+		{
+			std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+			Application::SetProjectFile(filePath + "\\" + fileName);
+		}
+		ImGuiFileDialog::Instance()->Close();
+	}
+
 	if (editorManager->m_projectFile)
 	{
 		if (ImGui::MenuItem("Project Details"))

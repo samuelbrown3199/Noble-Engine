@@ -27,7 +27,6 @@ private:
 
 public:
 
-	ProjectFile* m_projectFile = nullptr;
 	std::string m_sWindowName;
 	bool m_bShowImGuiDemos = false;
 
@@ -48,5 +47,5 @@ public:
 
 	void HandleQuit() override;
 
-	void SetProjectFile(ProjectFile* projectFile);
+	void SetProjectFile(ProjectFile* projectFile) override;
 };

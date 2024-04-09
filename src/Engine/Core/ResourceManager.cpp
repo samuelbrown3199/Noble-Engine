@@ -8,6 +8,7 @@
 #include "../Core/EngineResources/Model.h"
 #include "../Core/EngineResources/Pipeline.h"
 #include "../Core/EngineResources/Script.h"
+#include "ProjectFile.h"
 
 FT_Library ResourceManager::m_fontLibrary;
 
@@ -26,7 +27,6 @@ ResourceManager::ResourceManager()
 
 	m_sWorkingDirectory = GetWorkingDirectory();
 	RegisterResourceTypes();
-	LoadResourceDatabase();
 }
 
 ResourceManager::~ResourceManager()
@@ -47,7 +47,6 @@ void ResourceManager::RegisterResourceTypes()
 void ResourceManager::SetWorkingDirectory(std::string directory)
 {
 	m_sWorkingDirectory = directory;
-	LoadResourceDatabase();
 }
 
 void ResourceManager::RemoveResourceFromDatabase(std::string path)
@@ -83,20 +82,10 @@ void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 		Logger::LogError("Couldnt find resource type in Registry. Has it been registered?", 2);
 }
 
-void ResourceManager::LoadResourceDatabase()
+void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
-	std::string databasePath = m_sWorkingDirectory + "\\ResourceDatabase.nrd";
-	if (!PathExists(databasePath))
-		return;
-
 	m_vResourceDatabase.clear();
-
-	std::ifstream database(databasePath);
-	if (database.is_open())
-	{
-		m_resourceDatabaseJson = nlohmann::json::parse(database);
-		database.close();
-	}
+	m_resourceDatabaseJson = resourceDatabase;
 
 	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
 
@@ -133,8 +122,6 @@ void ResourceManager::WriteResourceDatabase()
 {
 	m_resourceDatabaseJson.clear();
 
-	AddVersionDataToJson(m_resourceDatabaseJson);
-
 	for (size_t re = 0; re < m_vResourceDatabase.size(); re++)
 	{
 		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();
@@ -145,11 +132,7 @@ void ResourceManager::WriteResourceDatabase()
 	{
 		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second.m_resource->AddToDatabase();
 	}
-
-	std::fstream database(m_sWorkingDirectory + "\\ResourceDatabase.nrd", 'w');
-	database << m_resourceDatabaseJson.dump();
-	database.close();
-
+	Application::GetProjectFile()->UpdateResourceDatabase(m_resourceDatabaseJson);
 	Logger::LogInformation("Resource Database file has been updated.");
 }
 

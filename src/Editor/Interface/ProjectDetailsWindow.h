@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Engine\Core\ToolUI.hpp>
-
-#include "../EditorManagement/ProjectFile.h"
+#include <Engine\Core\ProjectFile.h>
 
 class ProjectDetailsWindow : public EditorToolUI
 {

@@ -5,6 +5,7 @@
 #include <Engine\Core\SceneManager.h>
 #include <Engine\Core\EngineBehaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
+#include <Engine\Core\ProjectFile.h>
 
 #include "../Interface/MainMenuBar.h"
 #include "../Interface/EditorUI.h"
@@ -12,8 +13,6 @@
 #include "../Interface/ResourceManagerWindow.h"
 #include "../Interface/Profiler.h"
 #include "../Interface/ProjectDetailsWindow.h"
-
-#include "ProjectFile.h"
 
 void EditorManager::InitializeEditor()
 {	

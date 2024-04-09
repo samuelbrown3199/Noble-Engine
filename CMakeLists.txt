@@ -144,6 +144,9 @@ set (
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 
+	src/Engine/Core/ProjectFile.h
+	src/Engine/Core/ProjectFile.cpp
+
 	#Core Graphics
 
 	src/Engine/Core/Graphics/Renderer.h
@@ -293,9 +296,6 @@ set (
 	src/Editor/Interface/ProjectDetailsWindow.cpp
 
 	#Editor management
-
-	src/Editor/EditorManagement/ProjectFile.h
-	src/Editor/EditorManagement/ProjectFile.cpp
 	
 	src/Editor/EditorManagement/EditorManager.h
 	src/Editor/EditorManagement/EditorManager.cpp

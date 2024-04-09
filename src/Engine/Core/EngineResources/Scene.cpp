@@ -19,7 +19,6 @@ void Scene::OnLoad()
 
 	std::ifstream sceneFile(m_sResourcePath);
 	m_sceneData = nlohmann::json::parse(sceneFile);
-
 	sceneFile.close();
 
 	for (int i = 0; i < SceneManager::m_vKeysToCheck.size(); i++)

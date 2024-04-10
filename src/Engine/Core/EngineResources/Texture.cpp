@@ -25,7 +25,7 @@ void Texture::OnLoad()
         Logger::LogError("Failed to load texture image.", 2);
     }
 
-    Renderer* renderer = Application::GetRenderer();
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     m_texture = renderer->CreateImage(pixels, VkExtent3D(m_iWidth, m_iHeight, 1), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_SAMPLED_BIT, true, m_sLocalPath);
     CreateTextureSampler(m_textureFilter);
@@ -40,7 +40,7 @@ void Texture::OnUnload()
     if (!m_bIsLoaded)
         return;
 
-    Renderer* renderer = Application::GetRenderer();
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
     vkDestroyImageView(renderer->GetLogicalDevice(), m_texture.m_imageView, nullptr);
@@ -50,7 +50,8 @@ void Texture::OnUnload()
 
 void Texture::AddResource(std::string path)
 {
-    ResourceManager::AddNewResource<Texture>(path);
+    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+    resourceManager->AddNewResource<Texture>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> Texture::GetResourcesOfType()

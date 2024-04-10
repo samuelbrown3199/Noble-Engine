@@ -21,12 +21,14 @@ void Scene::OnLoad()
 	m_sceneData = nlohmann::json::parse(sceneFile);
 	sceneFile.close();
 
-	for (int i = 0; i < SceneManager::m_vKeysToCheck.size(); i++)
+	std::vector<std::string> keysToCheck = Application::GetApplication()->GetSceneManager()->m_vKeysToCheck;
+
+	for (int i = 0; i < keysToCheck.size(); i++)
 	{
-		auto check = m_sceneData.find(SceneManager::m_vKeysToCheck.at(i));
+		auto check = m_sceneData.find(keysToCheck.at(i));
 		if (check == m_sceneData.end())
 		{
-			Logger::LogError(FormatString("Scene file %s is malformed, missing %s information. ", m_sResourcePath.c_str(), SceneManager::m_vKeysToCheck.at(i).c_str()), 1);
+			Logger::LogError(FormatString("Scene file %s is malformed, missing %s information. ", m_sResourcePath.c_str(), keysToCheck.at(i).c_str()), 1);
 			return;
 		}
 	}
@@ -39,7 +41,7 @@ void Scene::LoadSceneIntoApplication()
 	if (m_bSceneReady == false)
 		return;
 
-	Renderer* renderer = Application::GetRenderer();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 	//parse out JSON here. Should probably check that the file isnt malformed in some way as well.
 	if (m_sceneData.find("ComponentData") != m_sceneData.end())
@@ -65,11 +67,11 @@ void Scene::LoadSceneIntoApplication()
 
 		for (auto it : entities.items())
 		{
-			Entity* ent = Application::CreateEntity(it.key(), entities[it.key()]["EntityName"], entities[it.key()]["ParentID"]);
+			Entity* ent = Application::GetApplication()->CreateEntity(it.key(), entities[it.key()]["EntityName"], entities[it.key()]["ParentID"]);
 			ent->GetAllComponents();
 		}
 
-		Application::LinkChildEntities();
+		Application::GetApplication()->LinkChildEntities();
 	}
 	if (m_sceneData.find("Behaviours") != m_sceneData.end())
 	{

@@ -41,7 +41,8 @@ void Shader::DoResourceInterface()
 
 void Shader::AddResource(std::string path)
 {
-    ResourceManager::AddNewResource<Shader>(path);
+    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+    resourceManager->AddNewResource<Shader>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> Shader::GetResourcesOfType()
@@ -124,13 +125,13 @@ void Pipeline::AddDescriptor()
 
 void Pipeline::AddDescriptor(std::string name)
 {
-    m_vDescriptors.push_back(std::make_pair(name, Application::GetRegistry()->GetDescriptorFromName(name)));
+    m_vDescriptors.push_back(std::make_pair(name, Application::GetApplication()->GetRegistry()->GetDescriptorFromName(name)));
 }
 
 void Pipeline::ChangeDescriptor(int index, std::string name)
 {
     m_vDescriptors.at(index).first = name;
-    m_vDescriptors.at(index).second = Application::GetRegistry()->GetDescriptorFromName(name);
+    m_vDescriptors.at(index).second = Application::GetApplication()->GetRegistry()->GetDescriptorFromName(name);
 }
 
 void Pipeline::AddPushConstant()
@@ -140,13 +141,13 @@ void Pipeline::AddPushConstant()
 
 void Pipeline::AddPushConstant(std::string name)
 {
-    m_vPushConstants.push_back(std::make_pair(name, Application::GetRegistry()->GetPushConstantFromName(name)));
+    m_vPushConstants.push_back(std::make_pair(name, Application::GetApplication()->GetRegistry()->GetPushConstantFromName(name)));
 }
 
 void Pipeline::ChangePushConstant(int index, std::string name)
 {
     m_vPushConstants.at(index).first = name;
-    m_vPushConstants.at(index).second = Application::GetRegistry()->GetPushConstantFromName(name);
+    m_vPushConstants.at(index).second = Application::GetApplication()->GetRegistry()->GetPushConstantFromName(name);
 }
 
 void Pipeline::DoResourceInterface()
@@ -165,7 +166,7 @@ void Pipeline::DoResourceInterface()
     }
 
     ImGui::Text("Pipeline Push Constants");
-    std::vector<std::pair<std::string, PushConstantRegistry>>* constantRegistry = Application::GetRegistry()->GetPushConstantRegistry();
+    std::vector<std::pair<std::string, PushConstantRegistry>>* constantRegistry = Application::GetApplication()->GetRegistry()->GetPushConstantRegistry();
     for (int i = 0; i < m_vPushConstants.size(); i++)
     {
         if (ImGui::BeginMenu(m_vPushConstants.at(i).first.c_str()))
@@ -183,7 +184,7 @@ void Pipeline::DoResourceInterface()
         AddPushConstant();
 
     ImGui::Text("Pipeline Descriptors");
-    std::vector<std::pair<std::string, DescriptorRegistry>>* descriptorRegistry = Application::GetRegistry()->GetDescriptorRegistry();
+    std::vector<std::pair<std::string, DescriptorRegistry>>* descriptorRegistry = Application::GetApplication()->GetRegistry()->GetDescriptorRegistry();
 
     for (int i = 0; i < m_vDescriptors.size(); i++)
     {
@@ -243,7 +244,8 @@ nlohmann::json Pipeline::AddToDatabase()
 
 void Pipeline::AddResource(std::string path)
 {
-    ResourceManager::AddNewResource<Pipeline>(path);
+    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+    resourceManager->AddNewResource<Pipeline>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> Pipeline::GetResourcesOfType()
@@ -284,7 +286,7 @@ std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const 
 
 void Pipeline::CreatePipeline()
 {
-    Renderer* renderer = Application::GetRenderer();
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     if (m_pipelineType == PipelineType::Graphics)
     {

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef SCENEMANAGER_H_
-#define SCENEMANAGER_H_
 
 #include <vector>
 #include <string>
@@ -12,19 +10,25 @@ class Scene;
 
 class SceneManager
 {
-	static std::shared_ptr<Scene> m_currentScene;
+	std::shared_ptr<Scene> m_currentScene;
+	std::vector<std::string> m_vScenes;
 
 public:
 
-	static std::vector<std::string> m_vKeysToCheck;
+	std::vector<std::string> m_vKeysToCheck;
 
-	static void ClearLoadedScene();
+	void ClearLoadedScene();
 
-	static void SaveLoadedScene();
-	static void LoadScene(std::string scenePath);
-	static void SaveScene(std::string scenePath);
+	void CreateNewScene(std::string sceneName);
+	void SaveLoadedScene();
+	void LoadScene(int sceneIndex);
+	void SaveScene(std::string scenePath);
 
-	static std::string GetCurrentSceneLocalPath();
+	void LoadDefaultScene();
+
+	void LoadSceneDatabase(nlohmann::json sceneDatabase);
+	nlohmann::json WriteSceneDatabase();
+
+	std::string GetCurrentSceneLocalPath();
+	std::vector<std::string> GetSceneList() { return m_vScenes; }
 };
-
-#endif

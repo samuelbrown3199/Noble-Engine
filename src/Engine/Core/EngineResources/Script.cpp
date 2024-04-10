@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "../../Core/Application.h"
 #include "../../Core/ResourceManager.h"
 
 Script::Script()
@@ -31,7 +32,8 @@ void Script::OnUnload()
 
 void Script::AddResource(std::string path)
 {
-	ResourceManager::AddNewResource<Script>(path);
+	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+	resourceManager->AddNewResource<Script>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> Script::GetResourcesOfType()

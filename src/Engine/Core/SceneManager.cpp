@@ -4,29 +4,47 @@
 #include "Registry.h"
 #include "ResourceManager.h"
 #include "../Core/EngineResources\Scene.h"
+#include "ProjectFile.h"
 
 #include "../imgui/imgui.h"
-
-std::shared_ptr<Scene> SceneManager::m_currentScene = nullptr;
-std::vector<std::string> SceneManager::m_vKeysToCheck;
 
 void SceneManager::ClearLoadedScene()
 {
 	m_currentScene = nullptr;
-	Application::ClearLoadedScene();
+	Application::GetApplication()->ClearLoadedScene();
 }
 
-void SceneManager::LoadScene(std::string scenePath)
+void SceneManager::LoadScene(int sceneIndex)
 {
+	if (sceneIndex < 0 || sceneIndex >= m_vScenes.size())
+	{
+		Logger::LogError("Scene index out of range", 1);
+		return;
+	}
+
 	m_vKeysToCheck.clear();
 	m_vKeysToCheck.push_back("LightingSettings");
 	m_vKeysToCheck.push_back("Entities");
 	m_vKeysToCheck.push_back("ComponentData");
 
-	Application::ClearLoadedScene();
-	m_currentScene = std::make_shared<Scene>(scenePath);
+	Application::GetApplication()->ClearLoadedScene();
+	m_currentScene = std::make_shared<Scene>(m_vScenes[sceneIndex]);
 	m_currentScene->OnLoad();
 	m_currentScene->LoadSceneIntoApplication();
+}
+
+void SceneManager::CreateNewScene(std::string sceneName)
+{
+	if (Application::GetApplication()->GetPlayMode())
+		return;
+
+	std::string scenePath = GetGameDataFolder() + "\\" + sceneName + ".nsc";
+	std::string relativePath = GetFolderLocationRelativeToGameData(scenePath);
+
+	SaveScene(scenePath);
+
+	m_vScenes.push_back(relativePath);
+	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void SceneManager::SaveLoadedScene()
@@ -36,11 +54,13 @@ void SceneManager::SaveLoadedScene()
 
 	SaveScene(m_currentScene->GetResourcePath());
 	m_currentScene->OnLoad();
+
+	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void SceneManager::SaveScene(std::string scenePath)
 {
-	if (Application::GetPlayMode())
+	if (Application::GetApplication()->GetPlayMode())
 		return;
 
 	if (scenePath.empty())
@@ -48,14 +68,14 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	Logger::LogInformation("Saving Scene " + scenePath);
 
-	std::vector<Entity>& entities = Application::GetEntityList();
+	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
 	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
 	std::map<int, std::pair<std::string, Behaviour*>>* behRegistry = NobleRegistry::GetBehaviourRegistry();
 
 	nlohmann::json data;
 	AddVersionDataToJson(data);
 
-	Renderer* renderer = Application::GetRenderer();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 	glm::vec3 clearColour = Renderer::GetClearColour();
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };
@@ -89,9 +109,39 @@ void SceneManager::SaveScene(std::string scenePath)
 	sceneFile << data.dump();
 	sceneFile.close();
 
-	Application::LinkChildEntities();
+	Application::GetApplication()->LinkChildEntities();
 
 	Logger::LogInformation("Saved Scene " + scenePath);
+}
+
+void SceneManager::LoadDefaultScene()
+{
+	if (m_vScenes.size() > 0)
+	{
+		LoadScene(0);
+	}
+}
+
+void SceneManager::LoadSceneDatabase(nlohmann::json sceneDatabase)
+{
+	m_vScenes.clear();
+
+	for (auto it : sceneDatabase.items())
+	{
+		m_vScenes.push_back(sceneDatabase[it.key()]["ScenePath"]);
+	}
+}
+
+nlohmann::json SceneManager::WriteSceneDatabase()
+{
+	nlohmann::json data;
+
+	for (int i = 0; i < m_vScenes.size(); i++)
+	{
+		data[std::to_string(i)]["ScenePath"] = m_vScenes.at(i);
+	}
+
+	return data;
 }
 
 std::string SceneManager::GetCurrentSceneLocalPath()

@@ -15,19 +15,19 @@
 
 Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
+	Entity* ent = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(entityID));
 	return ent->GetBehaviour<DebugCam>();
 }
 
 Behaviour* DebugCam::AddBehaviourToEntity(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
+	Entity* ent = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(entityID));
 	return ent->AddBehaviour<DebugCam>();
 }
 
 void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
 {
-	Entity* ent = Application::GetEntity(Application::GetEntityIndex(entityID));
+	Entity* ent = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(entityID));
 	ent->RemoveBehaviour<DebugCam>();
 }
 
@@ -47,7 +47,7 @@ void DebugCam::Start()
 		rot = camTransform->m_rotation;
 	}
 
-	Entity* hackCam = Application::GetEntity(Application::GetEntityIndex(m_sEntityID));
+	Entity* hackCam = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(m_sEntityID));
 	Transform* tr = hackCam->AddComponent<Transform>(pos, rot);
 	Camera* editCam = hackCam->AddComponent<Camera>();
 	editCam->m_state = editorCam;
@@ -116,7 +116,7 @@ void DebugCam::UpdateControls()
 		if (mouseRay.m_hitObject)
 		{
 			Logger::LogInformation(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
-			Entity* ent = Application::CreateEntity();
+			Entity* ent = Application::GetApplication()->CreateEntity();
 			ent->AddComponent<Transform>(mouseRay.m_hitPosition);
 			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();
 			mr->m_model = ResourceManager::LoadResource<Model>("\\GameData\\Models\\cube.obj");

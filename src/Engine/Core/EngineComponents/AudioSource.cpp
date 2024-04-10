@@ -20,7 +20,7 @@ void AudioSource::OnUpdate()
 		if (transform == nullptr)
 			return;
 
-		if (Application::GetPlayMode() == false)
+		if (Application::GetApplication()->GetPlayMode() == false)
 		{
 			FMOD_Channel_Stop(channel);
 			channel = nullptr;

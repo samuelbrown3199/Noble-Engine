@@ -24,7 +24,7 @@ std::vector<glm::vec3> Sprite::boundingBox =
 
 void Sprite::OnPreRender()
 {
-	Renderer* renderer = Application::GetRenderer();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 	m_meshBuffers = renderer->GetSpriteQuadBuffer();
 	m_vertices = &spriteQuadVertices;

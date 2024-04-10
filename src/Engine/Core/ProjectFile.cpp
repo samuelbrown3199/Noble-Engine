@@ -3,6 +3,7 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Useful.h>
 #include <Engine/Core/ResourceManager.h>
+#include "SceneManager.h"
 
 bool ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory)
 {
@@ -23,7 +24,7 @@ bool ProjectFile::CreateProjectFile(std::string projectName, std::string project
 
 void ProjectFile::LoadProjectFile(const std::string& file)
 {
-	Application::ClearLoadedScene();
+	Application::GetApplication()->ClearLoadedScene();
 	ResourceManager::UnloadAllResources();
 
 	std::ifstream projectFile;
@@ -59,15 +60,23 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 		ResourceManager::LoadResourceDatabase(m_projectData.at("Resources"));
 	else
 		Logger::LogError("Project file is malformed, missing Resources information.", 2);
+
+	if(m_projectData.find("Scenes") != m_projectData.end())
+		Application::GetApplication()->GetSceneManager()->LoadSceneDatabase(m_projectData.at("Scenes"));
+	else
+		Logger::LogError("Project file is malformed, missing Scenes information.", 2);
 }
 
 void ProjectFile::UpdateProjectFile()
 {
+	std::shared_ptr<Application> app = Application::GetApplication();
+
 	m_projectData["ProjectDetails"]["ProjectName"] = m_sProjectName;
 	m_projectData["ProjectDetails"]["ProjectDirectory"] = m_sProjectDirectory;
 	m_projectData["ProjectDetails"]["EngineVersion"] = GetVersionInfoString();
 
-	ResourceManager::WriteResourceDatabase();
+	m_projectData["Resources"] = app->GetResourceManager()->WriteResourceDatabase();
+	m_projectData["Scenes"] = app->GetSceneManager()->WriteSceneDatabase();
 
 	std::fstream file(m_sProjectFilePath, 'w');
 	file << m_projectData.dump();

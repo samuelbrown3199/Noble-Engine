@@ -118,7 +118,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 	}
 }
 
-void ResourceManager::WriteResourceDatabase()
+nlohmann::json ResourceManager::WriteResourceDatabase()
 {
 	m_resourceDatabaseJson.clear();
 
@@ -132,8 +132,7 @@ void ResourceManager::WriteResourceDatabase()
 	{
 		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second.m_resource->AddToDatabase();
 	}
-	Application::GetProjectFile()->UpdateResourceDatabase(m_resourceDatabaseJson);
-	Logger::LogInformation("Resource Database file has been updated.");
+	return m_resourceDatabaseJson;
 }
 
 void ResourceManager::UnloadUnusedResources()

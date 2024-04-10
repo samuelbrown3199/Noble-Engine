@@ -5,6 +5,8 @@
 
 #include "../Game/GameRegister.h"
 
+#include "SceneManager.h"
+
 #include "EngineComponents/Transform.h"
 #include "EngineComponents/AudioListener.h"
 #include "EngineComponents/AudioSource.h"
@@ -24,20 +26,7 @@
 #include "../imgui/backends/imgui_impl_vulkan.h"
 #include "../imgui/implot.h"
 
-bool Application::m_bLoop = true;
 std::weak_ptr<Application> Application::m_self;
-bool Application::m_bPlayMode = true;
-
-NobleRegistry* Application::m_registry;
-Renderer* Application::m_gameRenderer;
-PerformanceStats* Application::m_pStats;
-
-std::deque<Entity*> Application::m_vDeletionEntities;
-std::vector<Entity> Application::m_vEntities;
-
-ProjectFile* Application::m_projectFile;
-
-std::vector<std::shared_ptr<ToolUI>> Application::m_vToolUIs;
 
 //----------------- Private Functions ----------------------
 
@@ -49,6 +38,9 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	srand((unsigned int)time(NULL));
 
 	std::shared_ptr<Application> rtn = std::make_shared<Application>();
+	rtn->m_self = rtn;
+
+	rtn->m_bLoop = true;
 
 	rtn->m_registry = new NobleRegistry();
 	rtn->m_logger = new Logger();
@@ -67,6 +59,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_pStats = new PerformanceStats();
+	rtn->m_sceneManager = new SceneManager();
 
 	rtn->m_registry->RegisterComponent<Transform>("Transform", false, 1024, true, true);
 	rtn->m_registry->RegisterComponent<Camera>("Camera", false, 1024, true, true);
@@ -88,7 +81,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_mainIniFile = std::make_shared<IniFile>(GetWorkingDirectory() + "\\game.ini");
 
 	rtn->LoadSettings();
-	rtn->m_self = rtn;
 
 	std::vector<std::string> projectFiles = GetAllFilesOfType(GetWorkingDirectory(), ".npj");
 	if (projectFiles.size() != 0)
@@ -101,6 +93,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	}
 
 	Logger::LogInformation("Engine started successfully");
+
+	rtn->m_sceneManager->LoadDefaultScene();
 
 	return rtn;
 }
@@ -291,6 +285,7 @@ void Application::CleanupApplication()
 	delete m_threadManager;
 	delete m_logger;
 	delete m_pStats;
+	delete m_sceneManager;
 
 	SDL_Quit();
 }

@@ -374,7 +374,7 @@ void Renderer::InitializeDescriptors()
 		m_singleImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-	NobleRegistry* registry = Application::GetRegistry();
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	registry->RegisterDescriptor("DrawImage", &m_drawImageDescriptorLayout, &m_drawImageDescriptors, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
 	registry->RegisterDescriptor("SingleImage", &m_singleImageDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 	registry->RegisterDescriptor("GPUSceneData", &m_gpuSceneDataDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
@@ -711,7 +711,7 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	writer.WriteBuffer(0, gpuSceneDataBuffer.m_buffer, sizeof(GPUSceneData), 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 	writer.UpdateSet(m_device, GetCurrentFrame().m_sceneDescriptor);
 
-	NobleRegistry* registry = Application::GetRegistry();
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	registry->GetDescriptorFromName("GPUSceneData")->m_set = &GetCurrentFrame().m_sceneDescriptor;
 
 	//Begin a render pass connected to our draw image. 

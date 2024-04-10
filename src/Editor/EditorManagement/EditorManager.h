@@ -40,7 +40,7 @@ public:
 
 	void UpdateEditorWindowTitle();
 
-	void LoadScene(std::string scenePath);
+	void LoadScene(int sceneIndex);
 
 	void OnUpdate() override;
 	void OnRender() override;

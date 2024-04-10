@@ -39,7 +39,7 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 		}
 	}
 
-	Renderer* renderer = Application::GetRenderer();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 	for (int i = 0; i < closestLights.size(); i++)
 	{

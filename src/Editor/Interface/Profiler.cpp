@@ -7,7 +7,7 @@
 
 void Profiler::InitializeInterface()
 {
-    m_pStats = Application::GetPerformanceStats();
+    m_pStats = Application::GetApplication()->GetPerformanceStats();
 
     m_vFrameTimeStats.push_back(FrameTimeStat("Frame"));
     m_vFrameTimeStats.push_back(FrameTimeStat("Pre-Update"));

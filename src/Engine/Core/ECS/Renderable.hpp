@@ -106,11 +106,11 @@ struct Renderable : public Component
 		if (m_pipeline == nullptr || !m_pipeline->m_bIsLoaded)
 			return;
 
-		Renderer* renderer = Application::GetRenderer();
+		Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->m_pipeline);
 
-		NobleRegistry* registry = Application::GetRegistry();
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		std::vector<VkDescriptorSet> sets;
 		for (int i = 0; i < m_pipeline->m_vDescriptors.size(); i++)
 		{

@@ -21,20 +21,20 @@ Entity* EditorUI::m_DebugCam = nullptr;
 
 void EditorUI::ChangeEditorMode()
 {
-	Application::SetPlayMode(!Application::GetPlayMode());
+	Application::GetApplication()->SetPlayMode(!Application::GetApplication()->GetPlayMode());
 }
 
 void EditorUI::CreateEditorCam()
 {
 	if (!m_DebugCam)
 	{
-		m_DebugCam = Application::CreateEntity();
+		m_DebugCam = Application::GetApplication()->CreateEntity();
 		m_DebugCam->m_sEntityName = "Editor Cam";
 		m_DebugCam->AddBehaviour<DebugCam>();
 	}
 	else
 	{
-		Application::DeleteEntity(Application::GetEntityIndex(m_DebugCam->m_sEntityID));
+		Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(m_DebugCam->m_sEntityID));
 		m_DebugCam = nullptr;
 	}
 }
@@ -55,23 +55,23 @@ void EditorUI::DoInterface()
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
 	std::string playModeButton = "Enter Play Mode";
-	if(Application::GetPlayMode())
+	if(Application::GetApplication()->GetPlayMode())
 		playModeButton = "Enter Edit Mode";
 	if (ImGui::Button(playModeButton.c_str()))
 	{
 		ChangeEditorMode();
 	}
 
-	std::vector<Entity>& entities = Application::GetEntityList();
+	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
 	if(ImGui::Button("Create Entity"))
 	{
-		Application::CreateEntity();
+		Application::GetApplication()->CreateEntity();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Delete Entity"))
 	{
 		if(m_iSelEntity != -1)
-			Application::DeleteEntity(Application::GetEntityIndex(entities.at(m_iSelEntity).m_sEntityID));
+			Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(entities.at(m_iSelEntity).m_sEntityID));
 	}
 
 	ImGui::SameLine();
@@ -94,7 +94,7 @@ void EditorUI::DoInterface()
 		ImGui::TreePop();
 	}
 
-	Renderer* renderer = Application::GetRenderer();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
@@ -140,5 +140,5 @@ void EditorUI::HandleShortcutInputs()
 		ChangeEditorMode();
 
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_s))
-		SceneManager::SaveLoadedScene();
+		Application::GetApplication()->GetSceneManager()->SaveLoadedScene();
 }

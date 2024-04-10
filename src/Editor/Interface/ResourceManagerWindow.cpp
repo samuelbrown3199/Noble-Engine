@@ -6,6 +6,7 @@
 #include <Engine/Core/EngineResources/Texture.h>
 #include <Engine/Core/EngineResources/Model.h>
 #include <Engine/Core/EngineResources/Script.h>
+#include <Engine/Core/ProjectFile.h>
 
 void ResourceManagerWindow::InitializeInterface()
 {
@@ -50,7 +51,7 @@ void ResourceManagerWindow::DoInterface()
 
         if (ImGui::Button("Save Resource"))
         {
-            ResourceManager::WriteResourceDatabase();
+            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             defaultRes->ReloadResource();
         }
     }
@@ -102,17 +103,20 @@ void ResourceManagerWindow::DoInterface()
 
     if (selResource != nullptr) 
     {
+        ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+
         selResource->DoResourceInterface();
 
         if (ImGui::Button("Save Resource"))
         {
-            ResourceManager::WriteResourceDatabase();
+            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             selResource->ReloadResource();
         }
         ImGui::SameLine();
         if (ImGui::Button("Remove Resource"))
         {
-            ResourceManager::RemoveResourceFromDatabase(selResource->m_sLocalPath);
+            resourceManager->RemoveResourceFromDatabase(selResource->m_sLocalPath);
+            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             selResource = nullptr;
         }
     }

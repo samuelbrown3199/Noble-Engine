@@ -9,16 +9,16 @@
 #include "ThreadingManager.h"
 #include "PerformanceStats.h"
 #include "Logger.h"
-
 #include "ResourceManager.h"
-#include "../Core/EngineResources/IniFile.h"
 
+#include "../Core/EngineResources/IniFile.h"
 #include "ECS/Behaviour.hpp"
 
 #include "ToolUI.hpp"
 
 struct Entity;
 class NobleRegistry;
+class SceneManager;
 class ProjectFile;
 
 class Editor
@@ -44,40 +44,43 @@ private:
     
 	static std::weak_ptr<Application> m_self;
 
-	static bool m_bPlayMode;
+	bool m_bPlayMode;
 
-	static NobleRegistry* m_registry;
-    static Renderer* m_gameRenderer;
+	NobleRegistry* m_registry;
+    Renderer* m_gameRenderer;
 	AudioManager* m_audioManager;
     ThreadingManager* m_threadManager;
     ResourceManager* m_resourceManager;
     Logger* m_logger;
+	SceneManager* m_sceneManager;
 
 	Editor* m_editor;
 
-	static ProjectFile* m_projectFile;
+	ProjectFile* m_projectFile;
 
     std::shared_ptr<IniFile> m_mainIniFile;
 
-    static bool m_bLoop;
+    bool m_bLoop;
 
-    static PerformanceStats* m_pStats;
+    PerformanceStats* m_pStats;
 
-	static std::deque<Entity*> m_vDeletionEntities;
-	static std::vector<Entity> m_vEntities;
+	std::deque<Entity*> m_vDeletionEntities;
+	std::vector<Entity> m_vEntities;
 
-	static std::vector<std::shared_ptr<ToolUI>> m_vToolUIs;
+	std::vector<std::shared_ptr<ToolUI>> m_vToolUIs;
 
 	std::string GetUniqueEntityID();
 
 public:
 
+	static std::shared_ptr<Application> GetApplication() { return m_self.lock(); }
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);
-	static void StopApplication();
-	static void ForceQuit();
 
-	static void SetPlayMode(bool play);
-	static bool GetPlayMode() { return m_bPlayMode; }
+	void StopApplication();
+	void ForceQuit();
+
+	void SetPlayMode(bool play);
+	bool GetPlayMode() { return m_bPlayMode; }
 
 	void BindEditor(Editor* editor);
 
@@ -86,29 +89,34 @@ public:
     void MainLoop();
     void CleanupApplication();
 
-	static PerformanceStats* GetPerformanceStats() { return m_pStats; }
+	PerformanceStats* GetPerformanceStats() { return m_pStats; }
 
-	static Entity* CreateEntity();
-	static Entity* CreateEntity(std::string _desiredID, std::string _name, std::string _parentID);
+	Entity* CreateEntity();
+	Entity* CreateEntity(std::string _desiredID, std::string _name, std::string _parentID);
 
-	static void LinkChildEntities();
+	void LinkChildEntities();
 
-	static int GetEntityIndex(std::string _ID);
-	static void DeleteEntity(int index);
-	static Entity* GetEntity(int index);
+	int GetEntityIndex(std::string _ID);
+	void DeleteEntity(int index);
+	Entity* GetEntity(int index);
 	void CleanupDeletionEntities();
 
-	static std::vector<Entity>& GetEntityList() { return m_vEntities; }
-	static void ClearLoadedScene();
+	std::vector<Entity>& GetEntityList() { return m_vEntities; }
+	void ClearLoadedScene();
 
-	static NobleRegistry* GetRegistry() { return m_registry; }
-	static Renderer* GetRenderer() { return m_gameRenderer; }
+	NobleRegistry* GetRegistry() { return m_registry; }
+	Renderer* GetRenderer() { return m_gameRenderer; }
+	AudioManager* GetAudioManager() { return m_audioManager; }
+	ThreadingManager* GetThreadingManager() { return m_threadManager; }
+	ResourceManager* GetResourceManager() { return m_resourceManager; }
+	Logger* GetLogger() { return m_logger; }
+	SceneManager* GetSceneManager() { return m_sceneManager; }
 
-	static void SetProjectFile(std::string path);
-	static ProjectFile* GetProjectFile() { return m_projectFile; }
+	void SetProjectFile(std::string path);
+	ProjectFile* GetProjectFile() { return m_projectFile; }
 
 	template<typename T>
-	static std::shared_ptr<T> BindDebugUI()
+	std::shared_ptr<T> BindDebugUI()
 	{
 		std::shared_ptr<T> sys = std::make_shared<T>();
 		sys->InitializeInterface();

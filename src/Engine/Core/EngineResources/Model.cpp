@@ -103,7 +103,7 @@ void Model::OnLoad()
         m_modelBoundingBox.push_back(bbox[i]);
     }
 
-    Renderer* renderer = Application::GetRenderer();
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     m_meshBuffer = renderer->UploadMesh(m_indices, m_vertices, m_sLocalPath);
     m_bIsLoaded = true;
@@ -119,7 +119,8 @@ void Model::OnUnload()
 
 void Model::AddResource(std::string path)
 {
-    ResourceManager::AddNewResource<Model>(path);
+    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+    resourceManager->AddNewResource<Model>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> Model::GetResourcesOfType()

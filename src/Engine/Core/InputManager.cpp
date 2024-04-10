@@ -89,7 +89,7 @@ void InputManager::HandleGeneralInput()
 
 		if (e.type == SDL_QUIT)
 		{
-			Application::StopApplication();
+			Application::GetApplication()->StopApplication();
 		}
 
 		if (e.type == SDL_KEYDOWN)

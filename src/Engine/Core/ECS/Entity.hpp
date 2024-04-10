@@ -167,7 +167,7 @@ struct Entity
 
 	void CreateChildObject()
 	{
-		Entity* entity = Application::CreateEntity();
+		Entity* entity = Application::GetApplication()->CreateEntity();
 		entity->m_sEntityParentID = m_sEntityID;
 
 		m_vChildEntityIDs.push_back(entity->m_sEntityID);
@@ -203,7 +203,7 @@ struct Entity
 		ImGuiTreeNodeFlags node_flags = base_flags;
 
 		bool is_selected = false;
-		Entity* pSelEntity = Application::GetEntity(selEntity);
+		Entity* pSelEntity = Application::GetApplication()->GetEntity(selEntity);
 		if (pSelEntity != nullptr)
 			is_selected = pSelEntity->m_sEntityID == m_sEntityID;
 		if (is_selected)
@@ -211,7 +211,7 @@ struct Entity
 
 		bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, m_sEntityName.c_str());
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-			selEntity = Application::GetEntityIndex(m_sEntityID);
+			selEntity = Application::GetApplication()->GetEntityIndex(m_sEntityID);
 
 		if (node_open)
 		{
@@ -224,8 +224,8 @@ struct Entity
 				//List all child entities.
 				for (int o = 0; o < m_vChildEntityIDs.size(); o++)
 				{
-					int childIndex = Application::GetEntityIndex(m_vChildEntityIDs.at(o));
-					Application::GetEntity(childIndex)->DoEntityInterface(compRegistry, behaviourRegistry, i, selEntity, layer+1);
+					int childIndex = Application::GetApplication()->GetEntityIndex(m_vChildEntityIDs.at(o));
+					Application::GetApplication()->GetEntity(childIndex)->DoEntityInterface(compRegistry, behaviourRegistry, i, selEntity, layer+1);
 				}
 			}
 

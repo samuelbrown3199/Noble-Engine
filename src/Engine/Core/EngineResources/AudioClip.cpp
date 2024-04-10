@@ -2,6 +2,7 @@
 #include "../../Core/Logger.h"
 #include "../../Useful.h"
 
+#include "../../Core/Application.h"
 #include "../../Core/AudioManager.h"
 #include "../../Core/ResourceManager.h"
 
@@ -40,7 +41,8 @@ void AudioClip::OnUnload()
 
 void AudioClip::AddResource(std::string path)
 {
-	ResourceManager::AddNewResource<AudioClip>(path);
+	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+	resourceManager->AddNewResource<AudioClip>(path);
 }
 
 std::vector<std::shared_ptr<Resource>> AudioClip::GetResourcesOfType()

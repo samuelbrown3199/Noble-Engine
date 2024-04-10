@@ -16,7 +16,7 @@
 
 void EditorManager::InitializeEditor()
 {	
-	m_sWindowName = Application::GetRenderer()->GetWindowTitle();
+	m_sWindowName = Application::GetApplication()->GetRenderer()->GetWindowTitle();
 
 	BindEditorUI<MainMenuBar>("MainMenuBar");
 	BindEditorUI<EditorUI>("Editor"); //this UI will probably be removed long term
@@ -72,13 +72,13 @@ void EditorManager::UpdateEditorWindowTitle()
 	if (m_projectFile)
 		title += "\t(Project " + m_projectFile->m_sProjectName + ")";
 
-	title += "\t(" + SceneManager::GetCurrentSceneLocalPath() + ")";
+	title += "\t(" + Application::GetApplication()->GetSceneManager()->GetCurrentSceneLocalPath() + ")";
 	Renderer::UpdateWindowTitle(title);
 }
 
-void EditorManager::LoadScene(std::string scenePath)
+void EditorManager::LoadScene(int sceneIndex)
 {
-	SceneManager::LoadScene(scenePath);
+	Application::GetApplication()->GetSceneManager()->LoadScene(sceneIndex);
 	UpdateEditorWindowTitle();
 }
 

@@ -64,7 +64,7 @@ void QuitWarningModal::DoModal()
 
 		if (ImGui::Button("Yes"))
 		{
-			Application::ForceQuit();
+			Application::GetApplication()->ForceQuit();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel"))
@@ -173,7 +173,7 @@ void MainMenuBar::DoEditorMenu()
 		{
 			std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
 			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-			Application::SetProjectFile(filePath + "\\" + fileName);
+			Application::GetApplication()->SetProjectFile(filePath + "\\" + fileName);
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
@@ -207,22 +207,28 @@ void MainMenuBar::DoSceneMenu()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 	ImGui::MenuItem("Scene", NULL, false, false);
+	if (ImGui::MenuItem("Scene Manager"))
+	{
+		editorManager->ToggleUI("SceneManager");
+	}
+	ImGui::SetItemTooltip("Opens the Scene Manager window.");
+
 	if (ImGui::MenuItem("New Scene"))
 	{
 		//m_selComponent = nullptr; something will be needed to be done with this.
-		SceneManager::ClearLoadedScene();
+		Application::GetApplication()->GetSceneManager()->ClearLoadedScene();
 	}
 	ImGui::SetItemTooltip("Create a new Scene.");
 
 	if (ImGui::BeginMenu("Open Scene"))
 	{
 		std::string path = GetGameDataFolder();
-		std::vector<std::string> scenes = GetAllFilesOfType(path, ".nsc");
+		std::vector<std::string> scenes = Application::GetApplication()->GetSceneManager()->GetSceneList();
 		for (int n = 0; n < scenes.size(); n++)
 		{
-			if (ImGui::Button(GetFolderLocationRelativeToGameData(scenes.at(n)).c_str()))
+			if (ImGui::Button(scenes.at(n).c_str()))
 			{
-				editorManager->LoadScene(GetFolderLocationRelativeToGameData(scenes.at(n)));
+				editorManager->LoadScene(n);
 			}
 		}
 
@@ -232,35 +238,30 @@ void MainMenuBar::DoSceneMenu()
 
 	if (ImGui::MenuItem("Save Scene", "(CTRL+S)"))
 	{
-		if (Application::GetPlayMode())
+		if (Application::GetApplication()->GetPlayMode())
 		{
 			return;
 		}
 
-		SceneManager::SaveLoadedScene();
+		Application::GetApplication()->GetSceneManager()->SaveLoadedScene();
 	}
 	ImGui::SetItemTooltip("Save the currently open scene.");
 
 	if (ImGui::BeginMenu("Save Scene As..."))
 	{
-		if (Application::GetPlayMode())
+		if (Application::GetApplication()->GetPlayMode())
 		{
 			return;
 		}
 
-		std::string newSceneName;
+		static std::string newSceneName;
 		ImGui::InputText("Scene Name", &newSceneName);
-
-		static std::string path = "";
-		if (!newSceneName.empty())
-		{
-			path = ResourceManager::GetResourceManagerWorkingDirectory() + "\\GameData\\" + newSceneName + ".nsc";
-		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Create"))
 		{
-			SceneManager::SaveScene(path);
+			Application::GetApplication()->GetSceneManager()->CreateNewScene(newSceneName);
+			newSceneName = "";
 		}
 
 		ImGui::EndMenu();

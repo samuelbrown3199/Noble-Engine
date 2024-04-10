@@ -46,7 +46,7 @@ struct ResourceManager
 	static void SetWorkingDirectory(std::string directory);
 
 	template<typename T>
-	static void AddNewResource(std::string path)
+	void AddNewResource(std::string path)
 	{
 		for (int i = 0; i < m_vResourceDatabase.size(); i++)
 		{
@@ -69,12 +69,12 @@ struct ResourceManager
 		WriteResourceDatabase();
 	}
 
-	static void RemoveResourceFromDatabase(std::string path);
+	void RemoveResourceFromDatabase(std::string path);
 
 	static void SetResourceToDefaults(std::shared_ptr<Resource> res);
 	
 	static void LoadResourceDatabase(nlohmann::json resourceDatabase);
-	static void WriteResourceDatabase();
+	nlohmann::json WriteResourceDatabase();
 	
 	template<typename T>
 	static std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)

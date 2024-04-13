@@ -377,8 +377,10 @@ void MainMenuBar::DoDebugMenu()
 	}
 }
 
-void MainMenuBar::InitializeInterface()
+void MainMenuBar::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+	EditorToolUI::InitializeInterface(defaultFlags);
+
 	AddModal<NewProjectModal>("New Project");
 	AddModal<QuitWarningModal>("Quit Noble Editor?");
 	AddModal<AboutNobleModal>("About Noble Engine");

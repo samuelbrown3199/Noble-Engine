@@ -31,6 +31,6 @@ public:
 
 	void UpdateOriginalSceneOrder();
 
-	void InitializeInterface() override;
+	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 };

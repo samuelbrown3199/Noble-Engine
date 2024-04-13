@@ -16,14 +16,14 @@ private:
 	void CheckAndInitializeData();
 
 	template<typename T>
-	std::shared_ptr<T> BindEditorUI(std::string ID)
+	std::shared_ptr<T> BindEditorUI(std::string ID, ImGuiWindowFlags defaultFlags)
 	{
 		if (m_mEditorUIs.count(ID) != 0)
 			Logger::LogError(FormatString("Trying to bind UI %s that already exists.", ID.c_str()), 2);
 
 		std::shared_ptr<T> sys = std::make_shared<T>();
 		sys->m_pEditor = this;
-		sys->InitializeInterface();
+		sys->InitializeInterface(defaultFlags);
 		m_mEditorUIs[ID] = sys;
 		return sys;
 	}

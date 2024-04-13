@@ -85,8 +85,10 @@ void RenameSceneModal::DoModal()
 	}
 }
 
-void SceneManagerWindow::InitializeInterface()
+void SceneManagerWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+    EditorToolUI::InitializeInterface(defaultFlags);
+
     AddModal<DeleteSceneModal>("Delete Scene");
     AddModal<RenameSceneModal>("Rename Scene");
 }
@@ -101,7 +103,6 @@ void SceneManagerWindow::DoInterface()
 	SceneManager* sceneManager = Application::GetApplication()->GetSceneManager();
     EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
-	m_windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse;
 	if (ImGui::Begin("Scene Manager", &m_uiOpen, m_windowFlags))
 	{
         std::string item = "";
@@ -135,6 +136,8 @@ void SceneManagerWindow::DoInterface()
                         scenes->at(n) = scenes->at(n_next);
                         scenes->at(n_next) = item;
                         ImGui::ResetMouseDragDelta();
+
+                        SetUnsavedWork(true);
                     }
                 }
             }
@@ -162,6 +165,8 @@ void SceneManagerWindow::DoInterface()
                 std::string scenePath = filePath + "\\" + fileName;
                 scenePath = GetFolderLocationRelativeToGameData(scenePath);
                 scenes->push_back(scenePath);
+
+                SetUnsavedWork(true);
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -178,6 +183,7 @@ void SceneManagerWindow::DoInterface()
             if (ImGui::Button("Remove Scene"))
             {
 				scenes->erase(scenes->begin() + m_selectedSceneIndex);
+                SetUnsavedWork(true);
 			}
             ImGui::SetTooltip("Remove the selected scene from the project.");
             ImGui::SameLine();
@@ -199,6 +205,7 @@ void SceneManagerWindow::DoInterface()
         if (ImGui::Button("Revert Scene Database"))
         {
             sceneManager->SetSceneList(m_originalSceneOrder);
+            SetUnsavedWork(false);
         }
         ImGui::SetTooltip("Revert the scene order to the original order.");
         ImGui::SameLine();
@@ -206,6 +213,8 @@ void SceneManagerWindow::DoInterface()
         {
             Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             UpdateOriginalSceneOrder();
+
+            SetUnsavedWork(false);
         }
         ImGui::SetTooltip("Save the current scene order to the project file.");
 	}

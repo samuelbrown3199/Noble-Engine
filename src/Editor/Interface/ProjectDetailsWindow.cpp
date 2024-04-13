@@ -1,8 +1,9 @@
 #include "ProjectDetailsWindow.h"
 #include "../EditorManagement/EditorManager.h"
 
-void ProjectDetailsWindow::InitializeInterface()
+void ProjectDetailsWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+	EditorToolUI::InitializeInterface(defaultFlags);
 }
 
 void ProjectDetailsWindow::DoInterface()

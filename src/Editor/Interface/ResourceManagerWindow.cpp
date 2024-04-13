@@ -8,8 +8,9 @@
 #include <Engine/Core/EngineResources/Script.h>
 #include <Engine/Core/ProjectFile.h>
 
-void ResourceManagerWindow::InitializeInterface()
+void ResourceManagerWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+    EditorToolUI::InitializeInterface(defaultFlags);
     selResource = nullptr;
 }
 
@@ -23,7 +24,7 @@ void ResourceManagerWindow::DoInterface()
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_Appearing);
-    if (!ImGui::Begin("Resource Manager", &m_uiOpen))
+    if (!ImGui::Begin("Resource Manager", &m_uiOpen, m_windowFlags))
     {
         ImGui::End();
         return;

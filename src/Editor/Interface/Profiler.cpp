@@ -5,8 +5,9 @@
 
 #include <Engine\Core\Application.h>
 
-void Profiler::InitializeInterface()
+void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+    EditorToolUI::InitializeInterface(defaultFlags);
     m_pStats = Application::GetApplication()->GetPerformanceStats();
 
     m_vFrameTimeStats.push_back(FrameTimeStat("Frame"));
@@ -23,7 +24,7 @@ void Profiler::DoInterface()
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_Appearing);
-    if (!ImGui::Begin("Profiler", &m_uiOpen))
+    if (!ImGui::Begin("Profiler", &m_uiOpen, m_windowFlags))
     {
         ImGui::End();
         return;

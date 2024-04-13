@@ -21,13 +21,13 @@ void EditorManager::InitializeEditor()
 
 	CheckAndInitializeData();
 
-	BindEditorUI<MainMenuBar>("MainMenuBar");
-	BindEditorUI<EditorUI>("Editor"); //this UI will probably be removed long term
-	BindEditorUI<ResourceManagerWindow>("ResourceManager");
-	BindEditorUI<Profiler>("Profiler");
-	BindEditorUI<EditorSettingsWindow>("EditorSettings");
-	BindEditorUI<ProjectDetailsWindow>("ProjectDetails");
-	BindEditorUI<SceneManagerWindow>("SceneManager");
+	BindEditorUI<MainMenuBar>("MainMenuBar", ImGuiWindowFlags_NoMove);
+	BindEditorUI<EditorUI>("Editor", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize); //this UI will probably be removed long term
+	BindEditorUI<ResourceManagerWindow>("ResourceManager", ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	BindEditorUI<Profiler>("Profiler", ImGuiWindowFlags_None);
+	BindEditorUI<EditorSettingsWindow>("EditorSettings", ImGuiWindowFlags_AlwaysAutoResize);
+	BindEditorUI<ProjectDetailsWindow>("ProjectDetails", ImGuiWindowFlags_AlwaysAutoResize);
+	BindEditorUI<SceneManagerWindow>("SceneManager", ImGuiWindowFlags_AlwaysAutoResize);
 
 	ToggleUI("MainMenuBar");
 	ToggleUI("Editor");
@@ -114,6 +114,7 @@ void EditorManager::OnUpdate()
 	{
 		if (uiItr->second->m_uiOpen)
 		{
+			uiItr->second->UpdateWindowFlags();
 			uiItr->second->DoInterface();
 			uiItr->second->DoModals();
 		}

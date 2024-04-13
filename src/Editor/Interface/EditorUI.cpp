@@ -39,11 +39,9 @@ void EditorUI::CreateEditorCam()
 	}
 }
 
-void EditorUI::InitializeInterface()
+void EditorUI::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
-	m_windowFlags |= ImGuiWindowFlags_NoMove;
-	m_windowFlags |= ImGuiWindowFlags_NoTitleBar;
-	m_windowFlags |= ImGuiWindowFlags_NoResize;
+	EditorToolUI::InitializeInterface(defaultFlags);
 }
 
 void EditorUI::DoInterface()

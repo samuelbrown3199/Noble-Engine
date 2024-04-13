@@ -13,6 +13,6 @@ private:
 	int m_iNewResourceType = 0;
 
 public:
-	void InitializeInterface() override;
+	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 };

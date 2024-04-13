@@ -55,8 +55,9 @@ public:
 
 	bool m_uiOpen = false;
 	ImGuiWindowFlags m_windowFlags = 0;
+	ImGuiWindowFlags m_defaultFlags = 0;
 
-	virtual void InitializeInterface() {}
+	virtual void InitializeInterface(ImGuiWindowFlags defaultFlags) {}
 	virtual void DoInterface() = 0;
 
 	virtual void HandleShortcutInputs() {}
@@ -86,17 +87,35 @@ public:
 			uiItr->second->DoModal();
 		}
 	}
+
+	virtual void UpdateWindowFlags() = 0;
 };
 
 class EditorToolUI : public ToolUI
 {
 
+protected:
+
+	bool m_bUnsavedWork = false;
+
 public:
 
 	Editor* m_pEditor;
 
-	virtual void InitializeInterface() {}
+	virtual void InitializeInterface(ImGuiWindowFlags defaultFlags) { m_defaultFlags = defaultFlags; }
 	virtual void DoInterface() = 0;
 
 	virtual void HandleShortcutInputs() {}
+
+	void SetUnsavedWork(bool b)
+	{
+		m_bUnsavedWork = b;
+	}
+
+	void UpdateWindowFlags()
+	{
+		m_windowFlags = m_defaultFlags;
+		if(m_bUnsavedWork)
+			m_windowFlags |= ImGuiWindowFlags_UnsavedDocument;
+	}
 };

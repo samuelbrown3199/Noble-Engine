@@ -10,7 +10,7 @@ private:
 	ProjectFile* m_pProjectFile;
 
 public:
-	void InitializeInterface() override;
+	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 
 	void SetProjectFile(ProjectFile* projectFile);

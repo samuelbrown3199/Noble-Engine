@@ -27,7 +27,7 @@ class EditorUI : public EditorToolUI
 
 public:
 
-	void InitializeInterface() override;
+	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 
 	void HandleShortcutInputs();

@@ -115,13 +115,15 @@ void DebugCam::UpdateControls()
 		Ray mouseRay = Raycaster::GetRayToMousePosition();
 		if (mouseRay.m_hitObject)
 		{
+			ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
 			Logger::LogInformation(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
 			Entity* ent = Application::GetApplication()->CreateEntity();
 			ent->AddComponent<Transform>(mouseRay.m_hitPosition);
 			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();
-			mr->m_model = ResourceManager::LoadResource<Model>("\\GameData\\Models\\cube.obj");
-			mr->m_texture = ResourceManager::LoadResource<Texture>("\\GameData\\Textures\\cottage_diffuse.png");
-			mr->m_pipeline = ResourceManager::LoadResource<Pipeline>("Standard");
+			mr->m_model = rManager->LoadResource<Model>("\\GameData\\Models\\cube.obj");
+			mr->m_texture = rManager->LoadResource<Texture>("\\GameData\\Textures\\cottage_diffuse.png");
+			mr->m_pipeline = rManager->LoadResource<Pipeline>("Standard");
 		}
 	}
 }

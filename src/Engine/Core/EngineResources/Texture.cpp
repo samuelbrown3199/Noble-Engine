@@ -56,7 +56,8 @@ void Texture::AddResource(std::string path)
 
 std::vector<std::shared_ptr<Resource>> Texture::GetResourcesOfType()
 {
-    return ResourceManager::GetAllResourcesOfType<Texture>();
+    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+    return resourceManager->GetAllResourcesOfType<Texture>();
 }
 
 void Texture::SetResourceToDefaults(std::shared_ptr<Resource> res)

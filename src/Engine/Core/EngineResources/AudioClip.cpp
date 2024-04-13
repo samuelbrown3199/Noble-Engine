@@ -47,7 +47,8 @@ void AudioClip::AddResource(std::string path)
 
 std::vector<std::shared_ptr<Resource>> AudioClip::GetResourcesOfType()
 {
-	return ResourceManager::GetAllResourcesOfType<AudioClip>();
+	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+	return resourceManager->GetAllResourcesOfType<AudioClip>();
 }
 
 void AudioClip::SetResourceToDefaults(std::shared_ptr<Resource> res)

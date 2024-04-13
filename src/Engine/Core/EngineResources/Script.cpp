@@ -38,7 +38,8 @@ void Script::AddResource(std::string path)
 
 std::vector<std::shared_ptr<Resource>> Script::GetResourcesOfType()
 {
-	return ResourceManager::GetAllResourcesOfType<Script>();
+	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+	return resourceManager->GetAllResourcesOfType<Script>();
 }
 
 std::shared_ptr<Resource> Script::LoadFromJson(const std::string& path, const nlohmann::json& data)

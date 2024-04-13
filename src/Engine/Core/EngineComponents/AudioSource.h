@@ -45,7 +45,9 @@ struct AudioSource : public Component
 
 	void FromJson(const nlohmann::json& j) override
 	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(j["clipPath"]);
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+		m_clip = rManager->LoadResource<AudioClip>(j["clipPath"]);
 		m_iLoopCount = j["loopCount"];
 		m_fPitch = j["pitch"];
 		m_fVolume = j["volume"];
@@ -65,27 +67,6 @@ struct AudioSource : public Component
 		m_transformIndex = -1;
 	}
 
-	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption)
-	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation);
-		m_sMixerOption = _mixerOption;
-	}
-	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption, bool _paused)
-	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation);
-		m_sMixerOption = _mixerOption;
-		m_bPaused = _paused;
-	}
-	void OnInitialize(std::string _audioClipLocation, std::string _mixerOption, bool _paused, float _volume, float _pitchValue, int _loopCount)
-	{
-		m_clip = ResourceManager::LoadResource<AudioClip>(_audioClipLocation);
-		m_sMixerOption = _mixerOption;
-		m_bPaused = _paused;
-		m_fVolume = _volume;
-		m_fPitch = _pitchValue;
-		m_iLoopCount = _loopCount;
-	}
-
 	void ChangeAudioClip(std::shared_ptr<AudioClip> clip)
 	{
 		if (clip == nullptr)
@@ -102,7 +83,9 @@ struct AudioSource : public Component
 
 	virtual void DoComponentInterface() override
 	{
-		ChangeAudioClip(ResourceManager::DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+		ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
 
 		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
 		ImGui::DragFloat3("Velocity", vel);

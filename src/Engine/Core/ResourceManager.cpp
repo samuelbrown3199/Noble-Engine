@@ -10,14 +10,6 @@
 #include "../Core/EngineResources/Script.h"
 #include "ProjectFile.h"
 
-FT_Library ResourceManager::m_fontLibrary;
-
-std::vector<std::shared_ptr<Resource>> ResourceManager::m_vResourceDatabase;
-std::vector<std::shared_ptr<Resource>> ResourceManager::m_vLoadedResources;
-std::string ResourceManager::m_sWorkingDirectory;
-
-nlohmann::json ResourceManager::m_resourceDatabaseJson;
-
 ResourceManager::ResourceManager()
 {
 	if (FT_Init_FreeType(&m_fontLibrary))

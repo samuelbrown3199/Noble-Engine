@@ -3,6 +3,7 @@
 #include "../ECS/Component.h"
 #include "../ECS/ComponentList.hpp"
 
+#include "../Application.h"
 #include "../ResourceManager.h"
 #include "../../Lua/NobleLuaState.h"
 #include "../EngineResources/Script.h"
@@ -35,13 +36,17 @@ struct ScriptEmbedder : public Component
 
 	void FromJson(const nlohmann::json& j)
 	{
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
 		m_sFunctionName = j["functionName"];
-		m_script = ResourceManager::LoadResource<Script>(j["scriptPath"]);
+		m_script = rManager->LoadResource<Script>(j["scriptPath"]);
 	}
 
 	virtual void DoComponentInterface() override
 	{
-		m_script = ResourceManager::DoResourceSelectInterface<Script>("Script", m_script != nullptr ? m_script->m_sLocalPath : "none");
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+		m_script = rManager->DoResourceSelectInterface<Script>("Script", m_script != nullptr ? m_script->m_sLocalPath : "none");
 		ImGui::InputText("Entry Function", &m_sFunctionName);
 	}
 

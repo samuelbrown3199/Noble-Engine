@@ -23,27 +23,27 @@
 */
 struct ResourceManager
 {
-	static FT_Library m_fontLibrary;
+	FT_Library m_fontLibrary;
 
 	/**
 	*Stores all resources.
 	*/
-	static std::vector<std::shared_ptr<Resource>> m_vResourceDatabase;
+	std::vector<std::shared_ptr<Resource>> m_vResourceDatabase;
 	/**
 	*Stores all loaded resources.
 	*/
-	static std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
-	static std::string m_sWorkingDirectory;
+	std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
+	std::string m_sWorkingDirectory;
 
-	static nlohmann::json m_resourceDatabaseJson;
+	nlohmann::json m_resourceDatabaseJson;
 
 	ResourceManager();
 	~ResourceManager();
 
 	void RegisterResourceTypes();
 
-	static std::string GetResourceManagerWorkingDirectory() { return m_sWorkingDirectory; }
-	static void SetWorkingDirectory(std::string directory);
+	std::string GetResourceManagerWorkingDirectory() { return m_sWorkingDirectory; }
+	void SetWorkingDirectory(std::string directory);
 
 	template<typename T>
 	void AddNewResource(std::string path)
@@ -70,14 +70,12 @@ struct ResourceManager
 	}
 
 	void RemoveResourceFromDatabase(std::string path);
-
-	static void SetResourceToDefaults(std::shared_ptr<Resource> res);
-	
-	static void LoadResourceDatabase(nlohmann::json resourceDatabase);
+	void SetResourceToDefaults(std::shared_ptr<Resource> res);	
+	void LoadResourceDatabase(nlohmann::json resourceDatabase);
 	nlohmann::json WriteResourceDatabase();
 	
 	template<typename T>
-	static std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)
+	std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)
 	{
 		for (size_t re = 0; re < targetVector.size(); re++)
 		{
@@ -94,7 +92,7 @@ struct ResourceManager
 		return nullptr;
 	}
 
-	static std::string GetResourcePath(const std::string& _fileDirectory)
+	std::string GetResourcePath(const std::string& _fileDirectory)
 	{
 		std::string gamedataDir = _fileDirectory;
 		if (_fileDirectory[0] != '\\')
@@ -105,7 +103,7 @@ struct ResourceManager
 	}
 
 	template<typename T>
-	static std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory, const bool& requiresFile)
+	std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory, const bool& requiresFile)
 	{
 		std::shared_ptr<T> oldResource = nullptr;
 
@@ -125,7 +123,7 @@ struct ResourceManager
 	*Loads a resource of the passed type with the file directory.
 	*/
 	template<typename T>
-	static std::shared_ptr<T> LoadResource(const std::string& _fileDirectory)
+	std::shared_ptr<T> LoadResource(const std::string& _fileDirectory)
 	{
 		std::string searchPath = GetResourcePath(_fileDirectory);
 		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_vLoadedResources);
@@ -165,7 +163,7 @@ struct ResourceManager
 	}
 
 	template<typename T>
-	static std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()
+	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()
 	{
 		std::vector<std::shared_ptr<Resource>> returnVec;
 
@@ -182,12 +180,12 @@ struct ResourceManager
 	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
-	static void UnloadUnusedResources();
-	static void UnloadAllResources();
+	void UnloadUnusedResources();
+	void UnloadAllResources();
 
 
 	template<typename T>
-	static std::shared_ptr<T> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath)
+	std::shared_ptr<T> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath)
 	{
 		std::vector<std::shared_ptr<Resource>> resources = GetAllResourcesOfType<T>();
 

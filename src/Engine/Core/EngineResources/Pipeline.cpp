@@ -47,7 +47,8 @@ void Shader::AddResource(std::string path)
 
 std::vector<std::shared_ptr<Resource>> Shader::GetResourcesOfType()
 {
-    return ResourceManager::GetAllResourcesOfType<Shader>();
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+    return rManager->GetAllResourcesOfType<Shader>();
 }
 
 nlohmann::json Shader::AddToDatabase()
@@ -80,7 +81,8 @@ void Shader::SetDefaults(const nlohmann::json& data)
 std::string Pipeline::ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName)
 {
     //Need to consider type here.
-    std::shared_ptr<Shader> shader = ResourceManager::DoResourceSelectInterface<Shader>(elementName, currentPath != "" ? currentPath : "none");
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+    std::shared_ptr<Shader> shader = rManager->DoResourceSelectInterface<Shader>(elementName, currentPath != "" ? currentPath : "none");
     if (shader == nullptr || shader->m_shaderType != type)
         return "";
 
@@ -250,7 +252,8 @@ void Pipeline::AddResource(std::string path)
 
 std::vector<std::shared_ptr<Resource>> Pipeline::GetResourcesOfType()
 {
-    return ResourceManager::GetAllResourcesOfType<Pipeline>();
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+    return rManager->GetAllResourcesOfType<Pipeline>();
 }
 
 std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const nlohmann::json& data)
@@ -287,6 +290,7 @@ std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const 
 void Pipeline::CreatePipeline()
 {
     Renderer* renderer = Application::GetApplication()->GetRenderer();
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
     if (m_pipelineType == PipelineType::Graphics)
     {
@@ -304,8 +308,8 @@ void Pipeline::CreatePipeline()
             return;
         }
 
-        vertexShader = ResourceManager::LoadResource<Shader>(m_vertexShaderPath);
-        fragmentShader = ResourceManager::LoadResource<Shader>(m_fragmentShaderPath);
+        vertexShader = rManager->LoadResource<Shader>(m_vertexShaderPath);
+        fragmentShader = rManager->LoadResource<Shader>(m_fragmentShaderPath);
 
         std::vector<VkPushConstantRange> pushConstants;
         for (int i = 0; i < m_vPushConstants.size(); i++)

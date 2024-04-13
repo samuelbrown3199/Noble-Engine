@@ -164,9 +164,12 @@ void SceneManagerWindow::DoInterface()
 
                 std::string scenePath = filePath + "\\" + fileName;
                 scenePath = GetFolderLocationRelativeToGameData(scenePath);
-                scenes->push_back(scenePath);
 
-                SetUnsavedWork(true);
+                if (sceneManager->GetSceneIndex(scenePath) == -1)
+                {
+                    scenes->push_back(scenePath);
+                    SetUnsavedWork(true);
+                }
             }
             ImGuiFileDialog::Instance()->Close();
         }
@@ -193,8 +196,8 @@ void SceneManagerWindow::DoInterface()
 				DoModal("Delete Scene");
 			}
             ImGui::SetTooltip("Delete the selected scene file and remove it from the project.");
-			ImGui::SameLine();
-            /*if (ImGui::Button("Rename Scene"))
+			/*ImGui::SameLine();
+            if (ImGui::Button("Rename Scene"))
             {
 				dynamic_cast<RenameSceneModal*>(GetModal("Rename Scene"))->m_selectedSceneIndex = m_selectedSceneIndex;
                 DoModal("Rename Scene");

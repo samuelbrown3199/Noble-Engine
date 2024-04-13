@@ -35,12 +35,14 @@ struct MeshRenderer : public Renderable
 
 	void FromJson(const nlohmann::json& j)
 	{
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
 		if (j.find("texturePath") != j.end())
-			m_texture = ResourceManager::LoadResource<Texture>(j["texturePath"]);
+			m_texture = rManager->LoadResource<Texture>(j["texturePath"]);
 		if (j.find("modelPath") != j.end())
-			m_model = ResourceManager::LoadResource<Model>(j["modelPath"]);
+			m_model = rManager->LoadResource<Model>(j["modelPath"]);
 		if (j.find("pipeline") != j.end())
-			m_pipeline = ResourceManager::LoadResource<Pipeline>(j["pipeline"]);
+			m_pipeline = rManager->LoadResource<Pipeline>(j["pipeline"]);
 		if (j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 	}
@@ -58,6 +60,8 @@ struct MeshRenderer : public Renderable
 
 	virtual void DoComponentInterface() override
 	{
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
 		if (m_transformIndex == -1)
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
@@ -71,9 +75,9 @@ struct MeshRenderer : public Renderable
 		ImGui::Checkbox("On Screen", &m_bOnScreen);
 		ImGui::EndDisabled();
 
-		ChangeModel(ResourceManager::DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
-		ChangeTexture(ResourceManager::DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
-		ChangePipeline(ResourceManager::DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
+		ChangeModel(rManager->DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
+		ChangeTexture(rManager->DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+		ChangePipeline(rManager->DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
 
 		ImVec4 color = ImVec4(m_colour.x, m_colour.y, m_colour.z, m_colour.w);
 		ImGui::ColorEdit4("Colour", (float*)&color);

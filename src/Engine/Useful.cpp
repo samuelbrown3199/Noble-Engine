@@ -1,7 +1,7 @@
 #include "Useful.h"
 #include "Core/Logger.h"
 #include "Core/ResourceManager.h"
-
+#include "Core/Application.h"
 #include "Core/VersionInformation.h"
 
 #include <Windows.h>
@@ -232,7 +232,8 @@ void AddVersionDataToJson(nlohmann::json& data)
 
 std::string GetGameFolder()
 {
-    return ResourceManager::GetResourceManagerWorkingDirectory();
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+    return rManager->GetResourceManagerWorkingDirectory();
 }
 
 std::string GetGameDataFolder()
@@ -242,7 +243,9 @@ std::string GetGameDataFolder()
 
 std::string GetFolderLocationRelativeToGameData(std::string path)
 {
-    path.erase(0, ResourceManager::GetResourceManagerWorkingDirectory().length());
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+    path.erase(0, rManager->GetResourceManagerWorkingDirectory().length());
     return path;
 }
 

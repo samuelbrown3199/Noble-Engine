@@ -8,9 +8,12 @@ class EditorManager : public Editor
 {
 private:
 
+	std::string m_sDataFolder;
 	std::map<std::string, std::shared_ptr<ToolUI>> m_mEditorUIs;
+	std::deque<std::string> m_recentProjects;
 
 	void InitializeEditor();
+	void CheckAndInitializeData();
 
 	template<typename T>
 	std::shared_ptr<T> BindEditorUI(std::string ID)
@@ -48,4 +51,6 @@ public:
 	void HandleQuit() override;
 
 	void SetProjectFile(ProjectFile* projectFile) override;
+	void UpdateRecentProjects(ProjectFile* projectFile);
+	std::deque<std::string> GetRecentProjects() { return m_recentProjects; }
 };

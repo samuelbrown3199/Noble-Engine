@@ -79,7 +79,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->RegisterCoreKeybinds();
 
 	rtn->m_mainIniFile = std::make_shared<IniFile>(GetWorkingDirectory() + "\\game.ini");
-
 	rtn->LoadSettings();
 
 	std::vector<std::string> projectFiles = GetAllFilesOfType(GetWorkingDirectory(), ".npj");

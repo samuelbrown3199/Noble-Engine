@@ -33,6 +33,15 @@ void SceneManager::LoadScene(int sceneIndex)
 	m_currentScene->LoadSceneIntoApplication();
 }
 
+void SceneManager::LoadScene(std::string scenePath)
+{
+	int sceneIndex= GetSceneIndex(scenePath);
+	if (sceneIndex == -1)
+		return;
+
+	LoadScene(sceneIndex);
+}
+
 void SceneManager::CreateNewScene(std::string sceneName)
 {
 	if (Application::GetApplication()->GetPlayMode())
@@ -142,6 +151,18 @@ nlohmann::json SceneManager::WriteSceneDatabase()
 	}
 
 	return data;
+}
+
+int SceneManager::GetSceneIndex(std::string scenePath)
+{
+	for(int i = 0; i < m_vScenes.size(); i++)
+	{
+		if (m_vScenes[i] == scenePath)
+			return i;
+	}
+
+	Logger::LogError(FormatString("Scene %s not found in scene database", scenePath.c_str()), 1);
+	return -1;
 }
 
 std::string SceneManager::GetCurrentSceneLocalPath()

@@ -38,3 +38,4 @@
 /TechDemos/TechDemo1/Logs
 /Editor/Logs
 *.pdb
+/Editor/Data

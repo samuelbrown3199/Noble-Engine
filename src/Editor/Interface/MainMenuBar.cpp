@@ -34,9 +34,6 @@ void NewProjectModal::DoModal()
 			if (editorManager->m_projectFile == nullptr)
 				editorManager->m_projectFile = new ProjectFile();
 
-			editorManager->m_projectFile->LoadProjectFile(GetWorkingDirectory() + "\\Projects\\" + buf1 + ".npj");
-			editorManager->UpdateEditorWindowTitle();
-
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -178,6 +175,24 @@ void MainMenuBar::DoEditorMenu()
 		ImGuiFileDialog::Instance()->Close();
 	}
 
+	if(ImGui::BeginMenu("Recent Projects"))
+	{
+		std::deque<std::string> recentProjects = editorManager->GetRecentProjects();
+		for (int i = 0; i < recentProjects.size(); i++)
+		{
+			if (ImGui::MenuItem(recentProjects[i].c_str()))
+			{
+				Application::GetApplication()->SetProjectFile(recentProjects[i]);
+			}
+		}
+
+		if (recentProjects.size() == 0)
+			ImGui::MenuItem("No Recent Projects", NULL, false, false);
+
+		ImGui::EndMenu();
+	}
+	ImGui::SetItemTooltip("Open a recently opened project.");
+
 	if (editorManager->m_projectFile)
 	{
 		if (ImGui::MenuItem("Project Details"))
@@ -223,10 +238,10 @@ void MainMenuBar::DoSceneMenu()
 	if (ImGui::BeginMenu("Open Scene"))
 	{
 		std::string path = GetGameDataFolder();
-		std::vector<std::string> scenes = Application::GetApplication()->GetSceneManager()->GetSceneList();
-		for (int n = 0; n < scenes.size(); n++)
+		std::vector<std::string>* scenes = Application::GetApplication()->GetSceneManager()->GetSceneList();
+		for (int n = 0; n < scenes->size(); n++)
 		{
-			if (ImGui::Button(scenes.at(n).c_str()))
+			if (ImGui::Button(scenes->at(n).c_str()))
 			{
 				editorManager->LoadScene(n);
 			}

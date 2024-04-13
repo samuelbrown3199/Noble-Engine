@@ -7,11 +7,16 @@
 
 bool ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory)
 {
+	std::shared_ptr<Application> app = Application::GetApplication();
+
 	nlohmann::json data;
 
 	data["ProjectDetails"]["ProjectName"] = projectName;
 	data["ProjectDetails"]["ProjectDirectory"] = projectDirectory;
 	data["ProjectDetails"]["EngineVersion"] = GetVersionInfoString();
+
+	data["Resources"] = app->GetResourceManager()->WriteResourceDatabase();
+	data["Scenes"] = app->GetSceneManager()->WriteSceneDatabase();
 
 	std::string projectFileDir = projectDirectory + "\\" + projectName + ".npj";
 	std::fstream projectFile(projectFileDir, 'w');
@@ -81,6 +86,8 @@ void ProjectFile::UpdateProjectFile()
 	std::fstream file(m_sProjectFilePath, 'w');
 	file << m_projectData.dump();
 	file.close();
+
+	Logger::LogInformation("Updated project file " + m_sProjectFilePath);
 }
 
 void ProjectFile::UpdateResourceDatabase(nlohmann::json resourceDatabase)

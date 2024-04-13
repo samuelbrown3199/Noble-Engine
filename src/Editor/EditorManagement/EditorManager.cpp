@@ -13,10 +13,13 @@
 #include "../Interface/ResourceManagerWindow.h"
 #include "../Interface/Profiler.h"
 #include "../Interface/ProjectDetailsWindow.h"
+#include "../Interface/SceneManagerWindow.h"
 
 void EditorManager::InitializeEditor()
 {	
 	m_sWindowName = Application::GetApplication()->GetRenderer()->GetWindowTitle();
+
+	CheckAndInitializeData();
 
 	BindEditorUI<MainMenuBar>("MainMenuBar");
 	BindEditorUI<EditorUI>("Editor"); //this UI will probably be removed long term
@@ -24,9 +27,31 @@ void EditorManager::InitializeEditor()
 	BindEditorUI<Profiler>("Profiler");
 	BindEditorUI<EditorSettingsWindow>("EditorSettings");
 	BindEditorUI<ProjectDetailsWindow>("ProjectDetails");
+	BindEditorUI<SceneManagerWindow>("SceneManager");
 
 	ToggleUI("MainMenuBar");
 	ToggleUI("Editor");
+}
+
+void EditorManager::CheckAndInitializeData()
+{
+	m_sDataFolder = GetWorkingDirectory() + "\\Data\\";
+	if (!PathExists(m_sDataFolder))
+	{
+		CreateNewDirectory(m_sDataFolder);
+		return;
+	}
+
+	if (PathExists(m_sDataFolder + "RecentProjects.txt"))
+	{
+		std::ifstream file(m_sDataFolder + "RecentProjects.txt");
+		std::string line;
+		while (std::getline(file >> std::ws, line))
+		{
+			m_recentProjects.push_back(line);
+		}
+		file.close();
+	}
 }
 
 void EditorManager::ToggleUI(std::string ID)
@@ -118,4 +143,31 @@ void EditorManager::SetProjectFile(ProjectFile* projectFile)
 	m_projectFile = projectFile;
 	dynamic_cast<ProjectDetailsWindow*>(m_mEditorUIs["ProjectDetails"].get())->SetProjectFile(projectFile);
 	UpdateEditorWindowTitle();
+
+	dynamic_cast<SceneManagerWindow*>(GetEditorUI("SceneManager"))->UpdateOriginalSceneOrder();
+	UpdateRecentProjects(projectFile);
+}
+
+void EditorManager::UpdateRecentProjects(ProjectFile* projectFile)
+{
+	std::string path = projectFile->m_sProjectDirectory + "\\" + projectFile->m_sProjectName + ".npj";
+	for (int i = 0; i < m_recentProjects.size(); i++)
+	{
+		if (m_recentProjects[i] == path)
+		{
+			m_recentProjects.erase(m_recentProjects.begin() + i);
+			break;
+		}
+	}
+	m_recentProjects.push_front(path);
+
+	if(m_recentProjects.size() > 5)
+		m_recentProjects.pop_back();
+
+	std::ofstream file(m_sDataFolder + "RecentProjects.txt", 'w');
+	for (std::string project : m_recentProjects)
+	{
+		file << project << std::endl;
+	}
+	file.close();
 }

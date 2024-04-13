@@ -295,6 +295,9 @@ set (
 	src/Editor/Interface/ProjectDetailsWindow.h
 	src/Editor/Interface/ProjectDetailsWindow.cpp
 
+	src/Editor/Interface/SceneManagerWindow.h
+	src/Editor/Interface/SceneManagerWindow.cpp
+
 	#Editor management
 	
 	src/Editor/EditorManagement/EditorManager.h

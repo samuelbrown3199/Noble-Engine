@@ -38,6 +38,11 @@ void SceneManagerWindow::DoInterface()
 					m_selectedSceneIndex = n;
 				}
 
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+				{
+					sceneManager->LoadScene(scenes->at(n));
+				}
+
                 if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
                 {
                     int n_next = n + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);

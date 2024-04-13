@@ -20,13 +20,23 @@ void SceneManagerWindow::DoInterface()
 	m_windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse;
 	if (ImGui::Begin("Scene Manager", &m_uiOpen, m_windowFlags))
 	{
+        std::string item = "";
+        bool selectedItem = false;
+
+        std::vector<std::string>* scenes = sceneManager->GetSceneList();
+
         if (ImGui::TreeNode("Scenes"))
         {  
-            std::vector<std::string>* scenes = sceneManager->GetSceneList();
+            selectedItem = m_selectedSceneIndex >= 0 && m_selectedSceneIndex < scenes->size();
+
             for (int n = 0; n < scenes->size(); n++)
             {
-                std::string item = scenes->at(n);
-                ImGui::Selectable(item.c_str());
+                item = scenes->at(n);
+                bool thisSelected = m_selectedSceneIndex == n;
+                if(ImGui::Selectable(item.c_str(), thisSelected))
+                {
+					m_selectedSceneIndex = n;
+				}
 
                 if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
                 {
@@ -52,6 +62,14 @@ void SceneManagerWindow::DoInterface()
 			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             UpdateOriginalSceneOrder();
 		}
+
+        if (selectedItem)
+        {
+            if (ImGui::Button("Load Scene"))
+            {
+                sceneManager->LoadScene(scenes->at(m_selectedSceneIndex));
+            }
+        }
 
 		if (ImGui::Button("Exit"))
 		{

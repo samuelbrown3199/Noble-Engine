@@ -85,6 +85,10 @@ void AboutNobleModal::DoModal()
 	{
 		std::string versionString = GetVersionInfoString();
 		std::string aboutString = "Noble Engine\n\nVersion: " + versionString + "\n\nDeveloped by : Samuel Brown";
+		aboutString += "\n\nNoble Engine is a game engine developed for the purpose of creating 2D and 3D games.";
+		aboutString += "\nIt is currently in development and is not yet ready for commercial use.";
+		aboutString += "\n\nCopyright (c) Samuel Brown 2024.";
+
 		ImGui::Text(aboutString.c_str());
 		ImGui::Dummy(ImVec2(0.0f, 10.0f));
 

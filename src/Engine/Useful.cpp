@@ -171,6 +171,37 @@ std::string OpenFileSelectDialog(std::string filter)
     return "";
 }
 
+void CopyFile(std::string source, std::string destination)
+{
+    std::ifstream src(source);
+	std::ofstream dst(destination);
+
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(src >> std::ws, line))
+    {
+        lines.push_back(line);
+	}
+
+    for (auto& l : lines)
+    {
+		dst << l << std::endl;
+    }
+
+    src.close();
+    dst.close();
+
+    Logger::LogInformation(FormatString("Copied file %s to %s", source.c_str(), destination.c_str()));
+}
+
+void CutFile(std::string source, std::string destination)
+{
+	CopyFile(source, destination);
+	DeleteFilePath(source);
+
+    Logger::LogInformation(FormatString("Cut file %s to %s", source.c_str(), destination.c_str()));
+}
+
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType)
 {
     std::string path(directory);

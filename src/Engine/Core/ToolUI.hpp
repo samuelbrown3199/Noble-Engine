@@ -61,6 +61,14 @@ public:
 
 	virtual void HandleShortcutInputs() {}
 
+	ToolModalWindow* GetModal(std::string ID)
+	{
+		if (m_mModalWindows.count(ID) == 0)
+			Logger::LogError(FormatString("Tried to get a modal window that doesnt exist, %s", ID.c_str()), 2);
+
+		return m_mModalWindows[ID].get();
+	}
+
 	void DoModal(std::string ID)
 	{
 		if (m_mModalWindows.count(ID) == 0)

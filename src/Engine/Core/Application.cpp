@@ -417,6 +417,9 @@ void Application::SetProjectFile(std::string path)
 {
 	std::shared_ptr<Application> app = m_self.lock();
 
+	if (app->m_projectFile != nullptr && path == app->m_projectFile->GetProjectFilePath())
+		return;
+
 	if(app->m_projectFile != nullptr)
 		delete app->m_projectFile;
 

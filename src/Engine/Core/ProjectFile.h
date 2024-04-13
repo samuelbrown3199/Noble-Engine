@@ -22,5 +22,7 @@ public:
 	void LoadProjectFile(const std::string& file);
 	void UpdateProjectFile();
 
+	std::string GetProjectFilePath() { return m_sProjectFilePath; }
+
 	void UpdateResourceDatabase(nlohmann::json resourceDatabase);
 };

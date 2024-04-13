@@ -602,7 +602,8 @@ void Renderer::DrawFrame()
 	glm::vec3 viewPos = glm::vec3(0, 0, 0);
 	if (m_camera != nullptr)
 	{
-		viewPos = NobleRegistry::GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		viewPos = registry->GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
 	}
 
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
@@ -951,7 +952,8 @@ glm::mat4 Renderer::GenerateViewMatrix()
 	if (m_camera == nullptr)
 		return glm::mat4(1.0f);
 
-	Transform* camTransform = NobleRegistry::GetComponent<Transform>(m_camera->m_camTransformIndex);
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Transform* camTransform = registry->GetComponent<Transform>(m_camera->m_camTransformIndex);
 	if (camTransform == nullptr)
 		return glm::mat4(1.0f);
 

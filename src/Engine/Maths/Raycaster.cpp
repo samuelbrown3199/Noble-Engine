@@ -11,8 +11,9 @@ std::deque<Ray> Raycaster::m_vRays;
 
 Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, float maxDistance)
 {
-    Ray ray;
+    NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
+    Ray ray;
     ray.m_rayOrigin = origin;
     ray.m_rayDirection = direction;
 
@@ -26,7 +27,7 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
             glm::vec2 baryPos;
             float hitDis;
 
-            Transform* transform = NobleRegistry::GetComponent<Transform>(screenObjects->at(i)->m_transformIndex);
+            Transform* transform = registry->GetComponent<Transform>(screenObjects->at(i)->m_transformIndex);
             if (transform == nullptr)
                 continue;
 
@@ -80,7 +81,9 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
     Transform* camTransform;
     if (Renderer::GetCamera() != nullptr)
     {
-        camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
+        NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
+        camTransform = registry->GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
         return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
     }
 

@@ -46,7 +46,8 @@ void Scene::LoadSceneIntoApplication()
 	//parse out JSON here. Should probably check that the file isnt malformed in some way as well.
 	if (m_sceneData.find("ComponentData") != m_sceneData.end())
 	{
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
 
 		nlohmann::json componentData = m_sceneData.at("ComponentData");
 
@@ -75,7 +76,8 @@ void Scene::LoadSceneIntoApplication()
 	}
 	if (m_sceneData.find("Behaviours") != m_sceneData.end())
 	{
-		std::map<int, std::pair<std::string, Behaviour*>>* behRegistry = NobleRegistry::GetBehaviourRegistry();
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		std::vector<std::pair<std::string, Behaviour*>>* behRegistry = registry->GetBehaviourRegistry();
 
 		nlohmann::json behaviours = m_sceneData.at("Behaviours");
 

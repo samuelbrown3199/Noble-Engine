@@ -15,7 +15,8 @@ void AudioListener::PreUpdate()
 {
 	m_iCurrentListener = 0;
 
-	ComponentDatalist<AudioListener>* dataList = dynamic_cast<ComponentDatalist<AudioListener>*>(NobleRegistry::GetComponentList(GetComponentID()));
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	ComponentDatalist<AudioListener>* dataList = dynamic_cast<ComponentDatalist<AudioListener>*>(registry->GetComponentList(GetComponentID()));
 
 	int listenerCount = 0;
 	for (int i = 0; i < dataList->m_componentData.size(); i++)
@@ -31,13 +32,15 @@ void AudioListener::PreUpdate()
 
 void AudioListener::OnUpdate()
 {
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 	if (m_transformIndex == -1)
 	{
-		m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+		m_transformIndex = registry->GetComponentIndex<Transform>(m_sEntityID);
 		return;
 	}
 
-	Transform* listenerTransform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+	Transform* listenerTransform = registry->GetComponent<Transform>(m_transformIndex);
 	if (listenerTransform == nullptr)
 		return;
 

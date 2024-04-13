@@ -10,13 +10,15 @@ void AudioSource::OnUpdate()
 		if (m_clip == nullptr || !m_clip->m_bIsLoaded)
 			return;
 
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 		if (m_transformIndex == -1)
 		{
-			m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+			m_transformIndex = registry->GetComponentIndex<Transform>(m_sEntityID);
 			return;
 		}
 
-		Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+		Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
 		if (transform == nullptr)
 			return;
 

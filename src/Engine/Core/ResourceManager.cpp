@@ -28,12 +28,14 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::RegisterResourceTypes()
 {
-	NobleRegistry::RegisterResource("AudioClip", new AudioClip(), true);
-	NobleRegistry::RegisterResource("Texture", new Texture(), true);
-	NobleRegistry::RegisterResource("Model", new Model(), true);
-	NobleRegistry::RegisterResource("Pipeline", new Pipeline(), false);
-	NobleRegistry::RegisterResource("Script", new Script(), true);
-	NobleRegistry::RegisterResource("Shader", new Shader(), true);
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
+	registry->RegisterResource("AudioClip", new AudioClip(), true);
+	registry->RegisterResource("Texture", new Texture(), true);
+	registry->RegisterResource("Model", new Model(), true);
+	registry->RegisterResource("Pipeline", new Pipeline(), false);
+	registry->RegisterResource("Script", new Script(), true);
+	registry->RegisterResource("Shader", new Shader(), true);
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
@@ -57,7 +59,8 @@ void ResourceManager::RemoveResourceFromDatabase(std::string path)
 
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
-	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
 
 	bool foundRegistryRes = false;
 	for (int i = 0; i < resourceRegistry->size(); i++)
@@ -79,7 +82,8 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 	m_vResourceDatabase.clear();
 	m_resourceDatabaseJson = resourceDatabase;
 
-	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
 
 	if (m_resourceDatabaseJson.find("Defaults") != m_resourceDatabaseJson.end())
 	{
@@ -119,7 +123,8 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();
 	}
 
-	std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
 		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second.m_resource->AddToDatabase();

@@ -78,8 +78,10 @@ void SceneManager::SaveScene(std::string scenePath)
 	Logger::LogInformation("Saving Scene " + scenePath);
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
-	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
-	std::map<int, std::pair<std::string, Behaviour*>>* behRegistry = NobleRegistry::GetBehaviourRegistry();
+
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
+	std::vector<std::pair<std::string, Behaviour*>>* behRegistry = registry->GetBehaviourRegistry();
 
 	nlohmann::json data;
 	AddVersionDataToJson(data);

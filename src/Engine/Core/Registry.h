@@ -71,67 +71,65 @@ struct DescriptorRegistry
 
 class NobleRegistry
 {
-
-	//change these to vectors at some point, not sure why I made them maps.
-	static std::map<int, std::pair<std::string, ResourceRegistry>> m_mResourceRegistry;
-	static std::map<int, std::pair<std::string, ComponentRegistry>> m_mComponentRegistry;
-	static std::map<int, std::pair<std::string, Behaviour*>> m_mBehaviourRegistry;
+	std::vector<std::pair<std::string, ResourceRegistry>> m_vResourceRegistry;
+	std::vector<std::pair<std::string, ComponentRegistry>> m_vComponentRegistry;
+	std::vector<std::pair<std::string, Behaviour*>> m_vBehaviourRegistry;
 
 	std::vector<std::pair<std::string, PushConstantRegistry>> m_vPushConstantRegistry;
 	std::vector<std::pair<std::string, DescriptorRegistry>> m_vDescriptorRegistry;
 
 public:
 
-	static void RegisterResource(std::string ID, Resource* resource, bool requiresFile);
-	static std::map<int, std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_mResourceRegistry; }
+	void RegisterResource(std::string ID, Resource* resource, bool requiresFile);
+	std::vector<std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_vResourceRegistry; }
 
 	template<typename T>
-	static void RegisterComponent(std::string ID, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
+	void RegisterComponent(std::string ID, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)
 	{
 		T* comp = new T();
 		ComponentDatalist<T>* complist = new ComponentDatalist<T>();
 
 		ComponentRegistry reg(comp, complist, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
-		m_mComponentRegistry[(int)m_mComponentRegistry.size()] = std::make_pair(ID, reg);
+		m_vComponentRegistry.push_back(std::make_pair(ID, reg));
 
 		PerformanceStats* pStats = Application::GetApplication()->GetPerformanceStats();
 		pStats->AddComponentMeasurement(ID);
 	}
-	static std::map<int, std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_mComponentRegistry; }
-	static Datalist* GetComponentList(std::string ID);
+	std::vector<std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_vComponentRegistry; }
+	Datalist* GetComponentList(std::string ID);
 	template<typename T>
-	static int GetComponentIndex(std::string entityID)
+	int GetComponentIndex(std::string entityID)
 	{
 		T temp;
 
-		for (int i = 0; i < m_mComponentRegistry.size(); i++)
+		for (int i = 0; i < m_vComponentRegistry.size(); i++)
 		{
-			if (temp.GetComponentID() == m_mComponentRegistry.at(i).second.m_comp->GetComponentID())
+			if (temp.GetComponentID() == m_vComponentRegistry.at(i).second.m_comp->GetComponentID())
 			{
-				return m_mComponentRegistry.at(i).second.m_componentDatalist->GetComponentIndex(entityID);
+				return m_vComponentRegistry.at(i).second.m_componentDatalist->GetComponentIndex(entityID);
 			}
 		}
 
 		return -1;
 	}
 	template<typename T>
-	static T* GetComponent(int index)
+	T* GetComponent(int index)
 	{
 		T temp;
 
-		for (int i = 0; i < m_mComponentRegistry.size(); i++)
+		for (int i = 0; i < m_vComponentRegistry.size(); i++)
 		{
-			if (temp.GetComponentID() == m_mComponentRegistry.at(i).second.m_comp->GetComponentID())
+			if (temp.GetComponentID() == m_vComponentRegistry.at(i).second.m_comp->GetComponentID())
 			{
-				return dynamic_cast<T*>(m_mComponentRegistry.at(i).second.m_componentDatalist->GetComponent(index));
+				return dynamic_cast<T*>(m_vComponentRegistry.at(i).second.m_componentDatalist->GetComponent(index));
 			}
 		}
 
 		return nullptr;
 	}
 
-	static void RegisterBehaviour(std::string ID, Behaviour* comp);
-	static std::map<int, std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_mBehaviourRegistry; }
+	void RegisterBehaviour(std::string ID, Behaviour* comp);
+	std::vector<std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_vBehaviourRegistry; }
 
 	void RegisterDescriptor(std::string ID, VkDescriptorSetLayout* layout, VkDescriptorSet* set, VkDescriptorType type);
 	std::vector<std::pair<std::string, DescriptorRegistry>>* GetDescriptorRegistry() { return &m_vDescriptorRegistry; }

@@ -40,7 +40,8 @@ void DebugCam::Start()
 	if (curCam == nullptr)
 		return;
 
-	Transform* camTransform = NobleRegistry::GetComponent<Transform>(curCam->m_camTransformIndex);
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Transform* camTransform = registry->GetComponent<Transform>(curCam->m_camTransformIndex);
 	if (curCam && camTransform != nullptr)
 	{
 		pos = camTransform->m_position;
@@ -70,7 +71,8 @@ void DebugCam::UpdateControls()
 	if (ca == nullptr)
 		return;
 
-	Transform* camTransform = NobleRegistry::GetComponent<Transform>(ca->m_camTransformIndex);
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);
 	if (camTransform == nullptr)
 		return;
 
@@ -138,7 +140,8 @@ void DebugCam::UpdateCameraRotation()
 
 		newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
 
-		Transform* camTransform = NobleRegistry::GetComponent<Transform>(ca->m_camTransformIndex);
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);
 		if (camTransform == nullptr)
 			return;
 

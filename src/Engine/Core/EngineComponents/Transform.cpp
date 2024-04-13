@@ -24,7 +24,9 @@ void Transform::OnUpdate()
 	{
 		if (m_parentTransformIndex != -1)
 		{
-			Transform* parentTransform = NobleRegistry::GetComponent<Transform>(m_parentTransformIndex);
+			NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
+			Transform* parentTransform = registry->GetComponent<Transform>(m_parentTransformIndex);
 
 			glm::mat4 parentMat = glm::mat4(1.0f);
 			parentMat = glm::rotate(parentMat, glm::radians(-parentTransform->m_rotation.x), glm::vec3(1.0, 0.0, 0.0));

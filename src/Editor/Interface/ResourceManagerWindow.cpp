@@ -30,7 +30,8 @@ void ResourceManagerWindow::DoInterface()
         return;
     }
 
-    std::map<int, std::pair<std::string, ResourceRegistry>>* resourceRegistry = NobleRegistry::GetResourceRegistry();
+    NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+    std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {

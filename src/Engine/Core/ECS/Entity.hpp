@@ -43,7 +43,8 @@ struct Entity
 	{
 		m_vComponents.clear();
 
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			int compIndex = compRegistry->at(i).second.m_componentDatalist->GetComponentIndex(m_sEntityID);
@@ -58,6 +59,8 @@ struct Entity
 	template<typename T>
 	T* AddComponent()
 	{
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 		T comp;
 		comp.m_sEntityID = m_sEntityID;
 		comp.OnInitialize();
@@ -65,7 +68,7 @@ struct Entity
 
 		int compIndex = comp.GetComponentIndex(m_sEntityID);
 		m_vComponents[comp.GetComponentID()] = compIndex;
-		return NobleRegistry::GetComponent<T>(compIndex);
+		return registry->GetComponent<T>(compIndex);
 	}
 	/**
 	*Adds a component of the type to the Entity.
@@ -73,6 +76,8 @@ struct Entity
 	template <typename T, typename ... Args>
 	T* AddComponent(Args&&... _args)
 	{
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 		T comp;
 		comp.m_sEntityID = m_sEntityID;
 		comp.OnInitialize(std::forward<Args>(_args)...);
@@ -80,7 +85,7 @@ struct Entity
 
 		int compIndex = comp.GetComponentIndex(m_sEntityID);
 		m_vComponents[comp.GetComponentID()] = compIndex;
-		return NobleRegistry::GetComponent<T>(compIndex);
+		return registry->GetComponent<T>(compIndex);
 	}
 
 	/**
@@ -89,10 +94,11 @@ struct Entity
 	template<typename T>
 	T* GetComponent()
 	{
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		for (int i = 0; i < m_vComponents.size(); i++)
 		{
 			T temp;
-			T* comp = NobleRegistry::GetComponent<T>(m_vComponents[temp.GetComponentID()]);
+			T* comp = registry->GetComponent<T>(m_vComponents[temp.GetComponentID()]);
 			if (comp != nullptr)
 				return comp;
 		}
@@ -187,7 +193,7 @@ struct Entity
 		}
 	}
 
-	void DoEntityInterface(std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry, std::map<int, std::pair<std::string, Behaviour*>>* behaviourRegistry, int& i, int& selEntity, int layer = 0)
+	void DoEntityInterface(std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry, std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry, int& i, int& selEntity, int layer = 0)
 	{
 		if (m_bAvailableForUse)
 			return;

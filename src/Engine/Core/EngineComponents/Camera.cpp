@@ -11,7 +11,8 @@ void Camera::PreUpdate()
 	int bestCam = -1;
 	CameraState bestState = inactive;
 
-	ComponentDatalist<Camera>* dataList = dynamic_cast<ComponentDatalist<Camera>*>(NobleRegistry::GetComponentList(GetComponentID()));
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	ComponentDatalist<Camera>* dataList = dynamic_cast<ComponentDatalist<Camera>*>(registry->GetComponentList(GetComponentID()));
 
 	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
@@ -34,13 +35,14 @@ void Camera::PreUpdate()
 
 void Camera::OnUpdate()
 {
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	if (m_camTransformIndex == -1)
 	{
-		m_camTransformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+		m_camTransformIndex = registry->GetComponentIndex<Transform>(m_sEntityID);
 		return;
 	}
 
-	Transform* camTransform = NobleRegistry::GetComponent<Transform>(m_camTransformIndex);
+	Transform* camTransform = registry->GetComponent<Transform>(m_camTransformIndex);
 
 	if (camTransform == nullptr)
 		return;

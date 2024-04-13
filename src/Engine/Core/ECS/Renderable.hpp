@@ -62,14 +62,16 @@ struct Renderable : public Component
 	{
 		Renderer::IncrementRenderables();
 
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 		if (m_transformIndex == -1)
 		{
-			m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+			m_transformIndex = registry->GetComponentIndex<Transform>(m_sEntityID);
 			m_bOnScreen = false;
 			return;
 		}
 
-		Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
+		Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
 		if (transform == nullptr)
 			return;
 
@@ -96,7 +98,7 @@ struct Renderable : public Component
 		Camera* cam = Renderer::GetCamera();
 		if (cam != nullptr)
 		{
-			Transform* camTransform = NobleRegistry::GetComponent<Transform>(cam->m_camTransformIndex);
+			Transform* camTransform = registry->GetComponent<Transform>(cam->m_camTransformIndex);
 			m_fDistanceToCam = glm::length(camTransform->m_position - transform->m_position);
 		}
 	};

@@ -50,6 +50,8 @@ void EditorUI::DoInterface()
 
 	ImGui::SetNextWindowSize(ImVec2(450, Renderer::GetScreenSize().y));
 
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
 	std::string playModeButton = "Enter Play Mode";
@@ -81,8 +83,8 @@ void EditorUI::DoInterface()
 
 	if (ImGui::TreeNode("Entities"))
 	{
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
-		std::map<int, std::pair<std::string, Behaviour*>>* behaviourRegistry = NobleRegistry::GetBehaviourRegistry();
+		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
+		std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry = registry->GetBehaviourRegistry();
 
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);

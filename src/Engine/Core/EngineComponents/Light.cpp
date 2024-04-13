@@ -15,7 +15,8 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 	int numPointLights = 0;
 	int numSpotLights = 0;
 
-	ComponentDatalist<Light>* dataList = dynamic_cast<ComponentDatalist<Light>*>(NobleRegistry::GetComponentList(GetComponentID()));
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	ComponentDatalist<Light>* dataList = dynamic_cast<ComponentDatalist<Light>*>(registry->GetComponentList(GetComponentID()));
 
 	for (int i = 0; i < dataList->m_componentData.size(); i++)
 	{
@@ -43,7 +44,8 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 	for (int i = 0; i < closestLights.size(); i++)
 	{
-		Transform* transform = NobleRegistry::GetComponent<Transform>(closestLights.at(i)->m_transformIndex);
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		Transform* transform = registry->GetComponent<Transform>(closestLights.at(i)->m_transformIndex);
 		if (transform == nullptr)
 			continue;
 
@@ -64,17 +66,18 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 void Light::OnUpdate()
 {
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	if (m_transformIndex == -1)
 	{
-		m_transformIndex = NobleRegistry::GetComponentIndex<Transform>(m_sEntityID);
+		m_transformIndex = registry->GetComponentIndex<Transform>(m_sEntityID);
 		return;
 	}
 
 	SpotLight* spotLight = dynamic_cast<SpotLight*>(m_lightInfo);
 	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
-	Transform* transform = NobleRegistry::GetComponent<Transform>(m_transformIndex);
-	Transform* camTransform = NobleRegistry::GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
+	Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
+	Transform* camTransform = registry->GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
 
 	switch (m_lightType)
 	{

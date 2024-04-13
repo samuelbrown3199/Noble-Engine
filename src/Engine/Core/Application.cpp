@@ -118,7 +118,7 @@ void Application::SetPlayMode(bool play)
 	m_bPlayMode = play;
 	
 	//loop over components and do one more tick of update and render. This allows any components that need to stop themselves to do so.
-	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 	for (int i = 0; i < compRegistry->size(); i++)
 	{
 		compRegistry->at(i).second.m_comp->Update(compRegistry->at(i).second.m_bUseThreads, compRegistry->at(i).second.m_iMaxComponentsPerThread);
@@ -169,7 +169,7 @@ void Application::MainLoop()
 		m_pStats->StartPerformanceMeasurement("Frame");
 		m_pStats->StartPerformanceMeasurement("Pre-Update");
 
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
+		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 		InputManager::HandleGeneralInput();
 
 		Uint32 windowFlags = SDL_GetWindowFlags(m_gameRenderer->GetWindow());
@@ -406,7 +406,7 @@ void Application::ClearLoadedScene()
 
 	m_gameRenderer->m_camera = nullptr;
 
-	std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 	for (int i = 0; i < compRegistry->size(); i++)
 	{
 		compRegistry->at(i).second.m_comp->RemoveAllComponents();
@@ -437,7 +437,7 @@ void Application::CleanupDeletionEntities()
 		Entity* currentEntity = m_vDeletionEntities.front();
 		currentEntity->DeleteAllBehaviours();
 		m_vDeletionEntities.pop_front();
-		std::map<int, std::pair<std::string, ComponentRegistry>>* compRegistry = NobleRegistry::GetComponentRegistry();
+		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			compRegistry->at(i).second.m_comp->RemoveComponent(currentEntity->m_sEntityID);

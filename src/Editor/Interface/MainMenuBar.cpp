@@ -101,6 +101,30 @@ void AboutNobleModal::DoModal()
 	}
 }
 
+void ProjectDoesntExistModal::DoModal()
+{
+	MainMenuBar* mainmenuBar = dynamic_cast<MainMenuBar*>(m_pParentUI);
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(mainmenuBar->m_pEditor);
+
+	CheckIfToggled();
+
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	if (ImGui::BeginPopupModal("Project Doesn't Exist", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::Text("The project file doesn't exist. Please create a new project or load an existing one.");
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+		if (ImGui::Button("Ok"))
+		{
+			editorManager->RemoveRecentProject(m_selectedProjectIndex);
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+}
+
 
 void MainMenuBar::DoMainMenuBar()
 {
@@ -186,7 +210,13 @@ void MainMenuBar::DoEditorMenu()
 		{
 			if (ImGui::MenuItem(recentProjects[i].c_str()))
 			{
-				Application::GetApplication()->SetProjectFile(recentProjects[i]);
+				if(PathExists(recentProjects[i]))
+					Application::GetApplication()->SetProjectFile(recentProjects[i]);
+				else
+				{
+					dynamic_cast<ProjectDoesntExistModal*>(GetModal("Project Doesn't Exist"))->m_selectedProjectIndex = i;
+					DoModal("Project Doesn't Exist");
+				}
 			}
 		}
 
@@ -352,6 +382,7 @@ void MainMenuBar::InitializeInterface()
 	AddModal<NewProjectModal>("New Project");
 	AddModal<QuitWarningModal>("Quit Noble Editor?");
 	AddModal<AboutNobleModal>("About Noble Engine");
+	AddModal<ProjectDoesntExistModal>("Project Doesn't Exist");
 }
 
 void MainMenuBar::DoInterface()

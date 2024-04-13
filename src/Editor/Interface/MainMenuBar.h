@@ -22,6 +22,15 @@ public:
 	void DoModal() override;
 };
 
+class ProjectDoesntExistModal : public ToolModalWindow
+{
+public:
+
+	int m_selectedProjectIndex = -1;
+
+	void DoModal() override;
+};
+
 class MainMenuBar : public EditorToolUI
 {
 	friend class NewProjectModal;

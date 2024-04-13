@@ -164,6 +164,17 @@ void EditorManager::UpdateRecentProjects(ProjectFile* projectFile)
 	if(m_recentProjects.size() > 5)
 		m_recentProjects.pop_back();
 
+	UpdateRecentProjectFile();
+}
+
+void EditorManager::RemoveRecentProject(int index)
+{
+	m_recentProjects.erase(m_recentProjects.begin() + index);
+	UpdateRecentProjectFile();
+}
+
+void EditorManager::UpdateRecentProjectFile()
+{
 	std::ofstream file(m_sDataFolder + "RecentProjects.txt", 'w');
 	for (std::string project : m_recentProjects)
 	{

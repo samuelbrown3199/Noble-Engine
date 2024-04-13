@@ -28,6 +28,8 @@ private:
 		return sys;
 	}
 
+	void UpdateRecentProjectFile();
+
 public:
 
 	std::string m_sWindowName;
@@ -53,4 +55,5 @@ public:
 	void SetProjectFile(ProjectFile* projectFile) override;
 	void UpdateRecentProjects(ProjectFile* projectFile);
 	std::deque<std::string> GetRecentProjects() { return m_recentProjects; }
+	void RemoveRecentProject(int index);
 };

@@ -4,6 +4,8 @@
 #include <Engine/Core/SceneManager.h>
 #include <Engine/Core/ProjectFile.h>
 
+#include "../EditorManagement/EditorManager.h"
+
 void SceneManagerWindow::InitializeInterface()
 {
 }
@@ -16,6 +18,7 @@ void SceneManagerWindow::UpdateOriginalSceneOrder()
 void SceneManagerWindow::DoInterface()
 {
 	SceneManager* sceneManager = Application::GetApplication()->GetSceneManager();
+    EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
 	m_windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse;
 	if (ImGui::Begin("Scene Manager", &m_uiOpen, m_windowFlags))
@@ -40,7 +43,7 @@ void SceneManagerWindow::DoInterface()
 
 				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 				{
-					sceneManager->LoadScene(scenes->at(n));
+                    editorManager->LoadScene(n);
 				}
 
                 if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
@@ -72,7 +75,7 @@ void SceneManagerWindow::DoInterface()
         {
             if (ImGui::Button("Load Scene"))
             {
-                sceneManager->LoadScene(scenes->at(m_selectedSceneIndex));
+                editorManager->LoadScene(m_selectedSceneIndex);
             }
         }
 

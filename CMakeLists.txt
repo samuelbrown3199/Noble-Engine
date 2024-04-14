@@ -324,6 +324,15 @@ foreach(source IN LISTS editor_source)
     source_group("${source_path_msvc}" FILES "${source}")
 endforeach()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>)
+add_library(NobleGame SHARED
+
+	src/NobleGame/NobleGame.h
+	src/NobleGame/NobleGame.cpp
+
+)
+target_link_libraries(NobleGame Engine)
+target_compile_features(NobleGame PRIVATE cxx_std_20)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/TechDemos/TechDemo1>)
 add_executable(TechDemo1

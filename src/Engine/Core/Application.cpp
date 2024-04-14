@@ -30,6 +30,8 @@ std::weak_ptr<Application> Application::m_self;
 
 //----------------- Private Functions ----------------------
 
+#include <Windows.h>
+typedef void(__stdcall * DLLFunc)(std::string);
 
 //----------------- Public Functions -----------------------
 
@@ -92,6 +94,24 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	}
 
 	Logger::LogInformation("Engine started successfully");
+
+	HINSTANCE hGetProcIDLL = LoadLibrary("C:\\Users\\samue\\Desktop\\Development\\Projects\\Noble-Engine\\TechDemos\\TechDemo1\\NobleGame.dll");
+	if (!hGetProcIDLL)
+	{
+		Logger::LogError("Could not load game dll", 2);
+	}
+	else
+	{
+		DLLFunc func = (DLLFunc)GetProcAddress(hGetProcIDLL, "TestFunction");
+		if (!func)
+		{
+			Logger::LogError("Could not find function in game dll", 2);
+		}
+		else
+		{
+			func("Hello from engine");
+		}
+	}
 
 	rtn->m_sceneManager->LoadDefaultScene();
 

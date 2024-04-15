@@ -11,3 +11,14 @@
 [15:53:22.184] - test
 [16:07:59.574] - test
 [16:37:12.138] - Hello from engine
+[22:05:55.001] - Initializing DLL
+[22:07:58.857] - Initializing DLL
+[22:07:58.857] - Registering components from DLL
+[22:07:58.859] - Components registered from DLL
+[22:07:58.859] - Registering resources from DLL
+[22:07:58.860] - Resources registered from DLL
+[22:07:58.860] - Registering descriptors from DLL
+[22:07:58.860] - Descriptors registered from DLL
+[22:07:58.860] - Registering push constants from DLL
+[22:07:58.861] - Push constants registered from DLL
+[22:07:58.861] - DLL Initialized

@@ -10,7 +10,7 @@
 
 extern "C"
 {
-	__declspec(dllexport) void dllMain(std::shared_ptr<Application> application);
+	__declspec(dllexport) void dllMain(std::shared_ptr<Application> application, bool useLogging);
 
 	__declspec(dllexport) void TestFunction(std::string text);
 
@@ -34,7 +34,7 @@ extern "C"
 
 	public:
 
-		void InitializeDLL(std::shared_ptr<Application> application);
+		void InitializeDLL(std::shared_ptr<Application> application, bool useLogging);
 	};
 }
 

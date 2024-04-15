@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Logger.h"
 
-typedef int(__stdcall* DLLFunc)(std::shared_ptr<Application>);
+typedef int(__stdcall* DLLFunc)(std::shared_ptr<Application>, bool);
 
 NobleDLL::NobleDLL(std::string path)
 {
@@ -32,7 +32,7 @@ void NobleDLL::LoadDLL(std::shared_ptr<Application> application)
 		}
 		else
 		{
-			func(application);
+			func(application, Logger::m_bUseLogging);
 		}
 	}
 }

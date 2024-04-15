@@ -167,6 +167,7 @@ private:
 	void InitializeCommands();
 	void InitializeSyncStructures();
 	void InitializeDescriptors();
+	void RegisterDescriptors();
 
 	SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

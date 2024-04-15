@@ -66,6 +66,12 @@ void PerformanceStats::LogPerformanceStats()
 	Logger::LogInformation(performanceStatsString);
 }
 
+void PerformanceStats::ClearComponentMeasurements()
+{
+	m_mSystemUpdateTimes.clear();
+	m_mSystemRenderTimes.clear();
+}
+
 void PerformanceStats::AddPerformanceMeasurement(std::string name)
 {
 	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)

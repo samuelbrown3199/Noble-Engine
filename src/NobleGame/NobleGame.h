@@ -27,6 +27,10 @@ extern "C"
 		std::shared_ptr<Application> m_app;
 
 		void RegisterComponents();
+		void RegisterBehaviours();
+		void RegisterResources();
+		void RegisterDecriptors();
+		void RegisterPushConstants();
 
 	public:
 
@@ -51,5 +55,61 @@ struct TestComponent : Component
 	std::string GetComponentID() override
 	{
 		return "TestComponent";
+	}
+};
+
+struct TestResource : Resource
+{
+	std::string m_sTestString = "Hello from the DLL!";
+
+	void DoResourceInterface()
+	{
+		ImGui::InputText("Test String", &m_sTestString);
+	}
+
+	TestResource()
+	{
+		m_resourceType = "TestResource";
+	}
+
+	~TestResource()
+	{
+		if (m_bIsLoaded)
+		{
+			OnUnload();
+		}
+	}
+
+	void OnLoad() override
+	{
+		Logger::LogInformation("Loaded Test Resource");
+		m_bIsLoaded = true;
+	}
+
+	void OnUnload() override
+	{
+		Logger::LogInformation("Unloaded Test Resource");
+		m_bIsLoaded = false;
+	}
+
+	void AddResource(std::string path) override
+	{
+		ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+		resourceManager->AddNewResource<TestResource>(path);
+	}
+
+	std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override
+	{
+		ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+		return resourceManager->GetAllResourcesOfType<Texture>();
+	}
+
+	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override
+	{
+		std::shared_ptr<TestResource> res = std::make_shared<TestResource>();
+		
+		res->m_sTestString = data["TestString"];
+
+		return res;
 	}
 };

@@ -65,6 +65,8 @@ public:
 	*/
 	void LogPerformanceStats();
 
+	void ClearComponentMeasurements();
+
 	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
 	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
 

@@ -33,6 +33,8 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 	rManager->UnloadAllResources();
 
+	Application::GetApplication()->ResetRegistries();
+
 	std::ifstream projectFile;
 	projectFile.open(file);
 	m_projectData = nlohmann::json::parse(projectFile);

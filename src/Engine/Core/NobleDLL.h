@@ -19,4 +19,5 @@ public:
 	NobleDLL(std::string path);
 
 	void LoadDLL(std::shared_ptr<Application> application);
+	void UnloadDLL();
 };

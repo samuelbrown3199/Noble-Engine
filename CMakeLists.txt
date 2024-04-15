@@ -141,9 +141,6 @@ set (
 	src/Engine/Core/Registry.h
 	src/Engine/Core/Registry.cpp
 
-	src/Engine/Game/GameRegister.h
-	src/Engine/Game/GameRegister.cpp
-
 	src/Engine/Core/SceneManager.h
 	src/Engine/Core/SceneManager.cpp
 

@@ -24,13 +24,38 @@ void NobleGameDLL::InitializeDLL(std::shared_ptr<Application> application)
 	m_app = application;
 	m_app->m_self = application;
 	ImGui::SetCurrentContext(m_app->GetRenderer()->GetImguiContext());
-	//Logger::m_bUseLogging = m_app->GetLogger()->m_bUseLogging;
-	//Logger::LogInformation("Initializing DLL");
+
+	Logger::m_bUseLogging = m_app->GetLogger()->m_bUseLogging;
+	Logger::LogInformation("Initializing DLL");
 
 	RegisterComponents();
+	RegisterBehaviours();
+	RegisterResources();
+	RegisterDecriptors();
+	RegisterPushConstants();
 }
 
 void NobleGameDLL::RegisterComponents()
 {
 	m_app->GetRegistry()->RegisterComponent<TestComponent>("TestComponent", false, 1024, true, true);
+}
+
+void NobleGameDLL::RegisterBehaviours()
+{
+
+}
+
+void NobleGameDLL::RegisterResources()
+{
+	m_app->GetRegistry()->RegisterResource("TestResource", new TestResource(), false);
+}
+
+void NobleGameDLL::RegisterDecriptors()
+{
+
+}
+
+void NobleGameDLL::RegisterPushConstants()
+{
+
 }

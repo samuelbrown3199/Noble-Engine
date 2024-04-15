@@ -118,6 +118,9 @@ public:
 	void SetProjectFile(std::string path);
 	ProjectFile* GetProjectFile() { return m_projectFile; }
 
+	void RegisterDefaultComponents();
+	void ResetRegistries();
+
 	template<typename T>
 	std::shared_ptr<T> BindDebugUI()
 	{

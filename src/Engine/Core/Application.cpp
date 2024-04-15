@@ -5,8 +5,6 @@
 #include "SceneManager.h"
 #include "NobleDLL.h"
 
-#include "../Game/GameRegister.h"
-
 #include "EngineComponents/Transform.h"
 #include "EngineComponents/AudioListener.h"
 #include "EngineComponents/AudioSource.h"
@@ -60,20 +58,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_threadManager = new ThreadingManager();
 	rtn->m_sceneManager = new SceneManager();
 
-	rtn->m_registry->RegisterComponent<Transform>("Transform", false, 1024, true, true);
-	rtn->m_registry->RegisterComponent<Camera>("Camera", false, 1024, true, true);
-	rtn->m_registry->RegisterComponent<AudioListener>("AudioListener", false, 1024, false, false);
-	rtn->m_registry->RegisterComponent<AudioSource>("AudioSource", false, 1024, false, false);
-	rtn->m_registry->RegisterComponent<MeshRenderer>("MeshRenderer", false, 1024, true, true);
-	rtn->m_registry->RegisterComponent<ScriptEmbedder>("ScriptEmbedder", false, 1024, false, false);
-	rtn->m_registry->RegisterComponent<Sprite>("Sprite", false, 1024, true, true);
-	rtn->m_registry->RegisterComponent<Light>("Light", false, 1024, true, true);
-
-	rtn->m_registry->RegisterBehaviour("DebugCam", new DebugCam());
-
-	//For game components, resources and behaviours.
-	GameRegister reg;
-	reg.RegisterGame();
+	rtn->RegisterDefaultComponents();
 
 	rtn->RegisterCoreKeybinds();
 
@@ -89,9 +74,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	{
 		Logger::LogInformation("No project files found in working directory. Engine is running in editor mode.");
 	}
-
-	rtn->m_gameDLL = new NobleDLL("C:\\Users\\samue\\Desktop\\Development\\Projects\\Noble-Engine\\TechDemos\\TechDemo1\\NobleGame.dll");
-	rtn->m_gameDLL->LoadDLL(rtn->GetApplication());
 
 	Logger::LogInformation("Engine started successfully");
 
@@ -419,17 +401,48 @@ void Application::SetProjectFile(std::string path)
 {
 	std::shared_ptr<Application> app = m_self.lock();
 
-	if (app->m_projectFile != nullptr && path == app->m_projectFile->GetProjectFilePath())
+	if (app->m_projectFile != nullptr && path == m_projectFile->GetProjectFilePath())
 		return;
 
 	if(app->m_projectFile != nullptr)
-		delete app->m_projectFile;
+		delete m_projectFile;
 
-	app->m_projectFile = new ProjectFile();
-	app->m_projectFile->LoadProjectFile(path);
+	m_projectFile = new ProjectFile();
+	m_projectFile->LoadProjectFile(path);
+
+	if(m_gameDLL != nullptr)
+		delete m_gameDLL;
+
+	m_gameDLL = new NobleDLL(m_projectFile->m_sProjectDirectory + "\\NobleGame.dll");
+	m_gameDLL->LoadDLL(GetApplication());
 
 	if(app->m_editor != nullptr)
-		app->m_editor->SetProjectFile(app->m_projectFile);
+		app->m_editor->SetProjectFile(m_projectFile);
+}
+
+void Application::RegisterDefaultComponents()
+{
+	m_registry->RegisterComponent<Transform>("Transform", false, 1024, true, true);
+	m_registry->RegisterComponent<Camera>("Camera", false, 1024, true, true);
+	m_registry->RegisterComponent<AudioListener>("AudioListener", false, 1024, false, false);
+	m_registry->RegisterComponent<AudioSource>("AudioSource", false, 1024, false, false);
+	m_registry->RegisterComponent<MeshRenderer>("MeshRenderer", false, 1024, true, true);
+	m_registry->RegisterComponent<ScriptEmbedder>("ScriptEmbedder", false, 1024, false, false);
+	m_registry->RegisterComponent<Sprite>("Sprite", false, 1024, true, true);
+	m_registry->RegisterComponent<Light>("Light", false, 1024, true, true);
+
+	m_registry->RegisterBehaviour("DebugCam", new DebugCam());
+}
+
+void Application::ResetRegistries()
+{
+	m_registry->ClearRegistries();
+
+	m_pStats->ClearComponentMeasurements();
+
+	RegisterDefaultComponents();
+	m_resourceManager->RegisterResourceTypes();
+	m_gameRenderer->RegisterDescriptors();
 }
 
 void Application::CleanupDeletionEntities()

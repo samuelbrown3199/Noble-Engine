@@ -374,12 +374,7 @@ void Renderer::InitializeDescriptors()
 		m_singleImageDescriptorLayout = builder.Build(m_device, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	registry->RegisterDescriptor("DrawImage", &m_drawImageDescriptorLayout, &m_drawImageDescriptors, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
-	registry->RegisterDescriptor("SingleImage", &m_singleImageDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-	registry->RegisterDescriptor("GPUSceneData", &m_gpuSceneDataDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-
-	registry->RegisterPushConstant<GPUDrawPushConstants>("GPUDrawData", VK_SHADER_STAGE_VERTEX_BIT);
+	RegisterDescriptors();
 
 	m_mainDeletionQueue.push_function([=]()
 	{
@@ -390,6 +385,16 @@ void Renderer::InitializeDescriptors()
 		m_globalDescriptorAllocator.ClearDescriptors(m_device);
 		m_globalDescriptorAllocator.DestroyPool(m_device);
 	});
+}
+
+void Renderer::RegisterDescriptors()
+{
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	registry->RegisterDescriptor("DrawImage", &m_drawImageDescriptorLayout, &m_drawImageDescriptors, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+	registry->RegisterDescriptor("SingleImage", &m_singleImageDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+	registry->RegisterDescriptor("GPUSceneData", &m_gpuSceneDataDescriptorLayout, nullptr, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+
+	registry->RegisterPushConstant<GPUDrawPushConstants>("GPUDrawData", VK_SHADER_STAGE_VERTEX_BIT);
 }
 
 SwapChainSupportDetails Renderer::QuerySwapChainSupport(VkPhysicalDevice device)

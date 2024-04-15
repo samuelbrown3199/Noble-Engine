@@ -54,3 +54,23 @@ PushConstantRegistry* NobleRegistry::GetPushConstantFromName(std::string ID)
 	Logger::LogError(FormatString("Failed to get Push Constant with ID %s", ID.c_str()), 2);
 	return nullptr;
 }
+
+void NobleRegistry::ClearRegistries()
+{
+	for (int i = 0; i < m_vComponentRegistry.size(); i++)
+	{
+		delete m_vComponentRegistry.at(i).second.m_componentDatalist;
+		delete m_vComponentRegistry.at(i).second.m_comp;
+	}
+	m_vComponentRegistry.clear();
+
+	for (int i = 0; i < m_vBehaviourRegistry.size(); i++)
+	{
+		delete m_vBehaviourRegistry.at(i).second;
+	}
+	m_vBehaviourRegistry.clear();
+
+	m_vResourceRegistry.clear();
+	m_vDescriptorRegistry.clear();
+	m_vPushConstantRegistry.clear();
+}

@@ -36,3 +36,12 @@ void NobleDLL::LoadDLL(std::shared_ptr<Application> application)
 		}
 	}
 }
+
+void NobleDLL::UnloadDLL()
+{
+	if (m_hDLLInstance != NULL)
+	{
+		FreeLibrary(m_hDLLInstance);
+		m_hDLLInstance = NULL;
+	}
+}

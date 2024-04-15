@@ -153,4 +153,6 @@ public:
 	}
 	std::vector<std::pair<std::string, PushConstantRegistry>>* GetPushConstantRegistry() { return &m_vPushConstantRegistry; }
 	PushConstantRegistry* GetPushConstantFromName(std::string ID);
+
+	void ClearRegistries();
 };

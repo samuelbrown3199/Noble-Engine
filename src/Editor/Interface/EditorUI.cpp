@@ -46,9 +46,10 @@ void EditorUI::InitializeInterface(ImGuiWindowFlags defaultFlags)
 
 void EditorUI::DoInterface()
 {
-	HandleShortcutInputs();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
-	ImGui::SetNextWindowSize(ImVec2(450, Renderer::GetScreenSize().y));
+	HandleShortcutInputs();
+	ImGui::SetNextWindowSize(ImVec2(450, renderer->GetScreenSize().y));
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
@@ -94,13 +95,11 @@ void EditorUI::DoInterface()
 		ImGui::TreePop();
 	}
 
-	Renderer* renderer = Application::GetApplication()->GetRenderer();
-
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-	clearColour = ImVec4(Renderer::GetClearColour().x, Renderer::GetClearColour().y, Renderer::GetClearColour().z, 200.0f / 255.0f);
+	clearColour = ImVec4(renderer->GetClearColour().x, renderer->GetClearColour().y, renderer->GetClearColour().z, 200.0f / 255.0f);
 	ImGui::ColorEdit3("Clear Colour", (float*)&clearColour);
-	Renderer::SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
+	renderer->SetClearColour(glm::vec3(clearColour.x, clearColour.y, clearColour.z));
 
 	ambientColour = ImVec4(renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y, renderer->m_sceneData.ambientColour.z, renderer->m_sceneData.ambientColour.w);
 	ImGui::ColorEdit4("Ambient Colour", (float*)&ambientColour);

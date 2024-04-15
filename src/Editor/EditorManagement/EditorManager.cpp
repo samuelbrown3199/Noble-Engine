@@ -98,7 +98,7 @@ void EditorManager::UpdateEditorWindowTitle()
 		title += "\t(Project " + m_projectFile->m_sProjectName + ")";
 
 	title += "\t(" + Application::GetApplication()->GetSceneManager()->GetCurrentSceneLocalPath() + ")";
-	Renderer::UpdateWindowTitle(title);
+	Application::GetApplication()->GetRenderer()->UpdateWindowTitle(title);
 }
 
 void EditorManager::LoadScene(int sceneIndex)

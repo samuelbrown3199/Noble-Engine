@@ -33,10 +33,12 @@ void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
 
 void DebugCam::Start()
 {
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
+
 	glm::vec3 pos = glm::vec3(5, 0, 0);
 	glm::vec3 rot = glm::vec3(0, 0, -1);
 
-	Camera* curCam = Renderer::GetCamera();
+	Camera* curCam = renderer->GetCamera();
 	if (curCam == nullptr)
 		return;
 
@@ -67,7 +69,8 @@ void DebugCam::Update()
 
 void DebugCam::UpdateControls()
 {
-	Camera* ca = Renderer::GetCamera();
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
+	Camera* ca = renderer->GetCamera();
 	if (ca == nullptr)
 		return;
 
@@ -132,9 +135,10 @@ void DebugCam::UpdateControls()
 
 void DebugCam::UpdateCameraRotation()
 {
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	if (InputManager::GetKeybind("RightMouse"))
 	{
-		Camera* ca = Renderer::GetCamera();
+		Camera* ca = renderer->GetCamera();
 		if (ca == nullptr)
 			return;
 

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef RENDERER_H_
-#define RENDERER_H_
 
 #include <iostream>
 #include <exception>
@@ -69,27 +67,27 @@ class Renderer
 	friend struct Sprite;
 
 private:
-	static SDL_Window* m_gameWindow;
+	SDL_Window* m_gameWindow = nullptr;
 
-	uint32_t imageIndex;
-	static uint32_t m_iCurrentFrame;
+	uint32_t m_iCurrentFrame = 0;
 	const static int MAX_FRAMES_IN_FLIGHT = 2;
-	static VkSampleCountFlagBits m_msaaSamples;
+	VkSampleCountFlagBits m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+	FrameData m_frames[MAX_FRAMES_IN_FLIGHT];
 
-	static bool m_bVsync;
-	static glm::vec3 m_clearColour;
+	bool m_bVsync = true;
+	glm::vec3 m_clearColour = glm::vec3(0.0f, 0.0f, 0.0f);;
 
-	static VkInstance m_vulkanInstance;
+	VkInstance m_vulkanInstance;
 	ImGuiContext* m_imguiContext;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
-	static VkPhysicalDevice m_physicalDevice;
-	static VkDevice m_device;
+	VkPhysicalDevice m_physicalDevice;
+	VkDevice m_device;
 	VkSurfaceKHR m_surface;
 
 	//draw resources
 	AllocatedImage m_drawImage;
 	AllocatedImage m_depthImage;
-	static VkExtent2D m_drawExtent;
+	VkExtent2D m_drawExtent;
 	float m_fRenderScale = 1.0f;
 	VkFilter m_drawFilter = VK_FILTER_LINEAR;
 
@@ -104,30 +102,28 @@ private:
 	std::vector<VkImageView> m_swapchainImageViews;
 	VkExtent2D m_swapchainExtent;
 
-	FrameData m_frames[MAX_FRAMES_IN_FLIGHT];
-
-	static VkQueue m_graphicsQueue;
+	VkQueue m_graphicsQueue;
 	uint32_t m_graphicsQueueFamily;
 
 	//temp values here for future editor update.
-	bool drawToWindow = false;
+	bool m_bDrawToWindow = false;
 	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
 
 	DeletionQueue m_mainDeletionQueue;
-	static VmaAllocator m_allocator;
+	VmaAllocator m_allocator;
 
-	static VkFence m_immediateFence;
-	static VkCommandBuffer m_immediateCommandBuffer;
-	static VkCommandPool m_immediateCommandPool;
+	VkFence m_immediateFence;
+	VkCommandBuffer m_immediateCommandBuffer;
+	VkCommandPool m_immediateCommandPool;
 
-	static int m_iScreenWidth, m_iScreenHeight;
-	static float m_fNearPlane, m_fFarPlane;
-	static const float m_fMaxScale, m_fMinScale;
+	int m_iScreenWidth = 500, m_iScreenHeight = 500;
+	float m_fNearPlane = 0.1f, m_fFarPlane = 1000.0f;
+	const float m_fMaxScale = 1000, m_fMinScale = 3;
 
-	static Camera* m_camera;
+	Camera* m_camera = nullptr;
 
-	static std::vector<Renderable*> m_onScreenObjects;
-	static int m_iRenderableCount;
+	std::vector<Renderable*> m_onScreenObjects;
+	int m_iRenderableCount = 0;
 
 	//Default Data
 	AllocatedImage m_errorCheckerboardImage;
@@ -177,7 +173,7 @@ private:
 	void DestroySwapchain();
 	void RecreateSwapchain();
 
-	static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
 	void InitializeImgui();
 
@@ -207,12 +203,12 @@ public:
 
 	FrameData& GetCurrentFrame() { return m_frames[m_iCurrentFrame % MAX_FRAMES_IN_FLIGHT]; }
 
-	static void AddOnScreenObject(Renderable* comp);
-	static std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
+	void AddOnScreenObject(Renderable* comp);
+	std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
 
-	static void UpdateScreenSize();
-	static void UpdateScreenSize(const int& _height, const int& _width);
-	static SDL_Window* GetWindow() { return m_gameWindow; }
+	void UpdateScreenSize();
+	void UpdateScreenSize(const int& _height, const int& _width);
+	SDL_Window* GetWindow() { return m_gameWindow; }
 
 	// 0 Windowed, 1 Fullscreen, 2 Borderless Windowed
 	void SetWindowFullScreen(const int& _mode);
@@ -221,38 +217,38 @@ public:
 	float GetRenderScale() { return m_fRenderScale; }
 	void SetDrawImageFilter(const int& val);
 
-	static void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
-	static glm::vec3 GetClearColour() { return m_clearColour; }
+	void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
+	glm::vec3 GetClearColour() { return m_clearColour; }
 
-	static void SetCamera(Camera* cam) { m_camera = cam; }
-	static Camera* GetCamera() { return m_camera; };
-	static glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
+	void SetCamera(Camera* cam) { m_camera = cam; }
+	Camera* GetCamera() { return m_camera; };
+	glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
-	static glm::mat4 GenerateProjMatrix();
-	static glm::mat4 GenerateProjectionMatrix();
-	static glm::mat4 GenerateOrthographicMatrix();
-	static glm::mat4 GenerateUIOrthographicMatrix();
-	static glm::mat4 GenerateViewMatrix();
+	glm::mat4 GenerateProjMatrix();
+	glm::mat4 GenerateProjectionMatrix();
+	glm::mat4 GenerateOrthographicMatrix();
+	glm::mat4 GenerateUIOrthographicMatrix();
+	glm::mat4 GenerateViewMatrix();
 
-	static std::string GetWindowTitle();
-	static void UpdateWindowTitle(const std::string& _windowTitle) { SDL_SetWindowTitle(m_gameWindow, _windowTitle.c_str()); };
+	std::string GetWindowTitle();
+	void UpdateWindowTitle(const std::string& _windowTitle) { SDL_SetWindowTitle(m_gameWindow, _windowTitle.c_str()); };
 
-	static VkQueue GetGraphicsQueue() { return m_graphicsQueue; }
+	VkQueue GetGraphicsQueue() { return m_graphicsQueue; }
 
-	static VkInstance GetVulkanInstance() { return m_vulkanInstance; }
-	static VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
-	static VkDevice GetLogicalDevice() { return m_device; }
+	VkInstance GetVulkanInstance() { return m_vulkanInstance; }
+	VkPhysicalDevice GetPhysicalDevice() { return m_physicalDevice; }
+	VkDevice GetLogicalDevice() { return m_device; }
 
 	VmaAllocator GetAllocator() { return m_allocator; }
 
-	static VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
+	VkSampleCountFlagBits GetMSAALevel() { return m_msaaSamples; }
 
-	static void IncrementRenderables() { m_iRenderableCount++; }
-	static int GetRenderableCount() { return m_iRenderableCount; }
-	static size_t GetOnScreenRenderableCount() { return m_onScreenObjects.size(); }
-	static void GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount);
+	void IncrementRenderables() { m_iRenderableCount++; }
+	int GetRenderableCount() { return m_iRenderableCount; }
+	size_t GetOnScreenRenderableCount() { return m_onScreenObjects.size(); }
+	void GetOnScreenVerticesAndTriangles(int& vertCount, int& triCount);
 
-	static void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
+	void ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function);
 
 	//Functions below here likely to be moved/removed at some point
 	AllocatedBuffer CreateBuffer(size_t allocSize, VkBufferUsageFlags usage, VmaMemoryUsage memoryUsage, std::string allocationName);
@@ -270,11 +266,4 @@ public:
 	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
 
 	ImGuiContext* GetImguiContext() { return m_imguiContext; }
-
-	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
-
-	static VkImageView CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags);
-
 };
-
-#endif

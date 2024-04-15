@@ -60,8 +60,9 @@ struct Renderable : public Component
 
 	virtual void OnPreRender() 
 	{
-		Renderer::IncrementRenderables();
+		Renderer* renderer = Application::GetApplication()->GetRenderer();
 
+		renderer->IncrementRenderables();
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
 		if (m_transformIndex == -1)
@@ -79,15 +80,17 @@ struct Renderable : public Component
 		for (int i = 0; i < m_boundingBox->size(); i++)
 		{
 			glm::vec3 transPos = transform->m_transformMat * glm::vec4(m_boundingBox->at(i), 1.0f);
-			if (IsPointInViewFrustum(transPos, Renderer::GenerateProjMatrix() * Renderer::GenerateViewMatrix()))
+			if (IsPointInViewFrustum(transPos, renderer->GenerateProjMatrix() * renderer->GenerateViewMatrix()))
 			{
 				m_bOnScreen = true;
 				break;
 			}
 		}
 
+		//m_bOnScreen = true; //temp hack since above check seems to be broken
+
 		if (m_bOnScreen)
-			Renderer::AddOnScreenObject(this);
+			renderer->AddOnScreenObject(this);
 		else
 			return;
 
@@ -95,7 +98,7 @@ struct Renderable : public Component
 		m_drawConstants.m_objectColour = m_colour;
 		m_drawConstants.m_worldMatrix =  transform->m_transformMat;
 
-		Camera* cam = Renderer::GetCamera();
+		Camera* cam = renderer->GetCamera();
 		if (cam != nullptr)
 		{
 			Transform* camTransform = registry->GetComponent<Transform>(cam->m_camTransformIndex);

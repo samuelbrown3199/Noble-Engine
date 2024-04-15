@@ -161,7 +161,7 @@ void Application::MainLoop()
 			continue;
 
 		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplSDL2_NewFrame(Renderer::GetWindow());
+		ImGui_ImplSDL2_NewFrame(m_gameRenderer->GetWindow());
 		ImGui::NewFrame();
 
 		m_pStats->EndPerformanceMeasurement("Pre-Update");

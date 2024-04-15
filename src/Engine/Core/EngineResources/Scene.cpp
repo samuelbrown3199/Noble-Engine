@@ -105,7 +105,7 @@ void Scene::LoadSceneIntoApplication()
 		nlohmann::json lightingInfo = m_sceneData.at("LightingSettings");
 
 		glm::vec3 clearColour = glm::vec3(lightingInfo["ClearColour"][0], lightingInfo["ClearColour"][1], lightingInfo["ClearColour"][2]);
-		Renderer::SetClearColour(clearColour);
+		Application::GetApplication()->GetRenderer()->SetClearColour(clearColour);
 
 		if (lightingInfo.find("AmbientColour") != lightingInfo.end())
 		{

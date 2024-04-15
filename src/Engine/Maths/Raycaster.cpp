@@ -11,13 +11,14 @@ std::deque<Ray> Raycaster::m_vRays;
 
 Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& direction, float maxDistance)
 {
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
     NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
     Ray ray;
     ray.m_rayOrigin = origin;
     ray.m_rayDirection = direction;
 
-    std::vector<Renderable*>* screenObjects = Renderer::GetOnScreenObjects();
+    std::vector<Renderable*>* screenObjects = renderer->GetOnScreenObjects();
     float closestHit = maxDistance;
     for (int i = 0; i < screenObjects->size(); i++)
     {
@@ -56,7 +57,8 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
 
 Ray Raycaster::GetRayToMousePosition(float maxDistance)
 {
-    glm::vec2 screenSize = Renderer::GetScreenSize();
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
+    glm::vec2 screenSize = renderer->GetScreenSize();
 
     // converts a position from the 2d xpos, ypos to a normalized 3d direction
     float x = (2.0f * InputManager::m_iMouseX) / screenSize.x - 1.0f;
@@ -66,7 +68,7 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
     glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, -1.0f, 1.0f);
     // eye space to clip we would multiply by projection so
     // clip space to eye space is the inverse projection
-    glm::mat4 projMatrix = Renderer::GenerateProjMatrix();
+    glm::mat4 projMatrix = renderer->GenerateProjMatrix();
     projMatrix[1][1] *= -1;
 
     glm::vec4 ray_eye = glm::inverse(projMatrix) * ray_clip;
@@ -74,16 +76,16 @@ Ray Raycaster::GetRayToMousePosition(float maxDistance)
     ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0f, 0.0f);
     // world space to eye space is usually multiply by view so
     // eye space to world space is inverse view
-    glm::vec4 inv_ray_wor = (glm::inverse(Renderer::GenerateViewMatrix()) * ray_eye);
+    glm::vec4 inv_ray_wor = (glm::inverse(renderer->GenerateViewMatrix()) * ray_eye);
     glm::vec3 ray_wor = glm::vec3(inv_ray_wor.x, inv_ray_wor.y, inv_ray_wor.z);
     ray_wor = normalize(ray_wor);
 
     Transform* camTransform;
-    if (Renderer::GetCamera() != nullptr)
+    if (renderer->GetCamera() != nullptr)
     {
         NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
-        camTransform = registry->GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
+        camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
         return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
     }
 

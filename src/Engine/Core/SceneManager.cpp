@@ -75,6 +75,8 @@ void SceneManager::SaveScene(std::string scenePath)
 	if (scenePath.empty())
 		return;
 
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
+
 	Logger::LogInformation("Saving Scene " + scenePath);
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
@@ -86,9 +88,7 @@ void SceneManager::SaveScene(std::string scenePath)
 	nlohmann::json data;
 	AddVersionDataToJson(data);
 
-	Renderer* renderer = Application::GetApplication()->GetRenderer();
-
-	glm::vec3 clearColour = Renderer::GetClearColour();
+	glm::vec3 clearColour = renderer->GetClearColour();
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };
 	data["LightingSettings"]["AmbientColour"] = { renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y , renderer->m_sceneData.ambientColour.z , renderer->m_sceneData.ambientColour.w };
 	data["LightingSettings"]["SunlightDirection"] = { renderer->m_sceneData.sunlightDirection.x,renderer->m_sceneData.sunlightDirection.y, renderer->m_sceneData.sunlightDirection.z, renderer->m_sceneData.sunlightDirection.w };

@@ -42,7 +42,7 @@ void Texture::OnUnload()
 
     Renderer* renderer = Application::GetApplication()->GetRenderer();
 
-    vkDestroySampler(Renderer::GetLogicalDevice(), m_textureSampler, nullptr);
+    vkDestroySampler(renderer->GetLogicalDevice(), m_textureSampler, nullptr);
     vkDestroyImageView(renderer->GetLogicalDevice(), m_texture.m_imageView, nullptr);
     vmaDestroyImage(renderer->GetAllocator(), m_texture.m_image, m_texture.m_allocation);
     m_bIsLoaded = false;
@@ -68,6 +68,8 @@ void Texture::SetResourceToDefaults(std::shared_ptr<Resource> res)
 
 void Texture::CreateTextureSampler(VkFilter filter)
 {
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
+
     VkSamplerCreateInfo samplerInfo{};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     samplerInfo.magFilter = filter;
@@ -78,7 +80,7 @@ void Texture::CreateTextureSampler(VkFilter filter)
     samplerInfo.anisotropyEnable = VK_TRUE; //might be worth making conditional later, refer back to conclusion in https://vulkan-tutorial.com/Texture_mapping/Image_view_and_sampler
 
     VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(Renderer::GetPhysicalDevice(), &properties);
+    vkGetPhysicalDeviceProperties(renderer->GetPhysicalDevice(), &properties);
 
     samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
     samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -90,7 +92,7 @@ void Texture::CreateTextureSampler(VkFilter filter)
     samplerInfo.minLod = 0.0f;
     samplerInfo.maxLod = static_cast<float>(m_iMipLevels);
 
-    if (vkCreateSampler(Renderer::GetLogicalDevice(), &samplerInfo, nullptr, &m_textureSampler) != VK_SUCCESS)
+    if (vkCreateSampler(renderer->GetLogicalDevice(), &samplerInfo, nullptr, &m_textureSampler) != VK_SUCCESS)
     {
         Logger::LogError("Failed to create texture sampler.", 2);
     }

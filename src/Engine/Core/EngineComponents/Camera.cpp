@@ -30,7 +30,7 @@ void Camera::PreUpdate()
 	}
 
 	if (bestCam != -1)
-		Renderer::SetCamera(&dataList->m_componentData.at(bestCam));
+		Application::GetApplication()->GetRenderer()->SetCamera(&dataList->m_componentData.at(bestCam));
 }
 
 void Camera::OnUpdate()

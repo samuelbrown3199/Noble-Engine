@@ -36,40 +36,6 @@
 
 #include "VkBootstrap.h"
 
-SDL_Window* Renderer::m_gameWindow;
-
-uint32_t Renderer::m_iCurrentFrame = 0;
-VkSampleCountFlagBits Renderer::m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-bool Renderer::m_bVsync = false;
-
-glm::vec3 Renderer::m_clearColour = glm::vec3(0.0f, 0.0f, 0.0f);
-
-int Renderer::m_iScreenWidth = 2000;
-int Renderer::m_iScreenHeight = 1000;
-float Renderer::m_fNearPlane = 0.1f;
-float Renderer::m_fFarPlane = 1000.0f;
-const float Renderer::m_fMaxScale = 1000;
-const float Renderer::m_fMinScale = 3;
-
-Camera* Renderer::m_camera = nullptr;
-
-VkInstance Renderer::m_vulkanInstance;
-VkPhysicalDevice Renderer::m_physicalDevice = VK_NULL_HANDLE;
-VkDevice Renderer::m_device;
-
-VkExtent2D Renderer::m_drawExtent;
-VkQueue Renderer::m_graphicsQueue;
-
-std::vector<Renderable*> Renderer::m_onScreenObjects;
-int Renderer::m_iRenderableCount = 0;
-
-VmaAllocator Renderer::m_allocator;
-
-VkFence Renderer::m_immediateFence;
-VkCommandBuffer Renderer::m_immediateCommandBuffer;
-VkCommandPool Renderer::m_immediateCommandPool;
-
 //---------- public functions ---------
 
 Renderer::Renderer(const std::string _windowName)
@@ -635,10 +601,10 @@ void Renderer::DrawFrame()
 	vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-	if(!drawToWindow)
+	if(!m_bDrawToWindow)
 		vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
 
-	if (drawToWindow)
+	if (m_bDrawToWindow)
 	{
 		if (m_drawWindowSet == VK_NULL_HANDLE)
 			m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
@@ -760,7 +726,7 @@ void Renderer::DrawImGui(VkCommandBuffer cmd, VkImage targetImage, VkImageView t
 	VkRenderingAttachmentInfo colorAttachment = vkinit::AttachmentInfo(targetImageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 	VkRenderingInfo renderInfo = vkinit::RenderingInfo(m_swapchainExtent, &colorAttachment, nullptr);
 
-	if (drawToWindow)
+	if (m_bDrawToWindow)
 	{
 		VkClearColorValue clearValue;
 		clearValue = { { 0.0f, 0.0f, 0.0f, 1.0f } };
@@ -817,28 +783,6 @@ void Renderer::InitializeDefaultData()
 		vkDestroySampler(m_device, m_defaultSamplerNearest, nullptr);
 		DestroyImage(m_errorCheckerboardImage);
 	});
-}
-
-
-VkImageView Renderer::CreateImageView(VkImage image, uint32_t mipLevels, VkFormat format, VkImageAspectFlags aspectFlags)
-{
-	VkImageViewCreateInfo viewInfo{};
-	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	viewInfo.image = image;
-	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel = 0;
-	viewInfo.subresourceRange.levelCount = mipLevels;
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount = 1;
-
-	VkImageView imageView;
-	if (vkCreateImageView(m_device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create texture image view!");
-	}
-
-	return imageView;
 }
 
 void Renderer::UpdateScreenSize()

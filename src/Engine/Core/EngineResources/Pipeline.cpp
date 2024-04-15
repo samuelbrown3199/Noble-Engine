@@ -22,13 +22,16 @@ void Shader::OnLoad()
 {
     Resource::OnLoad();
 
-    if (!vkutil::LoadShaderModule(m_sResourcePath.c_str(), Renderer::GetLogicalDevice(), &m_shaderModule))
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
+
+    if (!vkutil::LoadShaderModule(m_sResourcePath.c_str(), renderer->GetLogicalDevice(), &m_shaderModule))
         Logger::LogError(FormatString("Failed to load shader module: %s", m_sLocalPath), 1);
 }
 
 void Shader::OnUnload()
 {
-    vkDestroyShaderModule(Renderer::GetLogicalDevice(), m_shaderModule, nullptr);
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
+    vkDestroyShaderModule(renderer->GetLogicalDevice(), m_shaderModule, nullptr);
 }
 
 void Shader::DoResourceInterface()
@@ -114,8 +117,10 @@ void Pipeline::OnUnload()
     if (!m_bIsLoaded)
         return;
 
-    vkDestroyPipelineLayout(Renderer::GetLogicalDevice(), m_pipelineLayout, nullptr);
-    vkDestroyPipeline(Renderer::GetLogicalDevice(), m_pipeline, nullptr);
+    Renderer* renderer = Application::GetApplication()->GetRenderer();
+
+    vkDestroyPipelineLayout(renderer->GetLogicalDevice(), m_pipelineLayout, nullptr);
+    vkDestroyPipeline(renderer->GetLogicalDevice(), m_pipeline, nullptr);
 
     m_bIsLoaded = false;
 }
@@ -364,7 +369,7 @@ void Pipeline::CreatePipeline()
         //Some/all of these settings should be parameters to be changed in the pipeline resource. ^^
 
         //finally build the pipeline
-        m_pipeline = pipelineBuilder.BuildPipeline(Renderer::GetLogicalDevice());
+        m_pipeline = pipelineBuilder.BuildPipeline(renderer->GetLogicalDevice());
     }
 
     Logger::LogInformation("Created pipeline " + m_sLocalPath);

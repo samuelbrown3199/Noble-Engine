@@ -66,6 +66,7 @@ void Light::PreUpdate() //probably a far better way to do this. Legacy code begg
 
 void Light::OnUpdate()
 {
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	if (m_transformIndex == -1)
 	{
@@ -77,7 +78,7 @@ void Light::OnUpdate()
 	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
 	Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
-	Transform* camTransform = registry->GetComponent<Transform>(Renderer::GetCamera()->m_camTransformIndex);
+	Transform* camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
 
 	switch (m_lightType)
 	{

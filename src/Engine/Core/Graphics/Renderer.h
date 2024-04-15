@@ -80,6 +80,7 @@ private:
 	static glm::vec3 m_clearColour;
 
 	static VkInstance m_vulkanInstance;
+	ImGuiContext* m_imguiContext;
 	VkDebugUtilsMessengerEXT m_debugMessenger;
 	static VkPhysicalDevice m_physicalDevice;
 	static VkDevice m_device;
@@ -266,6 +267,8 @@ public:
 
 	VkFormat GetDrawImageFormat() { return m_drawImage.m_imageFormat; }
 	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
+
+	ImGuiContext* GetImguiContext() { return m_imguiContext; }
 
 	//-------------------------------FUNCTIONS FOR PROTOTYPING-------------------------------------
 

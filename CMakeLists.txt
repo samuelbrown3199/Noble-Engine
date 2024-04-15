@@ -117,6 +117,9 @@ set (
 	src/Engine/Core/Application.h
 	src/Engine/Core/Application.cpp
 
+	src/Engine/Core/NobleDLL.h
+	src/Engine/Core/NobleDLL.cpp
+
 	src/Engine/Core/AudioManager.h
 	src/Engine/Core/AudioManager.cpp
 

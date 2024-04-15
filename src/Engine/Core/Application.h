@@ -20,6 +20,7 @@ struct Entity;
 class NobleRegistry;
 class SceneManager;
 class ProjectFile;
+class NobleDLL;
 
 class Editor
 {
@@ -41,8 +42,6 @@ class Application
 	friend class SceneManager;
 
 private:
-    
-	static std::weak_ptr<Application> m_self;
 
 	bool m_bPlayMode;
 
@@ -62,6 +61,8 @@ private:
 
     bool m_bLoop;
 
+	NobleDLL* m_gameDLL;
+
     PerformanceStats* m_pStats;
 
 	std::deque<Entity*> m_vDeletionEntities;
@@ -72,6 +73,8 @@ private:
 	std::string GetUniqueEntityID();
 
 public:
+
+	static std::weak_ptr<Application> m_self;
 
 	static std::shared_ptr<Application> GetApplication() { return m_self.lock(); }
     static std::shared_ptr<Application> StartApplication(const std::string _windowName);

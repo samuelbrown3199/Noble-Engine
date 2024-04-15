@@ -2,10 +2,10 @@
 #include "InputManager.h"
 #include "Registry.h"
 #include "ProjectFile.h"
+#include "SceneManager.h"
+#include "NobleDLL.h"
 
 #include "../Game/GameRegister.h"
-
-#include "SceneManager.h"
 
 #include "EngineComponents/Transform.h"
 #include "EngineComponents/AudioListener.h"
@@ -30,9 +30,6 @@ std::weak_ptr<Application> Application::m_self;
 
 //----------------- Private Functions ----------------------
 
-#include <Windows.h>
-typedef void(__stdcall * DLLFunc)(std::string);
-
 //----------------- Public Functions -----------------------
 
 std::shared_ptr<Application> Application::StartApplication(const std::string _windowName)
@@ -44,6 +41,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 	rtn->m_bLoop = true;
 
+	rtn->m_pStats = new PerformanceStats();
 	rtn->m_registry = new NobleRegistry();
 	rtn->m_logger = new Logger();
 
@@ -60,7 +58,6 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
-	rtn->m_pStats = new PerformanceStats();
 	rtn->m_sceneManager = new SceneManager();
 
 	rtn->m_registry->RegisterComponent<Transform>("Transform", false, 1024, true, true);
@@ -93,25 +90,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 		Logger::LogInformation("No project files found in working directory. Engine is running in editor mode.");
 	}
 
-	Logger::LogInformation("Engine started successfully");
+	rtn->m_gameDLL = new NobleDLL("C:\\Users\\samue\\Desktop\\Development\\Projects\\Noble-Engine\\TechDemos\\TechDemo1\\NobleGame.dll");
+	rtn->m_gameDLL->LoadDLL(rtn->GetApplication());
 
-	HINSTANCE hGetProcIDLL = LoadLibrary("C:\\Users\\samue\\Desktop\\Development\\Projects\\Noble-Engine\\TechDemos\\TechDemo1\\NobleGame.dll");
-	if (!hGetProcIDLL)
-	{
-		Logger::LogError("Could not load game dll", 2);
-	}
-	else
-	{
-		DLLFunc func = (DLLFunc)GetProcAddress(hGetProcIDLL, "TestFunction");
-		if (!func)
-		{
-			Logger::LogError("Could not find function in game dll", 2);
-		}
-		else
-		{
-			func("Hello from engine");
-		}
-	}
+	Logger::LogInformation("Engine started successfully");
 
 	rtn->m_sceneManager->LoadDefaultScene();
 

@@ -537,7 +537,7 @@ void Renderer::InitializeImgui()
 	// 2: initialize imgui library
 
 	// this initializes the core structures of imgui
-	ImGui::CreateContext();
+	m_imguiContext = ImGui::CreateContext();
 	ImPlot::CreateContext();
 
 	// this initializes imgui for SDL

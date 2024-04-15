@@ -78,7 +78,14 @@ class NobleRegistry
 	std::vector<std::pair<std::string, PushConstantRegistry>> m_vPushConstantRegistry;
 	std::vector<std::pair<std::string, DescriptorRegistry>> m_vDescriptorRegistry;
 
+	PerformanceStats* m_pPerformanceStats;
+
 public:
+
+	NobleRegistry()
+	{
+		m_pPerformanceStats = Application::GetApplication()->GetPerformanceStats();
+	}
 
 	void RegisterResource(std::string ID, Resource* resource, bool requiresFile);
 	std::vector<std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_vResourceRegistry; }
@@ -92,8 +99,7 @@ public:
 		ComponentRegistry reg(comp, complist, useThreads, maxComponentsPerThread, updateEditMode, renderEditMode);
 		m_vComponentRegistry.push_back(std::make_pair(ID, reg));
 
-		PerformanceStats* pStats = Application::GetApplication()->GetPerformanceStats();
-		pStats->AddComponentMeasurement(ID);
+		m_pPerformanceStats->AddComponentMeasurement(ID);
 	}
 	std::vector<std::pair<std::string, ComponentRegistry>>* GetComponentRegistry() { return &m_vComponentRegistry; }
 	Datalist* GetComponentList(std::string ID);

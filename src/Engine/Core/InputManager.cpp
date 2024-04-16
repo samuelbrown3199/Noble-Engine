@@ -10,19 +10,6 @@
 #include "../imgui/backends/imgui_impl_sdl2.h"
 #include "../imgui/backends/imgui_impl_opengl3.h"
 
-Controller InputManager::m_controller;
-
-std::vector<Keybind> InputManager::m_vKeybinds;
-
-int InputManager::m_iMouseX = 0;
-int InputManager::m_iMouseY = 0;
-glm::vec2 InputManager::m_iWorldMousePos;
-
-std::vector<SDL_Scancode> InputManager::m_vDownKeys = std::vector<SDL_Scancode>(), InputManager::m_vOldDownKeys = std::vector<SDL_Scancode>();
-std::vector<SDL_Scancode> InputManager::m_vUpKeys = std::vector<SDL_Scancode>();
-std::vector<int> InputManager::m_vDownMouseButtons = std::vector<int>(), InputManager::m_vOldMouseButtons = std::vector<int>();
-std::vector<int> InputManager::m_vUpMouseButtons = std::vector<int>();
-
 void InputManager::RemoveKeyFromOldDownKeys(SDL_Scancode key)
 {
 	for (int i = 0; i < m_vOldDownKeys.size(); i++)

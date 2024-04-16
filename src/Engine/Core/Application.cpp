@@ -56,6 +56,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_resourceManager = new ResourceManager();
 	rtn->m_audioManager = new AudioManager();
 	rtn->m_threadManager = new ThreadingManager();
+	rtn->m_inputManager = new InputManager();
 	rtn->m_sceneManager = new SceneManager();
 
 	rtn->RegisterDefaultComponents();
@@ -117,14 +118,14 @@ void Application::BindEditor(Editor* editor)
 
 void Application::RegisterCoreKeybinds()
 {
-	InputManager::AddKeybind(Keybind("Forward", { Input(SDLK_w, -1), Input(SDLK_UP, -1) }));
-	InputManager::AddKeybind(Keybind("Back", { Input(SDLK_s, -1), Input(SDLK_DOWN, -1) }));
-	InputManager::AddKeybind(Keybind("Left", { Input(SDLK_a, -1), Input(SDLK_LEFT, -1) }));
-	InputManager::AddKeybind(Keybind("Right", { Input(SDLK_d, -1), Input(SDLK_RIGHT, -1) }));
+	m_inputManager->AddKeybind(Keybind("Forward", { Input(SDLK_w, -1), Input(SDLK_UP, -1) }));
+	m_inputManager->AddKeybind(Keybind("Back", { Input(SDLK_s, -1), Input(SDLK_DOWN, -1) }));
+	m_inputManager->AddKeybind(Keybind("Left", { Input(SDLK_a, -1), Input(SDLK_LEFT, -1) }));
+	m_inputManager->AddKeybind(Keybind("Right", { Input(SDLK_d, -1), Input(SDLK_RIGHT, -1) }));
 
-	InputManager::AddKeybind(Keybind("LeftMouse", { Input(SDLK_UNKNOWN, 1) }));
-	InputManager::AddKeybind(Keybind("MiddleMouse", { Input(SDLK_UNKNOWN, 2) }));
-	InputManager::AddKeybind(Keybind("RightMouse", { Input(SDLK_UNKNOWN, 3) }));
+	m_inputManager->AddKeybind(Keybind("LeftMouse", { Input(SDLK_UNKNOWN, 1) }));
+	m_inputManager->AddKeybind(Keybind("MiddleMouse", { Input(SDLK_UNKNOWN, 2) }));
+	m_inputManager->AddKeybind(Keybind("RightMouse", { Input(SDLK_UNKNOWN, 3) }));
 }
 
 void Application::LoadSettings()
@@ -154,7 +155,7 @@ void Application::MainLoop()
 		m_pStats->StartPerformanceMeasurement("Pre-Update");
 
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
-		InputManager::HandleGeneralInput();
+		m_inputManager->HandleGeneralInput();
 
 		Uint32 windowFlags = SDL_GetWindowFlags(m_gameRenderer->GetWindow());
 		if (windowFlags & SDL_WINDOW_MINIMIZED)
@@ -237,7 +238,7 @@ void Application::MainLoop()
 
 		m_pStats->StartPerformanceMeasurement("Cleanup");
 		CleanupDeletionEntities();
-		InputManager::ClearFrameInputs();
+		m_inputManager->ClearFrameInputs();
 		m_resourceManager->UnloadUnusedResources();
 		m_pStats->EndPerformanceMeasurement("Cleanup");
 

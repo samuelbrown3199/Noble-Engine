@@ -155,68 +155,67 @@ class InputManager
 {
 private:
 
-	static Controller m_controller;
+	Controller m_controller;
+	std::vector<Keybind> m_vKeybinds;
 
-	static std::vector<Keybind> m_vKeybinds;
-
-	static void RemoveKeyFromOldDownKeys(SDL_Scancode key);
+	void RemoveKeyFromOldDownKeys(SDL_Scancode key);
 
 public:
 	/**
 	*Stores the mouse x and y positions.
 	*/
-	static int m_iMouseX, m_iMouseY;
-	static glm::vec2 m_iWorldMousePos;
-	static std::vector<SDL_Scancode> m_vDownKeys, m_vOldDownKeys;
-	static std::vector<SDL_Scancode> m_vUpKeys;
-	static std::vector<int> m_vDownMouseButtons, m_vOldMouseButtons;
-	static std::vector<int> m_vUpMouseButtons;
+	int m_iMouseX = 0, m_iMouseY=0;
+	glm::vec2 m_iWorldMousePos;
+	std::vector<SDL_Scancode> m_vDownKeys, m_vOldDownKeys;
+	std::vector<SDL_Scancode> m_vUpKeys;
+	std::vector<int> m_vDownMouseButtons, m_vOldMouseButtons;
+	std::vector<int> m_vUpMouseButtons;
 
-	static void SaveKeybindings();
-	static void LoadKeybindings();
+	void SaveKeybindings();
+	void LoadKeybindings();
 
-	static void HandleGeneralInput();
+	void HandleGeneralInput();
 	
-	static void AddKeybind(Keybind keybind);
-	static void ChangeKeybind(std::string _keybind, int index, Input newInput);
+	void AddKeybind(Keybind keybind);
+	void ChangeKeybind(std::string _keybind, int index, Input newInput);
 
-	static Keybind* FindKeybind(std::string _keybind);
-	static bool GetKeybind(std::string _keybind);
-	static bool GetKeybindDown(std::string _keybind);
-	static bool GetKeybindUp(std::string _keybind);
+	Keybind* FindKeybind(std::string _keybind);
+	bool GetKeybind(std::string _keybind);
+	bool GetKeybindDown(std::string _keybind);
+	bool GetKeybindUp(std::string _keybind);
 
 	/**
 	*Checks if a key is down. Uses SDL keycodes which can be found here: https://wiki.libsdl.org/SDL_Scancode
 	*/
-	static bool GetKey(SDL_Keycode _key);
+	bool GetKey(SDL_Keycode _key);
 	/**
 	*Checks if the key was pressed this frame.
 	*/
-	static bool GetKeyDown(SDL_Keycode _key);
+	bool GetKeyDown(SDL_Keycode _key);
 	/**
 	*Checks if the key was released this frame.
 	*/
-	static bool GetKeyUp(SDL_Keycode _key);
+	bool GetKeyUp(SDL_Keycode _key);
 	/**
 	*Checks if a mouse button is down. Button 0 is left, 1 is right, 2 is middle.
 	*/
-	static bool GetMouseButton(int _button);
+	bool GetMouseButton(int _button);
 	/**
 	*Checks if the mouse button has been pressed this frame.
 	*/
-	static bool GetMouseButtonDown(int _button);
+	bool GetMouseButtonDown(int _button);
 	/**
 	*Checks if the mouse button has been released this frame.
 	*/
-	static bool GetMouseButtonUp(int _button);
+	bool GetMouseButtonUp(int _button);
 	/**
 	*Gets the mouse position and stores it in the mouse position variables.
 	*/
-	static void GetMousePosition();
+	void GetMousePosition();
 	/**
 	*Clears the keys that are currently up and down.
 	*/
-	static void ClearFrameInputs();
+	void ClearFrameInputs();
 };
 
 #endif

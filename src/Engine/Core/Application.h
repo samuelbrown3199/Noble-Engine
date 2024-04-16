@@ -17,6 +17,7 @@
 #include "ToolUI.hpp"
 
 struct Entity;
+class InputManager;
 class NobleRegistry;
 class SceneManager;
 class ProjectFile;
@@ -51,6 +52,7 @@ private:
     ThreadingManager* m_threadManager;
     ResourceManager* m_resourceManager;
     Logger* m_logger;
+	InputManager* m_inputManager;
 	SceneManager* m_sceneManager;
 
 	Editor* m_editor;
@@ -113,6 +115,7 @@ public:
 	ThreadingManager* GetThreadingManager() { return m_threadManager; }
 	ResourceManager* GetResourceManager() { return m_resourceManager; }
 	Logger* GetLogger() { return m_logger; }
+	InputManager* GetInputManager() { return m_inputManager; }
 	SceneManager* GetSceneManager() { return m_sceneManager; }
 
 	void SetProjectFile(std::string path);

@@ -34,6 +34,7 @@ void DebugCam::RemoveBehaviourFromEntity(std::string entityID)
 void DebugCam::Start()
 {
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
+	InputManager* inputManager = Application::GetApplication()->GetInputManager();
 
 	glm::vec3 pos = glm::vec3(5, 0, 0);
 	glm::vec3 rot = glm::vec3(0, 0, -1);
@@ -57,8 +58,8 @@ void DebugCam::Start()
 
 	hackCam->AddComponent<AudioListener>();
 
-	oldMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
-	newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
+	oldMousePos = glm::vec2(inputManager->m_iMouseX, inputManager->m_iMouseY);
+	newMousePos = glm::vec2(inputManager->m_iMouseX, inputManager->m_iMouseY);
 }
 
 void DebugCam::Update()
@@ -70,6 +71,7 @@ void DebugCam::Update()
 void DebugCam::UpdateControls()
 {
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
+	InputManager* inputManager = Application::GetApplication()->GetInputManager();
 	Camera* ca = renderer->GetCamera();
 	if (ca == nullptr)
 		return;
@@ -81,33 +83,33 @@ void DebugCam::UpdateControls()
 
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	if (InputManager::GetKeybind("Forward"))
+	if (inputManager->GetKeybind("Forward"))
 	{
 		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * camTransform->m_rotation;
 	}
-	if (InputManager::GetKeybind("Back"))
+	if (inputManager->GetKeybind("Back"))
 	{
 		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * camTransform->m_rotation;
 	}
-	if (InputManager::GetKeybind("Left"))
+	if (inputManager->GetKeybind("Left"))
 	{
 		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
 		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * direction;
 	}
-	if (InputManager::GetKeybind("Right"))
+	if (inputManager->GetKeybind("Right"))
 	{
 		glm::vec3 direction = glm::cross(camTransform->m_rotation, up);
 		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * direction;
 	}
-	if (InputManager::GetKey(SDLK_SPACE))
+	if (inputManager->GetKey(SDLK_SPACE))
 	{
 		camTransform->m_position += (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * up;
 	}
-	if (InputManager::GetKey(SDLK_x))
+	if (inputManager->GetKey(SDLK_x))
 	{
 		camTransform->m_position -= (m_fMovementSpeed * (float)PerformanceStats::m_dDeltaT) * up;
 	}
-	if (InputManager::GetKeyDown(SDLK_p))
+	if (inputManager->GetKeyDown(SDLK_p))
 	{
 		if (ca->m_viewMode == orthographic)
 			ca->m_viewMode = projection;
@@ -115,7 +117,7 @@ void DebugCam::UpdateControls()
 			ca->m_viewMode = orthographic;
 	}
 
-	if (InputManager::GetKeybindDown("LeftMouse") && InputManager::GetKey(SDLK_r))
+	if (inputManager->GetKeybindDown("LeftMouse") && inputManager->GetKey(SDLK_r))
 	{
 		Ray mouseRay = Raycaster::GetRayToMousePosition();
 		if (mouseRay.m_hitObject)
@@ -136,13 +138,14 @@ void DebugCam::UpdateControls()
 void DebugCam::UpdateCameraRotation()
 {
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
-	if (InputManager::GetKeybind("RightMouse"))
+	InputManager* inputManager = Application::GetApplication()->GetInputManager();
+	if (inputManager->GetKeybind("RightMouse"))
 	{
 		Camera* ca = renderer->GetCamera();
 		if (ca == nullptr)
 			return;
 
-		newMousePos = glm::vec2(InputManager::m_iMouseX, InputManager::m_iMouseY);
+		newMousePos = glm::vec2(inputManager->m_iMouseX, inputManager->m_iMouseY);
 
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);

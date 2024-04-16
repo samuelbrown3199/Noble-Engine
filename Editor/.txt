@@ -82,3 +82,23 @@
 [16:42:41.954] - Registering push constants from DLL
 [16:42:41.954] - Push constants registered from DLL
 [16:42:41.954] - DLL Initialized
+[16:45:08.928] - Initializing DLL
+[16:45:08.928] - Registering components from DLL
+[16:45:08.928] - Components registered from DLL
+[16:45:08.928] - Registering resources from DLL
+[16:45:08.928] - Resources registered from DLL
+[16:45:08.929] - Registering descriptors from DLL
+[16:45:08.929] - Descriptors registered from DLL
+[16:45:08.929] - Registering push constants from DLL
+[16:45:08.929] - Push constants registered from DLL
+[16:45:08.929] - DLL Initialized
+[16:58:42.720] - Initializing DLL
+[16:58:42.721] - Registering components from DLL
+[16:58:42.721] - Components registered from DLL
+[16:58:42.721] - Registering resources from DLL
+[16:58:42.721] - Resources registered from DLL
+[16:58:42.722] - Registering descriptors from DLL
+[16:58:42.722] - Descriptors registered from DLL
+[16:58:42.722] - Registering push constants from DLL
+[16:58:42.722] - Push constants registered from DLL
+[16:58:42.722] - DLL Initialized

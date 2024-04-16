@@ -126,7 +126,8 @@ void EditorUI::DoInterface()
 
 void EditorUI::HandleShortcutInputs()
 {
-	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_q))
+	InputManager* inputManager = Application::GetApplication()->GetInputManager();
+	if (inputManager->GetKey(SDLK_LCTRL) && inputManager->GetKeyDown(SDLK_q))
 		CreateEditorCam();
 
 	/*if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_r))
@@ -135,9 +136,9 @@ void EditorUI::HandleShortcutInputs()
 	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_p))
 		OpenProfiler();*/
 
-	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_RETURN))
+	if (inputManager->GetKey(SDLK_LCTRL) && inputManager->GetKeyDown(SDLK_RETURN))
 		ChangeEditorMode();
 
-	if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_s))
+	if (inputManager->GetKey(SDLK_LCTRL) && inputManager->GetKeyDown(SDLK_s))
 		Application::GetApplication()->GetSceneManager()->SaveLoadedScene();
 }

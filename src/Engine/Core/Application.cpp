@@ -168,7 +168,7 @@ void Application::MainLoop()
 
 		//update start
 		m_pStats->StartPerformanceMeasurement("Update");
-		AudioManager::UpdateSystem();
+		m_audioManager->UpdateSystem();
 		for (int i = 0; i < m_vToolUIs.size(); i++)
 		{
 			if (m_vToolUIs.at(i)->m_uiOpen)

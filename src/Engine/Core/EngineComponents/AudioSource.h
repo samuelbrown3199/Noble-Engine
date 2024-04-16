@@ -84,6 +84,7 @@ struct AudioSource : public Component
 	virtual void DoComponentInterface() override
 	{
 		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+		AudioManager* aManager = Application::GetApplication()->GetAudioManager();
 
 		ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
 
@@ -97,7 +98,7 @@ struct AudioSource : public Component
 		ImGui::Checkbox("Paused", &m_bPaused);
 		ImGui::Checkbox("3D Sound", &m_b3DSound);
 
-		std::map<std::string, float> mixerOptions = AudioManager::GetMixerOptions();
+		std::map<std::string, float> mixerOptions = aManager->GetMixerOptions();
 		if (ImGui::BeginListBox("Mixer Option"))
 		{
 			std::map<std::string, float>::iterator itr;

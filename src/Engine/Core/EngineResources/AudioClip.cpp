@@ -25,7 +25,9 @@ void AudioClip::OnLoad()
 {
 	Resource::OnLoad();
 
-	FMOD_RESULT result = FMOD_System_CreateSound(AudioManager::GetFMODSystem(), m_sResourcePath.c_str(), m_mode, nullptr, &m_sound);
+	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
+
+	FMOD_RESULT result = FMOD_System_CreateSound(aManager->GetFMODSystem(), m_sResourcePath.c_str(), m_mode, nullptr, &m_sound);
 	if (result != FMOD_OK)
 		Logger::LogError("Failed to load sound file " + m_sResourcePath, 2);
 

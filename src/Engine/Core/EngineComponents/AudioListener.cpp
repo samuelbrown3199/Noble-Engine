@@ -16,6 +16,8 @@ void AudioListener::PreUpdate()
 	m_iCurrentListener = 0;
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
+
 	ComponentDatalist<AudioListener>* dataList = dynamic_cast<ComponentDatalist<AudioListener>*>(registry->GetComponentList(GetComponentID()));
 
 	int listenerCount = 0;
@@ -27,12 +29,13 @@ void AudioListener::PreUpdate()
 		listenerCount++;
 	}
 
-	FMOD_System_Set3DNumListeners(AudioManager::GetFMODSystem(), listenerCount);
+	FMOD_System_Set3DNumListeners(aManager->GetFMODSystem(), listenerCount);
 }
 
 void AudioListener::OnUpdate()
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
 
 	if (m_transformIndex == -1)
 	{
@@ -65,6 +68,6 @@ void AudioListener::OnUpdate()
 	up.y = 1;
 	up.z = 0;
 
-	FMOD_RESULT res = FMOD_System_Set3DListenerAttributes(AudioManager::GetFMODSystem(), m_iCurrentListener, &pos, &vel, &forward, &up);
+	FMOD_RESULT res = FMOD_System_Set3DListenerAttributes(aManager->GetFMODSystem(), m_iCurrentListener, &pos, &vel, &forward, &up);
 	m_iCurrentListener++;
 }

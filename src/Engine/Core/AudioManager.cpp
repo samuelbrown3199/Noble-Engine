@@ -2,11 +2,6 @@
 #include "Logger.h"
 #include "../Useful.h"
 
-bool AudioManager::m_bUseAudio = true;
-std::map<std::string, float> AudioManager::m_mMixerOptions;
-
-FMOD_SYSTEM* AudioManager::m_fmodSystem;
-
 AudioManager::AudioManager()
 {
 	FMOD_RESULT result = FMOD_System_Create(&m_fmodSystem, FMOD_VERSION);

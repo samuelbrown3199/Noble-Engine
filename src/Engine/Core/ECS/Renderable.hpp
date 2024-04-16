@@ -87,8 +87,6 @@ struct Renderable : public Component
 			}
 		}
 
-		//m_bOnScreen = true; //temp hack since above check seems to be broken
-
 		if (m_bOnScreen)
 			renderer->AddOnScreenObject(this);
 		else

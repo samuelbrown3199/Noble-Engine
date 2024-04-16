@@ -13,15 +13,15 @@ class AudioManager
 private:
 
 	const int m_iMaxChannels = 64;
-	static FMOD_SYSTEM* m_fmodSystem;
+	FMOD_SYSTEM* m_fmodSystem;
 	/**
 	*A check that can be used to determine whether the audio systems initialized correctly.
 	*/
-	static bool m_bUseAudio;
+	bool m_bUseAudio = true;
 	/**
 	*Stores the options for the audio mixer.
 	*/
-	static std::map<std::string, float> m_mMixerOptions;
+	std::map<std::string, float> m_mMixerOptions;
 
 public:
 	/**
@@ -32,16 +32,16 @@ public:
 	/**
 	*Adds an option to the audio mixer.
 	*/
-	static void AddMixerOption(std::string _optionName, float _initialValue);
+	void AddMixerOption(std::string _optionName, float _initialValue);
 	/**
 	*Gets an option from the audio mixer.
 	*/
-	static float GetAudioMixerOption(std::string _optionName);
-	static void UpdateAudioMixerOption(std::string _optionName, float _newValue);
-	static std::map<std::string, float> GetMixerOptions() { return m_mMixerOptions; }
+	float GetAudioMixerOption(std::string _optionName);
+	void UpdateAudioMixerOption(std::string _optionName, float _newValue);
+	std::map<std::string, float> GetMixerOptions() { return m_mMixerOptions; }
 
-	static FMOD_SYSTEM* GetFMODSystem() { return m_fmodSystem; }
-	static void UpdateSystem() { FMOD_System_Update(m_fmodSystem); }
+	FMOD_SYSTEM* GetFMODSystem() { return m_fmodSystem; }
+	void UpdateSystem() { FMOD_System_Update(m_fmodSystem); }
 };
 
 #endif

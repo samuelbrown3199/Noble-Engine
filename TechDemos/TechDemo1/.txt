@@ -1,0 +1,30 @@
+[22:47:56.204] - Initializing DLL
+[22:47:56.205] - Registering components from DLL
+[22:47:56.205] - Components registered from DLL
+[22:47:56.205] - Registering resources from DLL
+[22:47:56.205] - Resources registered from DLL
+[22:47:56.205] - Registering descriptors from DLL
+[22:47:56.206] - Descriptors registered from DLL
+[22:47:56.206] - Registering push constants from DLL
+[22:47:56.206] - Push constants registered from DLL
+[22:47:56.206] - DLL Initialized
+[09:26:03.215] - Initializing DLL
+[09:26:03.216] - Registering components from DLL
+[09:26:03.216] - Components registered from DLL
+[09:26:03.217] - Registering resources from DLL
+[09:26:03.217] - Resources registered from DLL
+[09:26:03.218] - Registering descriptors from DLL
+[09:26:03.218] - Descriptors registered from DLL
+[09:26:03.218] - Registering push constants from DLL
+[09:26:03.218] - Push constants registered from DLL
+[09:26:03.219] - DLL Initialized
+[13:31:12.163] - Initializing DLL
+[13:31:12.164] - Registering components from DLL
+[13:31:12.164] - Components registered from DLL
+[13:31:12.164] - Registering resources from DLL
+[13:31:12.164] - Resources registered from DLL
+[13:31:12.164] - Registering descriptors from DLL
+[13:31:12.164] - Descriptors registered from DLL
+[13:31:12.164] - Registering push constants from DLL
+[13:31:12.164] - Push constants registered from DLL
+[13:31:12.165] - DLL Initialized

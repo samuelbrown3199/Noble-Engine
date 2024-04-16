@@ -11,6 +11,7 @@ void AudioSource::OnUpdate()
 			return;
 
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		AudioManager* aManager = Application::GetApplication()->GetAudioManager();
 
 		if (m_transformIndex == -1)
 		{
@@ -32,15 +33,15 @@ void AudioSource::OnUpdate()
 
 		if (channel == nullptr)
 		{
-			FMOD_System_PlaySound(AudioManager::GetFMODSystem(), m_clip->m_sound, nullptr, true, &channel);
+			FMOD_System_PlaySound(aManager->GetFMODSystem(), m_clip->m_sound, nullptr, true, &channel);
 
 			int loopCount = m_iLoopCount > 0 ? m_iLoopCount - 1 : m_iLoopCount;
 			FMOD_Channel_SetLoopCount(channel, loopCount);
 		}
 
-		float volumeMixerValue = AudioManager::GetAudioMixerOption(m_sMixerOption);
+		float volumeMixerValue = aManager->GetAudioMixerOption(m_sMixerOption);
 		if (m_sMixerOption != "Master")
-			volumeMixerValue *= AudioManager::GetAudioMixerOption("Master");
+			volumeMixerValue *= aManager->GetAudioMixerOption("Master");
 
 		FMOD_Channel_SetVolume(channel, m_fVolume * volumeMixerValue);
 		FMOD_Channel_SetPitch(channel, m_fPitch);

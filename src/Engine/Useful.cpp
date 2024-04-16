@@ -171,7 +171,7 @@ std::string OpenFileSelectDialog(std::string filter)
     return "";
 }
 
-void CopyFile(std::string source, std::string destination)
+void CopyFileToDestination(std::string source, std::string destination)
 {
     std::ifstream src(source);
 	std::ofstream dst(destination);
@@ -196,23 +196,39 @@ void CopyFile(std::string source, std::string destination)
 
 void CutFile(std::string source, std::string destination)
 {
-	CopyFile(source, destination);
+    CopyFileToDestination(source, destination);
 	DeleteFilePath(source);
 
     Logger::LogInformation(FormatString("Cut file %s to %s", source.c_str(), destination.c_str()));
 }
 
-std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType)
+void CopyDirectory(std::string source, std::string destination)
+{
+    std::filesystem::copy(source, destination, std::filesystem::copy_options::recursive);
+}
+
+std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType, bool recursive)
 {
     std::string path(directory);
     std::string ext(fileType);
 
     std::vector<std::string> files;
 
-    for (auto& p : std::filesystem::recursive_directory_iterator(path))
+    if (recursive)
     {
-        if (p.path().extension() == ext)
-            files.push_back(p.path().string());
+        for (auto& p : std::filesystem::recursive_directory_iterator(path))
+        {
+            if (p.path().extension() == ext)
+                files.push_back(p.path().string());
+        }
+    }
+    else
+    {
+        for (auto& p : std::filesystem::directory_iterator(path))
+        {
+            if(p.path().extension() == ext)
+				files.push_back(p.path().string());
+        }
     }
 
     return files;

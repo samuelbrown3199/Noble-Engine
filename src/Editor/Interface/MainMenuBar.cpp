@@ -24,15 +24,37 @@ void NewProjectModal::DoModal()
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	if (ImGui::BeginPopupModal("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
+		std::vector<std::string> templates = GetAllFilesOfType(GetWorkingDirectory() + "\\Templates", "", false);
+
 		static char buf1[64] = ""; ImGui::InputText("Project Name", buf1, 64);
 		static char buf2[256] = ""; ImGui::InputText("Project Directory", buf2, 256);
 
+		static int selectedTemplate = -1;
+
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		ImGui::Text("Select a template:");
+		for (int i = 0; i < templates.size(); i++)
+		{
+			if (ImGui::Button(templates[i].c_str()))
+			{
+				selectedTemplate = i;
+			}
+		}
+
 		if (ImGui::Button("Create"))
 		{
-			ProjectFile::CreateProjectFile(buf1, buf2);
+			std::string projectFilePath = std::string(buf2) + "\\" + buf1 + ".npj";
+			std::string projectGameData = std::string(buf2) + "\\GameData";
 
-			if (editorManager->m_projectFile == nullptr)
-				editorManager->m_projectFile = new ProjectFile();
+			if (selectedTemplate == -1)
+			{
+				return;
+			}
+			CopyFileToDestination(templates[selectedTemplate] + "\\Template.npj", projectFilePath);
+			CopyDirectory(templates[selectedTemplate] + "\\GameData", projectGameData);
+
+			ProjectFile* projectFile = new ProjectFile();
+			projectFile->CreateProjectFile(buf1, buf2, projectFilePath);
 
 			ImGui::CloseCurrentPopup();
 		}

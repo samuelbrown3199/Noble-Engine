@@ -47,10 +47,12 @@ bool DeleteDirectory(const std::string& _path);
 std::string GetWorkingDirectory();
 std::string OpenFileSelectDialog(std::string filter);
 
-void CopyFile(std::string source, std::string destination);
+void CopyFileToDestination(std::string source, std::string destination);
 void CutFile(std::string source, std::string destination);
 
-std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType);
+void CopyDirectory(std::string source, std::string destination);
+
+std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType, bool recursive);
 void DeleteFilePath(std::string path);
 
 void AddVersionDataToJson(nlohmann::json& data);

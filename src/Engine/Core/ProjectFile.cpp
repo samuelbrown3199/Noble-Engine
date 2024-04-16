@@ -5,26 +5,17 @@
 #include <Engine/Core/ResourceManager.h>
 #include "SceneManager.h"
 
-bool ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory)
+void ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory, std::string projectFilePath)
 {
 	std::shared_ptr<Application> app = Application::GetApplication();
 
-	nlohmann::json data;
+	LoadProjectFile(projectFilePath);
 
-	data["ProjectDetails"]["ProjectName"] = projectName;
-	data["ProjectDetails"]["ProjectDirectory"] = projectDirectory;
-	data["ProjectDetails"]["EngineVersion"] = GetVersionInfoString();
-
-	data["Resources"] = app->GetResourceManager()->WriteResourceDatabase();
-	data["Scenes"] = app->GetSceneManager()->WriteSceneDatabase();
-
-	std::string projectFileDir = projectDirectory + "\\" + projectName + ".npj";
-	std::fstream projectFile(projectFileDir, 'w');
-
-	projectFile << data.dump();
-	projectFile.close();
-
-	return true;
+	m_sProjectName = projectName;
+	m_sProjectDirectory = projectDirectory;
+	m_sProjectFilePath = projectFilePath;
+	
+	UpdateProjectFile();
 }
 
 void ProjectFile::LoadProjectFile(const std::string& file)

@@ -16,7 +16,7 @@ Logger::Logger()
 		CreateNewDirectory(logFolder);
 	else
 	{
-		std::vector<std::string> files = GetAllFilesOfType(logFolder, ".txt");
+		std::vector<std::string> files = GetAllFilesOfType(logFolder, ".txt", false);
 
 		for (int i = 0; i < files.size(); i++)
 		{

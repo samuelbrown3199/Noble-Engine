@@ -102,3 +102,13 @@
 [16:58:42.722] - Registering push constants from DLL
 [16:58:42.722] - Push constants registered from DLL
 [16:58:42.722] - DLL Initialized
+[18:09:12.836] - Initializing DLL
+[18:09:12.837] - Registering components from DLL
+[18:09:12.838] - Components registered from DLL
+[18:09:12.839] - Registering resources from DLL
+[18:09:12.839] - Resources registered from DLL
+[18:09:12.839] - Registering descriptors from DLL
+[18:09:12.839] - Descriptors registered from DLL
+[18:09:12.840] - Registering push constants from DLL
+[18:09:12.840] - Push constants registered from DLL
+[18:09:12.840] - DLL Initialized

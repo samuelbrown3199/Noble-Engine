@@ -66,7 +66,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	rtn->m_mainIniFile = std::make_shared<IniFile>(GetWorkingDirectory() + "\\game.ini");
 	rtn->LoadSettings();
 
-	std::vector<std::string> projectFiles = GetAllFilesOfType(GetWorkingDirectory(), ".npj");
+	std::vector<std::string> projectFiles = GetAllFilesOfType(GetWorkingDirectory(), ".npj", false);
 	if (projectFiles.size() != 0)
 	{
 		rtn->SetProjectFile(projectFiles.at(0));

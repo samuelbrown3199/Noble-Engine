@@ -18,7 +18,7 @@ public:
 
 	nlohmann::json m_projectData;
 
-	static bool CreateProjectFile(std::string projectName, std::string projectDirectory);
+	void CreateProjectFile(std::string projectName, std::string projectDirectory, std::string projectFilePath);
 	void LoadProjectFile(const std::string& file);
 	void UpdateProjectFile();
 

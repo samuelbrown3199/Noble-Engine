@@ -1,0 +1,54 @@
+{
+	"ProjectDetails": {
+		"EngineVersion": "Alpha-0.4.0",
+		"ProjectDirectory": "",
+		"ProjectName": ""
+	},
+	"Resources": {
+		"Defaults": {
+			"AudioClip": {
+				"SoundMode": 16
+			},
+			"Model": null,
+			"Pipeline": {
+				"PipelineType": 1762638240
+			},
+			"Script": null,
+			"Shader": {
+				"ShaderType": 0
+			},
+			"TestResource": null,
+			"Texture": {
+				"Filter": 0
+			}
+		},
+		"Model": {
+			"\\GameData\\Models\\cube.obj": null
+		},
+		"Pipeline": {
+			"Standard": {
+				"Descriptors": [
+					"SingleImage",
+					"GPUSceneData"
+				],
+				"FragmentShader": "\\GameData\\Shaders\\frag.spv",
+				"PipelineType": 0,
+				"PushConstants": [
+					"GPUDrawData"
+				],
+				"VertexShader": "\\GameData\\Shaders\\vert.spv"
+			}
+		},
+		"Shader": {
+			"\\GameData\\Shaders\\frag.spv": {
+				"ShaderType": 4
+			},
+			"\\GameData\\Shaders\\vert.spv": {
+				"ShaderType": 0
+			}
+		}
+	},
+	"Scenes": {
+
+	}
+}

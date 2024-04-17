@@ -56,6 +56,8 @@ void NewProjectModal::DoModal()
 			ProjectFile* projectFile = new ProjectFile();
 			projectFile->CreateProjectFile(buf1, buf2, projectFilePath);
 
+			Application::GetApplication()->SetProjectFile(projectFilePath);
+
 			ImGui::CloseCurrentPopup();
 		}
 

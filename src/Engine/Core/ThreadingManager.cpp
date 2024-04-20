@@ -40,15 +40,16 @@ ThreadingManager::ThreadingManager()
 	LogInfo("Initializing thread manager.");
 	numberOfThreads = ceil(std::thread::hardware_concurrency() / 2);
 	InitializeThreads();
-	LogInfo("Initialized thread manager.");
+	LogTrace("Initialized thread manager.");
 }
 
 void ThreadingManager::InitializeThreads()
 {
-	LogInfo(FormatString("Starting %d threads.", numberOfThreads));
+	LogTrace(FormatString("Starting %d threads.", numberOfThreads));
 
 	for (auto i = 0; i < numberOfThreads; ++i)
 	{
+		LogTrace(FormatString("Starting thread %d.", i));
 		mThreads.emplace_back();
 	}
 }
@@ -65,7 +66,7 @@ void ThreadingManager::StopThreads() noexcept
 	for (auto& thread : mThreads)
 		thread.t.join();
 
-	LogInfo("Stopped threads.");
+	LogTrace("Stopped threads.");
 }
 
 bool ThreadingManager::AreAllThreadsFinished()

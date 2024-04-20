@@ -215,7 +215,6 @@ public:
 	void SetVSyncMode(const int& _mode);
 	void SetRenderScale(const float& value);
 	float GetRenderScale() { return m_fRenderScale; }
-	void SetDrawImageFilter(const int& val);
 
 	void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	glm::vec3 GetClearColour() { return m_clearColour; }

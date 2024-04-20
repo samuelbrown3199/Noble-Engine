@@ -65,7 +65,7 @@ void Logger::LogTrace(const std::string& _logString)
 		return;
 
 	std::string passedLine = "Trace: ";
-	passedLine += _logString + "\n";
+	passedLine += _logString;
 
 	LogInformation(passedLine);
 }
@@ -98,7 +98,7 @@ void Logger::LogError(const std::string& _logString)
 		return;
 
 	std::string passedString = "Error: ";
-	passedString += _logString+"\n";
+	passedString += _logString;
 
 	LogInformation(passedString);
 }
@@ -109,7 +109,7 @@ void Logger::LogFatalError(const std::string& _logString)
 		return;
 
 	std::string passedString = "Fatal Error: ";
-	passedString += _logString + "\n";
+	passedString += _logString;
 
 	LogInformation(passedString);
 

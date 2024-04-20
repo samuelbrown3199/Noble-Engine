@@ -51,11 +51,9 @@ Renderer::Renderer(const std::string _windowName)
 	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), 50, 50, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_MAXIMIZED);
 	if (!m_gameWindow)
 	{
-		LogInfo("Failed to create game window");
-		std::cout << "Failed to create game window " << SDL_GetError() << std::endl;
-		throw std::exception();
+		LogFatalError(FormatString("Failed to create game window %s", SDL_GetError()));
 	}
-	LogInfo("Created game window.");
+	LogTrace("Created game window.");
 
 	InitializeVulkan();
 }
@@ -75,6 +73,7 @@ void Renderer::WaitForRenderingToFinish()
 void Renderer::InitializeVulkan()
 {
 	LogInfo("Initializing Vulkan");
+
 	CreateInstance();
 	InitializeSwapchain();
 	InitializeCommands();
@@ -575,6 +574,19 @@ void Renderer::DrawFrame()
 	{
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		viewPos = registry->GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
+
+		switch (m_camera->m_iDrawMode)
+		{
+		case 0:
+			m_drawFilter = VK_FILTER_NEAREST;
+			break;
+		case 1:
+			m_drawFilter = VK_FILTER_LINEAR;
+			break;
+		default:
+			LogError("Invalid draw mode.");
+			break;
+		}
 	}
 
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
@@ -853,16 +865,6 @@ void Renderer::SetRenderScale(const float& value)
 	
 	m_fRenderScale = value;
 	LogInfo(FormatString("Set render scale to %.2f", m_fRenderScale));
-}
-
-void Renderer::SetDrawImageFilter(const int& val)
-{ 
-	if (val != 0 && val != 1)
-	{
-		LogError(FormatString("Tried to set draw image filter to wrong value %d. Expected a value of either 0 or 1.", val));
-		return;
-	}
-	m_drawFilter = (VkFilter)val;
 }
 
 glm::mat4 Renderer::GenerateProjMatrix()

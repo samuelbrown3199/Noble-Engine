@@ -25,6 +25,8 @@ struct Camera : Component
 	float m_fov = 90.0f;
 	float m_scale = 50.0f;
 
+	int m_iDrawMode = 1;
+
 	std::string GetComponentID() override
 	{
 		return "Camera";
@@ -43,7 +45,7 @@ struct Camera : Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"CameraState", m_state}, {"ViewMode", m_viewMode}, {"FOV", m_fov}, {"Scale", m_scale} };
+		nlohmann::json data = { {"CameraState", m_state}, {"ViewMode", m_viewMode}, {"FOV", m_fov}, {"Scale", m_scale}, {"DrawMode", m_iDrawMode} };
 		return data;
 	}
 
@@ -57,6 +59,8 @@ struct Camera : Component
 			m_fov = j["FOV"];
 		if (j.find("Scale") != j.end())
 			m_scale = j["Scale"];
+		if(j.find("DrawMode") != j.end())
+			m_iDrawMode = j["DrawMode"];
 	}
 
 	virtual void DoComponentInterface() override
@@ -75,6 +79,11 @@ struct Camera : Component
 			ImGui::DragFloat("FoV", &m_fov, 0.5f, 20.0f, 150.0f, "%.2f");
 		else
 			ImGui::DragFloat("Scale", &m_scale, 1.0f, 3.0f, 1000.0f, "%.2f");
+
+		const char* drawModes[] = { "Nearest", "Linear" };
+		int currentDrawMode = m_iDrawMode;
+		ImGui::Combo("Draw Mode", &currentDrawMode, drawModes, IM_ARRAYSIZE(drawModes));
+		m_iDrawMode = currentDrawMode;
 	}
 
 	virtual void PreUpdate() override;

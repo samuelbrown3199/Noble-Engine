@@ -136,7 +136,6 @@ void Application::LoadSettings()
 	m_gameRenderer->SetWindowFullScreen(m_mainIniFile->GetIntSetting("Video", "Fullscreen", 0));
 	m_gameRenderer->SetVSyncMode(m_mainIniFile->GetIntSetting("Video", "VSync", 1));
 	m_gameRenderer->SetRenderScale(m_mainIniFile->GetFloatSetting("Video", "RenderScale", 1.0f));
-	m_gameRenderer->SetDrawImageFilter(m_mainIniFile->GetIntSetting("Video", "DrawImageFilter", 1)); //probably shouldnt be a setting, rather something that is setup in the editor and loaded from a scene file or something.
 
 	m_audioManager->AddMixerOption("Master", m_mainIniFile->GetFloatSetting("Audio", "MasterVolume", 1.0f));
 	m_audioManager->AddMixerOption("Ambience", m_mainIniFile->GetFloatSetting("Audio", "AmbientVolume", 1.0f));

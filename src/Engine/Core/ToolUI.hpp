@@ -65,7 +65,7 @@ public:
 	ToolModalWindow* GetModal(std::string ID)
 	{
 		if (m_mModalWindows.count(ID) == 0)
-			Logger::LogError(FormatString("Tried to get a modal window that doesnt exist, %s", ID.c_str()), 2);
+			LogError(FormatString("Tried to get a modal window that doesnt exist, %s", ID.c_str()));
 
 		return m_mModalWindows[ID].get();
 	}
@@ -73,7 +73,7 @@ public:
 	void DoModal(std::string ID)
 	{
 		if (m_mModalWindows.count(ID) == 0)
-			Logger::LogError(FormatString("Tried to open a modal window that doesnt exist, %s", ID.c_str()), 2);
+			LogError(FormatString("Tried to open a modal window that doesnt exist, %s", ID.c_str()));
 
 		m_mModalWindows[ID]->m_bToggled = true;
 	}

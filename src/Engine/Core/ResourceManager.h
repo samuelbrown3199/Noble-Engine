@@ -52,7 +52,7 @@ struct ResourceManager
 		{
 			if (m_vResourceDatabase.at(i)->m_sResourcePath == path)
 			{
-				Logger::LogError("Tried to add a duplicate resource.", 0);
+				LogError("Tried to add a duplicate resource.");
 				return;
 			}
 		}
@@ -64,7 +64,7 @@ struct ResourceManager
 		SetResourceToDefaults(newResource);
 
 		m_vResourceDatabase.push_back(newResource);
-		Logger::LogInformation("Added new resource " + newResource->m_sLocalPath);
+		LogInfo("Added new resource " + newResource->m_sLocalPath);
 
 		WriteResourceDatabase();
 	}
@@ -129,14 +129,14 @@ struct ResourceManager
 		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_vLoadedResources);
 		if (oldResource != nullptr)
 		{
-			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
 		oldResource = PrelimLoadResource<T>(_fileDirectory, m_vLoadedResources);
 		if (oldResource != nullptr)
 		{
-			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
@@ -145,7 +145,7 @@ struct ResourceManager
 		{
 			oldResource->OnLoad();
 			m_vLoadedResources.push_back(oldResource);
-			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
@@ -154,11 +154,11 @@ struct ResourceManager
 		{
 			oldResource->OnLoad();
 			m_vLoadedResources.push_back(oldResource);
-			Logger::LogInformation(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
+			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 		
-		Logger::LogError(FormatString("Resource %s doesnt exist in database, make sure it is added.", _fileDirectory.c_str()), 1);
+		LogError(FormatString("Resource %s doesnt exist in database, make sure it is added.", _fileDirectory.c_str()));
 		return nullptr;
 	}
 

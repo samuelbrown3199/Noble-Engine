@@ -14,7 +14,7 @@ ResourceManager::ResourceManager()
 {
 	if (FT_Init_FreeType(&m_fontLibrary))
 	{
-		Logger::LogError("Could not initialize FreeType Library!", 2);
+		LogFatalError("Could not initialize FreeType Library!");
 	}
 
 	m_sWorkingDirectory = GetWorkingDirectory();
@@ -51,7 +51,7 @@ void ResourceManager::RemoveResourceFromDatabase(std::string path)
 		{
 			m_vResourceDatabase.erase(m_vResourceDatabase.begin() + i);
 			WriteResourceDatabase();
-			Logger::LogInformation(FormatString("Remove asset %s from Resource Database", path.c_str()));
+			LogInfo(FormatString("Remove asset %s from Resource Database", path.c_str()));
 			return;
 		}
 	}
@@ -74,7 +74,7 @@ void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 	}
 
 	if (!foundRegistryRes)
-		Logger::LogError("Couldnt find resource type in Registry. Has it been registered?", 2);
+		LogFatalError("Couldnt find resource type in Registry. Has it been registered?");
 }
 
 void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
@@ -109,7 +109,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 				m_vResourceDatabase.push_back(res);
 			}
 
-			Logger::LogInformation(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
+			LogInfo(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
 		}
 	}
 }
@@ -141,7 +141,7 @@ void ResourceManager::UnloadUnusedResources()
 	{
 		if (m_vLoadedResources.at(re).use_count() == 2)
 		{
-			Logger::LogInformation("Unloaded " + m_vLoadedResources.at(re)->m_sLocalPath);
+			LogInfo("Unloaded " + m_vLoadedResources.at(re)->m_sLocalPath);
 
 			m_vLoadedResources.at(re)->OnUnload();
 			m_vLoadedResources.erase(m_vLoadedResources.begin() + re);

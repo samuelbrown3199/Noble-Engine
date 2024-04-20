@@ -57,7 +57,7 @@ void EditorManager::CheckAndInitializeData()
 void EditorManager::ToggleUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
-		Logger::LogError(FormatString("Trying to toggle UI %s that doesnt exist.", ID.c_str()), 2);
+		LogFatalError(FormatString("Trying to toggle UI %s that doesnt exist.", ID.c_str()));
 
 	m_mEditorUIs.at(ID)->m_uiOpen = !m_mEditorUIs.at(ID)->m_uiOpen;
 }
@@ -65,7 +65,7 @@ void EditorManager::ToggleUI(std::string ID)
 void EditorManager::CloseUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
-		Logger::LogError(FormatString("Trying to close UI %s that doesnt exist.", ID.c_str()), 2);
+		LogFatalError(FormatString("Trying to close UI %s that doesnt exist.", ID.c_str()));
 
 	m_mEditorUIs.at(ID)->m_uiOpen = false;
 }
@@ -73,7 +73,7 @@ void EditorManager::CloseUI(std::string ID)
 void EditorManager::OpenUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
-		Logger::LogError(FormatString("Trying to open UI %s that doesnt exist.", ID.c_str()), 2);
+		LogFatalError(FormatString("Trying to open UI %s that doesnt exist.", ID.c_str()));
 
 	m_mEditorUIs.at(ID)->m_uiOpen = true;
 }
@@ -81,7 +81,7 @@ void EditorManager::OpenUI(std::string ID)
 ToolUI* EditorManager::GetEditorUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
-		Logger::LogError(FormatString("Trying to get UI %s that doesnt exist.", ID.c_str()), 2);
+		LogFatalError(FormatString("Trying to get UI %s that doesnt exist.", ID.c_str()));
 
 	return m_mEditorUIs.at(ID).get();
 }

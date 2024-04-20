@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Logger.h"
 
-typedef int(__stdcall* DLLFunc)(std::shared_ptr<Application>, bool);
+typedef int(__stdcall* DLLFunc)(std::shared_ptr<Application>);
 
 NobleDLL::NobleDLL(std::string path)
 {
@@ -19,20 +19,20 @@ void NobleDLL::LoadDLL(std::shared_ptr<Application> application)
 	// Check if the DLL was loaded
 	if (m_hDLLInstance == NULL)
 	{
-		Logger::LogError("Failed to load DLL: " + m_sDLLPath, 1);
+		LogError("Failed to load DLL: " + m_sDLLPath);
 	}
 	else
 	{
-		Logger::LogInformation("DLL loaded: " + m_sDLLPath);
+		LogInfo("DLL loaded: " + m_sDLLPath);
 
 		DLLFunc func = (DLLFunc)GetProcAddress(m_hDLLInstance, "dllMain");
 		if (!func)
 		{
-			Logger::LogError("Could not find dllMain function in game dll" , 2);
+			LogFatalError("Could not find dllMain function in game dll");
 		}
 		else
 		{
-			func(application, Logger::m_bUseLogging);
+			func(application);
 		}
 	}
 }

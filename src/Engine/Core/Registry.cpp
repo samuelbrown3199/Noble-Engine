@@ -17,7 +17,7 @@ Datalist* NobleRegistry::GetComponentList(std::string ID)
 			return m_vComponentRegistry.at(i).second.m_componentDatalist;
 	}
 
-	Logger::LogError(FormatString("Trying to get component list %s, but it hasn't been registered.", ID.c_str()), 2);
+	LogFatalError(FormatString("Trying to get component list %s, but it hasn't been registered.", ID.c_str()));
 	return nullptr;
 }
 
@@ -39,7 +39,7 @@ DescriptorRegistry* NobleRegistry::GetDescriptorFromName(std::string ID)
 			return &m_vDescriptorRegistry.at(i).second;
 	}
 
-	Logger::LogError(FormatString("Failed to get Descriptor with ID %s", ID.c_str()), 2);
+	LogFatalError(FormatString("Failed to get Descriptor with ID %s", ID.c_str()));
 	return nullptr;
 }
 
@@ -51,7 +51,7 @@ PushConstantRegistry* NobleRegistry::GetPushConstantFromName(std::string ID)
 			return &m_vPushConstantRegistry.at(i).second;
 	}
 
-	Logger::LogError(FormatString("Failed to get Push Constant with ID %s", ID.c_str()), 2);
+	LogFatalError(FormatString("Failed to get Push Constant with ID %s", ID.c_str()));
 	return nullptr;
 }
 

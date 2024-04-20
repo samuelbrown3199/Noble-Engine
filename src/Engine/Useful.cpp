@@ -105,13 +105,13 @@ bool PathExists(const std::string& _filePath)
 
 bool CreateNewDirectory(const std::string& _path)
 {
-    Logger::LogInformation(FormatString("Created file directory %s", _path.c_str()));
+    LogInfo(FormatString("Created file directory %s", _path.c_str()));
     return (_mkdir(_path.c_str()) == 0);
 }
 
 bool DeleteDirectory(const std::string& _path)
 {
-    Logger::LogInformation(FormatString("Deleted file directory %s", _path.c_str()));
+    LogInfo(FormatString("Deleted file directory %s", _path.c_str()));
     return (_rmdir(_path.c_str()) == 0);
 }
 
@@ -191,7 +191,7 @@ void CopyFileToDestination(std::string source, std::string destination)
     src.close();
     dst.close();
 
-    Logger::LogInformation(FormatString("Copied file %s to %s", source.c_str(), destination.c_str()));
+    LogInfo(FormatString("Copied file %s to %s", source.c_str(), destination.c_str()));
 }
 
 void CutFile(std::string source, std::string destination)
@@ -199,7 +199,7 @@ void CutFile(std::string source, std::string destination)
     CopyFileToDestination(source, destination);
 	DeleteFilePath(source);
 
-    Logger::LogInformation(FormatString("Cut file %s to %s", source.c_str(), destination.c_str()));
+    LogInfo(FormatString("Cut file %s to %s", source.c_str(), destination.c_str()));
 }
 
 void CopyDirectory(std::string source, std::string destination)

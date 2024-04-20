@@ -248,7 +248,7 @@ struct Light : public Component
 			m_lightInfo = new SpotLight();
 			break;
 		default:
-			Logger::LogError("Trying to switch light to unsupported type.", 2);
+			LogError("Trying to switch light to unsupported type.");
 			break;
 		}
 	}

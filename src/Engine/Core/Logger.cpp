@@ -1,11 +1,26 @@
 #include "Logger.h"
 #include "../Useful.h"
+#include "Application.h"
 
-std::ofstream Logger::m_logFile;
-std::string Logger::m_sSessionFileName;
-std::string Logger::logFolder;
+void LogTrace(const std::string& _logString)
+{
+	Application::GetApplication()->GetLogger()->LogTrace(_logString);
+}
 
-bool Logger::m_bUseLogging;
+void LogInfo(const std::string& _logString)
+{
+	Application::GetApplication()->GetLogger()->LogInformation(_logString);
+}
+
+void LogError(const std::string& _logString)
+{
+	Application::GetApplication()->GetLogger()->LogError(_logString);
+}
+
+void LogFatalError(const std::string& _logString)
+{
+	Application::GetApplication()->GetLogger()->LogFatalError(_logString);
+}
 
 Logger::Logger()
 {
@@ -25,9 +40,39 @@ Logger::Logger()
 	}
 }
 
+void Logger::SetLogLevel(std::string logLevel)
+{
+	if (logLevel == "trace")
+		m_logLevel = trace;
+	else if (logLevel == "info")
+		m_logLevel = info;
+	else if (logLevel == "error")
+		m_logLevel = error;
+	else if (logLevel == "fatal")
+		m_logLevel = fatal;
+	else if (logLevel == "none")
+		m_logLevel = none;
+	else
+	{
+		LogError("Invalid log level passed to SetLogLevel");
+		return;
+	}
+}
+
+void Logger::LogTrace(const std::string& _logString)
+{
+	if(m_logLevel > trace)
+		return;
+
+	std::string passedLine = "Trace: ";
+	passedLine += _logString + "\n";
+
+	LogInformation(passedLine);
+}
+
 void Logger::LogInformation(const std::string& _logString)
 {
-	if (!m_bUseLogging)
+	if (m_logLevel > info)
 		return;
 
 	std::string writtenLine = FormatString("[%s] - ", GetDateTimeString("%H:%M:%S"));
@@ -47,33 +92,26 @@ void Logger::LogInformation(const std::string& _logString)
 	throw std::exception(FormatString("Failed to open log file>: %s", m_sSessionFileName).c_str());
 }
 
-void Logger::LogError(const std::string& _logString, const int& _errorLevel)
+void Logger::LogError(const std::string& _logString)
 {
-	if (!m_bUseLogging && _errorLevel != 2)
+	if (m_logLevel > error)
 		return;
 
-	std::string passedString;
-
-	switch (_errorLevel)
-	{
-	case 0:
-		passedString = "Minor Error: ";
-		break;
-	case 1:
-		passedString = "Major Error: ";
-		break;
-	case 2:
-		passedString = "Fatal Error: ";
-		break;
-	default:
-		passedString = "Unknown error: ";
-		break;
-	}
-
+	std::string passedString = "Error: ";
 	passedString += _logString+"\n";
 
 	LogInformation(passedString);
+}
 
-	if (_errorLevel == 2)
-		throw std::exception(passedString.c_str());
+void Logger::LogFatalError(const std::string& _logString)
+{
+	if (m_logLevel > fatal)
+		return;
+
+	std::string passedString = "Fatal Error: ";
+	passedString += _logString + "\n";
+
+	LogInformation(passedString);
+
+	throw std::exception(passedString.c_str());
 }

@@ -37,15 +37,15 @@ void Thread::ThreadFunction()
 
 ThreadingManager::ThreadingManager()
 {
-	Logger::LogInformation("Initializing thread manager.");
+	LogInfo("Initializing thread manager.");
 	numberOfThreads = ceil(std::thread::hardware_concurrency() / 2);
 	InitializeThreads();
-	Logger::LogInformation("Initialized thread manager.");
+	LogInfo("Initialized thread manager.");
 }
 
 void ThreadingManager::InitializeThreads()
 {
-	Logger::LogInformation(FormatString("Starting %d threads.", numberOfThreads));
+	LogInfo(FormatString("Starting %d threads.", numberOfThreads));
 
 	for (auto i = 0; i < numberOfThreads; ++i)
 	{
@@ -55,7 +55,7 @@ void ThreadingManager::InitializeThreads()
 
 void ThreadingManager::StopThreads() noexcept
 {
-	Logger::LogInformation("Stopping threads.");
+	LogInfo("Stopping threads.");
 	{
 		std::unique_lock<std::mutex> lock{ mEventMutex };
 		mStopping = true;
@@ -65,7 +65,7 @@ void ThreadingManager::StopThreads() noexcept
 	for (auto& thread : mThreads)
 		thread.t.join();
 
-	Logger::LogInformation("Stopped threads.");
+	LogInfo("Stopped threads.");
 }
 
 bool ThreadingManager::AreAllThreadsFinished()

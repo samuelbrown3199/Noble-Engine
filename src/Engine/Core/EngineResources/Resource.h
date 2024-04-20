@@ -34,7 +34,7 @@ public:
 	virtual void OnLoad()
 	{
 		if (!CheckResourceFileExists())
-			Logger::LogError(FormatString("Resource Path does not exist: %s", m_sResourcePath), 2);
+			LogFatalError(FormatString("Resource Path does not exist: %s", m_sResourcePath));
 	};
 	/**
 	*Unloads the resource.

@@ -40,7 +40,7 @@
 
 Renderer::Renderer(const std::string _windowName)
 {
-	Logger::LogInformation("Creating engine renderer.");
+	LogInfo("Creating engine renderer.");
 
 	SDL_DisplayMode displayMode;
 	SDL_GetDesktopDisplayMode(0, &displayMode);
@@ -51,11 +51,11 @@ Renderer::Renderer(const std::string _windowName)
 	m_gameWindow = SDL_CreateWindow(_windowName.c_str(), 50, 50, m_iScreenWidth, m_iScreenHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN | SDL_WINDOW_MAXIMIZED);
 	if (!m_gameWindow)
 	{
-		Logger::LogInformation("Failed to create game window");
+		LogInfo("Failed to create game window");
 		std::cout << "Failed to create game window " << SDL_GetError() << std::endl;
 		throw std::exception();
 	}
-	Logger::LogInformation("Created game window.");
+	LogInfo("Created game window.");
 
 	InitializeVulkan();
 }
@@ -74,7 +74,7 @@ void Renderer::WaitForRenderingToFinish()
 
 void Renderer::InitializeVulkan()
 {
-	Logger::LogInformation("Initializing Vulkan");
+	LogInfo("Initializing Vulkan");
 	CreateInstance();
 	InitializeSwapchain();
 	InitializeCommands();
@@ -86,7 +86,7 @@ void Renderer::InitializeVulkan()
 
 	Renderer::SetClearColour(glm::vec3(0.0f, 0.25, 0.75));
 
-	Logger::LogInformation("Initialized Vulkan");
+	LogInfo("Initialized Vulkan");
 }
 
 void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
@@ -193,7 +193,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Renderer::DebugCallback(VkDebugUtilsMessageSeveri
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData)
 {
-	Logger::LogInformation(FormatString("Validation Layer: %s", pCallbackData->pMessage));
+	LogInfo(FormatString("Validation Layer: %s", pCallbackData->pMessage));
 
 	return VK_FALSE;
 }
@@ -472,7 +472,7 @@ VkFormat Renderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, 
 		}
 	}
 
-	Logger::LogError("Failed to find supported format.", 2);
+	LogFatalError("Failed to find supported format.");
 	VkFormat error;
 	return error;
 }
@@ -551,24 +551,24 @@ void Renderer::ResetForNextFrame()
 void Renderer::DrawFrame()
 {
 	if (vkWaitForFences(m_device, 1, &GetCurrentFrame().m_renderFence, true, 1000000000) != VK_SUCCESS)
-		Logger::LogError("Failed to wait for fence.", 2);
+		LogFatalError("Failed to wait for fence.");
 
 	GetCurrentFrame().m_deletionQueue.flush();
 	GetCurrentFrame().m_frameDescriptors.ClearPools(m_device);
 
 	if (vkResetFences(m_device, 1, &GetCurrentFrame().m_renderFence) != VK_SUCCESS)
-		Logger::LogError("Failed to reset fence.", 2);
+		LogFatalError("Failed to reset fence.");
 
 	uint32_t swapchainImageIndex;
 	if (vkAcquireNextImageKHR(m_device, m_swapchain, 100000000, GetCurrentFrame().m_swapchainSemaphore, nullptr, &swapchainImageIndex) != VK_SUCCESS)
-		Logger::LogError("Failed to acquire next image.", 2);
+		LogFatalError("Failed to acquire next image.");
 
 	VkCommandBuffer cmd = GetCurrentFrame().m_mainCommandBuffer;
 	if (vkResetCommandBuffer(cmd, 0) != VK_SUCCESS)
-		Logger::LogError("Failed to reset command buffer.", 2);
+		LogFatalError("Failed to reset command buffer.");
 
 	if (m_fRenderScale == 0)
-		Logger::LogError("Render scale is set to 0. This should never happen.", 2);
+		LogFatalError("Render scale is set to 0. This should never happen.");
 
 	glm::vec3 viewPos = glm::vec3(0, 0, 0);
 	if (m_camera != nullptr)
@@ -620,7 +620,7 @@ void Renderer::DrawFrame()
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
 	if (vkEndCommandBuffer(cmd) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to end command buffer.");
 
 	VkCommandBufferSubmitInfo cmdInfo = vkinit::CommandBufferSubmitInfo(cmd);
 
@@ -630,7 +630,7 @@ void Renderer::DrawFrame()
 	VkSubmitInfo2 submit = vkinit::SubmitInfo(&cmdInfo, &signalInfo, &waitInfo);
 
 	if (vkQueueSubmit2(m_graphicsQueue, 1, &submit, GetCurrentFrame().m_renderFence) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to submit queue.");
 
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -650,7 +650,7 @@ void Renderer::DrawFrame()
 	}
 	else if (result != VK_SUCCESS)
 	{
-		Logger::LogError("Failed to present swap chain image.", 2);
+		LogFatalError("Failed to present swap chain image.");
 	}
 
 	m_iCurrentFrame = (m_iCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -794,14 +794,14 @@ void Renderer::UpdateScreenSize()
 		m_iScreenWidth = newWidth;
 		m_iScreenHeight = newHeight;
 
-		Logger::LogInformation(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
+		LogInfo(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
 	}
 }
 
 void Renderer::UpdateScreenSize(const int& _height, const int& _width)
 {
 	if (_height <= 0 || _width <= 0)
-		Logger::LogError(FormatString("Trying to resize screen to invalid size, %d %d", _width, _height), 2);
+		LogFatalError(FormatString("Trying to resize screen to invalid size, %d %d", _width, _height));
 
 	int newWidth = _width, newHeight = _height;
 	if (newWidth != m_iScreenWidth || newHeight != m_iScreenHeight)
@@ -809,13 +809,13 @@ void Renderer::UpdateScreenSize(const int& _height, const int& _width)
 		m_iScreenWidth = newWidth;
 		m_iScreenHeight = newHeight;
 		SDL_SetWindowSize(m_gameWindow, m_iScreenWidth, m_iScreenHeight);
-		Logger::LogInformation(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
+		LogInfo(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
 	}
 }
 
 void Renderer::SetWindowFullScreen(const int& _mode)
 {
-	Logger::LogInformation(FormatString("Changing window fullscreen mode to %d", _mode));
+	LogInfo(FormatString("Changing window fullscreen mode to %d", _mode));
 	switch (_mode)
 	{
 	case 0:
@@ -843,7 +843,7 @@ void Renderer::SetVSyncMode(const int& _mode)
 {
 	m_bVsync = _mode;
 	RecreateSwapchain();
-	Logger::LogInformation(FormatString("Changing VSync mode to %d", _mode));
+	LogInfo(FormatString("Changing VSync mode to %d", _mode));
 }
 
 void Renderer::SetRenderScale(const float& value)
@@ -852,14 +852,14 @@ void Renderer::SetRenderScale(const float& value)
 		return;
 	
 	m_fRenderScale = value;
-	Logger::LogInformation(FormatString("Set render scale to %.2f", m_fRenderScale));
+	LogInfo(FormatString("Set render scale to %.2f", m_fRenderScale));
 }
 
 void Renderer::SetDrawImageFilter(const int& val)
 { 
 	if (val != 0 && val != 1)
 	{
-		Logger::LogError(FormatString("Tried to set draw image filter to wrong value %d. Expected a value of either 0 or 1.", val), 0);
+		LogError(FormatString("Tried to set draw image filter to wrong value %d. Expected a value of either 0 or 1.", val));
 		return;
 	}
 	m_drawFilter = (VkFilter)val;
@@ -1020,7 +1020,7 @@ AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUs
 
 	// allocate and create the image
 	if (vmaCreateImage(m_allocator, &img_info, &allocinfo, &newImage.m_image, &newImage.m_allocation, nullptr) != VK_SUCCESS)
-		Logger::LogError("Failed to allocate image.", 2);
+		LogFatalError("Failed to allocate image.");
 
 	// if the format is a depth format, we will need to have it use the correct
 	// aspect flag
@@ -1034,7 +1034,7 @@ AllocatedImage Renderer::CreateImage(VkExtent3D size, VkFormat format, VkImageUs
 	view_info.subresourceRange.levelCount = img_info.mipLevels;
 
 	if (vkCreateImageView(m_device, &view_info, nullptr, &newImage.m_imageView) != VK_SUCCESS)
-		Logger::LogError("Failed to create image view.", 2);
+		LogFatalError("Failed to create image view.");
 
 	newImage.m_allocation->SetName(m_allocator, imageName.c_str());
 	return newImage;
@@ -1093,27 +1093,27 @@ void Renderer::DestroyImage(AllocatedImage& img)
 void Renderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& function)
 {
 	if (vkResetFences(m_device, 1, &m_immediateFence) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to reset immediate fence.");
 	if (vkResetCommandBuffer(m_immediateCommandBuffer, 0) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to reset immediate command buffer.");
 
 	VkCommandBuffer cmd = m_immediateCommandBuffer;
 
 	VkCommandBufferBeginInfo cmdBeginInfo = vkinit::CommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 	if (vkBeginCommandBuffer(cmd, &cmdBeginInfo) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to begin immediate command buffer.");
 
 	function(cmd);
 
 	if (vkEndCommandBuffer(cmd) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to end immediate command buffer.");
 
 	VkCommandBufferSubmitInfo cmdInfo = vkinit::CommandBufferSubmitInfo(cmd);
 	VkSubmitInfo2 submit = vkinit::SubmitInfo(&cmdInfo, nullptr, nullptr);
 
 	if (vkQueueSubmit2(m_graphicsQueue, 1, &submit, m_immediateFence) != -VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to submit immediate queue.");
 
 	if (vkWaitForFences(m_device, 1, &m_immediateFence, true, 99999999) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to wait for immediate fence.");
 }

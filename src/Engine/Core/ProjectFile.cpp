@@ -31,7 +31,7 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	m_projectData = nlohmann::json::parse(projectFile);
 	projectFile.close();
 
-	Logger::LogInformation("Loaded project file " + file);
+	LogInfo("Loaded project file " + file);
 
 	if (m_projectData.find("ProjectDetails") != m_projectData.end())
 	{
@@ -40,11 +40,11 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 		m_sProjectEngineVersion = m_projectData["ProjectDetails"]["EngineVersion"];
 
 		if(m_sProjectEngineVersion != GetVersionInfoString())
-			Logger::LogError("Engine has been updated since this project was created. A file update may be required.", 1);
+			LogError("Engine has been updated since this project was created. A file update may be required.");
 	}
 	else
 	{
-		Logger::LogError("Project file is malformed, missing ProjectDetails information.", 2);
+		LogFatalError("Project file is malformed, missing ProjectDetails information.");
 		return;
 	}
 
@@ -58,12 +58,12 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 	if (m_projectData.find("Resources") != m_projectData.end())
 		rManager->LoadResourceDatabase(m_projectData.at("Resources"));
 	else
-		Logger::LogError("Project file is malformed, missing Resources information.", 2);
+		LogFatalError("Project file is malformed, missing Resources information.");
 
 	if(m_projectData.find("Scenes") != m_projectData.end())
 		Application::GetApplication()->GetSceneManager()->LoadSceneDatabase(m_projectData.at("Scenes"));
 	else
-		Logger::LogError("Project file is malformed, missing Scenes information.", 2);
+		LogFatalError("Project file is malformed, missing Scenes information.");
 }
 
 void ProjectFile::UpdateProjectFile()
@@ -81,7 +81,7 @@ void ProjectFile::UpdateProjectFile()
 	file << m_projectData.dump();
 	file.close();
 
-	Logger::LogInformation("Updated project file " + m_sProjectFilePath);
+	LogInfo("Updated project file " + m_sProjectFilePath);
 }
 
 void ProjectFile::UpdateResourceDatabase(nlohmann::json resourceDatabase)

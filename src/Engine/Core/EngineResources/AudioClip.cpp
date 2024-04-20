@@ -29,7 +29,7 @@ void AudioClip::OnLoad()
 
 	FMOD_RESULT result = FMOD_System_CreateSound(aManager->GetFMODSystem(), m_sResourcePath.c_str(), m_mode, nullptr, &m_sound);
 	if (result != FMOD_OK)
-		Logger::LogError("Failed to load sound file " + m_sResourcePath, 2);
+		LogFatalError("Failed to load sound file " + m_sResourcePath);
 
 	m_bIsLoaded = true;
 }

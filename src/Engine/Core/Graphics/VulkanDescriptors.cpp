@@ -198,7 +198,7 @@ VkDescriptorSet DescriptorAllocatorGrowable::AllocateSet(VkDevice device, VkDesc
 		allocInfo.descriptorPool = poolToUse;
 
 		if (vkAllocateDescriptorSets(device, &allocInfo, &ds) != VK_SUCCESS)
-			Logger::LogError("Failed to allocate descriptor set.", 2);
+			LogFatalError("Failed to allocate descriptor set.");
 	}
 
 	m_readyPools.push_back(poolToUse);

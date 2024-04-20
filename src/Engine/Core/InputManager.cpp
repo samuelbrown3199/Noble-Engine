@@ -35,7 +35,7 @@ void InputManager::SaveKeybindings()
 	keybindFile << keybinds.dump();
 	keybindFile.close();
 
-	Logger::LogInformation("Saved keybindings.");
+	LogInfo("Saved keybindings.");
 }
 
 void InputManager::LoadKeybindings()
@@ -43,7 +43,7 @@ void InputManager::LoadKeybindings()
 	std::ifstream keybindFile("Keybinds.json");
 	if (!keybindFile.is_open())
 	{
-		Logger::LogInformation("Couldnt find keybinding file.");
+		LogInfo("Couldnt find keybinding file.");
 		return;
 	}
 
@@ -61,7 +61,7 @@ void InputManager::LoadKeybindings()
 		}
 	}
 
-	Logger::LogInformation("Loaded keybindings.");
+	LogInfo("Loaded keybindings.");
 }
 
 void InputManager::HandleGeneralInput()
@@ -106,7 +106,7 @@ void InputManager::AddKeybind(Keybind keybind)
 	{
 		if (m_vKeybinds.at(i).m_keybindIdentifier == keybind.m_keybindIdentifier)
 		{
-			Logger::LogError(FormatString("Tried to add keybind %s but it already exists.", keybind.m_keybindIdentifier), 0);
+			LogError(FormatString("Tried to add keybind %s but it already exists.", keybind.m_keybindIdentifier));
 			return;
 		}
 	}
@@ -122,7 +122,7 @@ void InputManager::ChangeKeybind(std::string _keybind, int index, Input newInput
 		{
 			if (m_vKeybinds.at(i).m_vKeybindKeys.at(o) == newInput)
 			{
-				Logger::LogError(FormatString("Tried to rebind keybind %s to already bound input.", _keybind), 0);
+				LogError(FormatString("Tried to rebind keybind %s to already bound input.", _keybind));
 				return;
 			}
 		}
@@ -133,7 +133,7 @@ void InputManager::ChangeKeybind(std::string _keybind, int index, Input newInput
 		if (m_vKeybinds.at(i).m_keybindIdentifier == _keybind)
 		{
 			m_vKeybinds.at(i).m_vKeybindKeys.at(index) = newInput;
-			Logger::LogInformation(FormatString("Changed input %d for keybind %s.", index, _keybind));
+			LogInfo(FormatString("Changed input %d for keybind %s.", index, _keybind));
 			break;
 		}
 	}

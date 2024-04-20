@@ -124,7 +124,7 @@ void DebugCam::UpdateControls()
 		{
 			ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
-			Logger::LogInformation(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
+			LogInfo(FormatString("Hit entity %s! Position %.2f %.2f %.2f", mouseRay.m_hitEntity->m_sEntityID.c_str(), mouseRay.m_hitPosition.x, mouseRay.m_hitPosition.y, mouseRay.m_hitPosition.z));
 			Entity* ent = Application::GetApplication()->CreateEntity();
 			ent->AddComponent<Transform>(mouseRay.m_hitPosition);
 			MeshRenderer* mr = ent->AddComponent<MeshRenderer>();

@@ -10,11 +10,7 @@
 
 extern "C"
 {
-	__declspec(dllexport) void dllMain(std::shared_ptr<Application> application, bool useLogging);
-
-	__declspec(dllexport) void TestFunction(std::string text);
-
-	__declspec(dllexport) void TestRegistry(std::shared_ptr<Application> app, NobleRegistry* registry);
+	__declspec(dllexport) void dllMain(std::shared_ptr<Application> application);
 }
 
 extern "C"
@@ -34,7 +30,7 @@ extern "C"
 
 	public:
 
-		void InitializeDLL(std::shared_ptr<Application> application, bool useLogging);
+		void InitializeDLL(std::shared_ptr<Application> application);
 	};
 }
 
@@ -44,7 +40,7 @@ struct TestComponent : Component
 
 	void OnUpdate() override
 	{
-		Logger::LogInformation("Hello from the DLL!");
+		LogInfo("Hello from the DLL!");
 	}
 
 	void DoComponentInterface()
@@ -82,13 +78,13 @@ struct TestResource : Resource
 
 	void OnLoad() override
 	{
-		Logger::LogInformation("Loaded Test Resource");
+		LogInfo("Loaded Test Resource");
 		m_bIsLoaded = true;
 	}
 
 	void OnUnload() override
 	{
-		Logger::LogInformation("Unloaded Test Resource");
+		LogInfo("Unloaded Test Resource");
 		m_bIsLoaded = false;
 	}
 

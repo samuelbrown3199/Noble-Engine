@@ -25,7 +25,7 @@ void Shader::OnLoad()
     Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     if (!vkutil::LoadShaderModule(m_sResourcePath.c_str(), renderer->GetLogicalDevice(), &m_shaderModule))
-        Logger::LogError(FormatString("Failed to load shader module: %s", m_sLocalPath), 1);
+        LogError(FormatString("Failed to load shader module: %s", m_sLocalPath));
 }
 
 void Shader::OnUnload()
@@ -304,12 +304,12 @@ void Pipeline::CreatePipeline()
 
         if (m_vertexShaderPath.empty())
         {
-            Logger::LogError(FormatString("Pipeline %s does not have a vertex shader set.", m_sResourcePath), 0);
+            LogError(FormatString("Pipeline %s does not have a vertex shader set.", m_sResourcePath));
             return;
         }
         if (m_fragmentShaderPath.empty())
         {
-            Logger::LogError(FormatString("Pipeline %s does not have a fragment shader set.", m_sResourcePath), 0);
+            LogError(FormatString("Pipeline %s does not have a fragment shader set.", m_sResourcePath));
             return;
         }
 
@@ -344,7 +344,7 @@ void Pipeline::CreatePipeline()
         pipelineLayoutInfo.setLayoutCount = descriptorLayouts.size();
 
         if (vkCreatePipelineLayout(renderer->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
-            Logger::LogError(FormatString("Failed to create pipeline layout for pipeline %s", m_sResourcePath.c_str()), 2);
+            LogFatalError(FormatString("Failed to create pipeline layout for pipeline %s", m_sResourcePath.c_str()));
 
         PipelineBuilder pipelineBuilder;
         //use the triangle layout we created
@@ -372,5 +372,5 @@ void Pipeline::CreatePipeline()
         m_pipeline = pipelineBuilder.BuildPipeline(renderer->GetLogicalDevice());
     }
 
-    Logger::LogInformation("Created pipeline " + m_sLocalPath);
+    LogInfo("Created pipeline " + m_sLocalPath);
 }

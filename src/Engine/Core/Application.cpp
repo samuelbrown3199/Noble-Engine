@@ -45,10 +45,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 #ifndef NDEBUG
 	//We want to log initialization at least in debug mode.
-	rtn->m_logger->m_bUseLogging = true;
+	rtn->m_logger->SetLogLevel("trace");
 #endif
 
-	Logger::LogInformation("Starting Engine, Version: " + GetVersionInfoString());
+	LogInfo("Starting Engine, Version: " + GetVersionInfoString());
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 
@@ -73,10 +73,10 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	}
 	else
 	{
-		Logger::LogInformation("No project files found in working directory. Engine is running in editor mode.");
+		LogInfo("No project files found in working directory. Engine is running in editor mode.");
 	}
 
-	Logger::LogInformation("Engine started successfully");
+	LogInfo("Engine started successfully");
 
 	rtn->m_sceneManager->LoadDefaultScene();
 
@@ -130,7 +130,7 @@ void Application::RegisterCoreKeybinds()
 
 void Application::LoadSettings()
 {
-	Logger::LogInformation("Loading game.ini settings");
+	LogInfo("Loading game.ini settings");
 	
 	//m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 1000), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 2000)); //does this setting make sense? Currently this sets window size, but it should probably set draw size.
 	m_gameRenderer->SetWindowFullScreen(m_mainIniFile->GetIntSetting("Video", "Fullscreen", 0));
@@ -142,7 +142,7 @@ void Application::LoadSettings()
 	m_audioManager->AddMixerOption("Ambience", m_mainIniFile->GetFloatSetting("Audio", "AmbientVolume", 1.0f));
 
 	m_pStats->m_bLogPerformance = m_mainIniFile->GetBooleanSetting("Debug", "LogPerformance", false);
-	m_logger->m_bUseLogging = m_mainIniFile->GetBooleanSetting("Debug", "UseLogging", false);
+	m_logger->SetLogLevel(m_mainIniFile->GetStringSetting("Debug", "LogLevel", "info"));
 }
 
 void Application::MainLoop()
@@ -252,7 +252,7 @@ void Application::MainLoop()
 
 void Application::CleanupApplication()
 {
-	Logger::LogInformation("Starting cleanup and closing engine!");
+	LogInfo("Starting cleanup and closing engine!");
 
 	m_gameRenderer->WaitForRenderingToFinish();
 	m_gameRenderer->SetCamera(nullptr);
@@ -325,7 +325,7 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std
 	{
 		if (m_vEntities.at(i).m_sEntityID == _desiredID)
 		{
-			Logger::LogError(FormatString("Tried to create entity with duplicate ID. %s", _desiredID), 2);
+			LogFatalError(FormatString("Tried to create entity with duplicate ID. %s", _desiredID));
 			return nullptr;
 		}
 	}

@@ -63,7 +63,7 @@ void PerformanceStats::LogPerformanceStats()
 		performanceStatsString += FormatString("%s Update Time: %.2f | Render Time: %.2f\n", m_mSystemUpdateTimes.at(i).first, m_mSystemUpdateTimes.at(i).second.m_measurementTime.count()/1000, m_mSystemRenderTimes.at(i).second.m_measurementTime.count() / 1000);
 	}
 
-	Logger::LogInformation(performanceStatsString);
+	LogInfo(performanceStatsString);
 }
 
 void PerformanceStats::ClearComponentMeasurements()
@@ -77,7 +77,7 @@ void PerformanceStats::AddPerformanceMeasurement(std::string name)
 	for (int i = 0; i < m_mPerformanceMeasurements.size(); i++)
 	{
 		if (m_mPerformanceMeasurements.at(i).first == name)
-			Logger::LogError("Tried to add duplicate performance measurement.", 2);
+			LogFatalError("Tried to add duplicate performance measurement.");
 	}
 
 	m_mPerformanceMeasurements.push_back(std::make_pair(name, PerformanceMeasurement()));
@@ -118,7 +118,7 @@ void PerformanceStats::AddComponentMeasurement(std::string name)
 	for (int i = 0; i < m_mSystemUpdateTimes.size(); i++)
 	{
 		if (m_mSystemUpdateTimes.at(i).first == name)
-			Logger::LogError("Tried to add duplicate performance measurement.", 2);
+			LogFatalError("Tried to add duplicate performance measurement.");
 	}
 
 	m_mSystemUpdateTimes.push_back(std::make_pair(name, PerformanceMeasurement()));

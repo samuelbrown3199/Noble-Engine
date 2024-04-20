@@ -18,7 +18,7 @@ void SceneManager::LoadScene(int sceneIndex)
 {
 	if (sceneIndex < 0 || sceneIndex >= m_vScenes.size())
 	{
-		Logger::LogError("Scene index out of range", 1);
+		LogError("Scene index out of range");
 		return;
 	}
 
@@ -77,7 +77,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
 
-	Logger::LogInformation("Saving Scene " + scenePath);
+	LogInfo("Saving Scene " + scenePath);
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
 
@@ -120,7 +120,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	Application::GetApplication()->LinkChildEntities();
 
-	Logger::LogInformation("Saved Scene " + scenePath);
+	LogInfo("Saved Scene " + scenePath);
 }
 
 void SceneManager::LoadDefaultScene()
@@ -161,7 +161,7 @@ int SceneManager::GetSceneIndex(std::string scenePath)
 			return i;
 	}
 
-	Logger::LogError(FormatString("Scene %s not found in scene database", scenePath.c_str()), 1);
+	LogError(FormatString("Scene %s not found in scene database", scenePath.c_str()));
 	return -1;
 }
 

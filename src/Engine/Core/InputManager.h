@@ -53,7 +53,10 @@ public:
 	Input(SDL_Keycode keycode, int mouseButton)
 	{
 		if (keycode != SDLK_UNKNOWN && mouseButton != -1)
-			Logger::LogError("Trying to register an invalid Input.", 2);
+		{
+			LogError("Trying to register an invalid Input.");
+			return;
+		}
 
 		m_keycode = keycode;
 		m_iMouseButton = mouseButton;
@@ -62,7 +65,10 @@ public:
 	void SetInput(SDL_Keycode keycode, int mouseButton)
 	{
 		if (keycode != SDLK_UNKNOWN && mouseButton != -1)
-			Logger::LogError("Trying to change to an invalid Input.", 2);
+		{
+			LogError("Trying to register an invalid Input.");
+			return;
+		}
 
 		ResetInputs();
 		m_keycode = keycode;
@@ -118,8 +124,10 @@ struct Keybind
 
 	void ChangeKeybind(int index, Input newInput)
 	{
-		if(index < 0 || index > m_vKeybindKeys.size()-1)
-			Logger::LogError("Trying to change a keybind at an invalid index.", 2);
+		if (index < 0 || index > m_vKeybindKeys.size() - 1)
+		{
+			LogError("Trying to change a keybind at an invalid index.");
+		}
 
 		m_vKeybindKeys.at(index) = newInput;
 	}

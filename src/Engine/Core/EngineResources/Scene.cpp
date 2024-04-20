@@ -28,7 +28,7 @@ void Scene::OnLoad()
 		auto check = m_sceneData.find(keysToCheck.at(i));
 		if (check == m_sceneData.end())
 		{
-			Logger::LogError(FormatString("Scene file %s is malformed, missing %s information. ", m_sResourcePath.c_str(), keysToCheck.at(i).c_str()), 1);
+			LogError(FormatString("Scene file %s is malformed, missing %s information. ", m_sResourcePath.c_str(), keysToCheck.at(i).c_str()));
 			return;
 		}
 	}

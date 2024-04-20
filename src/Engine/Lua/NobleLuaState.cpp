@@ -11,8 +11,8 @@ NobleLuaState::NobleLuaState()
 
 	//AddFunction("SetClearColour", renderer->SetClearColour);
 
-	AddFunction("LogInfo", Logger::LogInformation);
-	AddFunction("LogError", Logger::LogError);
+	AddFunction("LogInfo", LogInfo);
+	AddFunction("LogError", LogError);
 }
 
 void NobleLuaState::SetScript(std::shared_ptr<Script> script)

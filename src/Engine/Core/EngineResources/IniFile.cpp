@@ -57,7 +57,7 @@ bool IniFile::GetBooleanSetting(const std::string& _sectionName, const std::stri
 	int integerValue = GetIntSetting(_sectionName, _settingName, _defaultValue);
 	if (integerValue > 1 || integerValue < 0)
 	{
-		Logger::LogError(FormatString("Trying to load boolean [%s] %s as an invalid value %d", _sectionName.c_str(), _settingName.c_str(), integerValue), 0);
+		LogError(FormatString("Trying to load boolean [%s] %s as an invalid value %d", _sectionName.c_str(), _settingName.c_str(), integerValue));
 		return settingValue;
 	}
 
@@ -72,7 +72,7 @@ std::string IniFile::GetStringSetting(const std::string& _sectionName, const std
 	if (splitSetting.size() == 2)
 		settingValue = splitSetting.at(1);
 
-	Logger::LogInformation(FormatString("Loading [%s] %s as %s", _sectionName.c_str(), _settingName.c_str(), settingValue.c_str()));
+	LogInfo(FormatString("Loading [%s] %s as %s", _sectionName.c_str(), _settingName.c_str(), settingValue.c_str()));
 	return settingValue;
 }
 
@@ -83,7 +83,7 @@ int IniFile::GetIntSetting(const std::string& _sectionName, const std::string& _
 	if (splitSetting.size() == 2)
 		settingValue = std::stoi(splitSetting.at(1));
 
-	Logger::LogInformation(FormatString("Loading [%s] %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
+	LogInfo(FormatString("Loading [%s] %s as %d", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 
@@ -94,7 +94,7 @@ float IniFile::GetFloatSetting(const std::string& _sectionName, const std::strin
 	if (splitSetting.size() == 2)
 		settingValue = std::stof(splitSetting.at(1));
 
-	Logger::LogInformation(FormatString("Loading [%s] %s as %1f", _sectionName.c_str(), _settingName.c_str(), settingValue));
+	LogInfo(FormatString("Loading [%s] %s as %1f", _sectionName.c_str(), _settingName.c_str(), settingValue));
 	return settingValue;
 }
 
@@ -138,7 +138,7 @@ void IniFile::WriteBooleanSetting(const std::string& _sectionName, const std::st
 {
 	if (_value > 1 || _value < 0)
 	{
-		Logger::LogError(FormatString("Trying to change boolean %s %s to invalid value %d", _sectionName.c_str(), _settingName.c_str(), _value), 0);
+		LogError(FormatString("Trying to change boolean %s %s to invalid value %d", _sectionName.c_str(), _settingName.c_str(), _value));
 		return;
 	}
 
@@ -146,11 +146,11 @@ void IniFile::WriteBooleanSetting(const std::string& _sectionName, const std::st
 }
 void IniFile::WriteIntSetting(const std::string& _sectionName, const std::string& _settingName, const int& _value)
 {
-	Logger::LogInformation(FormatString("Updating %s %s to value %d", _sectionName.c_str(), _settingName.c_str(), _value));
+	LogInfo(FormatString("Updating %s %s to value %d", _sectionName.c_str(), _settingName.c_str(), _value));
 	int lineIndex = GetIniLineIndex(_sectionName, _settingName);
 	if (lineIndex == -1)
 	{
-		Logger::LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()), 0);
+		LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()));
 		return;
 	}
 
@@ -160,11 +160,11 @@ void IniFile::WriteIntSetting(const std::string& _sectionName, const std::string
 
 void IniFile::WriteStringSetting(const std::string& _sectionName, const std::string& _settingName, const std::string& _value)
 {
-	Logger::LogInformation(FormatString("Updating %s %s to value %s", _sectionName.c_str(), _settingName.c_str(), _value.c_str()));
+	LogInfo(FormatString("Updating %s %s to value %s", _sectionName.c_str(), _settingName.c_str(), _value.c_str()));
 	int lineIndex = GetIniLineIndex(_sectionName, _settingName);
 	if (lineIndex == -1)
 	{
-		Logger::LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()), 0);
+		LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()));
 		return;
 	}
 
@@ -174,11 +174,11 @@ void IniFile::WriteStringSetting(const std::string& _sectionName, const std::str
 
 void IniFile::WriteFloatSetting(const std::string& _sectionName, const std::string& _settingName, const float& _value)
 {
-	Logger::LogInformation(FormatString("Updating %s %s to value %1f", _sectionName.c_str(), _settingName.c_str(), _value));
+	LogInfo(FormatString("Updating %s %s to value %1f", _sectionName.c_str(), _settingName.c_str(), _value));
 	int lineIndex = GetIniLineIndex(_sectionName, _settingName);
 	if (lineIndex == -1)
 	{
-		Logger::LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()), 0);
+		LogError(FormatString("Trying to change value %s %s which does not exist in file.", _sectionName.c_str(), _settingName.c_str()));
 		return;
 	}
 

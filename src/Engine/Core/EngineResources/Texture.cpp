@@ -22,7 +22,7 @@ void Texture::OnLoad()
 
     if (!pixels)
     {
-        Logger::LogError("Failed to load texture image.", 2);
+        LogFatalError("Failed to load texture image.");
     }
 
     Renderer* renderer = Application::GetApplication()->GetRenderer();
@@ -94,7 +94,7 @@ void Texture::CreateTextureSampler(VkFilter filter)
 
     if (vkCreateSampler(renderer->GetLogicalDevice(), &samplerInfo, nullptr, &m_textureSampler) != VK_SUCCESS)
     {
-        Logger::LogError("Failed to create texture sampler.", 2);
+        LogFatalError("Failed to create texture sampler.");
     }
 }
 

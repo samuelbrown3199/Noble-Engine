@@ -25,19 +25,29 @@ struct PointLight
     float intensity;
 };
 
-layout(set=1, binding=0, std140) uniform  SceneData
-{   
+struct DirectionalLight
+{
+	vec3 direction;
+	float intensity;
+	
+	vec3 diffuseLight;
+	vec3 specularLight;
+};
+
+layout(set=1, binding=0, std140) uniform  SceneData{   
+
 	mat4 view;
 	mat4 proj;
 	mat4 viewproj;
 	vec4 ambientColour;
-	vec4 sunlightDirection; //w for sun power
-	vec4 sunlightColour;
-	
+		
 	vec3 viewPos;
 	
 	int numberOfPointLights;
 	PointLight pointLights[64];
+	
+	int numberOfDirLights;
+	DirectionalLight directionalLights[4];
 	
 } sceneData;
 
@@ -67,9 +77,9 @@ vec3 CalculatePointLight(PointLight light, vec3 viewDir)
     return (diffuse/* + specular*/);
 }
 
-vec3 CalculateDirLight(vec3 viewDir)
+vec3 CalculateDirLight(DirectionalLight light, vec3 viewDir)
 {
-    vec3 lightDir = normalize(vec3(sceneData.sunlightDirection) - fragPos);
+    vec3 lightDir = normalize(vec3(light.direction) - fragPos);
     //diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     //specular shading, NYI
@@ -78,7 +88,7 @@ vec3 CalculateDirLight(vec3 viewDir)
 
     //combine results
 
-    vec3 diffuse = vec3(sceneData.sunlightColour) * diff * vec3(texture(displayTexture, inUV)) * sceneData.sunlightDirection.w;
+    vec3 diffuse = vec3(light.diffuseLight) * diff * vec3(texture(displayTexture, inUV)) * light.intensity;
     //vec3 specular = light.specularLight * spec * vec3(texture(material.specularTexture, i_TexCoord));
 
     return diffuse;
@@ -88,7 +98,9 @@ void main()
 {
     vec3 viewDir = normalize(sceneData.viewPos - fragPos);
 	vec3 result = CalculateAmbientLight();
-	result += CalculateDirLight(viewDir);
+	
+	for(int i = 0; i < sceneData.numberOfDirLights; i++)	
+		result += CalculateDirLight(sceneData.directionalLights[i], viewDir);
 	
 	for(int i = 0; i < sceneData.numberOfPointLights; i++)	
 		result += CalculatePointLight(sceneData.pointLights[i], viewDir);

@@ -91,19 +91,29 @@ struct GPUPointLight
     alignas(4) float intensity;
 };
 
+struct GPUDirectionalLight
+{
+    alignas(16) glm::vec3 direction;
+    alignas(4) float intensity;
+
+	alignas(16) glm::vec3 diffuseLight;
+	alignas(16) glm::vec3 specularLight;
+};
+
 struct GPUSceneData
 {
     glm::mat4 view;
     glm::mat4 proj;
     glm::mat4 viewproj;
     glm::vec4 ambientColour = glm::vec4(1, 1, 1, 1);
-    glm::vec4 sunlightDirection = glm::vec4(0, 0, 0, 1);
-    glm::vec4 sunlightColour = glm::vec4(1, 1, 1, 1);
 
     alignas(16) glm::vec3 viewPos;
 
     int numberOfPointLights;
     GPUPointLight pointLights[64];
+
+    int numberOfDirLights;
+    GPUDirectionalLight directionalLights[4];
 };
 
 struct GPUDrawPushConstants

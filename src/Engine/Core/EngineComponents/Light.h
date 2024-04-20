@@ -13,13 +13,13 @@ struct LightInfo
 
 	virtual void DoLightInfoInterface()
 	{
-		ImVec4 diffuse = ImVec4(m_diffuse.x, m_diffuse.y, m_diffuse.z, 1.0f);
-		ImGui::ColorEdit4("Diffuse Colour", (float*)&diffuse);
-		m_diffuse = glm::vec4(diffuse.x, diffuse.y, diffuse.z, diffuse.w);
+		float diffuse[3] = { m_diffuse.x, m_diffuse.y, m_diffuse.z };
+		ImGui::ColorEdit3("Diffuse Colour", (float*)&diffuse);
+		m_diffuse = glm::vec3(diffuse[0], diffuse[1], diffuse[2]);
 
-		ImVec4 specular = ImVec4(m_specular.x, m_specular.y, m_specular.z, 1.0f);
-		ImGui::ColorEdit4("Specular Colour", (float*)&specular);
-		m_specular = glm::vec4(specular.x, specular.y, specular.z, specular.w);
+		float specular[3] = { m_specular.x, m_specular.y, m_specular.z };
+		ImGui::ColorEdit3("Specular Colour", (float*)&specular);
+		m_specular = glm::vec3(specular[0], specular[1], specular[2]);
 	};
 	virtual nlohmann::json WriteInfoToJson() = 0;
 	virtual void LoadInfoFromJson(nlohmann::json j) = 0;
@@ -27,22 +27,20 @@ struct LightInfo
 
 struct DirectionalLight : public LightInfo
 {
-	glm::vec3 m_direction;
-
-	void BindInfoToShaders(int curLight, Transform* tr)
-	{
-		Logger::LogInformation("Using directional light, which is not implemented in this version of the engine.");
-	}
+	glm::vec3 m_direction = glm::vec3(0.0f, 180.0f, 0.0f);
+	float m_fIntensity = 1.0f;
 
 	void DoLightInfoInterface()
 	{
-		ImGui::Text("Directional Light, NYI");
+		ImGui::Text("Directional Light");
 		ImGui::Dummy(ImVec2(0.0f, 3.0f));
 
 		ImGui::BeginDisabled();
 		float direction[3] = { m_direction.x, m_direction.y, m_direction.z };
 		ImGui::DragFloat3("Direction", direction, 0.01f, -1, 1, "%.2f");
 		ImGui::EndDisabled();
+
+		ImGui::DragFloat("Intensity", &m_fIntensity, 0.01f, 0.0f, 1.0f, "%.2f");
 
 		LightInfo::DoLightInfoInterface();
 	}
@@ -124,6 +122,9 @@ struct SpotLight : public LightInfo
 
 	virtual void DoLightInfoInterface()
 	{
+		ImGui::Text("Spot Light");
+		ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
 		ImGui::BeginDisabled();
 		ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
 		ImGui::EndDisabled();
@@ -263,7 +264,7 @@ struct Light : public Component
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		}
 
-		const char* lightTypes[] = { "Point"/*, "Spot", "Directional"*/};
+		const char* lightTypes[] = { "Point", "Spot NYI", "Directional"};
 		int selLightType = m_lightType;
 		ImGui::Combo("Light Type", &selLightType, lightTypes, IM_ARRAYSIZE(lightTypes));
 		ChangeLightType((LightType)selLightType);

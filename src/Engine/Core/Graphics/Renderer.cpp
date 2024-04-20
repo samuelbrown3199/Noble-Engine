@@ -551,21 +551,21 @@ void Renderer::ResetForNextFrame()
 void Renderer::DrawFrame()
 {
 	if (vkWaitForFences(m_device, 1, &GetCurrentFrame().m_renderFence, true, 1000000000) != VK_SUCCESS)
-		throw std::exception();
+		Logger::LogError("Failed to wait for fence.", 2);
 
 	GetCurrentFrame().m_deletionQueue.flush();
 	GetCurrentFrame().m_frameDescriptors.ClearPools(m_device);
 
 	if (vkResetFences(m_device, 1, &GetCurrentFrame().m_renderFence) != VK_SUCCESS)
-		throw std::exception();
+		Logger::LogError("Failed to reset fence.", 2);
 
 	uint32_t swapchainImageIndex;
 	if (vkAcquireNextImageKHR(m_device, m_swapchain, 100000000, GetCurrentFrame().m_swapchainSemaphore, nullptr, &swapchainImageIndex) != VK_SUCCESS)
-		throw std::exception();
+		Logger::LogError("Failed to acquire next image.", 2);
 
 	VkCommandBuffer cmd = GetCurrentFrame().m_mainCommandBuffer;
 	if (vkResetCommandBuffer(cmd, 0) != VK_SUCCESS)
-		throw std::exception();
+		Logger::LogError("Failed to reset command buffer.", 2);
 
 	if (m_fRenderScale == 0)
 		Logger::LogError("Render scale is set to 0. This should never happen.", 2);

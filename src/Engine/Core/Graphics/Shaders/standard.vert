@@ -38,21 +38,31 @@ struct PointLight
     float intensity;
 };
 
+struct DirectionalLight
+{
+	vec3 direction;
+	float intensity;
+	
+	vec3 diffuseLight;
+	vec3 specularLight;
+};
+
 layout(set=1, binding=0, std140) uniform  SceneData{   
 
 	mat4 view;
 	mat4 proj;
 	mat4 viewproj;
-	vec4 ambientColor;
-	vec4 sunlightDirection; //w for sun power
-	vec4 sunlightColor;
+	vec4 ambientColour;
 		
 	vec3 viewPos;
 	
 	int numberOfPointLights;
 	PointLight pointLights[64];
+	
+	int numberOfDirLights;
+	DirectionalLight directionalLights[4];
+	
 } sceneData;
-
 void main()
 {
 	Vertex v = PushConstants.vertexBuffer.vertices[gl_VertexIndex];

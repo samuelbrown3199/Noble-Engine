@@ -97,6 +97,12 @@ class EditorToolUI : public ToolUI
 protected:
 
 	bool m_bUnsavedWork = false;
+	bool m_bWindowFocused = false;
+	bool m_bWindowHovered = false;
+
+	ImVec2 m_windowPos;
+	ImVec2 m_windowSize;
+	ImVec2 m_relativeMousePos;
 
 public:
 
@@ -117,5 +123,15 @@ public:
 		m_windowFlags = m_defaultFlags;
 		if(m_bUnsavedWork)
 			m_windowFlags |= ImGuiWindowFlags_UnsavedDocument;
+	}
+
+	void UpdateWindowState()
+	{
+		m_bWindowFocused = ImGui::IsWindowFocused();
+		m_bWindowHovered = ImGui::IsWindowHovered();
+
+		m_windowPos = ImGui::GetWindowPos();
+		m_windowSize = ImGui::GetWindowSize();
+		m_relativeMousePos = ImVec2(ImGui::GetMousePos().x - m_windowPos.x, ImGui::GetMousePos().y - m_windowPos.y);
 	}
 };

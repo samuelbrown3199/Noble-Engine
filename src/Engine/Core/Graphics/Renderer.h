@@ -105,9 +105,9 @@ private:
 	VkQueue m_graphicsQueue;
 	uint32_t m_graphicsQueueFamily;
 
-	//temp values here for future editor update.
 	bool m_bDrawToWindow = false;
-	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
+	ImVec2 m_drawWindowSize;
+	VkDescriptorSet* m_drawWindowSet = nullptr;
 
 	DeletionQueue m_mainDeletionQueue;
 	VmaAllocator m_allocator;
@@ -265,4 +265,7 @@ public:
 	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
 
 	ImGuiContext* GetImguiContext() { return m_imguiContext; }
+	void SetDrawWindowSize(ImVec2 size) { m_drawWindowSize = size; }
+	void SetDrawWindowSet(VkDescriptorSet* set) { m_drawWindowSet = set; }
+	void SetDrawToWindow(bool value) { m_bDrawToWindow = value; }
 };

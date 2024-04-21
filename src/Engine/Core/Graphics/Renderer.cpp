@@ -589,7 +589,6 @@ void Renderer::DrawFrame()
 		}
 	}
 
-	//if we are rendering to an imgui window, we need to set the draw extent to the window size.
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
 	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
 
@@ -615,16 +614,11 @@ void Renderer::DrawFrame()
 	vkutil::TransitionImage(cmd, m_swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 	if(!m_bDrawToWindow)
-		vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter); // I want an option at some point to skip this stuff and to copy the image into an imgui window.
-
-	if (m_bDrawToWindow)
+		vkutil::CopyImageToImage(cmd, m_drawImage.m_image, m_swapchainImages[swapchainImageIndex], m_drawExtent, m_swapchainExtent, m_drawFilter);
+	else
 	{
-		if (m_drawWindowSet == VK_NULL_HANDLE)
-			m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-		ImGui::Begin("Test");
-		ImGui::Image(m_drawWindowSet, ImVec2((m_swapchainExtent.width / 2), (m_swapchainExtent.height / 2)));
-		ImGui::End();
+		if (*m_drawWindowSet == VK_NULL_HANDLE)
+			*m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	}
 
 	DrawImGui(cmd, m_swapchainImages[swapchainImageIndex], m_swapchainImageViews[swapchainImageIndex]);

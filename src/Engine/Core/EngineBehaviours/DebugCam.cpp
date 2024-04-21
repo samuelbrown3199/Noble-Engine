@@ -119,7 +119,7 @@ void DebugCam::UpdateControls()
 
 	if (inputManager->GetKeybindDown("LeftMouse") && inputManager->GetKey(SDLK_r))
 	{
-		Ray mouseRay = Raycaster::GetRayToMousePosition();
+		Ray mouseRay = Raycaster::GetRayToMousePosition(renderer->GetScreenSize(), glm::vec2(inputManager->m_iMouseX, inputManager->m_iMouseY));
 		if (mouseRay.m_hitObject)
 		{
 			ResourceManager* rManager = Application::GetApplication()->GetResourceManager();

@@ -55,15 +55,15 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
     return ray;
 }
 
-Ray Raycaster::GetRayToMousePosition(float maxDistance)
+Ray Raycaster::GetRayToMousePosition(const glm::vec2 windowSize, const glm::vec2 mousePos, float maxDistance)
 {
     Renderer* renderer = Application::GetApplication()->GetRenderer();
     InputManager* inputManager = Application::GetApplication()->GetInputManager();
     glm::vec2 screenSize = renderer->GetScreenSize();
 
     // converts a position from the 2d xpos, ypos to a normalized 3d direction
-    float x = (2.0f * inputManager->m_iMouseX) / screenSize.x - 1.0f;
-    float y = 1.0f - (2.0f * inputManager->m_iMouseY) / screenSize.y;
+    float x = (2.0f * mousePos.x) / windowSize.x - 1.0f;
+    float y = 1.0f - (2.0f * mousePos.y) / windowSize.y;
     float z = 1.0f;
     glm::vec3 ray_nds = glm::vec3(x, y, z);
     glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, -1.0f, 1.0f);

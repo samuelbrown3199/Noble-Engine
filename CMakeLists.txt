@@ -298,6 +298,9 @@ set (
 	src/Editor/Interface/SceneManagerWindow.h
 	src/Editor/Interface/SceneManagerWindow.cpp
 
+	src/Editor/Interface/SceneViewWindow.h
+	src/Editor/Interface/SceneViewWindow.cpp
+
 	#Editor management
 	
 	src/Editor/EditorManagement/EditorManager.h

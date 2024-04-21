@@ -14,6 +14,7 @@
 #include "../Interface/Profiler.h"
 #include "../Interface/ProjectDetailsWindow.h"
 #include "../Interface/SceneManagerWindow.h"
+#include "../Interface/SceneViewWindow.h"
 
 void EditorManager::InitializeEditor()
 {	
@@ -28,9 +29,11 @@ void EditorManager::InitializeEditor()
 	BindEditorUI<EditorSettingsWindow>("EditorSettings", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<ProjectDetailsWindow>("ProjectDetails", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<SceneManagerWindow>("SceneManager", ImGuiWindowFlags_AlwaysAutoResize);
+	BindEditorUI<SceneViewWindow>("SceneView", ImGuiWindowFlags_None);
 
 	ToggleUI("MainMenuBar");
 	ToggleUI("Editor");
+	ToggleUI("SceneView");
 }
 
 void EditorManager::CheckAndInitializeData()

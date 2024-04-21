@@ -147,6 +147,8 @@ void SceneManagerWindow::DoInterface()
         ImGui::Text("Double click to load scene. \nRe-order scenes by clicking and dragging. First scene in the list is the default scene of the project.");
         ImGui::Dummy(ImVec2(0, 10));
 
+        UpdateWindowState();
+
         if (ImGui::Button("Add Existing Scene to Project"))
         {
             IGFD::FileDialogConfig config;

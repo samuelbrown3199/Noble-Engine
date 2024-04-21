@@ -55,6 +55,8 @@ void EditorUI::DoInterface()
 
 	ImGui::Begin("Editor", &m_uiOpen, m_windowFlags);
 
+	UpdateWindowState();
+
 	std::string playModeButton = "Enter Play Mode";
 	if(Application::GetApplication()->GetPlayMode())
 		playModeButton = "Enter Edit Mode";

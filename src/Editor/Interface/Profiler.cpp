@@ -110,5 +110,7 @@ void Profiler::DoInterface()
     renderer->GetOnScreenVerticesAndTriangles(vertCount, triCount);
     ImGui::Text(FormatString("Rendered Vertices: %d. Rendered Triangles: %d.", vertCount, triCount).c_str());
 
+    UpdateWindowState();
+
     ImGui::End();
 }

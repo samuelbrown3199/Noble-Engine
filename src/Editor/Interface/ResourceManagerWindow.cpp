@@ -30,6 +30,8 @@ void ResourceManagerWindow::DoInterface()
         return;
     }
 
+    UpdateWindowState();
+
     NobleRegistry* registry = Application::GetApplication()->GetRegistry();
     std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
 

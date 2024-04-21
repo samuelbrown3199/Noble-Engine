@@ -11,6 +11,8 @@ void ProjectDetailsWindow::DoInterface()
 	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 	ImGui::Begin("Project Details", &m_uiOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
 
+	UpdateWindowState();
+
 	if (m_pProjectFile == nullptr)
 	{
 		ImGui::Text("How did you get here?!");

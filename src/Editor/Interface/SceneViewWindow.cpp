@@ -8,7 +8,6 @@ void SceneViewWindow::DoInterface()
 {
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	renderer->SetDrawWindowSet(&m_drawWindowSet);
-	renderer->SetDrawWindowSize(m_windowSize);
 	renderer->SetDrawToWindow(true);
 
 	ImGui::Begin("Scene View", &m_uiOpen, m_windowFlags);

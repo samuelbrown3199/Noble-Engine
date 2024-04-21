@@ -132,7 +132,7 @@ void Application::LoadSettings()
 {
 	LogInfo("Loading game.ini settings");
 	
-	//m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 1000), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 2000)); //does this setting make sense? Currently this sets window size, but it should probably set draw size.
+	m_gameRenderer->UpdateScreenSize(m_mainIniFile->GetIntSetting("Video", "ResolutionHeight", 0), m_mainIniFile->GetIntSetting("Video", "ResolutionWidth", 0));
 	m_gameRenderer->SetWindowFullScreen(m_mainIniFile->GetIntSetting("Video", "Fullscreen", 0));
 	m_gameRenderer->SetVSyncMode(m_mainIniFile->GetIntSetting("Video", "VSync", 1));
 	m_gameRenderer->SetRenderScale(m_mainIniFile->GetFloatSetting("Video", "RenderScale", 1.0f));
@@ -209,7 +209,7 @@ void Application::MainLoop()
 
 		//Render Start
 		m_pStats->StartPerformanceMeasurement("Render");
-		m_gameRenderer->UpdateScreenSize();
+		m_gameRenderer->CheckScreenSizeForUpdate();
 		m_gameRenderer->ResetForNextFrame();
 
 		if (m_editor != nullptr)

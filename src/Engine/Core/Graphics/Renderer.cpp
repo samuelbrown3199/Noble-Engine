@@ -589,6 +589,7 @@ void Renderer::DrawFrame()
 		}
 	}
 
+	//if we are rendering to an imgui window, we need to set the draw extent to the window size.
 	m_drawExtent.width = m_drawImage.m_imageExtent.width * m_fRenderScale;
 	m_drawExtent.height = m_drawImage.m_imageExtent.height * m_fRenderScale;
 
@@ -797,29 +798,33 @@ void Renderer::InitializeDefaultData()
 	});
 }
 
-void Renderer::UpdateScreenSize()
+void Renderer::CheckScreenSizeForUpdate()
 {
 	int newWidth, newHeight;
 	SDL_GetWindowSize(m_gameWindow, &newWidth, &newHeight);
-	if (newWidth != m_iScreenWidth || newHeight != m_iScreenHeight)
-	{
-		m_iScreenWidth = newWidth;
-		m_iScreenHeight = newHeight;
-
-		LogInfo(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
-	}
+	UpdateScreenSize(newHeight, newWidth);
 }
 
 void Renderer::UpdateScreenSize(const int& _height, const int& _width)
 {
-	if (_height <= 0 || _width <= 0)
+	if (_height < 0 || _width < 0)
 		LogFatalError(FormatString("Trying to resize screen to invalid size, %d %d", _width, _height));
 
 	int newWidth = _width, newHeight = _height;
+	if (newHeight == 0 || newWidth == 0)
+	{
+		SDL_DisplayMode displayMode;
+		SDL_GetDesktopDisplayMode(0, &displayMode);
+
+		newHeight = displayMode.h;
+		newWidth = displayMode.w;
+	}
+
 	if (newWidth != m_iScreenWidth || newHeight != m_iScreenHeight)
 	{
 		m_iScreenWidth = newWidth;
 		m_iScreenHeight = newHeight;
+
 		SDL_SetWindowSize(m_gameWindow, m_iScreenWidth, m_iScreenHeight);
 		LogInfo(FormatString("Resized game window to %dx%d.", m_iScreenWidth, m_iScreenHeight));
 	}
@@ -841,7 +846,7 @@ void Renderer::SetWindowFullScreen(const int& _mode)
 		break;
 	}
 
-	Renderer::UpdateScreenSize();
+	Renderer::CheckScreenSizeForUpdate();
 }
 
 std::string Renderer::GetWindowTitle()

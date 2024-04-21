@@ -206,7 +206,7 @@ public:
 	void AddOnScreenObject(Renderable* comp);
 	std::vector<Renderable*>* GetOnScreenObjects() { return &m_onScreenObjects; }
 
-	void UpdateScreenSize();
+	void CheckScreenSizeForUpdate();
 	void UpdateScreenSize(const int& _height, const int& _width);
 	SDL_Window* GetWindow() { return m_gameWindow; }
 

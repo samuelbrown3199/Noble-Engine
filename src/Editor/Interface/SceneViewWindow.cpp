@@ -14,7 +14,7 @@ void SceneViewWindow::DoInterface()
 
 	UpdateWindowState();
 
-	if (m_bWindowFocused && m_bWindowFocused && ImGui::IsMouseClicked(0))
+	if (m_bWindowFocused && m_bWindowHovered && ImGui::IsMouseClicked(0))
 	{
 		Ray ray = Raycaster::GetRayToMousePosition(glm::vec2(m_windowSize.x, m_windowSize.y), glm::vec2(m_relativeMousePos.x, m_relativeMousePos.y));
 		if (ray.m_hitObject)

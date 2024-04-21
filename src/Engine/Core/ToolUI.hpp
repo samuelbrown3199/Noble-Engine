@@ -134,4 +134,10 @@ public:
 		m_windowSize = ImGui::GetWindowSize();
 		m_relativeMousePos = ImVec2(ImGui::GetMousePos().x - m_windowPos.x, ImGui::GetMousePos().y - m_windowPos.y);
 	}
+
+	bool IsWindowFocused() { return m_bWindowFocused; }
+	bool IsWindowHovered() { return m_bWindowHovered; }
+	ImVec2 GetWindowPos() { return m_windowPos; }
+	ImVec2 GetWindowSize() { return m_windowSize; }
+	ImVec2 GetRelativeMousePos() { return m_relativeMousePos; }
 };

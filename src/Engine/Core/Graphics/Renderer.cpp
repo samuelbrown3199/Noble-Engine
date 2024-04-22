@@ -510,6 +510,8 @@ void Renderer::InitializeImgui()
 	m_imguiContext = ImGui::CreateContext();
 	ImPlot::CreateContext();
 
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
 	// this initializes imgui for SDL
 	ImGui_ImplSDL2_InitForVulkan(m_gameWindow);
 

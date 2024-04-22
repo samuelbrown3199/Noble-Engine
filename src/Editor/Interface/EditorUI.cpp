@@ -14,29 +14,9 @@
 #include <Engine\Core\EngineResources\Texture.h>
 #include <Engine\Core\EngineResources\Script.h>
 
-int EditorUI::m_iSelEntity = -1;
-int EditorUI::m_iSelSystem = -1;
-
-Entity* EditorUI::m_DebugCam = nullptr;
-
 void EditorUI::ChangeEditorMode()
 {
 	Application::GetApplication()->SetPlayMode(!Application::GetApplication()->GetPlayMode());
-}
-
-void EditorUI::CreateEditorCam()
-{
-	if (!m_DebugCam)
-	{
-		m_DebugCam = Application::GetApplication()->CreateEntity();
-		m_DebugCam->m_sEntityName = "Editor Cam";
-		m_DebugCam->AddBehaviour<DebugCam>();
-	}
-	else
-	{
-		Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(m_DebugCam->m_sEntityID));
-		m_DebugCam = nullptr;
-	}
 }
 
 void EditorUI::InitializeInterface(ImGuiWindowFlags defaultFlags)
@@ -65,38 +45,6 @@ void EditorUI::DoInterface()
 		ChangeEditorMode();
 	}
 
-	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
-	if(ImGui::Button("Create Entity"))
-	{
-		Application::GetApplication()->CreateEntity();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Delete Entity"))
-	{
-		if(m_iSelEntity != -1)
-			Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(entities.at(m_iSelEntity).m_sEntityID));
-	}
-
-	ImGui::SameLine();
-	if (ImGui::Button("Add Child Entity"))
-	{
-		if (m_iSelEntity != -1)
-			entities.at(m_iSelEntity).CreateChildObject();
-	}
-
-	if (ImGui::TreeNode("Entities"))
-	{
-		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
-		std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry = registry->GetBehaviourRegistry();
-
-		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-		static int selection_mask = (1 << 2);
-		for (int i = 0; i < entities.size(); i++)
-			entities.at(i).DoEntityInterface(compRegistry, behaviourRegistry, i, m_iSelEntity);
-
-		ImGui::TreePop();
-	}
-
 	ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 	clearColour = ImVec4(renderer->GetClearColour().x, renderer->GetClearColour().y, renderer->GetClearColour().z, 200.0f / 255.0f);
@@ -118,8 +66,6 @@ void EditorUI::DoInterface()
 void EditorUI::HandleShortcutInputs()
 {
 	InputManager* inputManager = Application::GetApplication()->GetInputManager();
-	if (inputManager->GetKey(SDLK_LCTRL) && inputManager->GetKeyDown(SDLK_q))
-		CreateEditorCam();
 
 	/*if (InputManager::GetKey(SDLK_LCTRL) && InputManager::GetKeyDown(SDLK_r))
 		OpenResourceManager();

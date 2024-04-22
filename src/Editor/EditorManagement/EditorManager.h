@@ -9,7 +9,7 @@ class EditorManager : public Editor
 private:
 
 	std::string m_sDataFolder;
-	std::map<std::string, std::shared_ptr<ToolUI>> m_mEditorUIs;
+	std::unordered_map<std::string, std::shared_ptr<ToolUI>> m_mEditorUIs;
 	std::deque<std::string> m_recentProjects;
 
 	void InitializeEditor();

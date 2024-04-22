@@ -12,14 +12,7 @@ class ProjectFile;
 
 class EditorUI : public EditorToolUI
 {
-	static int m_iSelEntity;
-	static int m_iSelSystem;
-
-	Component* m_selComponent;
-	static Entity* m_DebugCam;
-
 	void ChangeEditorMode();
-	void CreateEditorCam();
 
 	ImVec4 ambientColour;
 	ImVec4 clearColour;

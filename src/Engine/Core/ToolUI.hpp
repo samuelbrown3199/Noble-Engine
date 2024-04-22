@@ -133,6 +133,9 @@ public:
 		m_windowPos = ImGui::GetWindowPos();
 		m_windowSize = ImGui::GetWindowSize();
 		m_relativeMousePos = ImVec2(ImGui::GetMousePos().x - m_windowPos.x, ImGui::GetMousePos().y - m_windowPos.y);
+
+		if(m_bWindowFocused)
+			HandleShortcutInputs();
 	}
 
 	bool IsWindowFocused() { return m_bWindowFocused; }

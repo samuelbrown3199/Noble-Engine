@@ -11,7 +11,6 @@ void SceneViewWindow::DoInterface()
 	renderer->SetDrawToWindow(true);
 
 	ImGui::Begin("Scene View", &m_uiOpen, m_windowFlags);
-
 	UpdateWindowState();
 
 	if (m_bWindowFocused && m_bWindowHovered && ImGui::IsMouseClicked(0))
@@ -22,7 +21,6 @@ void SceneViewWindow::DoInterface()
 			LogInfo("Hit Object: " + ray.m_hitEntity->m_sEntityID);
 		}
 	}
-
 	ImGui::Image(m_drawWindowSet, ImVec2(m_windowSize.x-15, m_windowSize.y - 35));
 
 	ImGui::End();

@@ -8,11 +8,13 @@
 #include <Engine\Core\ProjectFile.h>
 
 #include "../Interface/MainMenuBar.h"
-#include "../Interface/EditorUI.h"
+#include "../Interface/MainDockWindow.h"
+#include "../Interface/DataEditorWindow.h"
 #include "../Interface/EditorSettingsWindow.h"
 #include "../Interface/ResourceManagerWindow.h"
 #include "../Interface/Profiler.h"
 #include "../Interface/ProjectDetailsWindow.h"
+#include "../Interface/SceneHierarchyWindow.h"
 #include "../Interface/SceneManagerWindow.h"
 #include "../Interface/SceneViewWindow.h"
 
@@ -23,16 +25,20 @@ void EditorManager::InitializeEditor()
 	CheckAndInitializeData();
 
 	BindEditorUI<MainMenuBar>("MainMenuBar", ImGuiWindowFlags_NoMove);
-	BindEditorUI<EditorUI>("Editor", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize); //this UI will probably be removed long term
+	BindEditorUI<MainDockWindow>("MainDockWindow", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus);
 	BindEditorUI<ResourceManagerWindow>("ResourceManager", ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	BindEditorUI<Profiler>("Profiler", ImGuiWindowFlags_None);
 	BindEditorUI<EditorSettingsWindow>("EditorSettings", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<ProjectDetailsWindow>("ProjectDetails", ImGuiWindowFlags_AlwaysAutoResize);
+	BindEditorUI<SceneHierarchyWindow>("SceneHierarchy", ImGuiWindowFlags_None);
 	BindEditorUI<SceneManagerWindow>("SceneManager", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<SceneViewWindow>("SceneView", ImGuiWindowFlags_None);
+	BindEditorUI<DataEditorWindow>("DataEditor", ImGuiWindowFlags_None);
 
 	ToggleUI("MainMenuBar");
-	ToggleUI("Editor");
+	ToggleUI("MainDockWindow");
+	ToggleUI("SceneHierarchy");
+	ToggleUI("DataEditor");
 	ToggleUI("SceneView");
 }
 
@@ -112,7 +118,7 @@ void EditorManager::LoadScene(int sceneIndex)
 
 void EditorManager::OnUpdate()
 {
-	std::map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
+	std::unordered_map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
 	for (uiItr = m_mEditorUIs.begin(); uiItr != m_mEditorUIs.end(); uiItr++)
 	{
 		if (uiItr->second->m_uiOpen)

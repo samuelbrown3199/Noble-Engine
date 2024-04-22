@@ -280,8 +280,14 @@ set (
 	src/Editor/Interface/MainMenuBar.h
 	src/Editor/Interface/MainMenuBar.cpp
 
+	src/Editor/Interface/MainDockWindow.h
+	src/Editor/Interface/MainDockWindow.cpp
+
 	src/Editor/Interface/EditorUI.h
 	src/Editor/Interface/EditorUI.cpp
+
+	src/Editor/Interface/DataEditorWindow.h
+	src/Editor/Interface/DataEditorWindow.cpp
 
 	src/Editor/Interface/ResourceManagerWindow.h
 	src/Editor/Interface/ResourceManagerWindow.cpp
@@ -294,6 +300,9 @@ set (
 
 	src/Editor/Interface/ProjectDetailsWindow.h
 	src/Editor/Interface/ProjectDetailsWindow.cpp
+
+	src/Editor/Interface/SceneHierarchyWindow.h
+	src/Editor/Interface/SceneHierarchyWindow.cpp
 
 	src/Editor/Interface/SceneManagerWindow.h
 	src/Editor/Interface/SceneManagerWindow.cpp

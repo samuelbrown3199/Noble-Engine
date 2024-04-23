@@ -219,6 +219,39 @@ struct Entity
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 			selEntity = Application::GetApplication()->GetEntityIndex(m_sEntityID);
 
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Button("Create Child Entity"))
+			{
+				CreateChildObject();
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Delete"))
+			{
+				Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(m_sEntityID));
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::BeginMenu("Add Component"))
+			{
+				std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+				for (int o = 0; o < compRegistry->size(); o++)
+				{
+					if (ImGui::MenuItem(compRegistry->at(o).first.c_str()))
+					{
+						compRegistry->at(o).second.m_comp->AddComponentToEntity(m_sEntityID);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
 		if (node_open)
 		{
 			ImGui::InputText("Entity Name", &m_sEntityName, 128);

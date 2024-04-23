@@ -19,6 +19,15 @@ void SceneHierarchyWindow::DoInterface()
 	{
 		Application::GetApplication()->CreateEntity();
 	}
+	if (m_iSelEntity != -1)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Delete Entity"))
+		{
+			Application::GetApplication()->DeleteEntity(m_iSelEntity);
+			m_iSelEntity = -1;
+		}
+	}
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
 	if (ImGui::TreeNode("Entities"))

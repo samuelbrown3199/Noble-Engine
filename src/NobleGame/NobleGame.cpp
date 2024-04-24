@@ -28,37 +28,39 @@ void NobleGameDLL::InitializeDLL(std::shared_ptr<Application> application)
 
 void NobleGameDLL::RegisterComponents()
 {
-	LogInfo("Registering components from DLL");
+	LogTrace("Registering components from DLL");
 
 	m_app->GetRegistry()->RegisterComponent<TestComponent>("TestComponent", false, 1024, true, true);
 
-	LogInfo("Components registered from DLL");
+	LogTrace("Components registered from DLL");
 }
 
 void NobleGameDLL::RegisterBehaviours()
 {
+	LogTrace("Registering behaviours from DLL");
 
+	LogTrace("Behaviours registered from DLL");
 }
 
 void NobleGameDLL::RegisterResources()
 {
-	LogInfo("Registering resources from DLL");
+	LogTrace("Registering resources from DLL");
 
 	m_app->GetRegistry()->RegisterResource("TestResource", new TestResource(), false);
 
-	LogInfo("Resources registered from DLL");
+	LogTrace("Resources registered from DLL");
 }
 
 void NobleGameDLL::RegisterDecriptors()
 {
-	LogInfo("Registering descriptors from DLL");
+	LogTrace("Registering descriptors from DLL");
 
-	LogInfo("Descriptors registered from DLL");
+	LogTrace("Descriptors registered from DLL");
 }
 
 void NobleGameDLL::RegisterPushConstants()
 {
-	LogInfo("Registering push constants from DLL");
+	LogTrace("Registering push constants from DLL");
 
-	LogInfo("Push constants registered from DLL");
+	LogTrace("Push constants registered from DLL");
 }

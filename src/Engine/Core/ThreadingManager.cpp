@@ -3,30 +3,21 @@
 #include "Logger.h"
 #include "../Useful.h"
 
-int ThreadingManager::numberOfThreads;
-std::vector<Thread> ThreadingManager::mThreads;
-
-std::condition_variable ThreadingManager::mEventVar;
-std::mutex ThreadingManager::mEventMutex;
-bool ThreadingManager::mStopping = false;
-
-std::queue<Task> ThreadingManager::mTasks;
-
-void Thread::ThreadFunction()
+void Thread::ThreadFunction(ThreadingManager* tManager)
 {
 	while (true)
 	{
 		Task task;
 
 		{
-			std::unique_lock<std::mutex> lock{ ThreadingManager::mEventMutex };
+			std::unique_lock<std::mutex> lock{ tManager->m_EventMutex };
 
-			ThreadingManager::mEventVar.wait(lock, [=] {return ThreadingManager::mStopping || !ThreadingManager::mTasks.empty(); });
-			if (ThreadingManager::mStopping && ThreadingManager::mTasks.empty())
+			tManager->m_EventVar.wait(lock, [=] {return tManager->m_bStopping || !tManager->mTasks.empty(); });
+			if (tManager->m_bStopping && tManager->mTasks.empty())
 				break;
 
-			task = std::move(ThreadingManager::mTasks.front());
-			ThreadingManager::mTasks.pop();
+			task = std::move(tManager->mTasks.front());
+			tManager->mTasks.pop();
 			busy = true;
 		}
 
@@ -38,19 +29,19 @@ void Thread::ThreadFunction()
 ThreadingManager::ThreadingManager()
 {
 	LogInfo("Initializing thread manager.");
-	numberOfThreads = ceil(std::thread::hardware_concurrency() / 2);
+	m_iNumberOfThreads = ceil(std::thread::hardware_concurrency() / 2);
 	InitializeThreads();
 	LogTrace("Initialized thread manager.");
 }
 
 void ThreadingManager::InitializeThreads()
 {
-	LogTrace(FormatString("Starting %d threads.", numberOfThreads));
+	LogTrace(FormatString("Starting %d threads.", m_iNumberOfThreads));
 
-	for (auto i = 0; i < numberOfThreads; ++i)
+	for (auto i = 0; i < m_iNumberOfThreads; ++i)
 	{
 		LogTrace(FormatString("Starting thread %d.", i));
-		mThreads.emplace_back();
+		m_vThreads.emplace_back(Thread(this));
 	}
 }
 
@@ -58,22 +49,25 @@ void ThreadingManager::StopThreads() noexcept
 {
 	LogInfo("Stopping threads.");
 	{
-		std::unique_lock<std::mutex> lock{ mEventMutex };
-		mStopping = true;
+		std::unique_lock<std::mutex> lock{ m_EventMutex };
+		m_bStopping = true;
 	}
 
-	mEventVar.notify_all();
-	for (auto& thread : mThreads)
-		thread.t.join();
+	m_EventVar.notify_all();
+	for (int i = 0; i < m_vThreads.size(); i++)
+	{
+		m_vThreads[i].t.join();
+		LogTrace(FormatString("Thread %d stopped.", i));
+	}
 
 	LogTrace("Stopped threads.");
 }
 
 bool ThreadingManager::AreAllThreadsFinished()
 {
-	for (int i = 0; i < numberOfThreads; i++)
+	for (int i = 0; i < m_iNumberOfThreads; i++)
 	{
-		if (!mThreads[i].busy)
+		if (!m_vThreads[i].busy)
 			return false;
 	}
 

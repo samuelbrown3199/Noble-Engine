@@ -109,7 +109,7 @@ struct ComponentDatalist : public Datalist
 			for (int i = 0; i < amountOfThreads; i++)
 			{
 				int buffer = maxComponentsPerThread * i;
-				auto th = ThreadingManager::EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
+				auto th = Application::GetApplication()->GetThreadingManager()->EnqueueTask([&] { ThreadUpdate(buffer, maxComponentsPerThread); });
 			}
 		}
 	}
@@ -143,7 +143,7 @@ struct ComponentDatalist : public Datalist
 			for (int i = 0; i < amountOfThreads; i++)
 			{
 				int buffer = maxComponentsPerThread * i;
-				auto th = ThreadingManager::EnqueueTask([&] { ThreadPreRender(buffer, maxComponentsPerThread); });
+				auto th = Application::GetApplication()->GetThreadingManager()->EnqueueTask([&] { ThreadPreRender(buffer, maxComponentsPerThread); });
 			}
 		}
 	}

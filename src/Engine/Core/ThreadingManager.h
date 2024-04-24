@@ -12,17 +12,19 @@
 
 using Task = std::function<void()>;
 
+class ThreadingManager;
+
 struct Thread
 {
 	std::thread t;
 	bool busy = false;
 
-	Thread()
+	Thread(ThreadingManager* tManager)
 	{
-		t = std::thread(&Thread::ThreadFunction, this);
+		t = std::thread(&Thread::ThreadFunction, this, tManager);
 	}
 
-	void ThreadFunction();
+	void ThreadFunction(ThreadingManager* tManager);
 };
 
 /**
@@ -40,11 +42,11 @@ public:
 	/**
 	* Adds a task to the task list. A thread then picks up the task and calls the function.
 	*/
-	static auto EnqueueTask(T task)->std::future<decltype(task())>
+	auto EnqueueTask(T task)->std::future<decltype(task())>
 	{
 		auto wrapper = std::make_shared<std::packaged_task<decltype(task()) ()>>(std::move(task));
 		{
-			std::unique_lock<std::mutex> lock{ mEventMutex };
+			std::unique_lock<std::mutex> lock{ m_EventMutex };
 			mTasks.emplace([=]
 				{
 					(*wrapper)();
@@ -52,29 +54,29 @@ public:
 			);
 		}
 
-		mEventVar.notify_one();
+		m_EventVar.notify_one();
 		return wrapper->get_future();
 	}
 
-	static void WaitForTasksToClear()
+	void WaitForTasksToClear()
 	{
 		while (!mTasks.empty() /* && !AreAllThreadsFinished()*/) {}
 	}
 
 private:
 
-	static int numberOfThreads;
-	static std::vector<Thread> mThreads;
+	int m_iNumberOfThreads;
+	std::vector<Thread> m_vThreads;
 
-	static std::condition_variable mEventVar;
-	static std::mutex mEventMutex;
-	static bool mStopping;
+	std::condition_variable m_EventVar;
+	std::mutex m_EventMutex;
+	bool m_bStopping;
 
-	static std::queue<Task> mTasks;
+	std::queue<Task> mTasks;
 
 	void InitializeThreads();
-	static void StopThreads() noexcept;
-	static bool AreAllThreadsFinished();
+	void StopThreads() noexcept;
+	bool AreAllThreadsFinished();
 };
 
 #endif

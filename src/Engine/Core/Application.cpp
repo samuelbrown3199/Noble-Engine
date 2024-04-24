@@ -196,7 +196,7 @@ void Application::MainLoop()
 
 			m_pStats->EndComponentMeasurement(compRegistry->at(i).first, true);
 		}
-		ThreadingManager::WaitForTasksToClear();
+		m_threadManager->WaitForTasksToClear();
 		m_pStats->EndPerformanceMeasurement("Update");
 		//update end
 
@@ -230,7 +230,7 @@ void Application::MainLoop()
 
 			m_pStats->EndComponentMeasurement(compRegistry->at(i).first, false);
 		}
-		ThreadingManager::WaitForTasksToClear();
+		m_threadManager->WaitForTasksToClear();
 		m_gameRenderer->DrawFrame();
 		m_pStats->EndPerformanceMeasurement("Render");
 		//Render End
@@ -256,7 +256,7 @@ void Application::CleanupApplication()
 	m_gameRenderer->WaitForRenderingToFinish();
 	m_gameRenderer->SetCamera(nullptr);
 
-	ThreadingManager::StopThreads();
+	m_threadManager->StopThreads();
 	ClearLoadedScene();
 
 	m_resourceManager->UnloadAllResources();

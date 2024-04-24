@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "../Application.h"
 #include "../Graphics/Renderer.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 std::vector<uint32_t> Sprite::spriteQuadIndices =
 {

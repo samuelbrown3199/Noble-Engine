@@ -22,6 +22,7 @@ class NobleRegistry;
 class SceneManager;
 class ProjectFile;
 class NobleDLL;
+struct Command;
 
 class Editor
 {
@@ -35,6 +36,8 @@ public:
 	virtual void HandleQuit() = 0;
 
 	virtual void SetProjectFile(ProjectFile* projectFile) = 0;
+
+	virtual void PushCommand(Command* command) = 0;
 };
 
 class Application
@@ -123,6 +126,8 @@ public:
 
 	void RegisterDefaultComponents();
 	void ResetRegistries();
+
+	void PushCommand(Command* command);
 
 	template<typename T>
 	std::shared_ptr<T> BindDebugUI()

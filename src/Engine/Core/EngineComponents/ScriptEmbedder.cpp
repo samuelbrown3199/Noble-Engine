@@ -1,6 +1,6 @@
 #include "ScriptEmbedder.h"
 #include "../Application.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 void ScriptEmbedder::OnUpdate()
 {

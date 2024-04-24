@@ -117,6 +117,9 @@ set (
 	src/Engine/Core/Application.h
 	src/Engine/Core/Application.cpp
 
+	src/Engine/Core/CommandTypes.h
+	src/Engine/Core/CommandTypes.cpp
+
 	src/Engine/Core/NobleDLL.h
 	src/Engine/Core/NobleDLL.cpp
 
@@ -177,7 +180,8 @@ set (
 
 	#ECS
 
-	src/Engine/Core/ECS/Entity.hpp
+	src/Engine/Core/ECS/Entity.h
+	src/Engine/Core/ECS/Entity.cpp
 
 	src/Engine/Core/ECS/Component.h
 	src/Engine/Core/ECS/Component.cpp
@@ -314,7 +318,9 @@ set (
 	
 	src/Editor/EditorManagement/EditorManager.h
 	src/Editor/EditorManagement/EditorManager.cpp
-	
+
+	src/Editor/EditorManagement/CommandSystem.h
+	src/Editor/EditorManagement/CommandSystem.cpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Editor>)

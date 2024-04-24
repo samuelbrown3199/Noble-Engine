@@ -4,7 +4,7 @@
 #include "../Graphics/Renderer.h"
 #include "../Graphics/BufferHelper.h"
 #include "../Graphics/GraphicsPipeline.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 void MeshRenderer::OnPreRender() 
 {

@@ -1,7 +1,7 @@
 #include "DataEditorWindow.h"
 
 #include <Engine/Core/Application.h>
-#include <Engine/Core/ECS/Entity.hpp>
+#include <Engine/Core/ECS/Entity.h>
 
 void DataEditorWindow::DoInterface()
 {

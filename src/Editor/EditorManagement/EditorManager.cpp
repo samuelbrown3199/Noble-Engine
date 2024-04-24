@@ -21,6 +21,7 @@
 void EditorManager::InitializeEditor()
 {	
 	m_sWindowName = Application::GetApplication()->GetRenderer()->GetWindowTitle();
+	m_pCommandSystem = new CommandSystem();
 
 	CheckAndInitializeData();
 
@@ -118,6 +119,8 @@ void EditorManager::LoadScene(int sceneIndex)
 
 void EditorManager::OnUpdate()
 {
+	m_pCommandSystem->ProcessCommandQueue();
+
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
 	for (uiItr = m_mEditorUIs.begin(); uiItr != m_mEditorUIs.end(); uiItr++)
 	{
@@ -191,4 +194,9 @@ void EditorManager::UpdateRecentProjectFile()
 		file << project << std::endl;
 	}
 	file.close();
+}
+
+void EditorManager::PushCommand(Command* command)
+{
+	m_pCommandSystem->PushCommand(command);
 }

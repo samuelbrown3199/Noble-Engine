@@ -11,7 +11,7 @@
 
 #include "../../Maths/Raycaster.h"
 
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 Behaviour* DebugCam::GetAsBehaviour(std::string entityID)
 {

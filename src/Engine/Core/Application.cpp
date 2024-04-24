@@ -14,7 +14,7 @@
 #include "EngineComponents/Sprite.h"
 #include "EngineComponents/Light.h"
 
-#include "ECS/Entity.hpp"
+#include "ECS/Entity.h"
 
 #include "EngineBehaviours/DebugCam.h"
 
@@ -73,7 +73,7 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 	}
 	else
 	{
-		LogInfo("No project files found in working directory. Engine is running in editor mode.");
+		LogError("No project files found in working directory. Engine is probably running in editor mode.");
 	}
 
 	LogInfo("Engine started successfully");
@@ -322,9 +322,17 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std
 
 	for (int i = 0; i < m_vEntities.size(); i++)
 	{
-		if (m_vEntities.at(i).m_sEntityID == _desiredID)
+		Entity* targetEntity = &m_vEntities.at(i);
+		if (targetEntity->m_sEntityID == _desiredID && targetEntity->m_bAvailableForUse)
 		{
-			LogFatalError(FormatString("Tried to create entity with duplicate ID. %s", _desiredID));
+			targetEntity->m_bAvailableForUse = false;
+			targetEntity->m_sEntityParentID = _parentID;
+			targetEntity->m_sEntityName = _name;
+			return targetEntity;
+		}
+		else if (targetEntity->m_sEntityID == _desiredID && !targetEntity->m_bAvailableForUse)
+		{
+			LogFatalError("Entity with ID " + _desiredID + " already exists and is in use. Generating new ID.");
 			return nullptr;
 		}
 	}
@@ -443,6 +451,11 @@ void Application::ResetRegistries()
 	RegisterDefaultComponents();
 	m_resourceManager->RegisterResourceTypes();
 	m_gameRenderer->RegisterDescriptors();
+}
+
+void Application::PushCommand(Command* command)
+{
+	m_editor->PushCommand(command);
 }
 
 void Application::CleanupDeletionEntities()

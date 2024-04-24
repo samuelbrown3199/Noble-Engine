@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 #include "../Application.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 #include "Transform.h"
 
 #include "../ECS/ComponentList.hpp"

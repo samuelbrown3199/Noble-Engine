@@ -7,7 +7,7 @@
 #include <Engine\Core\EngineBehaviours\DebugCam.h>
 #include <Engine\Core\InputManager.h>
 
-#include <Engine\Core\ECS\Entity.hpp>
+#include <Engine\Core\ECS\Entity.h>
 
 #include <Engine\Core\EngineResources\AudioClip.h>
 #include <Engine\Core\EngineResources\Model.h>

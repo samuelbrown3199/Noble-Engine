@@ -2,7 +2,7 @@
 
 #include <Engine\Core\Registry.h>
 #include <Engine\Core\ToolUI.hpp>
-#include <Engine\Core\ECS\Entity.hpp>
+#include <Engine\Core\ECS\Entity.h>
 #include <Engine\Core\ECS\Component.h>
 
 #include "ResourceManagerWindow.h"

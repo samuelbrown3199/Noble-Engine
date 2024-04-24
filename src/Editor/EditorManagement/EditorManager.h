@@ -2,6 +2,8 @@
 
 #include <Engine/Core/Application.h>
 
+#include "CommandSystem.h"
+
 class ProjectFile;
 
 class EditorManager : public Editor
@@ -11,6 +13,8 @@ private:
 	std::string m_sDataFolder;
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>> m_mEditorUIs;
 	std::deque<std::string> m_recentProjects;
+
+	CommandSystem* m_pCommandSystem;
 
 	void InitializeEditor();
 	void CheckAndInitializeData();
@@ -56,4 +60,7 @@ public:
 	void UpdateRecentProjects(ProjectFile* projectFile);
 	std::deque<std::string> GetRecentProjects() { return m_recentProjects; }
 	void RemoveRecentProject(int index);
+
+	void PushCommand(Command* command) override;
+	CommandSystem* GetCommandSystem() { return m_pCommandSystem; }
 };

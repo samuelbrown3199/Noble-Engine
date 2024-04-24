@@ -1,9 +1,11 @@
 #include "SceneHierarchyWindow.h"
 
 #include <Engine/Core/Application.h>
-#include <Engine/Core/ECS/Entity.hpp>
+#include <Engine/Core/ECS/Entity.h>
+#include <Engine/Core/CommandTypes.h>
 
 #include "../EditorManagement/EditorManager.h"
+
 #include "DataEditorWindow.h"
 
 void SceneHierarchyWindow::DoInterface()
@@ -15,17 +17,24 @@ void SceneHierarchyWindow::DoInterface()
 
 	UpdateWindowState();
 
+	if(ImGui::Button("Undo TEST"))
+		editorManager->GetCommandSystem()->Undo();
+	ImGui::SameLine();
+	if (ImGui::Button("Redo TEST"))
+		editorManager->GetCommandSystem()->Redo();
+
 	if (ImGui::Button("Create Entity"))
 	{
-		Application::GetApplication()->CreateEntity();
+		AddEntityCommand* command = new AddEntityCommand();
+		editorManager->PushCommand(command);
 	}
 	if (m_iSelEntity != -1)
 	{
 		ImGui::SameLine();
 		if (ImGui::Button("Delete Entity"))
 		{
-			Application::GetApplication()->DeleteEntity(m_iSelEntity);
-			m_iSelEntity = -1;
+			DeleteEntityCommand* command = new DeleteEntityCommand(Application::GetApplication()->GetEntityList().at(m_iSelEntity).m_sEntityID);
+			editorManager->PushCommand(command);
 		}
 	}
 

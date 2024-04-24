@@ -1,7 +1,7 @@
 #include "AudioSource.h"
 
 #include "../Application.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 void AudioSource::OnUpdate()
 {

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "../Core/ECS/Entity.hpp"
+#include "../Core/ECS/Entity.h"
 
 struct Ray
 {

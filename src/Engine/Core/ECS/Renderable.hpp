@@ -4,7 +4,7 @@
 
 #include "../Application.h"
 #include "../Graphics/Renderer.h"
-#include "../ECS/Entity.hpp"
+#include "../ECS/Entity.h"
 
 #include "../EngineComponents/Camera.h"
 #include "../EngineComponents/Transform.h"

@@ -47,3 +47,16 @@ struct DeleteEntityCommand : public EntityCommand
 	void Undo() override;
 	void Redo() override;
 };
+
+struct ChangeStringCommand : public Command
+{
+	std::string* m_pTargetString;
+	std::string m_sNewString;
+	std::string m_sOldString;
+
+	ChangeStringCommand(std::string* target, std::string newString, std::string oldString);
+
+	void Execute() override;
+	void Undo() override;
+	void Redo() override;
+};

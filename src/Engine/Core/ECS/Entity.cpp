@@ -65,7 +65,12 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 
 	if (node_open)
 	{
-		ImGui::InputText("Entity Name", &m_sEntityName, 128);
+		std::string sOldEntityName = m_sEntityName;
+		if (ImGui::InputText("Entity Name", &m_sEntityName, 128))
+		{
+			ChangeStringCommand* command = new ChangeStringCommand(&m_sEntityName, m_sEntityName, sOldEntityName);
+			Application::GetApplication()->PushCommand(command);
+		}
 		ImGui::Text(FormatString("Entity ID: %s", m_sEntityID.c_str()).c_str());
 
 		if (m_vChildEntityIDs.size() != 0)

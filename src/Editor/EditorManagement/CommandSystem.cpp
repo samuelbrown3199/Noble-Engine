@@ -32,6 +32,12 @@ void CommandSystem::ProcessCommandQueue()
 		m_undoQueue.push_back(command);
 		m_commandQueue.pop();
 	}
+
+	while (m_undoQueue.size() > 100)
+	{
+		delete m_undoQueue.front();
+		m_undoQueue.pop_front();
+	}
 }
 
 void CommandSystem::PushCommand(Command* command)

@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "ECS/Entity.h"
+#include "ECS/Component.h"
+#include "ECS/Behaviour.hpp"
 
 struct Command
 {
@@ -18,6 +20,8 @@ struct Command
 struct EntityCommand : public Command
 {
 	std::vector<Entity> m_entities;
+	std::vector<std::vector<Component*>> m_entityComponents;
+	std::vector<std::vector<Behaviour*>> m_entityBehaviours;
 
 	EntityCommand() {};
 

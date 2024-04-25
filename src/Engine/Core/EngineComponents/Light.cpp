@@ -141,7 +141,14 @@ void Light::OnUpdate()
 	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
 	Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
-	Transform* camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
+	Transform* camTransform = nullptr;
+	if (renderer->GetCamera() != nullptr)
+	{
+		camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
+
+		if (camTransform == nullptr)
+			return;
+	}
 
 	switch (m_lightType)
 	{

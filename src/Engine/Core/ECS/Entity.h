@@ -137,6 +137,13 @@ struct Entity
 		return comp;
 	}
 
+	void AddBehaviour(Behaviour* beh)
+	{
+		m_vBehaviours.push_back(beh);
+		beh->m_sEntityID = m_sEntityID;
+		beh->Start();
+	}
+
 	template <typename T>
 	T* GetBehaviour()
 	{
@@ -148,6 +155,11 @@ struct Entity
 		}
 
 		return nullptr;
+	}
+
+	std::vector<Behaviour*> GetBehaviours()
+	{
+		return m_vBehaviours;
 	}
 
 	template <typename T>
@@ -186,6 +198,10 @@ struct Entity
 
 	void AddChildObject(std::string ID)
 	{
+		for(int i = 0; i < m_vChildEntityIDs.size(); i++)
+			if (m_vChildEntityIDs.at(i) == ID)
+				return;
+
 		m_vChildEntityIDs.push_back(ID);
 	}
 

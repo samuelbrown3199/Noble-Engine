@@ -264,6 +264,6 @@ public:
 	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
 
 	ImGuiContext* GetImguiContext() { return m_imguiContext; }
-	void SetDrawWindowSet(VkDescriptorSet* set) { m_drawWindowSet = set; }
+	void SetDrawWindowSet(VkDescriptorSet* set);
 	void SetDrawToWindow(bool value) { m_bDrawToWindow = value; }
 };

@@ -55,6 +55,84 @@ struct DeleteEntityCommand : public EntityCommand
 	void Redo() override;
 };
 
+struct AddComponentCommand : public Command
+{
+	std::string m_sEntityID;
+	int m_registryIndex;
+
+	Component* m_component;
+
+	AddComponentCommand(std::string sEntityID, int registryIndex)
+	{
+		m_sEntityID = sEntityID;
+		m_registryIndex = registryIndex;
+
+		m_component = nullptr;
+	}
+
+	void Execute() override;
+	void Undo() override;
+	void Redo() override;
+};
+
+struct RemoveComponentCommand : public Command
+{
+	std::string m_sEntityID;
+	int m_registryIndex;
+
+	Component* m_component;
+
+	RemoveComponentCommand(std::string sEntityID, int registryIndex)
+	{
+		m_sEntityID = sEntityID;
+		m_registryIndex = registryIndex;
+
+		m_component = nullptr;
+	}
+
+	void Execute() override;
+	void Undo() override;
+	void Redo() override;
+};
+
+template<typename T>
+struct AddBehaviourCommand : public Command
+{
+	std::string m_sEntityID;
+	int m_registryIndex;
+
+	T* m_behaviour;
+	T* m_behaviourCopy;
+
+	AddBehaviourCommand(std::string sEntityID, int registryIndex)
+	{
+		m_sEntityID = sEntityID;
+		m_registryIndex = registryIndex;
+
+		m_behaviour = nullptr;
+		m_behaviourCopy = nullptr;
+	}
+
+	void Execute()
+	{
+		std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry = Application::GetApplication()->GetRegistry()->GetBehaviourRegistry();
+		behaviourRegistry->at(m_registryIndex).second->AddBehaviourToEntity(m_sEntityID);
+
+		m_behaviour = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(m_sEntityID))->GetBehaviours().back();
+	}
+
+	void Undo()
+	{
+		m_behaviourCopy = new T(*m_behaviour);
+		m_behaviour->RemoveBehaviourFromEntity(m_sEntityID);
+	}
+
+	void Redo()
+	{
+		m_behaviourCopy->AddBehaviourToEntity(m_sEntityID);
+	}
+};
+
 template<typename T>
 struct ChangeValueCommand : public Command
 {

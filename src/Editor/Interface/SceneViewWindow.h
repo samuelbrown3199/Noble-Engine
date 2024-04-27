@@ -11,5 +11,6 @@ public:
 
 	VkDescriptorSet m_drawWindowSet = VK_NULL_HANDLE;
 
+	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 };

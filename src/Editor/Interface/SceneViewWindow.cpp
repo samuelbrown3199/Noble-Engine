@@ -3,13 +3,17 @@
 #include <Engine/Core/Application.h>
 #include <Engine/Maths/Raycaster.h>	
 
-
-void SceneViewWindow::DoInterface()
+void SceneViewWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
+	EditorToolUI::InitializeInterface(defaultFlags);
+
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	renderer->SetDrawWindowSet(&m_drawWindowSet);
 	renderer->SetDrawToWindow(true);
+}
 
+void SceneViewWindow::DoInterface()
+{
 	ImGui::Begin("Scene View", &m_uiOpen, m_windowFlags);
 	UpdateWindowState();
 

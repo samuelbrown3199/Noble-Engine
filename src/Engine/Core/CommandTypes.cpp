@@ -100,3 +100,47 @@ void DeleteEntityCommand::Redo()
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void AddComponentCommand::Execute()
+{
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+	compRegistry->at(m_registryIndex).second.m_comp->AddComponentToEntity(m_sEntityID);
+
+	m_component = compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponent(compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponentIndex(m_sEntityID));
+}
+
+void AddComponentCommand::Undo()
+{
+	m_component->RemoveComponent(m_sEntityID);
+}
+
+void AddComponentCommand::Redo()
+{
+	m_component->m_sEntityID = m_sEntityID;
+	m_component->m_bAvailableForReuse = false;
+	m_component->AddComponent();
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void RemoveComponentCommand::Execute()
+{
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+	m_component = compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponent(compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponentIndex(m_sEntityID));
+
+	m_component->RemoveComponent(m_sEntityID);
+}
+
+void RemoveComponentCommand::Undo()
+{
+	m_component->m_sEntityID = m_sEntityID;
+	m_component->m_bAvailableForReuse = false;
+	m_component->AddComponent();
+}
+
+void RemoveComponentCommand::Redo()
+{
+	m_component->RemoveComponent(m_sEntityID);
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -220,6 +220,14 @@ void Renderer::InitializeSwapchain()
 	VkImageUsageFlags depthImageUsages{};
 	depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	m_depthImage = CreateImage(drawImageExtent, VK_FORMAT_D32_SFLOAT, depthImageUsages, false, "DepthImage");
+
+	if (m_bDrawToWindow)
+	{
+		if(*m_drawWindowSet != VK_NULL_HANDLE)
+			*m_drawWindowSet = VK_NULL_HANDLE;
+
+		*m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_GENERAL);
+	}
 }
 
 void Renderer::RecreateSwapchain()
@@ -601,7 +609,7 @@ void Renderer::DrawFrame()
 
 	VkCommandBufferBeginInfo cmdBeginInfo = vkinit::CommandBufferBeginInfo(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 	if (vkBeginCommandBuffer(cmd, &cmdBeginInfo) != VK_SUCCESS)
-		throw std::exception();
+		LogFatalError("Failed to begin command buffer.");
 
 	vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
@@ -620,8 +628,6 @@ void Renderer::DrawFrame()
 	else
 	{
 		vkutil::TransitionImage(cmd, m_drawImage.m_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
-		if (*m_drawWindowSet == VK_NULL_HANDLE)
-			*m_drawWindowSet = ImGui_ImplVulkan_AddTexture(m_defaultSamplerLinear, m_drawImage.m_imageView, VK_IMAGE_LAYOUT_GENERAL);
 	}
 
 	DrawImGui(cmd, m_swapchainImages[swapchainImageIndex], m_swapchainImageViews[swapchainImageIndex]);
@@ -1120,4 +1126,12 @@ void Renderer::ImmediateSubmit(std::function<void(VkCommandBuffer cmd)>&& functi
 
 	if (vkWaitForFences(m_device, 1, &m_immediateFence, true, 99999999) != VK_SUCCESS)
 		LogFatalError("Failed to wait for immediate fence.");
+}
+
+void Renderer::SetDrawWindowSet(VkDescriptorSet* set)
+{
+	m_drawWindowSet = set;
+	m_bDrawToWindow = true;
+
+	RecreateSwapchain();
 }

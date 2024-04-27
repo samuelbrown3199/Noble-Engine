@@ -5,7 +5,10 @@
 
 void AddEntityCommand::Execute()
 {
-	m_entities.push_back(*Application::GetApplication()->CreateEntity());
+	m_entities.push_back(*Application::GetApplication()->CreateEntity("", m_sEntityName, m_sParentID));
+
+	if(!m_sParentID.empty())
+		Application::GetApplication()->LinkChildEntities();
 }
 
 void AddEntityCommand::Undo()
@@ -18,6 +21,9 @@ void AddEntityCommand::Redo()
 {
 	for (int i = 0; i < m_entities.size(); i++)
 		Application::GetApplication()->CreateEntity(m_entities.at(i).m_sEntityID, m_entities.at(i).m_sEntityName, m_entities.at(i).m_sEntityParentID);
+
+	if (!m_sParentID.empty())
+		Application::GetApplication()->LinkChildEntities();
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

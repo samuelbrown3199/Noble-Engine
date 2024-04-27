@@ -32,7 +32,8 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 	{
 		if (ImGui::Button("Create Child Entity"))
 		{
-			CreateChildObject();
+			AddEntityCommand* command = new AddEntityCommand("New Child Entity", m_sEntityID);
+			Application::GetApplication()->PushCommand(command);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();

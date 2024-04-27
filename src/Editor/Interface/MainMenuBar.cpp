@@ -22,7 +22,7 @@ void NewProjectModal::DoModal()
 	// Always center this window when appearing
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	if (ImGui::BeginPopupModal("New Project", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal(m_sID.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		std::vector<std::string> templates = GetAllFilesOfType(GetWorkingDirectory() + "\\Templates", "", false);
 
@@ -78,7 +78,7 @@ void QuitWarningModal::DoModal()
 
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	if (ImGui::BeginPopupModal("Quit Noble Editor?", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	if (ImGui::BeginPopupModal(m_sID.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
 	{
 		ImGui::Text("Are you sure you want to quit Noble Editor?\n\nAny unsaved work will be lost!");
 		ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -105,7 +105,7 @@ void AboutNobleModal::DoModal()
 
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	if (ImGui::BeginPopupModal("About Noble Engine", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	if (ImGui::BeginPopupModal(m_sID.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
 	{
 		std::string versionString = GetVersionInfoString();
 		std::string aboutString = "Noble Engine\n\nVersion: " + versionString + "\n\nDeveloped by : Samuel Brown";
@@ -134,7 +134,7 @@ void ProjectDoesntExistModal::DoModal()
 
 	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-	if (ImGui::BeginPopupModal("Project Doesn't Exist", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+	if (ImGui::BeginPopupModal(m_sID.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
 	{
 		ImGui::Text("The project file doesn't exist. Please create a new project or load an existing one.");
 		ImGui::Dummy(ImVec2(0.0f, 10.0f));

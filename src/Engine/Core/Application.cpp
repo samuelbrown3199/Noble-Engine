@@ -307,6 +307,11 @@ Entity* Application::CreateEntity() //this will need optimisation
 
 Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std::string _parentID)
 {
+	if (_desiredID == "")
+	{
+		_desiredID = GetUniqueEntityID();
+	}
+
 	if (!m_vDeletionEntities.empty())
 	{
 		Entity* targetEntity = m_vDeletionEntities.front();

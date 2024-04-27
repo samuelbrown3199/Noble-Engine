@@ -32,7 +32,14 @@ struct EntityCommand : public Command
 
 struct AddEntityCommand : public EntityCommand
 {
-	AddEntityCommand() : EntityCommand() { }
+	std::string m_sEntityName;
+	std::string m_sParentID;
+
+	AddEntityCommand(std::string name, std::string parentID) : EntityCommand() 
+	{
+		m_sEntityName = name;
+		m_sParentID = parentID;
+	}
 
 	void Execute() override;
 	void Undo() override;

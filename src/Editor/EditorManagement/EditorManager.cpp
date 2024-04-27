@@ -200,3 +200,8 @@ void EditorManager::PushCommand(Command* command)
 {
 	m_pCommandSystem->PushCommand(command);
 }
+
+void EditorManager::ConsoleLog(std::string message)
+{
+	LogInfo("Console TBD : " + message);
+}

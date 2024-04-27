@@ -67,12 +67,6 @@ void SceneHierarchyWindow::DoInterface()
 
 	UpdateWindowState();
 
-	if(ImGui::Button("Undo TEST"))
-		editorManager->GetCommandSystem()->Undo();
-	ImGui::SameLine();
-	if (ImGui::Button("Redo TEST"))
-		editorManager->GetCommandSystem()->Redo();
-
 	if (ImGui::Button("Create Entity"))
 	{
 		InputManager* iManager = Application::GetApplication()->GetInputManager();

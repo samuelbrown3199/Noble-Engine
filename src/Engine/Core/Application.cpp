@@ -463,6 +463,12 @@ void Application::PushCommand(Command* command)
 	m_editor->PushCommand(command);
 }
 
+void Application::ConsoleLog(std::string message)
+{
+	if(m_editor != nullptr)
+		m_editor->ConsoleLog(message);
+}
+
 void Application::CleanupDeletionEntities()
 {
 	while (!m_vDeletionEntities.empty())

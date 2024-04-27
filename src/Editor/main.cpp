@@ -19,6 +19,8 @@ void StartupEditor()
     EditorManager* editor = new EditorManager();
     app->BindEditor(editor);
 
+    LogConsole("Editor started.");
+
     app->MainLoop();
 }
 

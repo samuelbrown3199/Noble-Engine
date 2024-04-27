@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 
+void LogConsole(const std::string& _logString);
 void LogTrace(const std::string& _logString);
 void LogInfo(const std::string& _logString);
 void LogError(const std::string& _logString);
@@ -33,6 +34,7 @@ public:
 
 	void SetLogLevel(std::string logLevel);
 
+	void LogConsole(const std::string& _logString);
 	/*
 	* Logs a single line into the session log file.
 	*/

@@ -63,4 +63,6 @@ public:
 
 	void PushCommand(Command* command) override;
 	CommandSystem* GetCommandSystem() { return m_pCommandSystem; }
+
+	void ConsoleLog(std::string message) override;
 };

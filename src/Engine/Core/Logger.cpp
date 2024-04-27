@@ -2,6 +2,11 @@
 #include "../Useful.h"
 #include "Application.h"
 
+void LogConsole(const std::string& _logString)
+{
+	Application::GetApplication()->GetLogger()->LogConsole(_logString);
+}
+
 void LogTrace(const std::string& _logString)
 {
 	Application::GetApplication()->GetLogger()->LogTrace(_logString);
@@ -57,6 +62,15 @@ void Logger::SetLogLevel(std::string logLevel)
 		LogError("Invalid log level passed to SetLogLevel");
 		return;
 	}
+}
+
+void Logger::LogConsole(const std::string& _logString)
+{
+	std::string passedLine = "Console: ";
+	passedLine += _logString;
+
+	LogInformation(passedLine);
+	Application::GetApplication()->ConsoleLog(passedLine);
 }
 
 void Logger::LogTrace(const std::string& _logString)

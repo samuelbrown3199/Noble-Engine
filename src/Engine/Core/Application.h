@@ -38,6 +38,7 @@ public:
 	virtual void SetProjectFile(ProjectFile* projectFile) = 0;
 
 	virtual void PushCommand(Command* command) = 0;
+	virtual void ConsoleLog(std::string message) = 0;
 };
 
 class Application
@@ -128,6 +129,7 @@ public:
 	void ResetRegistries();
 
 	void PushCommand(Command* command);
+	void ConsoleLog(std::string message);
 
 	template<typename T>
 	std::shared_ptr<T> BindDebugUI()

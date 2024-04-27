@@ -376,11 +376,29 @@ void MainMenuBar::DoToolMenu()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 	ImGui::MenuItem("Tools", NULL, false, false);
+	if(ImGui::MenuItem("Undo", "(CTRL+Z)"))
+	{
+		editorManager->GetCommandSystem()->Undo();
+	}
+	if (ImGui::MenuItem("Redo", "(CTRL+Y)"))
+	{
+		editorManager->GetCommandSystem()->Redo();
+	}
+	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
+	ImGui::MenuItem("Windows", NULL, false, false);
 	if (ImGui::MenuItem("Profiler", "(CTRL+P)"))
 	{
 		editorManager->ToggleUI("Profiler");
 	}
+	if (editorManager->m_projectFile != nullptr)
+	{
+		if(ImGui::MenuItem("Resource Manager", "(CTRL+R)"))
+		{
+			editorManager->ToggleUI("ResourceManager");
+		}
+	}
+	//ImGui::Dummy(ImVec2(0.0f, 5.0f));
 }
 
 void MainMenuBar::DoHelpMenu()
@@ -422,6 +440,7 @@ void MainMenuBar::HandleShortcutInputs()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 	InputManager* iManager = Application::GetApplication()->GetInputManager();
+	CommandSystem* commandSystem = editorManager->GetCommandSystem();
 
 	if (iManager->GetKeyDown(SDLK_r) && iManager->GetKey(SDLK_LCTRL))
 	{
@@ -431,5 +450,14 @@ void MainMenuBar::HandleShortcutInputs()
 	if (iManager->GetKeyDown(SDLK_p) && iManager->GetKey(SDLK_LCTRL))
 	{
 		editorManager->ToggleUI("Profiler");
+	}
+
+	if(iManager->GetKeyDown(SDLK_z) && iManager->GetKey(SDLK_LCTRL))
+	{
+		commandSystem->Undo();
+	}
+	if (iManager->GetKeyDown(SDLK_y) && iManager->GetKey(SDLK_LCTRL))
+	{
+		commandSystem->Redo();
 	}
 }

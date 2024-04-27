@@ -2,7 +2,7 @@
 
 #include "../Registry.h"
 #include "Behaviour.hpp"
-#include "../ToolUI.hpp"
+#include "../ToolUI.h"
 
 struct Component;
 

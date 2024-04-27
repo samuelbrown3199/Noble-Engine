@@ -48,15 +48,32 @@ struct DeleteEntityCommand : public EntityCommand
 	void Redo() override;
 };
 
-struct ChangeStringCommand : public Command
+template<typename T>
+struct ChangeValueCommand : public Command
 {
-	std::string* m_pTargetString;
-	std::string m_sNewString;
-	std::string m_sOldString;
+	T* m_pTargetValue;
+	T m_newValue;
+	T m_oldValue;
 
-	ChangeStringCommand(std::string* target, std::string newString, std::string oldString);
+	ChangeValueCommand(T* target, T newValue)
+	{
+		m_pTargetValue = target;
+		m_newValue = newValue;
+		m_oldValue = *target;
+	}
 
-	void Execute() override;
-	void Undo() override;
-	void Redo() override;
+	void Execute() override
+	{
+		*m_pTargetValue = m_newValue;
+	}
+
+	void Undo()
+	{
+		*m_pTargetValue = m_oldValue;
+	}
+
+	void Redo() override
+	{
+		Execute();
+	}
 };

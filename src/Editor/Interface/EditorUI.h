@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine\Core\Registry.h>
-#include <Engine\Core\ToolUI.hpp>
+#include <Engine\Core\ToolUI.h>
 #include <Engine\Core\ECS\Entity.h>
 #include <Engine\Core\ECS\Component.h>
 

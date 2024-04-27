@@ -94,27 +94,3 @@ void DeleteEntityCommand::Redo()
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-ChangeStringCommand::ChangeStringCommand(std::string* target, std::string newString, std::string oldString)
-{
-	m_pTargetString = target;
-	m_sNewString = newString;
-	m_sOldString = oldString;
-}
-
-void ChangeStringCommand::Execute()
-{
-	*m_pTargetString = m_sNewString;
-}
-
-void ChangeStringCommand::Undo()
-{
-	*m_pTargetString = m_sOldString;
-}
-
-void ChangeStringCommand::Redo()
-{
-	Execute();
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

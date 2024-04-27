@@ -14,7 +14,7 @@
 #include "../Core/EngineResources/IniFile.h"
 #include "ECS/Behaviour.hpp"
 
-#include "ToolUI.hpp"
+#include "ToolUI.h"
 
 struct Entity;
 class InputManager;

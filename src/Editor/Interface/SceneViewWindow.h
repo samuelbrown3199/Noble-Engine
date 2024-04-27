@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/Core/ToolUI.hpp>
+#include <Engine/Core/ToolUI.h>
 #include <vulkan/vulkan.h>
 
 class SceneViewWindow : public EditorToolUI

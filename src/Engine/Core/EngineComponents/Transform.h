@@ -78,37 +78,6 @@ struct Transform : Component
 		m_scale = _sca;
 	}
 
-	virtual void DoComponentInterface() override
-	{
-		if (m_parentTransformIndex == -1)
-		{
-			float position[3] = { m_position.x, m_position.y, m_position.z };
-			ImGui::DragFloat3("Position", position, 0.01f);
-			m_position = glm::vec3(position[0], position[1], position[2]);
-
-			float rotation[3] = { m_rotation.x, m_rotation.y, m_rotation.z };
-			ImGui::DragFloat3("Rotation", rotation, 0.01f);
-			m_rotation = glm::vec3(rotation[0], rotation[1], rotation[2]);
-
-			float scale[3] = { m_scale.x, m_scale.y, m_scale.z };
-			ImGui::DragFloat3("Scale", scale, 0.01f);
-			m_scale = glm::vec3(scale[0], scale[1], scale[2]);
-		}
-		else
-		{
-			float position[3] = { m_localPosition.x, m_localPosition.y, m_localPosition.z };
-			ImGui::DragFloat3("Local Position", position, 0.01f);
-			m_localPosition = glm::vec3(position[0], position[1], position[2]);
-
-			float rotation[3] = { m_localRotation.x, m_localRotation.y, m_localRotation.z };
-			ImGui::DragFloat3("Local Rotation", rotation, 0.01f);
-			m_localRotation = glm::vec3(rotation[0], rotation[1], rotation[2]);
-
-			float scale[3] = { m_localScale.x, m_localScale.y, m_localScale.z };
-			ImGui::DragFloat3("Local Scale", scale, 0.01f);
-			m_localScale = glm::vec3(scale[0], scale[1], scale[2]);
-		}
-	}
-
+	virtual void DoComponentInterface() override;
 	virtual void OnUpdate() override;
 };

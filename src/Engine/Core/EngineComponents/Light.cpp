@@ -149,6 +149,10 @@ void Light::OnUpdate()
 		if (camTransform == nullptr)
 			return;
 	}
+	else
+	{
+		return;
+	}
 
 	switch (m_lightType)
 	{

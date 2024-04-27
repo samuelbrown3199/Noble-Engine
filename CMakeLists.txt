@@ -63,7 +63,8 @@ set (
 	src/Engine/imgui/ImGuiFileDialog.cpp
 	src/Engine/imgui/ImGuiFileDialogConfig.h
 
-	src/Engine/Core/ToolUI.hpp
+	src/Engine/Core/ToolUI.h
+	src/Engine/Core/ToolUI.cpp
 
 	#lua
 	

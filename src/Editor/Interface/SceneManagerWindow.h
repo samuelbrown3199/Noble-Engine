@@ -1,6 +1,6 @@
 #pragma
 
-#include <Engine/Core/ToolUI.hpp>
+#include <Engine/Core/ToolUI.h>
 
 class DeleteSceneModal : public ToolModalWindow
 {

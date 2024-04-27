@@ -50,4 +50,6 @@ public:
 
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
+
+	virtual void HandleShortcutInputs() override;
 };

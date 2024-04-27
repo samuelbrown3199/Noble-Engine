@@ -415,4 +415,21 @@ void MainMenuBar::InitializeInterface(ImGuiWindowFlags defaultFlags)
 void MainMenuBar::DoInterface()
 {
 	DoMainMenuBar();
+	HandleShortcutInputs();
+}
+
+void MainMenuBar::HandleShortcutInputs()
+{
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+	InputManager* iManager = Application::GetApplication()->GetInputManager();
+
+	if (iManager->GetKeyDown(SDLK_r) && iManager->GetKey(SDLK_LCTRL))
+	{
+		if(editorManager->m_projectFile != nullptr)
+			editorManager->ToggleUI("ResourceManager");
+	}
+	if (iManager->GetKeyDown(SDLK_p) && iManager->GetKey(SDLK_LCTRL))
+	{
+		editorManager->ToggleUI("Profiler");
+	}
 }

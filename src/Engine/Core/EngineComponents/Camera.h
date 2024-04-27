@@ -63,29 +63,7 @@ struct Camera : Component
 			m_iDrawMode = j["DrawMode"];
 	}
 
-	virtual void DoComponentInterface() override
-	{
-		const char* states[] = { "Inactive", "Main Cam", "Editor Cam" };
-		int currentState = m_state;
-		ImGui::Combo("State", &currentState, states, IM_ARRAYSIZE(states));
-		m_state = (CameraState)currentState;
-
-		const char* viewmodes[] = { "Projection", "Orthographic" };
-		int currentViewMode = m_viewMode;
-		ImGui::Combo("View Mode", &currentViewMode, viewmodes, IM_ARRAYSIZE(viewmodes));
-		m_viewMode = (ViewMode)currentViewMode;
-
-		if (m_viewMode == projection)
-			ImGui::DragFloat("FoV", &m_fov, 0.5f, 20.0f, 150.0f, "%.2f");
-		else
-			ImGui::DragFloat("Scale", &m_scale, 1.0f, 3.0f, 1000.0f, "%.2f");
-
-		const char* drawModes[] = { "Nearest", "Linear" };
-		int currentDrawMode = m_iDrawMode;
-		ImGui::Combo("Draw Mode", &currentDrawMode, drawModes, IM_ARRAYSIZE(drawModes));
-		m_iDrawMode = currentDrawMode;
-	}
-
+	virtual void DoComponentInterface() override;
 	virtual void PreUpdate() override;
 	virtual void OnUpdate() override;
 };

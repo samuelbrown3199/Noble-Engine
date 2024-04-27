@@ -81,41 +81,6 @@ struct AudioSource : public Component
 		m_clip = clip;
 	}
 
-	virtual void DoComponentInterface() override
-	{
-		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-		AudioManager* aManager = Application::GetApplication()->GetAudioManager();
-
-		ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
-
-		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
-		ImGui::DragFloat3("Velocity", vel);
-		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
-
-		ImGui::DragInt("Loop Count", &m_iLoopCount, 1.0f, -1.0f, 50.0f);
-		ImGui::DragFloat("Pitch", &m_fPitch, 0.1f, 0.0f, 3.0f);
-		ImGui::DragFloat("Volume", &m_fVolume, 0.1f, 0.0f, 10.0f);
-		ImGui::Checkbox("Paused", &m_bPaused);
-		ImGui::Checkbox("3D Sound", &m_b3DSound);
-
-		std::map<std::string, float> mixerOptions = aManager->GetMixerOptions();
-		if (ImGui::BeginListBox("Mixer Option"))
-		{
-			std::map<std::string, float>::iterator itr;
-			for (itr = mixerOptions.begin(); itr != mixerOptions.end(); itr++)
-			{
-				const bool is_selected = (m_sMixerOption == itr->first);
-				ImGui::Selectable(itr->first.c_str(), is_selected);
-
-				if (is_selected)
-				{
-					ImGui::SetItemDefaultFocus();
-					m_sMixerOption = itr->first;
-				}
-			}
-			ImGui::EndListBox();
-		}
-	}
-
+	virtual void DoComponentInterface() override;
 	virtual void OnUpdate() override;
 };

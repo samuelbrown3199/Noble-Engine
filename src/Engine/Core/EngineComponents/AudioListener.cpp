@@ -2,6 +2,7 @@
 
 #include "../Application.h"
 #include "../ECS/Entity.h"
+#include "../CommandTypes.h"
 
 #include "../ECS/ComponentList.hpp"
 
@@ -70,4 +71,14 @@ void AudioListener::OnUpdate()
 
 	FMOD_RESULT res = FMOD_System_Set3DListenerAttributes(aManager->GetFMODSystem(), m_iCurrentListener, &pos, &vel, &forward, &up);
 	m_iCurrentListener++;
+}
+
+void AudioListener::DoComponentInterface()
+{
+	float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
+	if (ImGui::InputFloat3("Velocity", vel, "%.3f"))
+	{
+		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_velocity, glm::vec3(vel[0], vel[1], vel[2]));
+		Application::GetApplication()->PushCommand(command);
+	}
 }

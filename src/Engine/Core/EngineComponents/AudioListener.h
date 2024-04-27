@@ -38,12 +38,7 @@ struct AudioListener : Component
 		m_velocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
 	}
 
-	virtual void DoComponentInterface() override
-	{
-		float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
-		ImGui::DragFloat3("Velocity", vel);
-		m_velocity = glm::vec3(vel[0], vel[1], vel[2]);
-	}
+	virtual void DoComponentInterface() override;
 
 	virtual void PreUpdate() override;
 	virtual void OnUpdate() override;

@@ -2,6 +2,112 @@
 
 #include "../Application.h"
 #include "../Registry.h"
+#include "../CommandTypes.h"
+
+void LightInfo::DoLightInfoInterface()
+{
+	float diffuse[3] = { m_diffuse.x, m_diffuse.y, m_diffuse.z };
+	if (ImGui::ColorEdit3("Diffuse Colour", (float*)&diffuse))
+	{
+		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_diffuse, glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	float specular[3] = { m_specular.x, m_specular.y, m_specular.z };
+	if (ImGui::ColorEdit3("Specular Colour", (float*)&specular))
+	{
+		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_specular, glm::vec3(specular[0], specular[1], specular[2]));
+		Application::GetApplication()->PushCommand(command);
+	}
+};
+
+void DirectionalLight::DoLightInfoInterface()
+{
+	ImGui::Text("Directional Light");
+	ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
+	ImGui::BeginDisabled();
+	float direction[3] = { m_direction.x, m_direction.y, m_direction.z };
+	ImGui::DragFloat3("Direction", direction, 0.01f, -1, 1, "%.2f");
+	ImGui::EndDisabled();
+
+	float intensity = m_fIntensity;
+	if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 1.0f, "%.2f"))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fIntensity, intensity);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	LightInfo::DoLightInfoInterface();
+}
+
+void PointLight::DoLightInfoInterface()
+{
+	ImGui::Text("Point Light");
+	ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
+	ImGui::BeginDisabled();
+	ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
+	ImGui::EndDisabled();
+
+	float linear = m_linear;
+	if (ImGui::DragFloat("Linear", &linear, 0.01f, 0.0014f, 0.7f, "%.4f"))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_linear, linear);
+		Application::GetApplication()->PushCommand(command);
+	}
+	float quadratic = m_quadratic;
+	if (ImGui::DragFloat("Quadratic", &quadratic, 0.01f, 0.000007f, 1.8f, "%.6f"))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_quadratic, quadratic);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	LightInfo::DoLightInfoInterface();
+}
+
+void SpotLight::DoLightInfoInterface()
+{
+	ImGui::Text("Spot Light");
+	ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
+	ImGui::BeginDisabled();
+	ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
+	ImGui::EndDisabled();
+
+	float linear = m_linear;
+	if (ImGui::DragFloat("Linear", &linear, 0.01f, 0.0014f, 0.7f, "%.4f"))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_linear, linear);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	float quadratic = m_quadratic;
+	if (ImGui::DragFloat("Quadratic", &m_quadratic, 0.01f, 0.000007f, 1.8f, "%.6f"))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_quadratic, quadratic);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	float cutOff = m_fCutOff;
+	if (ImGui::DragFloat("Cutoff", &m_fCutOff))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fCutOff, cutOff);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	float outerCutOff = m_fOuterCutOff;
+	if (ImGui::DragFloat("Outer Cutoff", &m_fOuterCutOff))
+	{
+		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fOuterCutOff, outerCutOff);
+		Application::GetApplication()->PushCommand(command);
+	}
+
+	LightInfo::DoLightInfoInterface();
+}
+
+
+
 
 bool SortByDistance(Light* val1, Light* val2)
 {
@@ -157,6 +263,8 @@ void Light::OnUpdate()
 	switch (m_lightType)
 	{
 	case Directional:
+		if(dirLight == nullptr)
+			return;
 		dirLight->m_direction = glm::normalize(transform->m_rotation);
 		break;
 	}
@@ -166,4 +274,30 @@ void Light::OnUpdate()
 	float zDis = (camTransform->m_position.z - transform->m_position.z) * (camTransform->m_position.z - transform->m_position.z);
 
 	m_fDistanceToCam = sqrt(xDis + yDis + zDis);
+}
+
+void Light::DoComponentInterface()
+{
+	if (m_transformIndex == -1)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("No transform attached. Light won't render.");
+		ImGui::PopStyleColor();
+
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+	}
+
+	const char* lightTypes[] = { "Point", "Spot NYI", "Directional" };
+	int selLightType = m_lightType;
+	if (ImGui::Combo("Light Type", &selLightType, lightTypes, IM_ARRAYSIZE(lightTypes)))
+	{
+		ChangeValueCommand<LightType>* command = new ChangeValueCommand<LightType>(&m_lightType, (LightType)selLightType);
+		Application::GetApplication()->PushCommand(command);
+	}
+	ChangeLightType((LightType)selLightType);
+	ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+	ImGui::Text("Light Information");
+	if (m_lightInfo)
+		m_lightInfo->DoLightInfoInterface();
 }

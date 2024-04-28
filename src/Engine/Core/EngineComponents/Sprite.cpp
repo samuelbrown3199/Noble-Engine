@@ -33,3 +33,29 @@ void Sprite::OnPreRender()
 
 	Renderable::OnPreRender();
 }
+
+void Sprite::DoComponentInterface()
+{
+	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+	if (m_transformIndex == -1)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+		ImGui::Text("No transform attached. Object won't render.");
+		ImGui::PopStyleColor();
+
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+	}
+
+	ImGui::BeginDisabled();
+	ImGui::Checkbox("On Screen", &m_bOnScreen);
+	ImGui::EndDisabled();
+
+	ChangeTexture(rManager->DoResourceSelectInterface<Texture>("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
+	ChangePipeline(rManager->DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
+
+	static NobleColourEdit colourEdit;
+	colourEdit.DoColourEdit4("Colour", m_bInitializeInterface, &m_colour, this);
+
+	m_bInitializeInterface = false;
+}

@@ -4,24 +4,16 @@
 #include "../Registry.h"
 #include "../CommandTypes.h"
 
-void LightInfo::DoLightInfoInterface()
+void LightInfo::DoLightInfoInterface(bool initialize)
 {
-	float diffuse[3] = { m_diffuse.x, m_diffuse.y, m_diffuse.z };
-	if (ImGui::ColorEdit3("Diffuse Colour", (float*)&diffuse))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_diffuse, glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleColourEdit diffuseEdit;
+	diffuseEdit.DoColourEdit3("Diffuse Colour", initialize, &m_diffuse, m_light);
 
-	float specular[3] = { m_specular.x, m_specular.y, m_specular.z };
-	if (ImGui::ColorEdit3("Specular Colour", (float*)&specular))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_specular, glm::vec3(specular[0], specular[1], specular[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleColourEdit specularEdit;
+	specularEdit.DoColourEdit3("Specular Colour", initialize, &m_specular, m_light);
 };
 
-void DirectionalLight::DoLightInfoInterface()
+void DirectionalLight::DoLightInfoInterface(bool initialize)
 {
 	ImGui::Text("Directional Light");
 	ImGui::Dummy(ImVec2(0.0f, 3.0f));
@@ -31,17 +23,13 @@ void DirectionalLight::DoLightInfoInterface()
 	ImGui::DragFloat3("Direction", direction, 0.01f, -1, 1, "%.2f");
 	ImGui::EndDisabled();
 
-	float intensity = m_fIntensity;
-	if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 1.0f, "%.2f"))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fIntensity, intensity);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat intensityDrag;
+	intensityDrag.DoDragFloat("Intensity", initialize, &m_fIntensity, m_light, 0.1f, 0.0f, 1.0f);
 
-	LightInfo::DoLightInfoInterface();
+	LightInfo::DoLightInfoInterface(initialize);
 }
 
-void PointLight::DoLightInfoInterface()
+void PointLight::DoLightInfoInterface(bool initialize)
 {
 	ImGui::Text("Point Light");
 	ImGui::Dummy(ImVec2(0.0f, 3.0f));
@@ -50,23 +38,16 @@ void PointLight::DoLightInfoInterface()
 	ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
 	ImGui::EndDisabled();
 
-	float linear = m_linear;
-	if (ImGui::DragFloat("Linear", &linear, 0.01f, 0.0014f, 0.7f, "%.4f"))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_linear, linear);
-		Application::GetApplication()->PushCommand(command);
-	}
-	float quadratic = m_quadratic;
-	if (ImGui::DragFloat("Quadratic", &quadratic, 0.01f, 0.000007f, 1.8f, "%.6f"))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_quadratic, quadratic);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat linearDrag;
+	linearDrag.DoDragFloat("Linear", initialize, &m_linear, m_light, 0.01f, 0.0014f, 0.7f);
 
-	LightInfo::DoLightInfoInterface();
+	static NobleDragFloat quadraticDrag;
+	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, m_light, 0.01f, 0.000007f, 1.8f);
+
+	LightInfo::DoLightInfoInterface(initialize);
 }
 
-void SpotLight::DoLightInfoInterface()
+void SpotLight::DoLightInfoInterface(bool initialize)
 {
 	ImGui::Text("Spot Light");
 	ImGui::Dummy(ImVec2(0.0f, 3.0f));
@@ -75,35 +56,19 @@ void SpotLight::DoLightInfoInterface()
 	ImGui::DragFloat("Constant", &m_constant, 1.0f, 1.0f, 1.0f, "%.2f");
 	ImGui::EndDisabled();
 
-	float linear = m_linear;
-	if (ImGui::DragFloat("Linear", &linear, 0.01f, 0.0014f, 0.7f, "%.4f"))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_linear, linear);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat linearDrag;
+	linearDrag.DoDragFloat("Linear", initialize, &m_linear, m_light, 0.01f, 0.0014f, 0.7f);
 
-	float quadratic = m_quadratic;
-	if (ImGui::DragFloat("Quadratic", &m_quadratic, 0.01f, 0.000007f, 1.8f, "%.6f"))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_quadratic, quadratic);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat quadraticDrag;
+	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, m_light, 0.01f, 0.000007f, 1.8f);
 
-	float cutOff = m_fCutOff;
-	if (ImGui::DragFloat("Cutoff", &m_fCutOff))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fCutOff, cutOff);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat cutOffDrag;
+	cutOffDrag.DoDragFloat("Cutoff", initialize, &m_fCutOff, m_light, 0.01f, 0.1f, 1.0f);
 
-	float outerCutOff = m_fOuterCutOff;
-	if (ImGui::DragFloat("Outer Cutoff", &m_fOuterCutOff))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fOuterCutOff, outerCutOff);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat outerCutOffDrag;
+	outerCutOffDrag.DoDragFloat("Outer Cutoff", initialize, &m_fOuterCutOff, m_light, 0.01f, 0.1f, 1.0f);
 
-	LightInfo::DoLightInfoInterface();
+	LightInfo::DoLightInfoInterface(initialize);
 }
 
 
@@ -299,5 +264,10 @@ void Light::DoComponentInterface()
 
 	ImGui::Text("Light Information");
 	if (m_lightInfo)
-		m_lightInfo->DoLightInfoInterface();
+	{
+		m_lightInfo->m_light = this;
+		m_lightInfo->DoLightInfoInterface(m_bInitializeInterface);
+	}
+
+	m_bInitializeInterface = false;
 }

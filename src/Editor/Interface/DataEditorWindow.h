@@ -12,5 +12,5 @@ public:
 
 	void DoInterface() override;
 
-	void SetSelectedEntity(int _index) { m_iSelEntity = _index; }
+	void SetSelectedEntity(int _index);
 };

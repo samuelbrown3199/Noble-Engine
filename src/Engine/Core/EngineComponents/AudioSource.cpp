@@ -82,31 +82,18 @@ void AudioSource::DoComponentInterface()
 
 	ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
 
-	float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
-	if (ImGui::InputFloat3("Velocity", vel))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_velocity, glm::vec3(vel[0], vel[1], vel[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat velocityDrag;
+	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, this, 0.1f);
 
-	int loopCount = m_iLoopCount;
-	if (ImGui::DragInt("Loop Count", &loopCount, 1, -1, 50))
-	{
-		ChangeValueCommand<int>* command = new ChangeValueCommand<int>(&m_iLoopCount, loopCount);
-		Application::GetApplication()->PushCommand(command);
-	}
-	float pitch = m_fPitch;
-	if (ImGui::DragFloat("Pitch", &pitch, 0.1f, 0.0f, 3.0f))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fPitch, pitch);
-		Application::GetApplication()->PushCommand(command);
-	}
-	float volume = m_fVolume;
-	if (ImGui::DragFloat("Volume", &volume, 0.1f, 0.0f, 10.0f))
-	{
-		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fVolume, volume);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragInt loopCountDrag;
+	loopCountDrag.DoDragInt("Loop Count", m_bInitializeInterface, &m_iLoopCount, this, 1, -1, 50);
+
+	static NobleDragFloat pitchDrag;
+	pitchDrag.DoDragFloat("Pitch", m_bInitializeInterface, &m_fPitch, this, 0.1f, 0.0f, 3.0f);
+
+	static NobleDragFloat volumeDrag;
+	volumeDrag.DoDragFloat("Volume", m_bInitializeInterface, &m_fVolume, this, 0.1f, 0.0f, 10.0f);
+
 	bool paused = m_bPaused;
 	if (ImGui::Checkbox("Paused", &paused))
 	{
@@ -136,4 +123,6 @@ void AudioSource::DoComponentInterface()
 		}
 		ImGui::EndListBox();
 	}
+
+	m_bInitializeInterface = false;
 }

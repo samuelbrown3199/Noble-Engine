@@ -77,7 +77,7 @@ struct Transform : Component
 		m_rotation = _rot;
 		m_scale = _sca;
 	}
+	virtual void OnUpdate() override;
 
 	virtual void DoComponentInterface() override;
-	virtual void OnUpdate() override;
 };

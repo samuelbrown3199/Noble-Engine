@@ -75,10 +75,8 @@ void AudioListener::OnUpdate()
 
 void AudioListener::DoComponentInterface()
 {
-	float vel[3] = { m_velocity.x,m_velocity.y ,m_velocity.z };
-	if (ImGui::InputFloat3("Velocity", vel, "%.3f"))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_velocity, glm::vec3(vel[0], vel[1], vel[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat velocityDrag;
+	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, this, 0.1f);
+
+	m_bInitializeInterface = false;
 }

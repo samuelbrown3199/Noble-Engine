@@ -73,21 +73,13 @@ void Camera::DoComponentInterface()
 
 	if (m_viewMode == projection)
 	{
-		float fov = m_fov;
-		if (ImGui::DragFloat("FoV", &fov, 0.5f, 20.0f, 150.0f, "%.2f"))
-		{
-			ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_fov, fov);
-			Application::GetApplication()->PushCommand(command);
-		}
+		static NobleDragFloat fovDrag;
+		fovDrag.DoDragFloat("FoV", m_bInitializeInterface, &m_fov, this, 0.5f, 20.0f, 150.0f);
 	}
 	else
 	{
-		float scale = m_scale;
-		if (ImGui::DragFloat("Scale", &scale, 1.0f, 3.0f, 1000.0f, "%.2f"))
-		{
-			ChangeValueCommand<float>* command = new ChangeValueCommand<float>(&m_scale, scale);
-			Application::GetApplication()->PushCommand(command);
-		}
+		static NobleDragFloat scaleDrag;
+		scaleDrag.DoDragFloat("Scale", m_bInitializeInterface, &m_scale, this, 1.0f, 3.0f, 1000.0f);
 	}
 
 	const char* drawModes[] = { "Nearest", "Linear" };
@@ -97,4 +89,6 @@ void Camera::DoComponentInterface()
 		ChangeValueCommand<int>* command = new ChangeValueCommand<int>(&m_iDrawMode, currentDrawMode);
 		Application::GetApplication()->PushCommand(command);
 	}
+
+	m_bInitializeInterface = false;
 }

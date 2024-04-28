@@ -6,12 +6,16 @@
 
 #include <glm/glm.hpp>
 
+struct Light;
+
 struct LightInfo
 {
+	Light* m_light = nullptr;
+
 	glm::vec3 m_diffuse = glm::vec3(1, 1, 1);
 	glm::vec3 m_specular = glm::vec3(1, 1, 1);
 
-	virtual void DoLightInfoInterface();
+	virtual void DoLightInfoInterface(bool initialize);
 	virtual nlohmann::json WriteInfoToJson() = 0;
 	virtual void LoadInfoFromJson(nlohmann::json j) = 0;
 };
@@ -21,7 +25,7 @@ struct DirectionalLight : public LightInfo
 	glm::vec3 m_direction = glm::vec3(0.0f, 180.0f, 0.0f);
 	float m_fIntensity = 1.0f;
 
-	void DoLightInfoInterface() override;
+	void DoLightInfoInterface(bool initialize) override;
 
 	nlohmann::json WriteInfoToJson()
 	{
@@ -46,7 +50,7 @@ struct PointLight : public LightInfo
 	float m_linear = 0.09f;
 	float m_quadratic = 0.032f;
 
-	virtual void DoLightInfoInterface() override;
+	virtual void DoLightInfoInterface(bool initialize) override;
 
 	virtual nlohmann::json WriteInfoToJson()
 	{
@@ -85,7 +89,7 @@ struct SpotLight : public LightInfo
 	float m_linear = 0.09f;
 	float m_quadratic = 0.032f;
 
-	virtual void DoLightInfoInterface() override;
+	virtual void DoLightInfoInterface(bool initialize) override;
 
 	virtual nlohmann::json WriteInfoToJson()
 	{

@@ -140,21 +140,30 @@ struct ChangeValueCommand : public Command
 	T m_newValue;
 	T m_oldValue;
 
-	ChangeValueCommand(T* target, T newValue)
+	Component* m_pComponent;
+
+	ChangeValueCommand(T* target, T newValue, Component* comp = nullptr)
 	{
 		m_pTargetValue = target;
 		m_newValue = newValue;
 		m_oldValue = *target;
+		m_pComponent = comp;
 	}
 
 	void Execute() override
 	{
 		*m_pTargetValue = m_newValue;
+
+		if(m_pComponent != nullptr)
+			m_pComponent->m_bInitializeInterface = true;
 	}
 
 	void Undo()
 	{
 		*m_pTargetValue = m_oldValue;
+
+		if (m_pComponent != nullptr)
+			m_pComponent->m_bInitializeInterface = true;
 	}
 
 	void Redo() override

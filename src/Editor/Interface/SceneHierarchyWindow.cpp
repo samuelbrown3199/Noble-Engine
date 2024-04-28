@@ -62,6 +62,7 @@ void SceneHierarchyWindow::DoInterface()
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+	InputManager* iManager = Application::GetApplication()->GetInputManager();
 
 	ImGui::Begin("Scene Hierarchy", &m_uiOpen, m_windowFlags);
 
@@ -69,8 +70,6 @@ void SceneHierarchyWindow::DoInterface()
 
 	if (ImGui::Button("Create Entity"))
 	{
-		InputManager* iManager = Application::GetApplication()->GetInputManager();
-
 		if (iManager->GetKey(SDLK_LSHIFT) || iManager->GetKey(SDLK_RSHIFT))
 		{
 			AddEntityCommand* command = new AddEntityCommand("New Entity", "");
@@ -93,7 +92,25 @@ void SceneHierarchyWindow::DoInterface()
 	}
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
-	if (ImGui::TreeNode("Entities"))
+	bool sceneTreeOpen = ImGui::TreeNode("Entities");
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::Button("Create Entity"))
+		{
+			if (iManager->GetKey(SDLK_LSHIFT) || iManager->GetKey(SDLK_RSHIFT))
+			{
+				AddEntityCommand* command = new AddEntityCommand("New Entity", "");
+				editorManager->PushCommand(command);
+			}
+			else
+				DoModal("Create Entity");
+
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if(sceneTreeOpen)
 	{
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);

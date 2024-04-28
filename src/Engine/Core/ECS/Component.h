@@ -33,6 +33,8 @@ struct Component
 	virtual nlohmann::json WriteJson() { nlohmann::json data; return data; };
 	virtual void FromJson(const nlohmann::json& j) {}
 
+	bool m_bInitializeInterface = false;
+	virtual void InitializeComponentInterface() { m_bInitializeInterface = true; }
 	virtual void DoComponentInterface()
 	{
 		ImGui::Text("No editable values. Component window not defined for this type.");

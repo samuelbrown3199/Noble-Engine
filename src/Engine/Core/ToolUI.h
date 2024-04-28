@@ -12,6 +12,8 @@
 class Editor;
 class ToolUI;
 
+struct Component;
+
 class ToolModalWindow
 {
 	friend class ToolUI;
@@ -143,4 +145,32 @@ public:
 	ImVec2 GetWindowPos() { return m_windowPos; }
 	ImVec2 GetWindowSize() { return m_windowSize; }
 	ImVec2 GetRelativeMousePos() { return m_relativeMousePos; }
+};
+
+struct NobleColourEdit
+{
+	float m_fColour[4] = { 1.0f, 1.0f, 1.0f };
+	bool edited = false;
+
+	void DoColourEdit3(const char* label, bool initialize, glm::vec3* targetVal, Component* comp);
+	void DoColourEdit4(const char* label, bool initialize, glm::vec4* targetVal, Component* comp);
+};
+
+struct NobleDragFloat
+{
+	float m_fValue[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	bool edited = false;
+
+	void DoDragFloat(const char* label, bool initialize, float* targetVal, Component* comp, float speed, float min = 0, float max = 1);
+	void DoDragFloat2(const char* label, bool initialize, glm::vec2* targetVal, Component* comp, float speed);
+	void DoDragFloat3(const char* label, bool initialize, glm::vec3* targetVal, Component* comp, float speed);
+	void DoDragFloat4(const char* label, bool initialize, glm::vec4* targetVal, Component* comp, float speed);
+};
+
+struct NobleDragInt
+{
+	int m_iValue = 0;
+	bool edited = false;
+
+	void DoDragInt(const char* label, bool initialize, int* targetVal, Component* comp, int speed, int min = 0, int max = 100);
 };

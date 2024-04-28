@@ -58,49 +58,28 @@ void Transform::DoComponentInterface()
 	//Handle Child Transform data
 	if(m_parentTransformIndex != -1)
 	{
-		float position[3] = { m_localPosition.x, m_localPosition.y, m_localPosition.z };
-		if (ImGui::InputFloat3("Local Position", position, "%.3f"))
-		{
-			ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_localPosition, glm::vec3(position[0], position[1], position[2]));
-			Application::GetApplication()->PushCommand(command);
-		}
+		static NobleDragFloat localPos;
+		localPos.DoDragFloat3("Local Position", m_bInitializeInterface, &m_localPosition, this, 0.1f);
 
-		float rotation[3] = { m_localRotation.x, m_localRotation.y, m_localRotation.z };
-		if (ImGui::InputFloat3("Local Rotation", rotation, "%.3f"))
-		{
-			ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_localRotation, glm::vec3(rotation[0], rotation[1], rotation[2]));
-			Application::GetApplication()->PushCommand(command);
-		}
+		static NobleDragFloat localRot;
+		localRot.DoDragFloat3("Local Rotation", m_bInitializeInterface, &m_localRotation, this, 0.1f);
 
-		float scale[3] = { m_localScale.x, m_localScale.y, m_localScale.z };
-		if (ImGui::InputFloat3("Local Scale", scale, "%.3f"))
-		{
-			ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_localScale, glm::vec3(scale[0], scale[1], scale[2]));
-			Application::GetApplication()->PushCommand(command);
-		}
+		static NobleDragFloat localScale;
+		localScale.DoDragFloat3("Local Scale", m_bInitializeInterface, &m_localScale, this, 0.1f);
 		
+		m_bInitializeInterface = false;
+
 		return;
 	}
 
-	//Handle normal Transform data
-	float position[3] = {m_position.x, m_position.y, m_position.z};
-	if (ImGui::InputFloat3("Position", position, "%.3f"))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_position, glm::vec3(position[0], position[1], position[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat pos;
+	pos.DoDragFloat3("Position", m_bInitializeInterface, &m_position, this, 0.1f);
 
-	float rotation[3] = { m_rotation.x, m_rotation.y, m_rotation.z };
-	if (ImGui::InputFloat3("Rotation", rotation, "%.3f"))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_rotation, glm::vec3(rotation[0], rotation[1], rotation[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat rot;
+	rot.DoDragFloat3("Rotation", m_bInitializeInterface, &m_rotation, this, 0.1f);
 
-	float scale[3] = { m_scale.x, m_scale.y, m_scale.z };
-	if (ImGui::InputFloat3("Scale", scale, "%.3f"))
-	{
-		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(&m_scale, glm::vec3(scale[0], scale[1], scale[2]));
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleDragFloat scale;
+	scale.DoDragFloat3("Scale", m_bInitializeInterface, &m_scale, this, 0.1f);
+
+	m_bInitializeInterface = false;
 }

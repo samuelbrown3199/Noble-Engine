@@ -33,7 +33,7 @@ void EditorManager::InitializeEditor()
 	BindEditorUI<ProjectDetailsWindow>("ProjectDetails", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<SceneHierarchyWindow>("SceneHierarchy", ImGuiWindowFlags_None);
 	BindEditorUI<SceneManagerWindow>("SceneManager", ImGuiWindowFlags_AlwaysAutoResize);
-	BindEditorUI<SceneViewWindow>("SceneView", ImGuiWindowFlags_None);
+	BindEditorUI<SceneViewWindow>("SceneView", ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 	BindEditorUI<DataEditorWindow>("DataEditor", ImGuiWindowFlags_None);
 
 	ToggleUI("MainMenuBar");

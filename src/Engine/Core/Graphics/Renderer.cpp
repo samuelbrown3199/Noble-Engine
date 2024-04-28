@@ -712,6 +712,16 @@ void Renderer::DrawGeometry(VkCommandBuffer cmd)
 	VkViewport viewport = {};
 	viewport.x = 0;
 	viewport.y = 0;
+	if (m_bDrawToWindow)
+	{
+		viewport.width = (float)m_drawWindowSize.x;
+		viewport.height = (float)m_drawWindowSize.y;
+	}
+	else
+	{
+		viewport.width = (float)m_drawExtent.width;
+		viewport.height = (float)m_drawExtent.height;
+	}
 	viewport.width = m_drawExtent.width;
 	viewport.height = m_drawExtent.height;
 	viewport.minDepth = 0.0f;
@@ -888,7 +898,11 @@ glm::mat4 Renderer::GenerateProjMatrix()
 
 glm::mat4 Renderer::GenerateProjectionMatrix()
 {
-	glm::mat4 projMatrix = glm::perspective(glm::radians(m_camera->m_fov), (float)m_drawExtent.width / (float)m_drawExtent.height, m_fNearPlane, m_fFarPlane);
+	glm::mat4 projMatrix = glm::mat4(1.0f);
+	if(m_bDrawToWindow)
+		projMatrix = glm::perspective(glm::radians(m_camera->m_fov), (float)m_drawWindowSize.x / (float)m_drawWindowSize.y, m_fNearPlane, m_fFarPlane);
+	else
+		projMatrix = glm::perspective(glm::radians(m_camera->m_fov), (float)m_drawExtent.width / (float)m_drawExtent.height, m_fNearPlane, m_fFarPlane);
 	projMatrix[1][1] *= -1;
 
 	return projMatrix;

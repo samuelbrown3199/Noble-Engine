@@ -391,6 +391,22 @@ void MainMenuBar::DoToolMenu()
 	{
 		editorManager->ToggleUI("Profiler");
 	}
+	if (ImGui::MenuItem("Console"))
+	{
+		//editorManager->ToggleUI("Console");
+	}
+	if (ImGui::MenuItem("Scene View"))
+	{
+		editorManager->ToggleUI("SceneView");
+	}
+	if (ImGui::MenuItem("Data Editor"))
+	{
+		editorManager->ToggleUI("DataEditor");
+	}
+	if (ImGui::MenuItem("Scene Hierarchy"))
+	{
+		editorManager->ToggleUI("SceneHierarchy");
+	}
 	if (editorManager->m_projectFile != nullptr)
 	{
 		if(ImGui::MenuItem("Resource Manager", "(CTRL+R)"))

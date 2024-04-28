@@ -107,6 +107,7 @@ private:
 
 	bool m_bDrawToWindow = false;
 	VkDescriptorSet* m_drawWindowSet = nullptr;
+	ImVec2 m_drawWindowSize;
 
 	DeletionQueue m_mainDeletionQueue;
 	VmaAllocator m_allocator;
@@ -260,10 +261,12 @@ public:
 	AllocatedImage GetCheckerboardErrorTexture() { return m_errorCheckerboardImage; }
 	VkSampler GetDefaultSampler() { return m_defaultSamplerNearest; }
 
+	AllocatedImage* GetDrawImage() { return &m_drawImage; }
 	VkFormat GetDrawImageFormat() { return m_drawImage.m_imageFormat; }
 	VkFormat GetDepthImageFormat() { return m_depthImage.m_imageFormat; }
 
 	ImGuiContext* GetImguiContext() { return m_imguiContext; }
 	void SetDrawWindowSet(VkDescriptorSet* set);
 	void SetDrawToWindow(bool value) { m_bDrawToWindow = value; }
+	void SetDrawWindowSize(ImVec2 size) { m_drawWindowSize = size; }
 };

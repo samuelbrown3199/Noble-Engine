@@ -36,6 +36,7 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 			Application::GetApplication()->PushCommand(command);
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::SetItemTooltip("Create a new entity as a child of this entity.");
 		ImGui::SameLine();
 		if (ImGui::Button("Delete"))
 		{
@@ -44,6 +45,7 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::SetItemTooltip("Deletes the selected entity.");
 
 		if (ImGui::BeginMenu("Add Component"))
 		{
@@ -86,11 +88,14 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 			ChangeValueCommand<std::string>* command = new ChangeValueCommand<std::string>(&m_sEntityName, m_sEntityName);
 			Application::GetApplication()->PushCommand(command);
 		}
+		ImGui::SetItemTooltip("Change the name of the entity.");
 		ImGui::Text(FormatString("Entity ID: %s", m_sEntityID.c_str()).c_str());
+		ImGui::SetItemTooltip("The unique identifier for the entity.");
 
 		if (m_vChildEntityIDs.size() != 0)
 		{
 			ImGui::Text("Child Entities");
+
 			//List all child entities.
 			for (int o = 0; o < m_vChildEntityIDs.size(); o++)
 			{
@@ -115,10 +120,20 @@ void Entity::DoEntityComponentInterface(std::vector<std::pair<std::string, Compo
 		if (comp != nullptr)
 		{
 			ImGui::SeparatorText(compRegistry->at(o).first.c_str());
+			if (ImGui::BeginPopupContextItem(compRegistry->at(o).first.c_str()))
+			{
+				if (ImGui::Button("Remove"))
+				{
+					RemoveComponentCommand* command = new RemoveComponentCommand(m_sEntityID, o);
+					Application::GetApplication()->PushCommand(command);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
 			comp->DoComponentInterface();
 
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-			if (ImGui::Button(FormatString("Remove %s %s", m_sEntityName, compRegistry->at(o).first).c_str()))
+			if (ImGui::Button(FormatString("Remove %s", compRegistry->at(o).first).c_str()))
 			{
 				RemoveComponentCommand* command = new RemoveComponentCommand(m_sEntityID, o);
 				Application::GetApplication()->PushCommand(command);
@@ -156,10 +171,20 @@ void Entity::DoEntityComponentInterface(std::vector<std::pair<std::string, Compo
 		if (beh != nullptr)
 		{
 			ImGui::SeparatorText(behaviourRegistry->at(o).first.c_str());
+			if (ImGui::BeginPopupContextItem(behaviourRegistry->at(o).first.c_str()))
+			{
+				if (ImGui::Button("Remove"))
+				{
+					beh->RemoveBehaviourFromEntity(m_sEntityID);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+
 			beh->DoBehaviourInterface();
 
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-			if (ImGui::Button(FormatString("Remove %s %s", m_sEntityName, behaviourRegistry->at(o).first).c_str()))
+			if (ImGui::Button(FormatString("Remove %s", behaviourRegistry->at(o).first).c_str()))
 			{
 				beh->RemoveBehaviourFromEntity(m_sEntityID);
 			}

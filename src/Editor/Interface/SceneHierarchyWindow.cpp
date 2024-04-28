@@ -78,7 +78,7 @@ void SceneHierarchyWindow::DoInterface()
 		else
 			DoModal("Create Entity");
 	}
-	//ImGui::SetTooltip("Allows the creation of a new entity, with a name of your choosing. If shift is pressed it will use a default name.");
+	ImGui::SetItemTooltip("Create a new entity, with a name of your choosing. Hold Shift to skip name choice.");
 
 	if (m_iSelEntity != -1)
 	{
@@ -88,7 +88,7 @@ void SceneHierarchyWindow::DoInterface()
 			DeleteEntityCommand* command = new DeleteEntityCommand(Application::GetApplication()->GetEntityList().at(m_iSelEntity).m_sEntityID);
 			editorManager->PushCommand(command);
 		}
-		//ImGui::SetTooltip("Deletes the selected entity.");
+		ImGui::SetItemTooltip("Deletes the selected entity.");
 	}
 
 	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
@@ -107,6 +107,7 @@ void SceneHierarchyWindow::DoInterface()
 
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::SetItemTooltip("Create a new entity, with a name of your choosing. Hold Shift to skip name choice.");
 		ImGui::EndPopup();
 	}
 

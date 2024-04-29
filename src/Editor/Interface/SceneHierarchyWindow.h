@@ -25,4 +25,6 @@ public:
 
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
+
+	void ResetSelectedEntity() { m_iSelEntity = -1; }
 };

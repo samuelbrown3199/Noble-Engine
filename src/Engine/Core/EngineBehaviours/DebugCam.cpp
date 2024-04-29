@@ -39,13 +39,14 @@ void DebugCam::Start()
 	glm::vec3 pos = glm::vec3(5, 0, 0);
 	glm::vec3 rot = glm::vec3(0, 0, -1);
 
-	Camera* curCam = renderer->GetCamera();
-	if (curCam == nullptr)
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
+	Camera* ca = registry->GetComponent<Camera>(registry->GetComponentIndex<Camera>(m_sEntityID));
+	if (ca == nullptr)
 		return;
 
-	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	Transform* camTransform = registry->GetComponent<Transform>(curCam->m_camTransformIndex);
-	if (curCam && camTransform != nullptr)
+	Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);
+	if (ca && camTransform != nullptr)
 	{
 		pos = camTransform->m_position;
 		rot = camTransform->m_rotation;
@@ -72,11 +73,13 @@ void DebugCam::UpdateControls()
 {
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	InputManager* inputManager = Application::GetApplication()->GetInputManager();
-	Camera* ca = renderer->GetCamera();
+	
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+
+	Camera* ca = registry->GetComponent<Camera>(registry->GetComponentIndex<Camera>(m_sEntityID));
 	if (ca == nullptr)
 		return;
 
-	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);
 	if (camTransform == nullptr)
 		return;
@@ -124,13 +127,13 @@ void DebugCam::UpdateCameraRotation()
 	InputManager* inputManager = Application::GetApplication()->GetInputManager();
 	if (inputManager->GetKeybind("RightMouse"))
 	{
-		Camera* ca = renderer->GetCamera();
+		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+		Camera* ca = registry->GetComponent<Camera>(registry->GetComponentIndex<Camera>(m_sEntityID));
 		if (ca == nullptr)
 			return;
 
 		newMousePos = glm::vec2(inputManager->m_iMouseX, inputManager->m_iMouseY);
 
-		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		Transform* camTransform = registry->GetComponent<Transform>(ca->m_camTransformIndex);
 		if (camTransform == nullptr)
 			return;

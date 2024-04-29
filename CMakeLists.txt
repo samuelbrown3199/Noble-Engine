@@ -322,6 +322,9 @@ set (
 
 	src/Editor/EditorManagement/CommandSystem.h
 	src/Editor/EditorManagement/CommandSystem.cpp
+
+	src/Editor/EditorManagement/EditorCam.h
+	src/Editor/EditorManagement/EditorCam.cpp
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_SOURCE_DIR}/Editor>)

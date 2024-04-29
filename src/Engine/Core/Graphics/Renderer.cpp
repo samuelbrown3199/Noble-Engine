@@ -583,7 +583,7 @@ void Renderer::DrawFrame()
 	if (m_camera != nullptr)
 	{
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-		viewPos = registry->GetComponent<Transform>(m_camera->m_camTransformIndex)->m_position;
+		viewPos = m_camera->GetPosition();
 
 		switch (m_camera->m_iDrawMode)
 		{
@@ -885,6 +885,17 @@ void Renderer::SetRenderScale(const float& value)
 	LogInfo(FormatString("Set render scale to %.2f", m_fRenderScale));
 }
 
+void Renderer::RemoveCamera()
+{
+	if (m_camera != nullptr)
+	{
+		if (m_camera->m_state != CameraState::editorCam)
+		{
+			m_camera = nullptr;
+		}
+	}
+}
+
 glm::mat4 Renderer::GenerateProjMatrix()
 {
 	if (m_camera == nullptr)
@@ -926,11 +937,11 @@ glm::mat4 Renderer::GenerateViewMatrix()
 		return glm::mat4(1.0f);
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	Transform* camTransform = registry->GetComponent<Transform>(m_camera->m_camTransformIndex);
-	if (camTransform == nullptr)
-		return glm::mat4(1.0f);
 
-	glm::mat4 viewMatrix = glm::lookAt(camTransform->m_position, camTransform->m_position + camTransform->m_rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 camPos = m_camera->GetPosition();
+	glm::vec3 camRot = m_camera->GetRotation();
+
+	glm::mat4 viewMatrix = glm::lookAt(camPos, camPos + camRot, glm::vec3(0.0f, 1.0f, 0.0f));
 	return viewMatrix;
 }
 

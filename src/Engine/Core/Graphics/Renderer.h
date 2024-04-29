@@ -120,7 +120,7 @@ private:
 	float m_fNearPlane = 0.1f, m_fFarPlane = 1000.0f;
 	const float m_fMaxScale = 1000, m_fMinScale = 3;
 
-	Camera* m_camera = nullptr;
+	CameraBase* m_camera = nullptr;
 
 	std::vector<Renderable*> m_onScreenObjects;
 	int m_iRenderableCount = 0;
@@ -219,8 +219,9 @@ public:
 	void SetClearColour(const glm::vec3 colour) { m_clearColour = colour; }
 	glm::vec3 GetClearColour() { return m_clearColour; }
 
-	void SetCamera(Camera* cam) { m_camera = cam; }
-	Camera* GetCamera() { return m_camera; };
+	void RemoveCamera();
+	void SetCamera(CameraBase* cam) { m_camera = cam; }
+	CameraBase* GetCamera() { return m_camera; };
 	glm::vec2 GetScreenSize() { return glm::vec2(m_iScreenWidth, m_iScreenHeight); };
 
 	glm::mat4 GenerateProjMatrix();

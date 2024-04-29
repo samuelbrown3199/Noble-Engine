@@ -113,4 +113,14 @@ void Scene::LoadSceneIntoApplication()
 			renderer->m_sceneData.ambientColour = ambientColour;
 		}
 	}
+
+	if (m_sceneData.find("EditorCamera") != m_sceneData.end())
+	{
+		CameraBase* cam = renderer->GetCamera();
+		if (cam != nullptr && cam->m_state == editorCam)
+		{
+			cam->SetPosition(glm::vec3(m_sceneData["EditorCamera"]["Position"][0], m_sceneData["EditorCamera"]["Position"][1], m_sceneData["EditorCamera"]["Position"][2]));
+			cam->SetRotation(glm::vec3(m_sceneData["EditorCamera"]["Rotation"][0], m_sceneData["EditorCamera"]["Rotation"][1], m_sceneData["EditorCamera"]["Rotation"][2]));
+		}
+	}
 }

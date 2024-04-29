@@ -41,6 +41,8 @@ void EditorManager::InitializeEditor()
 	ToggleUI("SceneHierarchy");
 	ToggleUI("DataEditor");
 	ToggleUI("SceneView");
+
+	m_pEditorCam = new EditorCam(dynamic_cast<SceneViewWindow*>(GetEditorUI("SceneView")));
 }
 
 void EditorManager::CheckAndInitializeData()
@@ -88,12 +90,12 @@ void EditorManager::OpenUI(std::string ID)
 	m_mEditorUIs.at(ID)->m_uiOpen = true;
 }
 
-ToolUI* EditorManager::GetEditorUI(std::string ID)
+EditorToolUI* EditorManager::GetEditorUI(std::string ID)
 {
 	if (m_mEditorUIs.count(ID) == 0)
 		LogFatalError(FormatString("Trying to get UI %s that doesnt exist.", ID.c_str()));
 
-	return m_mEditorUIs.at(ID).get();
+	return dynamic_cast<EditorToolUI*>(m_mEditorUIs.at(ID).get());
 }
 
 EditorManager::EditorManager()
@@ -113,6 +115,8 @@ void EditorManager::UpdateEditorWindowTitle()
 
 void EditorManager::LoadScene(int sceneIndex)
 {
+	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
+	dynamic_cast<DataEditorWindow*>(GetEditorUI("DataEditor"))->SetSelectedEntity(-1);
 	Application::GetApplication()->GetSceneManager()->LoadScene(sceneIndex);
 	UpdateEditorWindowTitle();
 }
@@ -120,6 +124,7 @@ void EditorManager::LoadScene(int sceneIndex)
 void EditorManager::OnUpdate()
 {
 	m_pCommandSystem->ProcessCommandQueue();
+	m_pEditorCam->Update();
 
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
 	for (uiItr = m_mEditorUIs.begin(); uiItr != m_mEditorUIs.end(); uiItr++)

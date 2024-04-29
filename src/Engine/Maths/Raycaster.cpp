@@ -86,8 +86,7 @@ Ray Raycaster::GetRayToMousePosition(const glm::vec2 windowSize, const glm::vec2
     {
         NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
-        camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
-        return GetRayToInDirection(camTransform->m_position, ray_wor, maxDistance);
+        return GetRayToInDirection(renderer->GetCamera()->GetPosition(), ray_wor, maxDistance);
     }
 
     return Ray();

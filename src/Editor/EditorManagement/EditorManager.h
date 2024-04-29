@@ -3,6 +3,7 @@
 #include <Engine/Core/Application.h>
 
 #include "CommandSystem.h"
+#include "EditorCam.h"
 
 class ProjectFile;
 
@@ -14,7 +15,8 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>> m_mEditorUIs;
 	std::deque<std::string> m_recentProjects;
 
-	CommandSystem* m_pCommandSystem;
+	CommandSystem* m_pCommandSystem = nullptr;
+	EditorCam* m_pEditorCam = nullptr;
 
 	void InitializeEditor();
 	void CheckAndInitializeData();
@@ -45,7 +47,7 @@ public:
 	void CloseUI(std::string ID);
 	void OpenUI(std::string ID);
 
-	ToolUI* GetEditorUI(std::string ID);
+	EditorToolUI* GetEditorUI(std::string ID);
 
 	void UpdateEditorWindowTitle();
 

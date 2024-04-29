@@ -96,11 +96,10 @@ struct Renderable : public Component
 		m_drawConstants.m_objectColour = m_colour;
 		m_drawConstants.m_worldMatrix =  transform->m_transformMat;
 
-		Camera* cam = renderer->GetCamera();
+		CameraBase* cam = renderer->GetCamera();
 		if (cam != nullptr)
 		{
-			Transform* camTransform = registry->GetComponent<Transform>(cam->m_camTransformIndex);
-			m_fDistanceToCam = glm::length(camTransform->m_position - transform->m_position);
+			m_fDistanceToCam = glm::length(cam->GetPosition() - transform->m_position);
 		}
 	};
 

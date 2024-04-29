@@ -11,6 +11,8 @@
 #include <Engine\Core\ProjectFile.h>
 
 #include "../EditorManagement/EditorManager.h"
+#include "SceneHierarchyWindow.h"
+#include "DataEditorWindow.h"
 
 void NewProjectModal::DoModal()
 {
@@ -288,7 +290,8 @@ void MainMenuBar::DoSceneMenu()
 
 	if (ImGui::MenuItem("New Scene"))
 	{
-		//m_selComponent = nullptr; something will be needed to be done with this.
+		dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
+		dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedEntity(-1);
 		Application::GetApplication()->GetSceneManager()->ClearLoadedScene();
 	}
 	ImGui::SetItemTooltip("Create a new Scene.");

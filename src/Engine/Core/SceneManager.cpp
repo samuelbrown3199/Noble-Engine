@@ -113,6 +113,16 @@ void SceneManager::SaveScene(std::string scenePath)
 	{
 		data["ComponentData"][compRegistry->at(i).first] = compRegistry->at(i).second.m_comp->WriteComponentDataToJson();
 	}
+	
+	CameraBase* cam = renderer->GetCamera();
+	if(cam != nullptr)
+	{
+		if (cam->m_state == CameraState::editorCam)
+		{
+			data["EditorCamera"]["Position"] = { cam->GetPosition().x,cam->GetPosition().y,cam->GetPosition().z };
+			data["EditorCamera"]["Rotation"] = { cam->GetRotation().x,cam->GetRotation().y,cam->GetRotation().z };
+		}
+	}
 
 	std::fstream sceneFile(scenePath, 'w');
 	sceneFile << data.dump();

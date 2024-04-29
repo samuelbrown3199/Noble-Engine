@@ -401,7 +401,7 @@ void Application::ClearLoadedScene()
 	m_vEntities.clear();
 	m_vDeletionEntities.clear();
 
-	m_gameRenderer->m_camera = nullptr;
+	m_gameRenderer->RemoveCamera();
 
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 	for (int i = 0; i < compRegistry->size(); i++)

@@ -16,16 +16,26 @@ enum ViewMode
 	orthographic
 };
 
-struct Camera : Component
+struct CameraBase
 {
-	int m_camTransformIndex = -1;
-	CameraState m_state = inactive;
 	ViewMode m_viewMode = projection;
+	CameraState m_state = inactive;
 
 	float m_fov = 90.0f;
 	float m_scale = 50.0f;
 
 	int m_iDrawMode = 1;
+
+	virtual glm::vec3 GetPosition() = 0;
+	virtual glm::vec3 GetRotation() = 0;
+
+	virtual void SetPosition(glm::vec3 pos) {};
+	virtual void SetRotation(glm::vec3 rot) {};
+};
+
+struct Camera : public Component, public CameraBase
+{
+	int m_camTransformIndex = -1;
 
 	std::string GetComponentID() override
 	{
@@ -66,4 +76,8 @@ struct Camera : Component
 	virtual void DoComponentInterface() override;
 	virtual void PreUpdate() override;
 	virtual void OnUpdate() override;
+
+	virtual glm::vec3 GetPosition() override;
+	virtual glm::vec3 GetRotation() override;
+
 };

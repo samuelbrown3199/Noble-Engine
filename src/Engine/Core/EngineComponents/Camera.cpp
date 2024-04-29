@@ -55,7 +55,7 @@ void Camera::OnUpdate()
 
 void Camera::DoComponentInterface()
 {
-	const char* states[] = { "Inactive", "Main Cam", "Editor"};
+	const char* states[] = { "Inactive", "Main Cam" };
 	int currentState = m_state;
 	if (ImGui::Combo("State", &currentState, states, IM_ARRAYSIZE(states)))
 	{
@@ -91,4 +91,26 @@ void Camera::DoComponentInterface()
 	}
 
 	m_bInitializeInterface = false;
+}
+
+glm::vec3 Camera::GetPosition()
+{
+	m_camTransformIndex = Application::GetApplication()->GetRegistry()->GetComponentIndex<Transform>(m_sEntityID);
+
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Transform* camTransform = registry->GetComponent<Transform>(m_camTransformIndex);
+	if (camTransform == nullptr)
+		return glm::vec3(0.0f, 0.0f, 0.0f);
+	return camTransform->m_position;
+}
+
+glm::vec3 Camera::GetRotation()
+{
+	m_camTransformIndex = Application::GetApplication()->GetRegistry()->GetComponentIndex<Transform>(m_sEntityID);
+
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Transform* camTransform = registry->GetComponent<Transform>(m_camTransformIndex);
+	if (camTransform == nullptr)
+		return glm::vec3(0.0f, 0.0f, 0.0f);
+	return camTransform->m_rotation;
 }

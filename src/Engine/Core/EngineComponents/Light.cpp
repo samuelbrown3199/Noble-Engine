@@ -212,15 +212,7 @@ void Light::OnUpdate()
 	DirectionalLight* dirLight = dynamic_cast<DirectionalLight*>(m_lightInfo);
 
 	Transform* transform = registry->GetComponent<Transform>(m_transformIndex);
-	Transform* camTransform = nullptr;
-	if (renderer->GetCamera() != nullptr)
-	{
-		camTransform = registry->GetComponent<Transform>(renderer->GetCamera()->m_camTransformIndex);
-
-		if (camTransform == nullptr)
-			return;
-	}
-	else
+	if (renderer->GetCamera() == nullptr)
 	{
 		return;
 	}
@@ -234,9 +226,9 @@ void Light::OnUpdate()
 		break;
 	}
 
-	float xDis = (camTransform->m_position.x - transform->m_position.x) * (camTransform->m_position.x - transform->m_position.x);
-	float yDis = (camTransform->m_position.y - transform->m_position.y) * (camTransform->m_position.y - transform->m_position.y);
-	float zDis = (camTransform->m_position.z - transform->m_position.z) * (camTransform->m_position.z - transform->m_position.z);
+	float xDis = (renderer->GetCamera()->GetPosition().x - transform->m_position.x) * (renderer->GetCamera()->GetPosition().x - transform->m_position.x);
+	float yDis = (renderer->GetCamera()->GetPosition().y - transform->m_position.y) * (renderer->GetCamera()->GetPosition().y - transform->m_position.y);
+	float zDis = (renderer->GetCamera()->GetPosition().z - transform->m_position.z) * (renderer->GetCamera()->GetPosition().z - transform->m_position.z);
 
 	m_fDistanceToCam = sqrt(xDis + yDis + zDis);
 }

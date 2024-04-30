@@ -83,7 +83,6 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
-	std::vector<std::pair<std::string, Behaviour*>>* behRegistry = registry->GetBehaviourRegistry();
 
 	nlohmann::json data;
 	AddVersionDataToJson(data);
@@ -99,15 +98,6 @@ void SceneManager::SaveScene(std::string scenePath)
 
 		data["Entities"][entities.at(i).m_sEntityID]["EntityName"] = entities.at(i).m_sEntityName;
 		data["Entities"][entities.at(i).m_sEntityID]["ParentID"] = entities.at(i).m_sEntityParentID;
-
-		for (int o = 0; o < behRegistry->size(); o++)
-		{
-			Behaviour* currentBehaviour = behRegistry->at(o).second->GetAsBehaviour(entities.at(i).m_sEntityID);
-			if (currentBehaviour != nullptr)
-			{
-				data["Behaviours"][entities.at(i).m_sEntityID][behRegistry->at(o).first] = currentBehaviour->WriteBehaviourToJson();
-			}
-		}
 	}
 	for (int i = 0; i < compRegistry->size(); i++)
 	{

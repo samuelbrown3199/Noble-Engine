@@ -73,7 +73,6 @@ class NobleRegistry
 {
 	std::vector<std::pair<std::string, ResourceRegistry>> m_vResourceRegistry;
 	std::vector<std::pair<std::string, ComponentRegistry>> m_vComponentRegistry;
-	std::vector<std::pair<std::string, Behaviour*>> m_vBehaviourRegistry;
 
 	std::vector<std::pair<std::string, PushConstantRegistry>> m_vPushConstantRegistry;
 	std::vector<std::pair<std::string, DescriptorRegistry>> m_vDescriptorRegistry;
@@ -133,9 +132,6 @@ public:
 
 		return nullptr;
 	}
-
-	void RegisterBehaviour(std::string ID, Behaviour* comp);
-	std::vector<std::pair<std::string, Behaviour*>>* GetBehaviourRegistry() { return &m_vBehaviourRegistry; }
 
 	void RegisterDescriptor(std::string ID, VkDescriptorSetLayout* layout, VkDescriptorSet* set, VkDescriptorType type);
 	std::vector<std::pair<std::string, DescriptorRegistry>>* GetDescriptorRegistry() { return &m_vDescriptorRegistry; }

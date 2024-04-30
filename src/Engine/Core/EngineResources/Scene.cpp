@@ -74,32 +74,6 @@ void Scene::LoadSceneIntoApplication()
 
 		Application::GetApplication()->LinkChildEntities();
 	}
-	if (m_sceneData.find("Behaviours") != m_sceneData.end())
-	{
-		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-		std::vector<std::pair<std::string, Behaviour*>>* behRegistry = registry->GetBehaviourRegistry();
-
-		nlohmann::json behaviours = m_sceneData.at("Behaviours");
-
-		for (auto it : behaviours.items())
-		{
-			nlohmann::json entity = behaviours.at(it.key());
-
-			for (auto beh : entity.items())
-			{
-				for (int o = 0; o < behRegistry->size(); o++)
-				{
-					if (behRegistry->at(o).first == beh.key())
-					{
-						behRegistry->at(o).second->LoadBehaviourFromJson(it.key(), beh.value());
-
-						continue;
-					}
-				}
-			}
-		}
-	}
-
 	if (m_sceneData.find("LightingSettings") != m_sceneData.end())
 	{
 		nlohmann::json lightingInfo = m_sceneData.at("LightingSettings");

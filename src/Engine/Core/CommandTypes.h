@@ -5,7 +5,6 @@
 
 #include "ECS/Entity.h"
 #include "ECS/Component.h"
-#include "ECS/Behaviour.hpp"
 
 struct Command
 {
@@ -21,7 +20,6 @@ struct EntityCommand : public Command
 {
 	std::vector<Entity> m_entities;
 	std::vector<std::vector<Component*>> m_entityComponents;
-	std::vector<std::vector<Behaviour*>> m_entityBehaviours;
 
 	EntityCommand() {};
 
@@ -93,44 +91,6 @@ struct RemoveComponentCommand : public Command
 	void Execute() override;
 	void Undo() override;
 	void Redo() override;
-};
-
-template<typename T>
-struct AddBehaviourCommand : public Command
-{
-	std::string m_sEntityID;
-	int m_registryIndex;
-
-	T* m_behaviour;
-	T* m_behaviourCopy;
-
-	AddBehaviourCommand(std::string sEntityID, int registryIndex)
-	{
-		m_sEntityID = sEntityID;
-		m_registryIndex = registryIndex;
-
-		m_behaviour = nullptr;
-		m_behaviourCopy = nullptr;
-	}
-
-	void Execute()
-	{
-		std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry = Application::GetApplication()->GetRegistry()->GetBehaviourRegistry();
-		behaviourRegistry->at(m_registryIndex).second->AddBehaviourToEntity(m_sEntityID);
-
-		m_behaviour = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(m_sEntityID))->GetBehaviours().back();
-	}
-
-	void Undo()
-	{
-		m_behaviourCopy = new T(*m_behaviour);
-		m_behaviour->RemoveBehaviourFromEntity(m_sEntityID);
-	}
-
-	void Redo()
-	{
-		m_behaviourCopy->AddBehaviourToEntity(m_sEntityID);
-	}
 };
 
 template<typename T>

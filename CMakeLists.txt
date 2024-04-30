@@ -110,10 +110,6 @@ set (
 	src/Engine/Lua/NobleLuaState.h
 	src/Engine/Lua/NobleLuaState.cpp
 
-	#Behaviours
-	src/Engine/Core/EngineBehaviours/DebugCam.h
-	src/Engine/Core/EngineBehaviours/DebugCam.cpp
-
 	#Core
 	src/Engine/Core/Application.h
 	src/Engine/Core/Application.cpp
@@ -189,8 +185,6 @@ set (
 
 	src/Engine/Core/ECS/Renderable.hpp
 	src/Engine/Core/ECS/ComponentList.hpp
-
-	src/Engine/Core/ECS/Behaviour.hpp
 
 	#Resource Handling
 	

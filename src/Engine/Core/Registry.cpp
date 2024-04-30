@@ -21,11 +21,6 @@ Datalist* NobleRegistry::GetComponentList(std::string ID)
 	return nullptr;
 }
 
-void NobleRegistry::RegisterBehaviour(std::string ID, Behaviour* comp)
-{
-	m_vBehaviourRegistry.push_back(std::make_pair(ID, comp));
-}
-
 void NobleRegistry::RegisterDescriptor(std::string ID, VkDescriptorSetLayout* layout, VkDescriptorSet* set, VkDescriptorType type)
 {
 	m_vDescriptorRegistry.push_back(std::make_pair(ID, DescriptorRegistry(layout, set, type)));
@@ -63,12 +58,6 @@ void NobleRegistry::ClearRegistries()
 		delete m_vComponentRegistry.at(i).second.m_comp;
 	}
 	m_vComponentRegistry.clear();
-
-	for (int i = 0; i < m_vBehaviourRegistry.size(); i++)
-	{
-		delete m_vBehaviourRegistry.at(i).second;
-	}
-	m_vBehaviourRegistry.clear();
 
 	m_vResourceRegistry.clear();
 	m_vDescriptorRegistry.clear();

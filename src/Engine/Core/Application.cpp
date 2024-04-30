@@ -16,8 +16,6 @@
 
 #include "ECS/Entity.h"
 
-#include "EngineBehaviours/DebugCam.h"
-
 #include "../imgui/imgui.h"
 #include "../imgui/implot.h"
 #include "../imgui/backends/imgui_impl_sdl2.h"
@@ -175,13 +173,6 @@ void Application::MainLoop()
 			{
 				m_vToolUIs.at(i)->DoInterface();
 				m_vToolUIs.at(i)->DoModals();
-			}
-		}
-		for (int i = 0; i < m_vEntities.size(); i++)
-		{
-			for (int o = 0; o < m_vEntities.at(i).m_vBehaviours.size(); o++)
-			{
-				m_vEntities.at(i).m_vBehaviours.at(o)->Update();
 			}
 		}
 		for (int i = 0; i < compRegistry->size(); i++)
@@ -393,11 +384,6 @@ Entity* Application::GetEntity(int index)
 
 void Application::ClearLoadedScene()
 {
-	for (int i = 0; i < m_vEntities.size(); i++)
-	{
-		m_vEntities.at(i).DeleteAllBehaviours();
-	}
-
 	m_vEntities.clear();
 	m_vDeletionEntities.clear();
 
@@ -443,8 +429,6 @@ void Application::RegisterDefaultComponents()
 	m_registry->RegisterComponent<ScriptEmbedder>("ScriptEmbedder", false, 1024, false, false);
 	m_registry->RegisterComponent<Sprite>("Sprite", false, 1024, true, true);
 	m_registry->RegisterComponent<Light>("Light", false, 1024, true, true);
-
-	m_registry->RegisterBehaviour("DebugCam", new DebugCam());
 }
 
 void Application::ResetRegistries()
@@ -474,7 +458,6 @@ void Application::CleanupDeletionEntities()
 	while (!m_vDeletionEntities.empty())
 	{
 		Entity* currentEntity = m_vDeletionEntities.front();
-		currentEntity->DeleteAllBehaviours();
 		m_vDeletionEntities.pop_front();
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();
 		for (int i = 0; i < compRegistry->size(); i++)

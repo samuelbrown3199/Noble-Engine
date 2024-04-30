@@ -45,7 +45,6 @@ DeleteEntityCommand::DeleteEntityCommand(std::string sEntityID)
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
 		std::vector<Component*> components;
-		std::vector<Behaviour*> behaviours;
 
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
 		for (int j = 0; j < compRegistry->size(); j++)
@@ -55,12 +54,7 @@ DeleteEntityCommand::DeleteEntityCommand(std::string sEntityID)
 				components.push_back(compRegistry->at(j).second.m_componentDatalist->GetComponent(compIndex));
 		}
 
-		std::vector<Behaviour*> entityBehaviours = m_entities.at(i).GetBehaviours();
-		for (int j = 0; j < entityBehaviours.size(); j++)
-			behaviours.push_back(entityBehaviours.at(j));
-
 		m_entityComponents.push_back(components);
-		m_entityBehaviours.push_back(behaviours);
 	}
 }
 
@@ -84,9 +78,6 @@ void DeleteEntityCommand::Undo()
 			m_entityComponents.at(i).at(j)->m_bAvailableForReuse = false;
 			m_entityComponents.at(i).at(j)->AddComponent();
 		}
-
-		for (int j = 0; j < m_entityBehaviours.at(i).size(); j++)
-			newEnt->AddBehaviour(m_entityBehaviours.at(i).at(j));
 
 		newEnt->GetAllComponents();
 	}

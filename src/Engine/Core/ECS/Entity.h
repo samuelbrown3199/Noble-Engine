@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Registry.h"
-#include "Behaviour.hpp"
 #include "../ToolUI.h"
 
 struct Component;
@@ -26,7 +25,6 @@ struct Entity
 	bool m_bAvailableForUse = false;
 
 	std::map<std::string, int> m_vComponents;
-	std::vector<Behaviour*> m_vBehaviours;
 
 	std::string m_sEntityParentID = "";
 	std::vector<std::string> m_vChildEntityIDs;
@@ -123,71 +121,6 @@ struct Entity
 		Application::SetEntitiesDeleted();
 	}
 
-
-	template <typename T, typename ... Args>
-	T* AddBehaviour(Args&&... _args)
-	{
-		T* comp = new T();
-
-		m_vBehaviours.push_back(comp);
-
-		comp->m_sEntityID = m_sEntityID;
-		comp->Start();
-
-		return comp;
-	}
-
-	void AddBehaviour(Behaviour* beh)
-	{
-		m_vBehaviours.push_back(beh);
-		beh->m_sEntityID = m_sEntityID;
-		beh->Start();
-	}
-
-	template <typename T>
-	T* GetBehaviour()
-	{
-		for (int i = 0; i < m_vBehaviours.size(); i++)
-		{
-			T* beh = dynamic_cast<T*>(m_vBehaviours.at(i));
-			if (beh != nullptr)
-				return beh;
-		}
-
-		return nullptr;
-	}
-
-	std::vector<Behaviour*> GetBehaviours()
-	{
-		return m_vBehaviours;
-	}
-
-	template <typename T>
-	void RemoveBehaviour()
-	{
-		for (int i = 0; i < m_vBehaviours.size(); i++)
-		{
-			T* beh = dynamic_cast<T*>(m_vBehaviours.at(i));
-			if (beh != nullptr)
-			{
-				m_vBehaviours.erase(m_vBehaviours.begin() + i);
-				delete beh;
-
-				return;
-			}
-		}
-	}
-
-	void DeleteAllBehaviours()
-	{
-		for (int i = 0; i < m_vBehaviours.size(); i++)
-		{
-			delete m_vBehaviours.at(i);
-		}
-
-		m_vBehaviours.clear();
-	}
-
 	void CreateChildObject()
 	{
 		Entity* entity = Application::GetApplication()->CreateEntity();
@@ -215,5 +148,5 @@ struct Entity
 	}
 
 	void DoEntityInterface(int& i, int& selEntity, int layer = 0);
-	void DoEntityComponentInterface(std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry, std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry);
+	void DoEntityComponentInterface(std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry);
 };

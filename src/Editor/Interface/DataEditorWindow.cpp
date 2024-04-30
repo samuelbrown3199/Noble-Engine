@@ -14,10 +14,9 @@ void DataEditorWindow::DoInterface()
 		std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
-		std::vector<std::pair<std::string, Behaviour*>>* behaviourRegistry = registry->GetBehaviourRegistry();
 
 		Entity& entity = entities.at(m_iSelEntity);
-		entity.DoEntityComponentInterface(compRegistry, behaviourRegistry);
+		entity.DoEntityComponentInterface(compRegistry);
 	}
 
 	ImGui::End();

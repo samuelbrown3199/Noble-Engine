@@ -83,16 +83,20 @@ void AudioSource::DoComponentInterface()
 	ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
 
 	static NobleDragFloat velocityDrag;
-	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, this, 0.1f);
+	velocityDrag.m_pComponent = this;
+	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, 0.1f);
 
 	static NobleDragInt loopCountDrag;
-	loopCountDrag.DoDragInt("Loop Count", m_bInitializeInterface, &m_iLoopCount, this, 1, -1, 50);
+	loopCountDrag.m_pComponent = this;
+	loopCountDrag.DoDragInt("Loop Count", m_bInitializeInterface, &m_iLoopCount, 1, -1, 50);
 
 	static NobleDragFloat pitchDrag;
-	pitchDrag.DoDragFloat("Pitch", m_bInitializeInterface, &m_fPitch, this, 0.1f, 0.0f, 3.0f);
+	pitchDrag.m_pComponent = this;
+	pitchDrag.DoDragFloat("Pitch", m_bInitializeInterface, &m_fPitch, 0.1f, 0.0f, 3.0f);
 
 	static NobleDragFloat volumeDrag;
-	volumeDrag.DoDragFloat("Volume", m_bInitializeInterface, &m_fVolume, this, 0.1f, 0.0f, 10.0f);
+	volumeDrag.m_pComponent = this;
+	volumeDrag.DoDragFloat("Volume", m_bInitializeInterface, &m_fVolume, 0.1f, 0.0f, 10.0f);
 
 	bool paused = m_bPaused;
 	if (ImGui::Checkbox("Paused", &paused))

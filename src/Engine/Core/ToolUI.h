@@ -12,6 +12,7 @@
 class Editor;
 class ToolUI;
 
+struct Entity;
 struct Component;
 
 class ToolModalWindow
@@ -147,30 +148,49 @@ public:
 	ImVec2 GetRelativeMousePos() { return m_relativeMousePos; }
 };
 
-struct NobleColourEdit
+struct BaseEdit
+{
+	bool m_bEdited = false;
+
+	Component* m_pComponent = nullptr;
+	Entity* m_pEntity = nullptr;
+};
+
+struct NobleColourEdit : public BaseEdit
 {
 	float m_fColour[4] = { 1.0f, 1.0f, 1.0f };
-	bool edited = false;
 
-	void DoColourEdit3(const char* label, bool initialize, glm::vec3* targetVal, Component* comp);
-	void DoColourEdit4(const char* label, bool initialize, glm::vec4* targetVal, Component* comp);
+	void DoColourEdit3(const char* label, bool initialize, glm::vec3* targetVal);
+	void DoColourEdit4(const char* label, bool initialize, glm::vec4* targetVal);
 };
 
-struct NobleDragFloat
+struct NobleDragFloat : public BaseEdit
 {
 	float m_fValue[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	bool edited = false;
 
-	void DoDragFloat(const char* label, bool initialize, float* targetVal, Component* comp, float speed, float min = 0, float max = 1);
-	void DoDragFloat2(const char* label, bool initialize, glm::vec2* targetVal, Component* comp, float speed);
-	void DoDragFloat3(const char* label, bool initialize, glm::vec3* targetVal, Component* comp, float speed);
-	void DoDragFloat4(const char* label, bool initialize, glm::vec4* targetVal, Component* comp, float speed);
+	void DoDragFloat(const char* label, bool initialize, float* targetVal, float speed, float min = 0, float max = 1);
+	void DoDragFloat2(const char* label, bool initialize, glm::vec2* targetVal, float speed);
+	void DoDragFloat3(const char* label, bool initialize, glm::vec3* targetVal, float speed);
+	void DoDragFloat4(const char* label, bool initialize, glm::vec4* targetVal, float speed);
 };
 
-struct NobleDragInt
+struct NobleDragInt : public BaseEdit
 {
 	int m_iValue = 0;
-	bool edited = false;
 
-	void DoDragInt(const char* label, bool initialize, int* targetVal, Component* comp, int speed, int min = 0, int max = 100);
+	void DoDragInt(const char* label, bool initialize, int* targetVal, int speed, int min = 0, int max = 100);
+};
+
+struct NobleTextInput : public BaseEdit
+{
+	std::string m_sValue;
+	std::string m_sID;
+
+	void Initialize(std::string* targetVal);
+	void DoTextInput(const char* label, bool initialize, std::string* targetVal);
+};
+
+struct EntityDropdown
+{
+	void DoEntityDropdown(int index, int& selEntity, int layer = 0);
 };

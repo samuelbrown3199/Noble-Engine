@@ -76,7 +76,8 @@ void AudioListener::OnUpdate()
 void AudioListener::DoComponentInterface()
 {
 	static NobleDragFloat velocityDrag;
-	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, this, 0.1f);
+	velocityDrag.m_pComponent = this;
+	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, 0.1f);
 
 	m_bInitializeInterface = false;
 }

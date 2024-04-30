@@ -59,13 +59,16 @@ void Transform::DoComponentInterface()
 	if(m_parentTransformIndex != -1)
 	{
 		static NobleDragFloat localPos;
-		localPos.DoDragFloat3("Local Position", m_bInitializeInterface, &m_localPosition, this, 0.1f);
+		localPos.m_pComponent = this;
+		localPos.DoDragFloat3("Local Position", m_bInitializeInterface, &m_localPosition, 0.1f);
 
 		static NobleDragFloat localRot;
-		localRot.DoDragFloat3("Local Rotation", m_bInitializeInterface, &m_localRotation, this, 0.1f);
+		localRot.m_pComponent = this;
+		localRot.DoDragFloat3("Local Rotation", m_bInitializeInterface, &m_localRotation, 0.1f);
 
 		static NobleDragFloat localScale;
-		localScale.DoDragFloat3("Local Scale", m_bInitializeInterface, &m_localScale, this, 0.1f);
+		localScale.m_pComponent = this;
+		localScale.DoDragFloat3("Local Scale", m_bInitializeInterface, &m_localScale, 0.1f);
 		
 		m_bInitializeInterface = false;
 
@@ -73,13 +76,16 @@ void Transform::DoComponentInterface()
 	}
 
 	static NobleDragFloat pos;
-	pos.DoDragFloat3("Position", m_bInitializeInterface, &m_position, this, 0.1f);
+	pos.m_pComponent = this;
+	pos.DoDragFloat3("Position", m_bInitializeInterface, &m_position, 0.1f);
 
 	static NobleDragFloat rot;
-	rot.DoDragFloat3("Rotation", m_bInitializeInterface, &m_rotation, this, 0.1f);
+	rot.m_pComponent = this;
+	rot.DoDragFloat3("Rotation", m_bInitializeInterface, &m_rotation, 0.1f);
 
 	static NobleDragFloat scale;
-	scale.DoDragFloat3("Scale", m_bInitializeInterface, &m_scale, this, 0.1f);
+	scale.m_pComponent = this;
+	scale.DoDragFloat3("Scale", m_bInitializeInterface, &m_scale, 0.1f);
 
 	m_bInitializeInterface = false;
 }

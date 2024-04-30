@@ -2,7 +2,7 @@
 
 #include "../CommandTypes.h"
 
-void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
+void Entity::DoEntityInterface(int& i, bool& node_open, int &selEntity, int layer)
 {
 	if (m_bAvailableForUse)
 		return;
@@ -11,70 +11,20 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 	if (m_sEntityParentID != "" && layer == 0)
 		return;
 
-	static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-	// Disable the default "open on single-click behavior" + set Selected flag according to our selection.
-	// To alter selection we use IsItemClicked() && !IsItemToggledOpen(), so clicking on an arrow doesn't alter selection.
-	ImGuiTreeNodeFlags node_flags = base_flags;
-
-	bool is_selected = false;
-	Entity* pSelEntity = Application::GetApplication()->GetEntity(selEntity);
-	if (pSelEntity != nullptr)
-		is_selected = pSelEntity->m_sEntityID == m_sEntityID;
-	if (is_selected)
-		node_flags |= ImGuiTreeNodeFlags_Selected;
-
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, m_sEntityName.c_str());
-	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-		selEntity = Application::GetApplication()->GetEntityIndex(m_sEntityID);
-
-	if (ImGui::BeginPopupContextItem())
+	if (m_pNameEdit == nullptr)
 	{
-		if (ImGui::Button("Create Child Entity"))
-		{
-			AddEntityCommand* command = new AddEntityCommand("New Child Entity", m_sEntityID);
-			Application::GetApplication()->PushCommand(command);
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::SetItemTooltip("Create a new entity as a child of this entity.");
-		ImGui::SameLine();
-		if (ImGui::Button("Delete"))
-		{
-			DeleteEntityCommand* command = new DeleteEntityCommand(m_sEntityID);
-			Application::GetApplication()->PushCommand(command);
+		m_pNameEdit = new NobleTextInput();
+		m_pNameEdit->m_sID = m_sEntityID;
+		m_pNameEdit->m_pEntity = this;
 
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::SetItemTooltip("Deletes the selected entity.");
-
-		if (ImGui::BeginMenu("Add Component"))
-		{
-			std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
-			for (int o = 0; o < compRegistry->size(); o++)
-			{
-				if (ImGui::MenuItem(compRegistry->at(o).first.c_str()))
-				{
-					AddComponentCommand* command = new AddComponentCommand(m_sEntityID, o);
-					Application::GetApplication()->PushCommand(command);
-				}
-			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::Button("Close"))
-			ImGui::CloseCurrentPopup();
-		ImGui::EndPopup();
+		m_pNameEdit->Initialize(&m_sEntityName);
 	}
 
 	if (node_open)
 	{
-		if (ImGui::InputText("Entity Name", &m_sEntityName, 128))
-		{
-			ChangeValueCommand<std::string>* command = new ChangeValueCommand<std::string>(&m_sEntityName, m_sEntityName);
-			Application::GetApplication()->PushCommand(command);
-		}
+		m_pNameEdit->DoTextInput("Entity Name", m_bInitializeInterface, &m_sEntityName);
 		ImGui::SetItemTooltip("Change the name of the entity.");
+
 		ImGui::Text(FormatString("Entity ID: %s", m_sEntityID.c_str()).c_str());
 		ImGui::SetItemTooltip("The unique identifier for the entity.");
 
@@ -85,13 +35,17 @@ void Entity::DoEntityInterface(int& i, int& selEntity, int layer)
 			//List all child entities.
 			for (int o = 0; o < m_vChildEntityIDs.size(); o++)
 			{
-				int childIndex = Application::GetApplication()->GetEntityIndex(m_vChildEntityIDs.at(o));
-				Application::GetApplication()->GetEntity(childIndex)->DoEntityInterface(i, selEntity, layer + 1);
+				int childIndex = Application::GetApplication()->GetEntityIndex(m_vChildEntityIDs[o]);
+
+				static EntityDropdown entityDropdown;
+				entityDropdown.DoEntityDropdown(childIndex, selEntity, layer+1);
 			}
 		}
 
 		ImGui::TreePop();
 	}
+
+	m_bInitializeInterface = false;
 }
 
 void Entity::DoEntityComponentInterface(std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry)

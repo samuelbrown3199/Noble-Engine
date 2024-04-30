@@ -55,7 +55,8 @@ void Sprite::DoComponentInterface()
 	ChangePipeline(rManager->DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
 
 	static NobleColourEdit colourEdit;
-	colourEdit.DoColourEdit4("Colour", m_bInitializeInterface, &m_colour, this);
+	colourEdit.m_pComponent = this;
+	colourEdit.DoColourEdit4("Colour", m_bInitializeInterface, &m_colour);
 
 	m_bInitializeInterface = false;
 }

@@ -38,6 +38,7 @@ public:
 
 	virtual void PushCommand(Command* command) = 0;
 	virtual void ConsoleLog(std::string message) = 0;
+	virtual void SetSelectedEntity(int index) = 0;
 };
 
 class Application
@@ -127,6 +128,7 @@ public:
 	void RegisterDefaultComponents();
 	void ResetRegistries();
 
+	Editor* GetEditor() { return m_editor; }
 	void PushCommand(Command* command);
 	void ConsoleLog(std::string message);
 

@@ -205,6 +205,11 @@ void EditorManager::PushCommand(Command* command)
 	m_pCommandSystem->PushCommand(command);
 }
 
+void EditorManager::SetSelectedEntity(int index)
+{
+	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->SetSelectedEntity(index);
+}
+
 void EditorManager::ConsoleLog(std::string message)
 {
 	LogInfo("Console TBD : " + message);

@@ -100,14 +100,14 @@ struct ChangeValueCommand : public Command
 	T m_newValue;
 	T m_oldValue;
 
-	Component* m_pComponent;
+	Component* m_pComponent = nullptr;
+	Entity* m_entity = nullptr;
 
-	ChangeValueCommand(T* target, T newValue, Component* comp = nullptr)
+	ChangeValueCommand(T* target, T newValue)
 	{
 		m_pTargetValue = target;
 		m_newValue = newValue;
 		m_oldValue = *target;
-		m_pComponent = comp;
 	}
 
 	void Execute() override
@@ -116,6 +116,9 @@ struct ChangeValueCommand : public Command
 
 		if(m_pComponent != nullptr)
 			m_pComponent->m_bInitializeInterface = true;
+
+		if (m_entity != nullptr)
+			m_entity->m_bInitializeInterface = true;
 	}
 
 	void Undo()
@@ -124,6 +127,9 @@ struct ChangeValueCommand : public Command
 
 		if (m_pComponent != nullptr)
 			m_pComponent->m_bInitializeInterface = true;
+
+		if (m_entity != nullptr)
+			m_entity->m_bInitializeInterface = true;
 	}
 
 	void Redo() override

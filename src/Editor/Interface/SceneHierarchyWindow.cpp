@@ -116,7 +116,13 @@ void SceneHierarchyWindow::DoInterface()
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);
 		for (int i = 0; i < entities.size(); i++)
-			entities.at(i).DoEntityInterface(i, m_iSelEntity);
+		{
+			if (entities.at(i).m_sEntityParentID != "")
+				continue;
+
+			static EntityDropdown entityDropdown;
+			entityDropdown.DoEntityDropdown(i, m_iSelEntity, 0);
+		}
 
 		ImGui::TreePop();
 	}
@@ -124,4 +130,11 @@ void SceneHierarchyWindow::DoInterface()
 	dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedEntity(m_iSelEntity);
 
 	ImGui::End();
+}
+
+void SceneHierarchyWindow::SetSelectedEntity(int iEntity)
+{
+	m_iSelEntity = iEntity;
+	Entity* pEntity = Application::GetApplication()->GetEntity(iEntity);
+	pEntity->InitializeEntityInterface();
 }

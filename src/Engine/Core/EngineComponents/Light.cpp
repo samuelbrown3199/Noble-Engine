@@ -7,10 +7,12 @@
 void LightInfo::DoLightInfoInterface(bool initialize)
 {
 	static NobleColourEdit diffuseEdit;
-	diffuseEdit.DoColourEdit3("Diffuse Colour", initialize, &m_diffuse, m_light);
+	diffuseEdit.m_pComponent = m_light;
+	diffuseEdit.DoColourEdit3("Diffuse Colour", initialize, &m_diffuse);
 
 	static NobleColourEdit specularEdit;
-	specularEdit.DoColourEdit3("Specular Colour", initialize, &m_specular, m_light);
+	specularEdit.m_pComponent = m_light;
+	specularEdit.DoColourEdit3("Specular Colour", initialize, &m_specular);
 };
 
 void DirectionalLight::DoLightInfoInterface(bool initialize)
@@ -24,7 +26,8 @@ void DirectionalLight::DoLightInfoInterface(bool initialize)
 	ImGui::EndDisabled();
 
 	static NobleDragFloat intensityDrag;
-	intensityDrag.DoDragFloat("Intensity", initialize, &m_fIntensity, m_light, 0.1f, 0.0f, 1.0f);
+	intensityDrag.m_pComponent = m_light;
+	intensityDrag.DoDragFloat("Intensity", initialize, &m_fIntensity, 0.1f, 0.0f, 1.0f);
 
 	LightInfo::DoLightInfoInterface(initialize);
 }
@@ -39,10 +42,12 @@ void PointLight::DoLightInfoInterface(bool initialize)
 	ImGui::EndDisabled();
 
 	static NobleDragFloat linearDrag;
-	linearDrag.DoDragFloat("Linear", initialize, &m_linear, m_light, 0.01f, 0.0014f, 0.7f);
+	linearDrag.m_pComponent = m_light;
+	linearDrag.DoDragFloat("Linear", initialize, &m_linear, 0.01f, 0.0014f, 0.7f);
 
 	static NobleDragFloat quadraticDrag;
-	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, m_light, 0.01f, 0.000007f, 1.8f);
+	quadraticDrag.m_pComponent = m_light;
+	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, 0.01f, 0.000007f, 1.8f);
 
 	LightInfo::DoLightInfoInterface(initialize);
 }
@@ -57,16 +62,20 @@ void SpotLight::DoLightInfoInterface(bool initialize)
 	ImGui::EndDisabled();
 
 	static NobleDragFloat linearDrag;
-	linearDrag.DoDragFloat("Linear", initialize, &m_linear, m_light, 0.01f, 0.0014f, 0.7f);
+	linearDrag.m_pComponent = m_light;
+	linearDrag.DoDragFloat("Linear", initialize, &m_linear, 0.01f, 0.0014f, 0.7f);
 
 	static NobleDragFloat quadraticDrag;
-	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, m_light, 0.01f, 0.000007f, 1.8f);
+	quadraticDrag.m_pComponent = m_light;
+	quadraticDrag.DoDragFloat("Quadratic", initialize, &m_quadratic, 0.01f, 0.000007f, 1.8f);
 
 	static NobleDragFloat cutOffDrag;
-	cutOffDrag.DoDragFloat("Cutoff", initialize, &m_fCutOff, m_light, 0.01f, 0.1f, 1.0f);
+	cutOffDrag.m_pComponent = m_light;
+	cutOffDrag.DoDragFloat("Cutoff", initialize, &m_fCutOff, 0.01f, 0.1f, 1.0f);
 
 	static NobleDragFloat outerCutOffDrag;
-	outerCutOffDrag.DoDragFloat("Outer Cutoff", initialize, &m_fOuterCutOff, m_light, 0.01f, 0.1f, 1.0f);
+	outerCutOffDrag.m_pComponent = m_light;
+	outerCutOffDrag.DoDragFloat("Outer Cutoff", initialize, &m_fOuterCutOff, 0.01f, 0.1f, 1.0f);
 
 	LightInfo::DoLightInfoInterface(initialize);
 }

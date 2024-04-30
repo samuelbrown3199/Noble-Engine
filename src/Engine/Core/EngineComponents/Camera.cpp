@@ -74,12 +74,14 @@ void Camera::DoComponentInterface()
 	if (m_viewMode == projection)
 	{
 		static NobleDragFloat fovDrag;
-		fovDrag.DoDragFloat("FoV", m_bInitializeInterface, &m_fov, this, 0.5f, 20.0f, 150.0f);
+		fovDrag.m_pComponent = this;
+		fovDrag.DoDragFloat("FoV", m_bInitializeInterface, &m_fov, 0.5f, 20.0f, 150.0f);
 	}
 	else
 	{
 		static NobleDragFloat scaleDrag;
-		scaleDrag.DoDragFloat("Scale", m_bInitializeInterface, &m_scale, this, 1.0f, 3.0f, 1000.0f);
+		scaleDrag.m_pComponent = this;
+		scaleDrag.DoDragFloat("Scale", m_bInitializeInterface, &m_scale, 1.0f, 3.0f, 1000.0f);
 	}
 
 	const char* drawModes[] = { "Nearest", "Linear" };

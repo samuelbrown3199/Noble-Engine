@@ -132,7 +132,7 @@ struct Renderable : public Component
 			if (m_pipeline->m_vDescriptors.at(i).second->m_type == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) //HARD CODED FOR NOW, MATERIAL SYSTEM WILL CHANGE THIS.
 			{
 				DescriptorWriter writer;
-				if (m_texture != nullptr)
+				if (m_texture != nullptr && m_texture->IsLoaded())
 				{
 					writer.WriteImage(0, m_texture->m_texture.m_imageView, m_texture->m_textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 					writer.UpdateSet(renderer->GetLogicalDevice(), targetSet);

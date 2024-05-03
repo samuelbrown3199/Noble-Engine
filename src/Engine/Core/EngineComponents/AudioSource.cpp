@@ -8,7 +8,7 @@ void AudioSource::OnUpdate()
 {
 	if (!m_bPaused)
 	{
-		if (m_clip == nullptr || !m_clip->m_bIsLoaded)
+		if (m_clip == nullptr || !m_clip->IsLoaded())
 			return;
 
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();

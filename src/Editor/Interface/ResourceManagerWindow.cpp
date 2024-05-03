@@ -10,6 +10,7 @@
 
 #include "../EditorManagement/EditorManager.h"
 #include "DataEditorWindow.h"
+#include "SceneHierarchyWindow.h"
 
 void ResourceManagerWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
@@ -104,39 +105,13 @@ void ResourceManagerWindow::DoInterface()
                 ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
                 selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bRequiresFile);
 
+                dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
                 dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedResource(selResource);
             }
         }
     }
 
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    ImGui::SeparatorText("Resource Information");
-    ImGui::BeginChild("Resource Info", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), false);
-
-    if (selResource != nullptr) 
-    {
-        ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-
-        selResource->DoResourceInterface();
-
-        if (ImGui::Button("Save Resource"))
-        {
-            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
-            selResource->ReloadResource();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Remove Resource"))
-        {
-            resourceManager->RemoveResourceFromDatabase(selResource->m_sLocalPath);
-            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
-            selResource = nullptr;
-        }
-    }
-    ImGui::EndChild();
-
     ImGui::End();
-
-
 
     if (m_bOpenNoFileResourceWindow)
     {

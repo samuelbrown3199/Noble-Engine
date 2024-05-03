@@ -56,13 +56,6 @@ void AudioClip::SetResourceToDefaults(std::shared_ptr<Resource> res)
 void AudioClip::DoResourceInterface()
 {
 	ImGui::Text(m_sLocalPath.c_str());
-	ImGui::Text(m_resourceType.c_str());
-	
-	if (m_bIsLoaded)
-	{
-		ImGui::Text("Audio Clip is currently in use and can't be modified.");
-		return;
-	}
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 

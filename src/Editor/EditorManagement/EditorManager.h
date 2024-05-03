@@ -68,4 +68,5 @@ public:
 	void SetSelectedEntity(int index) override;
 
 	void ConsoleLog(std::string message) override;
+	void ChangeEditorMode();
 };

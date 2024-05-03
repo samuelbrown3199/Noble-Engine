@@ -109,13 +109,6 @@ Texture::~Texture()
 void Texture::DoResourceInterface()
 {
     ImGui::Text(m_sLocalPath.c_str());
-    ImGui::Text(m_resourceType.c_str());
-
-    if (m_bIsLoaded)
-    {
-        ImGui::Text("Texture is currently in use and can't be modified.");
-        return;
-    }
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
     const char* items[] = { "Nearest", "Linear" };
@@ -123,6 +116,8 @@ void Texture::DoResourceInterface()
     ImGui::Combo("Filter Mode", &item, items, IM_ARRAYSIZE(items));
 
     m_textureFilter = (VkFilter)item;
+
+    m_bInitializeInterface = false;
 }
 
 nlohmann::json Texture::AddToDatabase()

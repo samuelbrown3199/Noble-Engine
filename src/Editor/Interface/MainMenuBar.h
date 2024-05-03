@@ -46,6 +46,8 @@ private:
 	void DoHelpMenu();
 	void DoDebugMenu();
 
+	void DoSecondaryMenuBar();
+
 public:
 
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;

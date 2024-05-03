@@ -214,3 +214,8 @@ void EditorManager::ConsoleLog(std::string message)
 {
 	LogInfo("Console TBD : " + message);
 }
+
+void EditorManager::ChangeEditorMode()
+{
+	Application::GetApplication()->SetPlayMode(!Application::GetApplication()->GetPlayMode());
+}

@@ -195,6 +195,17 @@ void MainMenuBar::DoMainMenuBar()
 			ImGui::EndMenu();
 		}
 
+		std::string playModeButton = "Enter Play Mode";
+		if (Application::GetApplication()->GetPlayMode())
+			playModeButton = "Enter Edit Mode";
+
+		playModeButton += " temp button";
+		if (ImGui::Button(playModeButton.c_str()))
+		{
+			editorManager->ChangeEditorMode();
+		}
+
+
 		ImGui::EndMainMenuBar();
 	}
 }
@@ -390,6 +401,7 @@ void MainMenuBar::DoToolMenu()
 	{
 		//editorManager->ToggleUI("EditorCamSettings"); tbd
 	}
+
 	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 	ImGui::MenuItem("Windows", NULL, false, false);

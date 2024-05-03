@@ -386,6 +386,10 @@ void MainMenuBar::DoToolMenu()
 	{
 		editorManager->GetCommandSystem()->Redo();
 	}
+	if (ImGui::MenuItem("Editor Camera Settings TBD", ""))
+	{
+		//editorManager->ToggleUI("EditorCamSettings"); tbd
+	}
 	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 	ImGui::MenuItem("Windows", NULL, false, false);

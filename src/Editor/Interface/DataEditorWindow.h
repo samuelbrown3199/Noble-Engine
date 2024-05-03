@@ -17,5 +17,6 @@ public:
 	void DoInterface() override;
 
 	void SetSelectedEntity(int _index);
+	void ResetSelectedEntity() { m_iSelEntity = -1; }
 	void SetSelectedResource(std::shared_ptr<Resource> _resource);
 };

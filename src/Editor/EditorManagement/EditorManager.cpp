@@ -115,7 +115,7 @@ void EditorManager::UpdateEditorWindowTitle()
 void EditorManager::LoadScene(int sceneIndex)
 {
 	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
-	dynamic_cast<DataEditorWindow*>(GetEditorUI("DataEditor"))->SetSelectedEntity(-1);
+	dynamic_cast<DataEditorWindow*>(GetEditorUI("DataEditor"))->ResetSelectedEntity();
 	Application::GetApplication()->GetSceneManager()->LoadScene(sceneIndex);
 	UpdateEditorWindowTitle();
 }

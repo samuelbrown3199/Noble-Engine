@@ -33,9 +33,11 @@ void SceneViewWindow::DoInterface()
 	Renderer* renderer = Application::GetApplication()->GetRenderer();
 	renderer->SetDrawWindowSize(contentSize);
 
+	float fRenderScale = renderer->GetRenderScale();
+
 	if (m_bWindowFocused && m_bWindowHovered && ImGui::IsMouseClicked(0))
 	{
-		Ray ray = Raycaster::GetRayToMousePosition(glm::vec2(contentSize.x, contentSize.y), glm::vec2(m_relativeMousePos.x - 8, m_relativeMousePos.y - 27));
+		Ray ray = Raycaster::GetRayToMousePosition(glm::vec2(contentSize.x/ fRenderScale, contentSize.y / fRenderScale), glm::vec2(m_relativeMousePos.x - 8, m_relativeMousePos.y - 27));
 		InputManager* inputManager = Application::GetApplication()->GetInputManager();
 
 		if (ray.m_hitObject)
@@ -43,7 +45,7 @@ void SceneViewWindow::DoInterface()
 			dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->SetSelectedEntity(Application::GetApplication()->GetEntityIndex(ray.m_hitEntity->m_sEntityID));
 		}
 	}
-	ImGui::Image(m_drawWindowSet, contentSize);
+	ImGui::Image(m_drawWindowSet, ImVec2(contentSize.x / fRenderScale, contentSize.y / fRenderScale));
 
 	ImGui::End();
 }

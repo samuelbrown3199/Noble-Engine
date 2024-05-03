@@ -42,7 +42,7 @@ void MeshRenderer::DoComponentInterface()
 	modelWidget.m_sResourceType = "Model";
 	//modelWidget.DoResourceSelection("Model", m_bInitializeInterface, m_model); //doesnt work yet, needs more work
 
-	ChangeModel(std::dynamic_pointer_cast<Model>(rManager->DoResourceSelectInterface("Model", m_model != nullptr ? m_model->m_sLocalPath : "none", "Model")));)
+	ChangeModel(std::dynamic_pointer_cast<Model>(rManager->DoResourceSelectInterface("Model", m_model != nullptr ? m_model->m_sLocalPath : "none", "Model")));
 	ChangeTexture(std::dynamic_pointer_cast<Texture>(rManager->DoResourceSelectInterface("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none", "Texture")));
 	ChangePipeline(std::dynamic_pointer_cast<Pipeline>(rManager->DoResourceSelectInterface("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none", "Pipeline")));
 

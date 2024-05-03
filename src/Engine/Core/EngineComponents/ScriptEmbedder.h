@@ -46,7 +46,7 @@ struct ScriptEmbedder : public Component
 	{
 		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
-		m_script = rManager->DoResourceSelectInterface<Script>("Script", m_script != nullptr ? m_script->m_sLocalPath : "none");
+		m_script = std::dynamic_pointer_cast<Script>(rManager->DoResourceSelectInterface("Script", m_script != nullptr ? m_script->m_sLocalPath : "none", "Script"));
 		ImGui::InputText("Entry Function", &m_sFunctionName);
 	}
 

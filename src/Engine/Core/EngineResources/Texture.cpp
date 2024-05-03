@@ -54,12 +54,6 @@ void Texture::AddResource(std::string path)
     resourceManager->AddNewResource<Texture>(path);
 }
 
-std::vector<std::shared_ptr<Resource>> Texture::GetResourcesOfType()
-{
-    ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-    return resourceManager->GetAllResourcesOfType<Texture>();
-}
-
 void Texture::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
     std::shared_ptr<Texture> dyRes = std::dynamic_pointer_cast<Texture>(res);
@@ -77,7 +71,8 @@ void Texture::CreateTextureSampler(VkFilter filter)
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.anisotropyEnable = VK_TRUE; //might be worth making conditional later, refer back to conclusion in https://vulkan-tutorial.com/Texture_mapping/Image_view_and_sampler
+    //need to add support for anisotropy, something needs to be initialized in the renderer for this
+    samplerInfo.anisotropyEnable = VK_FALSE; //might be worth making conditional later, refer back to conclusion in https://vulkan-tutorial.com/Texture_mapping/Image_view_and_sampler
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(renderer->GetPhysicalDevice(), &properties);

@@ -28,7 +28,6 @@ struct Shader : public Resource
 	virtual void DoResourceInterface() override;
 
 	virtual void AddResource(std::string path) override;
-	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 	nlohmann::json AddToDatabase() override;
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
 	void SetDefaults(const nlohmann::json& data) override;
@@ -76,7 +75,6 @@ public:
 	virtual void DoResourceInterface() override;
 
 	virtual void AddResource(std::string path) override;
-	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 	nlohmann::json AddToDatabase() override;
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
 

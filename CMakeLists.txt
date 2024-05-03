@@ -189,6 +189,7 @@ set (
 	#Resource Handling
 	
 	src/Engine/Core/EngineResources/Resource.h
+	src/Engine/Core/EngineResources/Resource.cpp
 
 	src/Engine/Core/EngineResources/Texture.h
 	src/Engine/Core/EngineResources/Texture.cpp

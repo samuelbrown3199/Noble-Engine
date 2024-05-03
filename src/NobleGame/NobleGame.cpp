@@ -18,7 +18,6 @@ void NobleGameDLL::InitializeDLL(std::shared_ptr<Application> application)
 	ImGui::SetCurrentContext(m_app->GetRenderer()->GetImguiContext());
 
 	RegisterComponents();
-	RegisterBehaviours();
 	RegisterResources();
 	RegisterDecriptors();
 	RegisterPushConstants();
@@ -33,13 +32,6 @@ void NobleGameDLL::RegisterComponents()
 	m_app->GetRegistry()->RegisterComponent<TestComponent>("TestComponent", false, 1024, true, true);
 
 	LogTrace("Components registered from DLL");
-}
-
-void NobleGameDLL::RegisterBehaviours()
-{
-	LogTrace("Registering behaviours from DLL");
-
-	LogTrace("Behaviours registered from DLL");
 }
 
 void NobleGameDLL::RegisterResources()

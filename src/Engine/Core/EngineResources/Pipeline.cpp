@@ -48,12 +48,6 @@ void Shader::AddResource(std::string path)
     resourceManager->AddNewResource<Shader>(path);
 }
 
-std::vector<std::shared_ptr<Resource>> Shader::GetResourcesOfType()
-{
-    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-    return rManager->GetAllResourcesOfType<Shader>();
-}
-
 nlohmann::json Shader::AddToDatabase()
 {
     nlohmann::json data;
@@ -85,8 +79,9 @@ std::string Pipeline::ChangeShader(Shader::ShaderType type, std::string currentP
 {
     //Need to consider type here.
     ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-    std::shared_ptr<Shader> shader = rManager->DoResourceSelectInterface<Shader>(elementName, currentPath != "" ? currentPath : "none");
-    if (shader == nullptr || shader->m_shaderType != type)
+    std::shared_ptr<Resource> shader = rManager->DoResourceSelectInterface(elementName, currentPath != "" ? currentPath : "none", "Shader");
+    std::shared_ptr<Shader> shaderRes = std::dynamic_pointer_cast<Shader>(shader);
+    if (shader == nullptr || shaderRes->m_shaderType != type)
         return "";
 
     return shader->m_sLocalPath;
@@ -253,12 +248,6 @@ void Pipeline::AddResource(std::string path)
 {
     ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
     resourceManager->AddNewResource<Pipeline>(path);
-}
-
-std::vector<std::shared_ptr<Resource>> Pipeline::GetResourcesOfType()
-{
-    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-    return rManager->GetAllResourcesOfType<Pipeline>();
 }
 
 std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const nlohmann::json& data)

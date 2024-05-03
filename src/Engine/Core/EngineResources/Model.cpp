@@ -123,12 +123,6 @@ void Model::AddResource(std::string path)
     resourceManager->AddNewResource<Model>(path);
 }
 
-std::vector<std::shared_ptr<Resource>> Model::GetResourcesOfType()
-{
-    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-    return rManager->GetAllResourcesOfType<Model>();
-}
-
 std::shared_ptr<Resource> Model::LoadFromJson(const std::string& path, const nlohmann::json& data)
 {
     std::shared_ptr<Model> res = std::make_shared<Model>();

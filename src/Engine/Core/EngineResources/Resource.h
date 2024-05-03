@@ -1,6 +1,4 @@
 #pragma once
-#ifndef RESOURCE_H
-#define RESOURCE_H
 
 #include <string>
 #include <exception>
@@ -42,9 +40,13 @@ public:
 	virtual void OnUnload() = 0;
 
 	virtual void AddResource(std::string path) = 0;
-	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() = 0;
-
+	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType();
 	virtual void SetResourceToDefaults(std::shared_ptr<Resource> res) {};
+
+	bool IsLoaded()
+	{
+		return m_bIsLoaded;
+	}
 
 	void ReloadResource()
 	{
@@ -88,4 +90,3 @@ public:
 		return PathExists(m_sResourcePath);
 	}
 };
-#endif

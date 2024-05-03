@@ -47,12 +47,6 @@ void AudioClip::AddResource(std::string path)
 	resourceManager->AddNewResource<AudioClip>(path);
 }
 
-std::vector<std::shared_ptr<Resource>> AudioClip::GetResourcesOfType()
-{
-	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-	return resourceManager->GetAllResourcesOfType<AudioClip>();
-}
-
 void AudioClip::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
 	std::shared_ptr<AudioClip> dyRes = std::dynamic_pointer_cast<AudioClip>(res);

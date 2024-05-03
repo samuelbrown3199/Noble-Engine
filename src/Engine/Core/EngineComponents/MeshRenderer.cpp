@@ -37,9 +37,14 @@ void MeshRenderer::DoComponentInterface()
 	ImGui::Checkbox("On Screen", &m_bOnScreen);
 	ImGui::EndDisabled();
 
-	ChangeModel(rManager->DoResourceSelectInterface<Model>("Model", m_model != nullptr ? m_model->m_sLocalPath : "none"));
-	ChangeTexture(rManager->DoResourceSelectInterface<Texture>("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none"));
-	ChangePipeline(rManager->DoResourceSelectInterface<Pipeline>("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none"));
+	static ResourceSelectionWidget modelWidget;
+	modelWidget.m_pComponent = this;
+	modelWidget.m_sResourceType = "Model";
+	//modelWidget.DoResourceSelection("Model", m_bInitializeInterface, m_model); //doesnt work yet, needs more work
+
+	ChangeModel(std::dynamic_pointer_cast<Model>(rManager->DoResourceSelectInterface("Model", m_model != nullptr ? m_model->m_sLocalPath : "none", "Model")));)
+	ChangeTexture(std::dynamic_pointer_cast<Texture>(rManager->DoResourceSelectInterface("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none", "Texture")));
+	ChangePipeline(std::dynamic_pointer_cast<Pipeline>(rManager->DoResourceSelectInterface("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none", "Pipeline")));
 
 	static NobleColourEdit colourEdit;
 	colourEdit.m_pComponent = this;

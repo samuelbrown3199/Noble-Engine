@@ -1,6 +1,4 @@
 #pragma once
-#ifndef RESOURCEMANAGER_H_
-#define RESOURCEMANAGER_H_
 
 #include <vector>
 #include <memory>
@@ -162,15 +160,13 @@ struct ResourceManager
 		return nullptr;
 	}
 
-	template<typename T>
-	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType()
+	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType(std::string type)
 	{
 		std::vector<std::shared_ptr<Resource>> returnVec;
 
 		for (int i = 0; i < m_vResourceDatabase.size(); i++)
 		{
-			std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(m_vResourceDatabase.at(i));
-			if (resource != nullptr)
+			if(m_vResourceDatabase.at(i)->m_resourceType == type)
 				returnVec.push_back(m_vResourceDatabase.at(i));
 		}
 
@@ -181,13 +177,16 @@ struct ResourceManager
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
 	*/
 	void UnloadUnusedResources();
+
+	/**
+	* Unloads all resources from memory.
+	*/
 	void UnloadAllResources();
 
 
-	template<typename T>
-	std::shared_ptr<T> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath)
+	std::shared_ptr<Resource> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath, std::string type)
 	{
-		std::vector<std::shared_ptr<Resource>> resources = GetAllResourcesOfType<T>();
+		std::vector<std::shared_ptr<Resource>> resources = GetAllResourcesOfType(type);
 
 		if (resources.size() == 0)
 		{
@@ -216,9 +215,6 @@ struct ResourceManager
 						continue;
 					}
 				}
-
-				if (displayResources.at(i)->m_sLocalPath == currentResourcePath)
-					res = i;
 			}
 
 			if (displayResources.size() == 0)
@@ -240,17 +236,10 @@ struct ResourceManager
 
 		if (res != -1)
 		{
-			if (res <= displayResources.size() - 1 && displayResources.at(res)->m_sLocalPath == currentResourcePath)
-				return std::dynamic_pointer_cast<T>(displayResources.at(res));
-
-			if (res <= displayResources.size() - 1)
-				return LoadResource<T>(displayResources.at(res)->m_sLocalPath);
-			else
-				return nullptr;
+			if (displayResources.at(res)->m_sLocalPath != currentResourcePath)
+				return displayResources.at(res);
 		}
-		else
-			return nullptr;
+
+		return nullptr;
 	}
 };
-
-#endif

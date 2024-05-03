@@ -23,7 +23,6 @@ extern "C"
 		std::shared_ptr<Application> m_app;
 
 		void RegisterComponents();
-		void RegisterBehaviours();
 		void RegisterResources();
 		void RegisterDecriptors();
 		void RegisterPushConstants();
@@ -97,7 +96,7 @@ struct TestResource : Resource
 	std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override
 	{
 		ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-		return resourceManager->GetAllResourcesOfType<Texture>();
+		return resourceManager->GetAllResourcesOfType(m_resourceType);
 	}
 
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override

@@ -24,7 +24,6 @@ struct Model : public Resource
 	void OnUnload() override;
 
 	virtual void AddResource(std::string path) override;
-	virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
 };

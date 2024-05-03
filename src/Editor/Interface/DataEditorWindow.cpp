@@ -1,10 +1,14 @@
 #include "DataEditorWindow.h"
 
 #include <Engine/Core/Application.h>
+#include <Engine/Core/ResourceManager.h>
+#include <Engine/Core/ProjectFile.h>
 #include <Engine/Core/ECS/Entity.h>
 
 void DataEditorWindow::DoInterface()
 {
+	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
+
 	ImGui::Begin("Data Editor", &m_uiOpen, m_windowFlags);
 
 	UpdateWindowState();
@@ -21,7 +25,23 @@ void DataEditorWindow::DoInterface()
 
 	if (m_pSelResource != nullptr)
 	{
+		std::string type = m_pSelResource->m_resourceType + " Information";
+		ImGui::SeparatorText(type.c_str());
+
 		m_pSelResource->DoResourceInterface();
+
+		if (ImGui::Button("Save Resource"))
+		{
+			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
+			m_pSelResource->ReloadResource();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Remove Resource"))
+		{
+			resourceManager->RemoveResourceFromDatabase(m_pSelResource->m_sLocalPath);
+			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
+			m_pSelResource = nullptr;
+		}
 	}
 
 	ImGui::End();

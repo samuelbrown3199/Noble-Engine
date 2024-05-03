@@ -137,3 +137,47 @@ struct ChangeValueCommand : public Command
 		Execute();
 	}
 };
+
+struct ChangeResourceCommand : public Command
+{
+	std::shared_ptr<Resource>* m_pTargetValue;
+	std::shared_ptr<Resource> m_newValue;
+	std::shared_ptr<Resource> m_oldValue;
+
+	Component* m_pComponent = nullptr;
+	Entity* m_entity = nullptr;
+	
+	ChangeResourceCommand(std::shared_ptr<Resource>* target, std::shared_ptr<Resource> newValue)
+	{
+		m_pTargetValue = target;
+		m_newValue = newValue;
+		m_oldValue = *target;
+	}
+
+	void Execute() override
+	{
+		*m_pTargetValue = m_newValue;
+
+		if (m_pComponent != nullptr)
+			m_pComponent->m_bInitializeInterface = true;
+
+		if (m_entity != nullptr)
+			m_entity->m_bInitializeInterface = true;
+	}
+
+	void Undo()
+	{
+		*m_pTargetValue = m_oldValue;
+
+		if (m_pComponent != nullptr)
+			m_pComponent->m_bInitializeInterface = true;
+
+		if (m_entity != nullptr)
+			m_entity->m_bInitializeInterface = true;
+	}
+
+	void Redo() override
+	{
+		Execute();
+	}
+};

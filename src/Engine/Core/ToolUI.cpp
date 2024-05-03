@@ -5,6 +5,8 @@
 #include "ECS/Component.h"
 #include "CommandTypes.h"
 
+#include "ResourceManager.h"
+
 void NobleColourEdit::DoColourEdit3(const char* label, bool initialize, glm::vec3* targetVal)
 {
 	if (initialize)
@@ -308,4 +310,27 @@ void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
 	}
 
 	entities.at(index).DoEntityInterface(index, node_open, selEntity, layer);
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void ResourceSelectionWidget::DoResourceSelection(const char* label, bool initialize, std::shared_ptr<Resource> targetVal)
+{
+	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+	if (initialize)
+	{
+		Initialize(targetVal);
+	}
+
+	std::shared_ptr<Resource> newRes = rManager->DoResourceSelectInterface(label, m_pResource != nullptr ? m_pResource->m_sLocalPath : "none", m_sResourceType);
+
+	if (newRes != nullptr && newRes != m_pResource)
+	{
+		ChangeResourceCommand* command = new ChangeResourceCommand(&targetVal, newRes);
+		command->m_pComponent = m_pComponent;
+		command->m_entity = m_pEntity;
+
+		Application::GetApplication()->PushCommand(command);
+	}
 }

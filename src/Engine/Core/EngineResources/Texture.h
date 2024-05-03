@@ -26,7 +26,6 @@ struct Texture : public Resource
     void OnUnload() override;
 
     virtual void AddResource(std::string path) override;
-    virtual std::vector<std::shared_ptr<Resource>> GetResourcesOfType() override;
 
     virtual void SetResourceToDefaults(std::shared_ptr<Resource> res) override;
 

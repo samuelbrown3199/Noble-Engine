@@ -80,7 +80,7 @@ void AudioSource::DoComponentInterface()
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
 
-	ChangeAudioClip(rManager->DoResourceSelectInterface<AudioClip>("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none"));
+	ChangeAudioClip(std::dynamic_pointer_cast<AudioClip>(rManager->DoResourceSelectInterface("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none", "AudioClip")));
 
 	static NobleDragFloat velocityDrag;
 	velocityDrag.m_pComponent = this;

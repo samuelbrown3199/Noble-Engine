@@ -14,6 +14,7 @@ class ToolUI;
 
 struct Entity;
 struct Component;
+struct Resource;
 
 class ToolModalWindow
 {
@@ -195,35 +196,14 @@ struct EntityDropdown
 	void DoEntityDropdown(int index, int& selEntity, int layer = 0);
 };
 
-
-/*template<typename T>
 struct ResourceSelectionWidget : public BaseEdit
 {
-	std::shared_ptr<T> m_pResource = nullptr;
+	std::shared_ptr<Resource> m_pResource = nullptr;
+	std::string m_sResourceType;
 
-	void Initialize(std::shared_ptr<T>* targetVal)
+	void Initialize(std::shared_ptr<Resource> targetVal)
 	{
-		m_pResource = *targetVal;
+		m_pResource = targetVal;
 	}
-
-	void DoResourceSelection(const char* label, bool initialize, std::shared_ptr<T>* targetVal)
-	{
-		if (initialize)
-		{
-			Initialize(targetVal);
-		}
-
-		std::shared_ptr<T> newRes = rManager->DoResourceSelectInterface<T>(label, m_pResource != nullptr ? m_pResource->m_sLocalPath : "none")
-
-			if (newRes != nullptr && newRes != m_pResource)
-			{
-				ChangeValueCommand<std::shared_ptr<T>>* command = new ChangeValueCommand<std::shared_ptr<T>>(targetVal, newRes);
-				command->m_pComponent = m_pComponent;
-				command->m_entity = m_pEntity;
-
-				Application::GetApplication()->PushCommand(command);
-
-				m_pResource = newRes;
-			}
-	}
-};*/
+	void DoResourceSelection(const char* label, bool initialize, std::shared_ptr<Resource> targetVal);
+};

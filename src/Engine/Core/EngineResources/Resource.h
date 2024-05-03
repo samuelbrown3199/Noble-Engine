@@ -59,12 +59,20 @@ public:
 	*Saves the resource.
 	*/
 	virtual void OnSave() {};
+	
 
+	bool m_bInitializeInterface = true;
+	void InitializeInterface()
+	{
+		m_bInitializeInterface = true;
+	}
 	virtual void DoResourceInterface()
 	{
 		ImGui::Text(m_sLocalPath.c_str());
 		ImGui::Text(m_resourceType.c_str());
 		ImGui::Text("No editable values. Resource window not defined for this type.");
+
+		m_bInitializeInterface = false;
 	}
 
 	virtual nlohmann::json AddToDatabase()

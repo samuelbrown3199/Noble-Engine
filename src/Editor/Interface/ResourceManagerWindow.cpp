@@ -8,6 +8,9 @@
 #include <Engine/Core/EngineResources/Script.h>
 #include <Engine/Core/ProjectFile.h>
 
+#include "../EditorManagement/EditorManager.h"
+#include "DataEditorWindow.h"
+
 void ResourceManagerWindow::InitializeInterface(ImGuiWindowFlags defaultFlags)
 {
     EditorToolUI::InitializeInterface(defaultFlags);
@@ -20,6 +23,8 @@ void ResourceManagerWindow::DoInterface()
     static int selectedDefaultRes = -1;
     static int selectedShaderProg = -1;
     static Resource* defaultRes = nullptr;
+
+    EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -98,6 +103,8 @@ void ResourceManagerWindow::DoInterface()
             {
                 ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
                 selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bRequiresFile);
+
+                dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedResource(selResource);
             }
         }
     }

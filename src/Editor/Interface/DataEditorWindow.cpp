@@ -19,6 +19,11 @@ void DataEditorWindow::DoInterface()
 		entity.DoEntityComponentInterface(compRegistry);
 	}
 
+	if (m_pSelResource != nullptr)
+	{
+		m_pSelResource->DoResourceInterface();
+	}
+
 	ImGui::End();
 }
 
@@ -34,6 +39,7 @@ void DataEditorWindow::SetSelectedEntity(int _index)
 		return;
 
 	m_iSelEntity = _index;
+	m_pSelResource = nullptr;
 
 	//Initialize the entity's components interfaces
 	Entity* ent = Application::GetApplication()->GetEntity(m_iSelEntity);
@@ -44,4 +50,19 @@ void DataEditorWindow::SetSelectedEntity(int _index)
 	{
 		registry->GetComponentList(itr->first)->GetComponent(itr->second)->InitializeComponentInterface();
 	}
+}
+
+void DataEditorWindow::SetSelectedResource(std::shared_ptr<Resource> _resource)
+{
+	if (_resource == nullptr)
+		return;
+
+	if (m_pSelResource == _resource)
+		return;
+
+	m_pSelResource = _resource;
+	m_iSelEntity = -1;
+
+	//Initialize the resource's interface
+	m_pSelResource->InitializeInterface();
 }

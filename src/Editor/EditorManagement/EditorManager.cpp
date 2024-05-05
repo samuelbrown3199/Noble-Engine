@@ -26,7 +26,7 @@ void EditorManager::InitializeEditor()
 
 	BindEditorUI<MainMenuBar>("MainMenuBar", ImGuiWindowFlags_NoMove);
 	BindEditorUI<MainDockWindow>("MainDockWindow", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus);
-	BindEditorUI<ResourceManagerWindow>("ResourceManager", ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	BindEditorUI<ResourceManagerWindow>("ResourceManager", ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_MenuBar);
 	BindEditorUI<Profiler>("Profiler", ImGuiWindowFlags_None);
 	BindEditorUI<EditorSettingsWindow>("EditorSettings", ImGuiWindowFlags_AlwaysAutoResize);
 	BindEditorUI<ProjectDetailsWindow>("ProjectDetails", ImGuiWindowFlags_AlwaysAutoResize);

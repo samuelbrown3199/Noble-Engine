@@ -30,12 +30,12 @@ void ResourceManager::RegisterResourceTypes()
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
-	registry->RegisterResource<AudioClip>("AudioClip", true, ".wav|.ogg|.mp3");
-	registry->RegisterResource<Texture>("Texture", true, ".jpg|.png|.tga|.bmp|.hdr");
+	registry->RegisterResource<AudioClip>("AudioClip", true, ".wav,.ogg,.mp3");
+	registry->RegisterResource<Texture>("Texture", true, ".jpg,.png,.tga,.bmp,.hdr");
 	registry->RegisterResource<Model>("Model", true, ".obj");
 	registry->RegisterResource<Pipeline>("Pipeline", false, "");
 	registry->RegisterResource<Script>("Script", true, ".lua");
-	registry->RegisterResource<Shader>("Shader", true, ".vert|.frag|.comp|.spv"); //spv here doesnt make sense, at some point the engine will compile the shader to spv, as that isnt implemented yet, this is fine.
+	registry->RegisterResource<Shader>("Shader", true, ".vert,.frag,.comp,.spv"); //spv here doesnt make sense, at some point the engine will compile the shader to spv, as that isnt implemented yet, this is fine.
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)

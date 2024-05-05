@@ -22,11 +22,13 @@ void ResourceManagerWindow::DoInterface()
 {
     static int selectedRes = -1;
     static int selectedDefaultRes = -1;
-    static int selectedShaderProg = -1;
     static Resource* defaultRes = nullptr;
 
     EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
     ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+
+    NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+    std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
     if (!ImGui::Begin("Resource Manager", &m_uiOpen, m_windowFlags))
     {
@@ -36,8 +38,64 @@ void ResourceManagerWindow::DoInterface()
 
     UpdateWindowState();
 
-    NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-    std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
+    if (ImGui::BeginMenuBar())
+    {
+		if (ImGui::BeginMenu("File"))
+		{
+            if (ImGui::BeginMenu("Import Resource"))
+            {
+                for (int i = 0; i < resourceRegistry->size(); i++)
+                {
+                    if (!resourceRegistry->at(i).second->m_bRequiresFile)
+                        continue;
+
+                    if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
+                    {
+                        IGFD::FileDialogConfig config;
+                        ImGuiFileDialog::Instance()->OpenDialog("ChooseResource", "Choose Resource", resourceRegistry->at(i).second->m_sAcceptedFileTypes.c_str(), config);
+                        m_iNewResourceType = i;
+                    }
+                }
+
+                ImGui::EndMenu();
+			}
+            if (ImGui::BeginMenu("Create New Resource"))
+            {
+                for (int i = 0; i < resourceRegistry->size(); i++)
+                {
+                    if (resourceRegistry->at(i).second->m_bRequiresFile)
+                        continue;
+
+                    if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
+                    {
+                        m_bOpenNoFileResourceWindow = true;
+                        m_iNewResourceType = i;
+                    }
+                }
+
+                ImGui::EndMenu();
+			}
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
+    if (ImGuiFileDialog::Instance()->Display("ChooseResource"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string fileName = ImGuiFileDialog::Instance()->GetCurrentFileName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+
+            std::string copyDir = GetGameDataFolder() + "\\" + fileName;
+            CopyFileToDestination(filePath + "\\" + fileName, copyDir);
+
+            resourceRegistry->at(m_iNewResourceType).second->m_resource->AddResource(copyDir);
+            Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
@@ -73,31 +131,6 @@ void ResourceManagerWindow::DoInterface()
     }
 
     ImGui::SeparatorText("Resources");
-
-    if (ImGui::BeginMenu("Add Resource"))
-    {
-        for (int i = 0; i < resourceRegistry->size(); i++)
-        {
-            if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
-            {
-                if (resourceRegistry->at(i).second->m_bRequiresFile)
-                {
-                    std::string path = OpenFileSelectDialog(".mp3");
-                    if (path != "")
-                    {
-                        resourceRegistry->at(i).second->m_resource->AddResource(path);
-                    }
-                }
-                else
-                {
-                    m_bOpenNoFileResourceWindow = true;
-                    m_iNewResourceType = i;
-                }
-            }
-        }
-        ImGui::EndMenu();
-    }
-    ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {

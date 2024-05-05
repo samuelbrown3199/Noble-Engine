@@ -45,6 +45,12 @@ void ResourceManager::SetWorkingDirectory(std::string directory)
 
 void ResourceManager::AddNewResource(std::string type, std::string path)
 {
+	if (type == "NotSupported")
+	{
+		LogError("Tried to add a resource of type NotSupported.");
+		return;
+	}
+
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
@@ -162,27 +168,31 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 
 void ResourceManager::ScanForResources()
 {
+	//some serious optimisation needed here, running this every frame is not good, but its needed for the editor to work nicely
+
+	std::unique_lock<std::mutex> lock(m_resourceDatabaseMutex);
+
 	if(Application::GetApplication()->GetProjectFile() == nullptr)
 		return;
 
 	std::vector<std::string> files = GetAllFiles(GetGameDataFolder(), true);
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
+	//most of the slowdown is in this loop.
 	for (size_t i = 0; i < files.size(); i++)
 	{
 		std::string type = GetResourceTypeFromPath(files.at(i));
-		if (type == "NotSupported")
+
+		if(type == "NotSupported")
 			continue;
 
 		if (IsFileInDatabase(type, GetFolderLocationRelativeToGameData(files.at(i))))
 			continue;
 
 		LogInfo("Found new resource " + files.at(i) + " of type " + type + " that is not in the database.");
-
 		AddNewResource(type, files.at(i));
 	}
-
-	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 	for (int o = 0; o < resourceRegistry->size(); o++)
 	{
 		if (m_resourceDatabaseJson.find(resourceRegistry->at(o).first) != m_resourceDatabaseJson.end())
@@ -219,8 +229,11 @@ void ResourceManager::ScanForResources()
 
 bool ResourceManager::IsFileInDatabase(std::string type, std::string path)
 {
+	if (type == "NotSupported")
+		return false;
+
 	nlohmann::json typeJson = m_resourceDatabaseJson[type];
-	bool isInDatabase = (typeJson.find(path) != typeJson.end());
+	bool isInDatabase = (typeJson.count(path) != 0);
 	return isInDatabase;
 }
 

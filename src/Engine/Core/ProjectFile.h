@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <string>
+#include <mutex>
 
 class ProjectFile
 {
@@ -15,8 +16,9 @@ public:
 	std::string m_sProjectEngineVersion;
 
 	std::string m_sProjectFilePath;
-
 	nlohmann::json m_projectData;
+
+	std::mutex m_projectFileMutex;
 
 	void CreateProjectFile(std::string projectName, std::string projectDirectory, std::string projectFilePath);
 	void LoadProjectFile(const std::string& file);

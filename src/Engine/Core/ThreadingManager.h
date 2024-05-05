@@ -1,6 +1,4 @@
 #pragma once
-#ifndef THREADINGMANAGER_H_
-#define THREADINGMANAGER_H_
 
 #include <condition_variable>
 #include <functional>
@@ -70,7 +68,7 @@ private:
 
 	std::condition_variable m_EventVar;
 	std::mutex m_EventMutex;
-	bool m_bStopping;
+	bool m_bStopping = false;
 
 	std::queue<Task> mTasks;
 
@@ -78,5 +76,3 @@ private:
 	void StopThreads() noexcept;
 	bool AreAllThreadsFinished();
 };
-
-#endif

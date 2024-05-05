@@ -1,6 +1,7 @@
 #include "EditorManager.h"
 
 #include <Engine\Core\Application.h>
+#include <Engine\Core\ThreadingManager.h>
 #include <Engine\Core\Graphics\Renderer.h>
 #include <Engine\Core\SceneManager.h>
 #include <Engine\Core\InputManager.h>
@@ -145,6 +146,8 @@ void EditorManager::OnUpdate()
 		ImGui::ShowDemoWindow();
 		ImPlot::ShowDemoWindow();
 	}
+
+	Application::GetApplication()->GetThreadingManager()->WaitForTasksToClear();
 }
 
 void EditorManager::OnRender() 

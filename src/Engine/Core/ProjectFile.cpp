@@ -7,6 +7,8 @@
 
 void ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory, std::string projectFilePath)
 {
+	std::unique_lock<std::mutex> lock(m_projectFileMutex);
+
 	std::shared_ptr<Application> app = Application::GetApplication();
 
 	LoadProjectFile(projectFilePath);
@@ -20,6 +22,8 @@ void ProjectFile::CreateProjectFile(std::string projectName, std::string project
 
 void ProjectFile::LoadProjectFile(const std::string& file)
 {
+	std::unique_lock<std::mutex> lock(m_projectFileMutex);
+
 	Application::GetApplication()->ClearLoadedScene();
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 	rManager->UnloadAllResources();
@@ -68,6 +72,8 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 
 void ProjectFile::UpdateProjectFile()
 {
+	std::unique_lock<std::mutex> lock(m_projectFileMutex);
+
 	std::shared_ptr<Application> app = Application::GetApplication();
 
 	m_projectData["ProjectDetails"]["ProjectName"] = m_sProjectName;

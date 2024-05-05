@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <mutex>
 
 #include <nlohmann/json.hpp>
 
@@ -34,6 +35,8 @@ struct ResourceManager
 	std::string m_sWorkingDirectory;
 
 	nlohmann::json m_resourceDatabaseJson;
+
+	std::mutex m_resourceDatabaseMutex;
 
 	ResourceManager();
 	~ResourceManager();

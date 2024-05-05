@@ -126,6 +126,9 @@ void EditorManager::OnUpdate()
 	m_pCommandSystem->ProcessCommandQueue();
 	m_pEditorCam->Update();
 
+	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+	rManager->ScanForResources();
+
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
 	for (uiItr = m_mEditorUIs.begin(); uiItr != m_mEditorUIs.end(); uiItr++)
 	{

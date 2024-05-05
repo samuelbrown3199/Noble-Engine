@@ -1,15 +1,5 @@
 #include "Registry.h"
 
-void NobleRegistry::RegisterResource(std::string ID, Resource* resource, bool generatesFile , std::string acceptedFileTypes)
-{
-	ResourceRegistry newRegistry;
-	newRegistry.m_resource = resource;
-	newRegistry.m_bGenerateFileOnCreation = generatesFile;
-	newRegistry.m_sAcceptedFileTypes = acceptedFileTypes;
-
-	m_vResourceRegistry.push_back(std::make_pair(ID, newRegistry));
-}
-
 Datalist* NobleRegistry::GetComponentList(std::string ID)
 {
 	for (int i = 0; i < m_vComponentRegistry.size(); i++)

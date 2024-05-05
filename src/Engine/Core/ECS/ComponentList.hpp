@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 
+#include "../../Core/Application.h"
 #include "../../Core/ThreadingManager.h"
 
 struct Component;
@@ -187,5 +188,18 @@ struct ComponentDatalist : public Datalist
 		}
 
 		return data;
+	}
+};
+
+template<typename T>
+struct ResourceCreator
+{
+	void AddResource(std::string path)
+	{
+		T* newResource = new T();
+		newResource->m_sResourcePath = path;
+		newResource->m_sLocalPath = GetFolderLocationRelativeToGameData(path) != "" ? GetFolderLocationRelativeToGameData(path) : path;
+
+		Application::GetApplication()->GetResourceManager()->AddNewResource(newResource);
 	}
 };

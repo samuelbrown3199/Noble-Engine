@@ -39,12 +39,24 @@ struct ComponentRegistry
 	}
 };
 
-struct ResourceRegistry
+struct ResourceRegistryBase
 {
 	Resource* m_resource = nullptr;
-	bool m_bGenerateFileOnCreation = true;
 
+	bool m_bGenerateFileOnCreation = true;
 	std::string m_sAcceptedFileTypes = "";
+	virtual void AddResourceToDatabase(std::string path) = 0;
+};
+
+template<typename T>
+struct ResourceRegistry : public ResourceRegistryBase
+{
+	ResourceCreator<T>* m_resourceCreator = nullptr;
+
+	void AddResourceToDatabase(std::string path) override
+	{
+		m_resourceCreator->AddResource(path);
+	}
 };
 
 struct PushConstantRegistry
@@ -73,7 +85,7 @@ struct DescriptorRegistry
 
 class NobleRegistry
 {
-	std::vector<std::pair<std::string, ResourceRegistry>> m_vResourceRegistry;
+	std::vector<std::pair<std::string, ResourceRegistryBase*>> m_vResourceRegistry;
 	std::vector<std::pair<std::string, ComponentRegistry>> m_vComponentRegistry;
 
 	std::vector<std::pair<std::string, PushConstantRegistry>> m_vPushConstantRegistry;
@@ -88,8 +100,19 @@ public:
 		m_pPerformanceStats = Application::GetApplication()->GetPerformanceStats();
 	}
 
-	void RegisterResource(std::string ID, Resource* resource, bool generatesFile, std::string acceptedFileTypes);
-	std::vector<std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_vResourceRegistry; }
+	template<typename T>
+	void RegisterResource(std::string ID, bool generatesFile, std::string acceptedFileTypes)
+	{
+		ResourceRegistry<T>* newRegistry = new ResourceRegistry<T>();
+		newRegistry->m_resource = new T();
+		newRegistry->m_bGenerateFileOnCreation = generatesFile;
+		newRegistry->m_sAcceptedFileTypes = acceptedFileTypes;
+
+		newRegistry->m_resourceCreator = new ResourceCreator<T>();
+
+		m_vResourceRegistry.push_back(std::make_pair(ID, newRegistry));
+	}
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* GetResourceRegistry() { return &m_vResourceRegistry; }
 
 	template<typename T>
 	void RegisterComponent(std::string ID, bool useThreads, int maxComponentsPerThread, bool updateEditMode, bool renderEditMode)

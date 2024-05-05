@@ -415,6 +415,8 @@ void Application::SetProjectFile(std::string path)
 	m_gameDLL = new NobleDLL(m_projectFile->m_sProjectDirectory + "\\NobleGame.dll");
 	m_gameDLL->LoadDLL(GetApplication());
 
+	m_resourceManager->ScanForResources();
+
 	if(app->m_editor != nullptr)
 		app->m_editor->SetProjectFile(m_projectFile);
 }

@@ -30,17 +30,44 @@ void ResourceManager::RegisterResourceTypes()
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
-	registry->RegisterResource("AudioClip", new AudioClip(), true, ".wav|.ogg|.mp3");
-	registry->RegisterResource("Texture", new Texture(), true, ".jpg|.png|.tga|.bmp|.hdr");
-	registry->RegisterResource("Model", new Model(), true, ".obj");
-	registry->RegisterResource("Pipeline", new Pipeline(), false, ".npl");
-	registry->RegisterResource("Script", new Script(), true, ".lua");
-	registry->RegisterResource("Shader", new Shader(), true, ".vert|.frag|.comp");
+	registry->RegisterResource<AudioClip>("AudioClip", true, ".wav|.ogg|.mp3");
+	registry->RegisterResource<Texture>("Texture", true, ".jpg|.png|.tga|.bmp|.hdr");
+	registry->RegisterResource<Model>("Model", true, ".obj");
+	registry->RegisterResource<Pipeline>("Pipeline", false, ".npl");
+	registry->RegisterResource<Script>("Script", true, ".lua");
+	registry->RegisterResource<Shader>("Shader", true, ".vert|.frag|.comp|.spv");
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
 {
 	m_sWorkingDirectory = directory;
+}
+
+void ResourceManager::AddNewResource(std::string type, std::string path)
+{
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
+
+	for (int i = 0; i < resourceRegistry->size(); i++)
+	{
+		if (resourceRegistry->at(i).first == type)
+		{
+			resourceRegistry->at(i).second->AddResourceToDatabase(path);
+			return;
+		}
+	}
+
+	LogFatalError("Could not find resource type in registry.");
+}
+
+void ResourceManager::AddNewResource(Resource* resource)
+{
+	std::shared_ptr<Resource> res(resource);
+
+	m_vResourceDatabase.push_back(res);
+	LogInfo(FormatString("Added new resource %s", res->m_sLocalPath.c_str()));
+
+	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void ResourceManager::RemoveResourceFromDatabase(std::string path)
@@ -50,8 +77,8 @@ void ResourceManager::RemoveResourceFromDatabase(std::string path)
 		if (m_vResourceDatabase.at(i)->m_sLocalPath == path)
 		{
 			m_vResourceDatabase.erase(m_vResourceDatabase.begin() + i);
-			WriteResourceDatabase();
 			LogInfo(FormatString("Remove asset %s from Resource Database", path.c_str()));
+			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 			return;
 		}
 	}
@@ -60,14 +87,14 @@ void ResourceManager::RemoveResourceFromDatabase(std::string path)
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
 	bool foundRegistryRes = false;
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
 		if (resourceRegistry->at(i).first == res->m_resourceType)
 		{
-			resourceRegistry->at(i).second.m_resource->SetResourceToDefaults(res);
+			resourceRegistry->at(i).second->m_resource->SetResourceToDefaults(res);
 			foundRegistryRes = true;
 			break;
 		}
@@ -80,10 +107,11 @@ void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
 	m_vResourceDatabase.clear();
+	m_vLoadedResources.clear();
 	m_resourceDatabaseJson = resourceDatabase;
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
 	if (m_resourceDatabaseJson.find("Defaults") != m_resourceDatabaseJson.end())
 	{
@@ -93,7 +121,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 		{
 			if (def.find(resourceRegistry->at(i).first) != def.end())
 			{
-				resourceRegistry->at(i).second.m_resource->SetDefaults(def[resourceRegistry->at(i).first]);
+				resourceRegistry->at(i).second->m_resource->SetDefaults(def[resourceRegistry->at(i).first]);
 			}
 		}
 	}
@@ -105,7 +133,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(i).first);
 			for (auto it : ac.items())
 			{
-				std::shared_ptr<Resource> res = resourceRegistry->at(i).second.m_resource->LoadFromJson(it.key(), it.value());
+				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->m_resource->LoadFromJson(it.key(), it.value());
 				m_vResourceDatabase.push_back(res);
 			}
 
@@ -124,12 +152,95 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 	}
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-	std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 	for (int i = 0; i < resourceRegistry->size(); i++)
 	{
-		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second.m_resource->AddToDatabase();
+		m_resourceDatabaseJson["Defaults"][resourceRegistry->at(i).first] = resourceRegistry->at(i).second->m_resource->AddToDatabase();
 	}
 	return m_resourceDatabaseJson;
+}
+
+void ResourceManager::ScanForResources()
+{
+	if(Application::GetApplication()->GetProjectFile() == nullptr)
+		return;
+
+	std::vector<std::string> files = GetAllFiles(GetGameDataFolder(), true);
+
+	for (size_t i = 0; i < files.size(); i++)
+	{
+		std::string type = GetResourceTypeFromPath(files.at(i));
+		if (type == "NotSupported")
+			continue;
+
+		if (IsFileInDatabase(type, GetFolderLocationRelativeToGameData(files.at(i))))
+			continue;
+
+		LogInfo("Found new resource " + files.at(i) + " of type " + type + " that is not in the database.");
+
+		AddNewResource(type, files.at(i));
+	}
+
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
+	for (int o = 0; o < resourceRegistry->size(); o++)
+	{
+		if (m_resourceDatabaseJson.find(resourceRegistry->at(o).first) != m_resourceDatabaseJson.end())
+		{
+			if (resourceRegistry->at(o).first == "Pipeline") //skip these as they are currently non file based
+				continue;
+
+			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(o).first);
+			for (auto it : ac.items())
+			{
+				bool foundResource = false;
+
+				for (size_t i = 0; i < files.size(); i++)
+				{
+					if (files.at(i) == "")
+						continue;
+
+					if (GetFolderLocationRelativeToGameData(files.at(i)) == it.key())
+					{
+						foundResource = true;
+						files.erase(files.begin() + i);
+						break;
+					}
+				}
+
+				if (foundResource == false)
+				{
+					RemoveResourceFromDatabase(it.key());
+				}
+			}
+		}
+	}
+}
+
+bool ResourceManager::IsFileInDatabase(std::string type, std::string path)
+{
+	nlohmann::json typeJson = m_resourceDatabaseJson[type];
+	bool isInDatabase = (typeJson.find(path) != typeJson.end());
+	return isInDatabase;
+}
+
+std::string ResourceManager::GetResourceTypeFromPath(std::string path)
+{
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
+
+	std::vector<std::string> splitPath = SplitString(path, '.');
+	std::string fileType = splitPath.at(splitPath.size() - 1);
+
+	for (int i = 0; i < resourceRegistry->size(); i++)
+	{
+		if (resourceRegistry->at(i).second->m_sAcceptedFileTypes.find(fileType) != std::string::npos)
+		{
+			return resourceRegistry->at(i).first;
+		}
+	}
+
+	return "NotSupported";
 }
 
 std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(std::string type)
@@ -221,7 +332,9 @@ std::shared_ptr<Resource> ResourceManager::DoResourceSelectInterface(std::string
 	if (res != -1)
 	{
 		if (displayResources.at(res)->m_sLocalPath != currentResourcePath)
-			return displayResources.at(res);
+		{
+			return LoadResource<Resource>(displayResources.at(res)->m_sLocalPath);
+		}
 	}
 
 	return nullptr;

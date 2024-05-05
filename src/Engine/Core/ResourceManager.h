@@ -67,6 +67,9 @@ struct ResourceManager
 		WriteResourceDatabase();
 	}
 
+	void AddNewResource(std::string type, std::string path);
+	void AddNewResource(Resource* resource);
+
 	void RemoveResourceFromDatabase(std::string path);
 	void SetResourceToDefaults(std::shared_ptr<Resource> res);	
 	void LoadResourceDatabase(nlohmann::json resourceDatabase);
@@ -160,6 +163,9 @@ struct ResourceManager
 		return nullptr;
 	}
 
+	void ScanForResources();
+	bool IsFileInDatabase(std::string type, std::string path);
+	std::string GetResourceTypeFromPath(std::string path);
 	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType(std::string type);
 	/**
 	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.

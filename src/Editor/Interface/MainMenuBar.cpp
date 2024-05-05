@@ -363,7 +363,7 @@ void MainMenuBar::DoAssetMenu()
 	if (ImGui::BeginMenu("Add Resource"))
 	{
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-		std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
+		std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
 		for (int i = 0; i < resourceRegistry->size(); i++)
 		{
@@ -372,7 +372,7 @@ void MainMenuBar::DoAssetMenu()
 				std::string path = OpenFileSelectDialog(".mp3");
 				if (path != "")
 				{
-					resourceRegistry->at(i).second.m_resource->AddResource(path);
+					resourceRegistry->at(i).second->m_resource->AddResource(path);
 				}
 			}
 		}

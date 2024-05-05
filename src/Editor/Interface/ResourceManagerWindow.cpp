@@ -26,6 +26,7 @@ void ResourceManagerWindow::DoInterface()
     static Resource* defaultRes = nullptr;
 
     EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
     if (!ImGui::Begin("Resource Manager", &m_uiOpen, m_windowFlags))
     {
@@ -36,7 +37,7 @@ void ResourceManagerWindow::DoInterface()
     UpdateWindowState();
 
     NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-    std::vector<std::pair<std::string, ResourceRegistry>>* resourceRegistry = registry->GetResourceRegistry();
+    std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
@@ -44,7 +45,7 @@ void ResourceManagerWindow::DoInterface()
 
         if (ImGui::Selectable(resourceRegistry->at(i).first.c_str(), selectedDefaultRes == res))
         {
-            defaultRes = resourceRegistry->at(i).second.m_resource;
+            defaultRes = resourceRegistry->at(i).second->m_resource;
         }
 
         res++;
@@ -79,12 +80,12 @@ void ResourceManagerWindow::DoInterface()
         {
             if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
             {
-                if (resourceRegistry->at(i).second.m_bGenerateFileOnCreation)
+                if (resourceRegistry->at(i).second->m_bGenerateFileOnCreation)
                 {
                     std::string path = OpenFileSelectDialog(".mp3");
                     if (path != "")
                     {
-                        resourceRegistry->at(i).second.m_resource->AddResource(path);
+                        resourceRegistry->at(i).second->m_resource->AddResource(path);
                     }
                 }
                 else
@@ -101,14 +102,14 @@ void ResourceManagerWindow::DoInterface()
     for (int i = 0; i < resourceRegistry->size(); i++)
     {
         ImGui::Text(resourceRegistry->at(i).first.c_str());
-        std::vector<std::shared_ptr<Resource>> resources = resourceRegistry->at(i).second.m_resource->GetResourcesOfType(); //Doing this every frame on a large database might hurt in future.
+        std::vector<std::shared_ptr<Resource>> resources = rManager->GetAllResourcesOfType(resourceRegistry->at(i).first); //Doing this every frame on a large database might hurt in future.
 
         for (int o = 0; o < resources.size(); o++)
         {
             if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
             {
                 ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bGenerateFileOnCreation);
+                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second->m_bGenerateFileOnCreation);
 
                 dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
                 dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedResource(selResource);
@@ -130,7 +131,7 @@ void ResourceManagerWindow::DoInterface()
 
         if (ImGui::Button("Create"))
         {
-            resourceRegistry->at(m_iNewResourceType).second.m_resource->AddResource(newResourceName);
+            resourceRegistry->at(m_iNewResourceType).second->m_resource->AddResource(newResourceName);
             m_bOpenNoFileResourceWindow = false;
             ImGui::CloseCurrentPopup();
         }

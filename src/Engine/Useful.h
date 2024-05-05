@@ -53,6 +53,7 @@ void CutFile(std::string source, std::string destination);
 void CopyDirectory(std::string source, std::string destination);
 
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType, bool recursive);
+std::vector<std::string> GetAllFiles(std::string directory, bool recursive);
 void DeleteFilePath(std::string path);
 
 void AddVersionDataToJson(nlohmann::json& data);

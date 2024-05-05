@@ -234,6 +234,29 @@ std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fi
     return files;
 }
 
+std::vector<std::string> GetAllFiles(std::string directory, bool recursive)
+{
+    std::string path(directory);
+	std::vector<std::string> files;
+
+    if (recursive)
+    {
+        for (auto& p : std::filesystem::recursive_directory_iterator(path))
+        {
+			files.push_back(p.path().string());
+		}
+	}
+    else
+    {
+        for (auto& p : std::filesystem::directory_iterator(path))
+        {
+			files.push_back(p.path().string());
+		}
+	}
+
+	return files;
+}
+
 void DeleteFilePath(std::string path)
 {
     std::remove(path.c_str());

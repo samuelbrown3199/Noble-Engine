@@ -40,6 +40,7 @@ void EditorManager::InitializeEditor()
 	ToggleUI("SceneHierarchy");
 	ToggleUI("DataEditor");
 	ToggleUI("SceneView");
+	ToggleUI("ResourceManager");
 
 	m_pEditorCam = new EditorCam(dynamic_cast<SceneViewWindow*>(GetEditorUI("SceneView")));
 }

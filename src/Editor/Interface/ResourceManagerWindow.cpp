@@ -27,9 +27,6 @@ void ResourceManagerWindow::DoInterface()
 
     EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_Appearing);
     if (!ImGui::Begin("Resource Manager", &m_uiOpen, m_windowFlags))
     {
         ImGui::End();
@@ -59,10 +56,18 @@ void ResourceManagerWindow::DoInterface()
     {
         defaultRes->DoResourceInterface();
 
+        if (editorManager->m_projectFile == nullptr)
+        {
+            ImGui::BeginDisabled();
+        }
         if (ImGui::Button("Save Resource"))
         {
             Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
             defaultRes->ReloadResource();
+        }
+        if (editorManager->m_projectFile == nullptr)
+        {
+            ImGui::EndDisabled();
         }
     }
 
@@ -74,7 +79,7 @@ void ResourceManagerWindow::DoInterface()
         {
             if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
             {
-                if (resourceRegistry->at(i).second.m_bRequiresFile)
+                if (resourceRegistry->at(i).second.m_bGenerateFileOnCreation)
                 {
                     std::string path = OpenFileSelectDialog(".mp3");
                     if (path != "")
@@ -103,7 +108,7 @@ void ResourceManagerWindow::DoInterface()
             if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
             {
                 ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bRequiresFile);
+                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second.m_bGenerateFileOnCreation);
 
                 dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
                 dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedResource(selResource);
@@ -118,9 +123,6 @@ void ResourceManagerWindow::DoInterface()
         ImGui::OpenPopup("New Resource");
     }
 
-    // Always center this window when appearing
-    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize(ImVec2(500.0f, 150.0f));
     if (ImGui::BeginPopupModal("New Resource"))
     {
         std::string newResourceName = "";

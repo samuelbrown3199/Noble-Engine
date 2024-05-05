@@ -38,7 +38,7 @@ void NobleGameDLL::RegisterResources()
 {
 	LogTrace("Registering resources from DLL");
 
-	m_app->GetRegistry()->RegisterResource("TestResource", new TestResource(), false);
+	m_app->GetRegistry()->RegisterResource("TestResource", new TestResource(), false, ".tests");
 
 	LogTrace("Resources registered from DLL");
 }

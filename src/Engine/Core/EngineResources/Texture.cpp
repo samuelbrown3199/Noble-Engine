@@ -43,8 +43,8 @@ void Texture::OnUnload()
     Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     vkDestroySampler(renderer->GetLogicalDevice(), m_textureSampler, nullptr);
-    vkDestroyImageView(renderer->GetLogicalDevice(), m_texture.m_imageView, nullptr);
-    vmaDestroyImage(renderer->GetAllocator(), m_texture.m_image, m_texture.m_allocation);
+    renderer->DestroyImage(m_texture);
+
     m_bIsLoaded = false;
 }
 

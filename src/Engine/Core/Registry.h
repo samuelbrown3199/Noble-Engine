@@ -42,7 +42,9 @@ struct ComponentRegistry
 struct ResourceRegistry
 {
 	Resource* m_resource = nullptr;
-	bool m_bRequiresFile = true;
+	bool m_bGenerateFileOnCreation = true;
+
+	std::string m_sAcceptedFileTypes = "";
 };
 
 struct PushConstantRegistry
@@ -86,7 +88,7 @@ public:
 		m_pPerformanceStats = Application::GetApplication()->GetPerformanceStats();
 	}
 
-	void RegisterResource(std::string ID, Resource* resource, bool requiresFile);
+	void RegisterResource(std::string ID, Resource* resource, bool generatesFile, std::string acceptedFileTypes);
 	std::vector<std::pair<std::string, ResourceRegistry>>* GetResourceRegistry() { return &m_vResourceRegistry; }
 
 	template<typename T>

@@ -30,12 +30,12 @@ void ResourceManager::RegisterResourceTypes()
 {
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
-	registry->RegisterResource("AudioClip", new AudioClip(), true);
-	registry->RegisterResource("Texture", new Texture(), true);
-	registry->RegisterResource("Model", new Model(), true);
-	registry->RegisterResource("Pipeline", new Pipeline(), false);
-	registry->RegisterResource("Script", new Script(), true);
-	registry->RegisterResource("Shader", new Shader(), true);
+	registry->RegisterResource("AudioClip", new AudioClip(), true, ".wav|.ogg|.mp3");
+	registry->RegisterResource("Texture", new Texture(), true, ".jpg|.png|.tga|.bmp|.hdr");
+	registry->RegisterResource("Model", new Model(), true, ".obj");
+	registry->RegisterResource("Pipeline", new Pipeline(), false, ".npl");
+	registry->RegisterResource("Script", new Script(), true, ".lua");
+	registry->RegisterResource("Shader", new Shader(), true, ".vert|.frag|.comp");
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
@@ -132,6 +132,19 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 	return m_resourceDatabaseJson;
 }
 
+std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(std::string type)
+{
+	std::vector<std::shared_ptr<Resource>> returnVec;
+
+	for (int i = 0; i < m_vResourceDatabase.size(); i++)
+	{
+		if (m_vResourceDatabase.at(i)->m_resourceType == type)
+			returnVec.push_back(m_vResourceDatabase.at(i));
+	}
+
+	return returnVec;
+}
+
 void ResourceManager::UnloadUnusedResources()
 {
 	if (m_vLoadedResources.empty())
@@ -153,4 +166,63 @@ void ResourceManager::UnloadAllResources()
 {
 	m_vLoadedResources.clear();
 	m_vResourceDatabase.clear();
+}
+
+std::shared_ptr<Resource> ResourceManager::DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath, std::string type)
+{
+	std::vector<std::shared_ptr<Resource>> resources = GetAllResourcesOfType(type);
+
+	if (resources.size() == 0)
+	{
+		ImGui::Text(FormatString("No resources of type %s exist in database.", interfaceText).c_str());
+		return nullptr;
+	}
+
+	static std::string searchVal = "";
+	std::vector<std::shared_ptr<Resource>> displayResources = resources;
+
+	int res = -1;
+
+	ImGui::Text(interfaceText.c_str());
+	ImGui::SameLine();
+	if (ImGui::BeginMenu(currentResourcePath.c_str()))
+	{
+		ImGui::InputText("Search", &searchVal);
+
+		for (int i = displayResources.size() - 1; i >= 0; i--)
+		{
+			if (!searchVal.empty())
+			{
+				if (displayResources.at(i)->m_sLocalPath.find(searchVal) == std::string::npos)
+				{
+					displayResources.erase(displayResources.begin() + i);
+					continue;
+				}
+			}
+		}
+
+		if (displayResources.size() == 0)
+		{
+			ImGui::Text(FormatString("No resources found.", interfaceText).c_str());
+			ImGui::EndMenu();
+			return nullptr;
+		}
+
+		for (int i = 0; i < displayResources.size(); i++)
+		{
+			if (ImGui::MenuItem(displayResources.at(i)->m_sLocalPath.c_str()))
+				res = i;
+		}
+
+		ImGui::EndMenu();
+	}
+	ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+	if (res != -1)
+	{
+		if (displayResources.at(res)->m_sLocalPath != currentResourcePath)
+			return displayResources.at(res);
+	}
+
+	return nullptr;
 }

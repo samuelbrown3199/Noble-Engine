@@ -1,10 +1,11 @@
 #include "Registry.h"
 
-void NobleRegistry::RegisterResource(std::string ID, Resource* resource, bool requiresFile)
+void NobleRegistry::RegisterResource(std::string ID, Resource* resource, bool generatesFile , std::string acceptedFileTypes)
 {
 	ResourceRegistry newRegistry;
 	newRegistry.m_resource = resource;
-	newRegistry.m_bRequiresFile = requiresFile;
+	newRegistry.m_bGenerateFileOnCreation = generatesFile;
+	newRegistry.m_sAcceptedFileTypes = acceptedFileTypes;
 
 	m_vResourceRegistry.push_back(std::make_pair(ID, newRegistry));
 }

@@ -170,11 +170,6 @@ void MainMenuBar::DoMainMenuBar()
 				DoSceneMenu();
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Resources"))
-			{
-				DoAssetMenu();
-				ImGui::EndMenu();
-			}
 		}
 
 		if (ImGui::BeginMenu("Tools"))
@@ -353,36 +348,6 @@ void MainMenuBar::DoSceneMenu()
 		ImGui::EndMenu();
 	}
 	ImGui::SetItemTooltip("Save the currently open scene as a new file.");
-}
-
-void MainMenuBar::DoAssetMenu()
-{
-	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
-
-	ImGui::MenuItem("Resources", NULL, false, false);
-	if (ImGui::BeginMenu("Add Resource"))
-	{
-		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
-		std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
-
-		for (int i = 0; i < resourceRegistry->size(); i++)
-		{
-			if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
-			{
-				std::string path = OpenFileSelectDialog(".mp3");
-				if (path != "")
-				{
-					resourceRegistry->at(i).second->m_resource->AddResource(path);
-				}
-			}
-		}
-		ImGui::EndMenu();
-	}
-
-	if (ImGui::MenuItem("Resource Manager", "(CTRL+R)"))
-	{
-		editorManager->ToggleUI("ResourceManager");
-	}
 }
 
 void MainMenuBar::DoToolMenu()

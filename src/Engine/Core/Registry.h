@@ -43,7 +43,7 @@ struct ResourceRegistryBase
 {
 	Resource* m_resource = nullptr;
 
-	bool m_bGenerateFileOnCreation = true;
+	bool m_bRequiresFile = true;
 	std::string m_sAcceptedFileTypes = "";
 	virtual void AddResourceToDatabase(std::string path) = 0;
 };
@@ -101,11 +101,11 @@ public:
 	}
 
 	template<typename T>
-	void RegisterResource(std::string ID, bool generatesFile, std::string acceptedFileTypes)
+	void RegisterResource(std::string ID, bool requiresFile, std::string acceptedFileTypes)
 	{
 		ResourceRegistry<T>* newRegistry = new ResourceRegistry<T>();
 		newRegistry->m_resource = new T();
-		newRegistry->m_bGenerateFileOnCreation = generatesFile;
+		newRegistry->m_bRequiresFile = requiresFile;
 		newRegistry->m_sAcceptedFileTypes = acceptedFileTypes;
 
 		newRegistry->m_resourceCreator = new ResourceCreator<T>();

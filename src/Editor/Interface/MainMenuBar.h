@@ -41,12 +41,9 @@ private:
 
 	void DoEditorMenu();
 	void DoSceneMenu();
-	void DoAssetMenu();
 	void DoToolMenu();
 	void DoHelpMenu();
 	void DoDebugMenu();
-
-	void DoSecondaryMenuBar();
 
 public:
 

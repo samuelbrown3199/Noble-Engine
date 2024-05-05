@@ -80,7 +80,7 @@ void ResourceManagerWindow::DoInterface()
         {
             if (ImGui::MenuItem(resourceRegistry->at(i).first.c_str()))
             {
-                if (resourceRegistry->at(i).second->m_bGenerateFileOnCreation)
+                if (resourceRegistry->at(i).second->m_bRequiresFile)
                 {
                     std::string path = OpenFileSelectDialog(".mp3");
                     if (path != "")
@@ -109,7 +109,7 @@ void ResourceManagerWindow::DoInterface()
             if (ImGui::Selectable(resources.at(o)->m_sLocalPath.c_str(), selectedRes == o))
             {
                 ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
-                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second->m_bGenerateFileOnCreation);
+                selResource = resourceManager->GetResourceFromDatabase<Resource>(resources.at(o)->m_sLocalPath, resourceRegistry->at(i).second->m_bRequiresFile);
 
                 dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
                 dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedResource(selResource);

@@ -33,9 +33,9 @@ void ResourceManager::RegisterResourceTypes()
 	registry->RegisterResource<AudioClip>("AudioClip", true, ".wav|.ogg|.mp3");
 	registry->RegisterResource<Texture>("Texture", true, ".jpg|.png|.tga|.bmp|.hdr");
 	registry->RegisterResource<Model>("Model", true, ".obj");
-	registry->RegisterResource<Pipeline>("Pipeline", false, ".npl");
+	registry->RegisterResource<Pipeline>("Pipeline", false, "");
 	registry->RegisterResource<Script>("Script", true, ".lua");
-	registry->RegisterResource<Shader>("Shader", true, ".vert|.frag|.comp|.spv");
+	registry->RegisterResource<Shader>("Shader", true, ".vert|.frag|.comp|.spv"); //spv here doesnt make sense, at some point the engine will compile the shader to spv, as that isnt implemented yet, this is fine.
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
@@ -187,7 +187,7 @@ void ResourceManager::ScanForResources()
 	{
 		if (m_resourceDatabaseJson.find(resourceRegistry->at(o).first) != m_resourceDatabaseJson.end())
 		{
-			if (resourceRegistry->at(o).first == "Pipeline") //skip these as they are currently non file based
+			if (!resourceRegistry->at(o).second->m_bRequiresFile) //skip any resources that dont require a file
 				continue;
 
 			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(o).first);

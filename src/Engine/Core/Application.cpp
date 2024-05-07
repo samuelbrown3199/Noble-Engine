@@ -267,7 +267,7 @@ void Application::CleanupApplication()
 std::string Application::GetUniqueEntityID()
 {
 	std::string id = GenerateRandomString(25);
-	while (GetEntityIndex(id) != -1)
+	while (m_vEntities.count(id) != 0)
 	{
 		id = GenerateRandomString(25);
 	}
@@ -290,10 +290,10 @@ Entity* Application::CreateEntity() //this will need optimisation
 	}
 
 	//generate entity ID here.
-	std::string id = m_self.lock()->GetUniqueEntityID();
-	m_vEntities.push_back(id);
-	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = "New Entity";
-	return &m_vEntities.at(m_vEntities.size() - 1);
+	std::string id = GetUniqueEntityID();
+	m_vEntities[id] = Entity(id);
+	m_vEntities[id].m_sEntityName = "New Entity";
+	return &m_vEntities.at(id);
 }
 
 Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std::string _parentID)
@@ -316,9 +316,9 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std
 		}
 	}
 
-	for (int i = 0; i < m_vEntities.size(); i++)
+	if(m_vEntities.count(_desiredID) != 0)
 	{
-		Entity* targetEntity = &m_vEntities.at(i);
+		Entity* targetEntity = &m_vEntities.at(_desiredID);
 		if (targetEntity->m_sEntityID == _desiredID && targetEntity->m_bAvailableForUse)
 		{
 			targetEntity->m_bAvailableForUse = false;
@@ -336,50 +336,35 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std
 	Entity newEnt(_desiredID);
 	newEnt.m_sEntityParentID = _parentID;
 
-	m_vEntities.push_back(newEnt);
-	m_vEntities.at(m_vEntities.size() - 1).m_sEntityName = _name;
-	return &m_vEntities.at(m_vEntities.size() - 1);
+	m_vEntities[_desiredID] = newEnt;
+	m_vEntities[_desiredID].m_sEntityName = _name;
+	return &m_vEntities.at(_desiredID);
 }
 
 void Application::LinkChildEntities()
 {
-	for(int i = 0; i < m_vEntities.size(); i++)
+	std::map<std::string, Entity>::iterator it;
+	for (it = m_vEntities.begin(); it != m_vEntities.end(); it++)
 	{
-		if (m_vEntities.at(i).m_sEntityParentID == "")
+		if (it->second.m_sEntityParentID == "")
 			continue;
 
-		int parentIndex = GetEntityIndex(m_vEntities.at(i).m_sEntityParentID);
-		Entity* parentEntity = GetEntity(parentIndex);
-
-		parentEntity->AddChildObject(m_vEntities.at(i).m_sEntityID);
+		Entity* parentEntity = GetEntity(it->second.m_sEntityParentID);
+		parentEntity->AddChildObject(m_vEntities.at(it->first).m_sEntityID);
 	}
 }
 
-int Application::GetEntityIndex(std::string _ID)
+void Application::DeleteEntity(std::string ID)
 {
-	for (int i = 0; i < m_vEntities.size(); i++)
-	{
-		if (m_vEntities.at(i).m_sEntityID == _ID)
-			return i;
-	}
-
-	return -1;
+	m_vDeletionEntities.push_back(&m_vEntities.at(ID));
 }
 
-void Application::DeleteEntity(int index)
+Entity* Application::GetEntity(std::string ID)
 {
-	if (index > m_vEntities.size() - 1 || index < 0)
-		return;
-
-	m_vDeletionEntities.push_back(&m_vEntities.at(index));
-}
-
-Entity* Application::GetEntity(int index)
-{
-	if (index > m_vEntities.size() - 1 || index < 0)
+	if(ID == "")
 		return nullptr;
 
-	return &m_vEntities.at(index);
+	return &m_vEntities.at(ID);
 }
 
 void Application::ClearLoadedScene()
@@ -470,22 +455,21 @@ void Application::CleanupDeletionEntities()
 
 		if (currentEntity->m_sEntityParentID != "")
 		{
-			int parentIndex = GetEntityIndex(currentEntity->m_sEntityParentID);
-			GetEntity(parentIndex)->RemoveChildObject(currentEntity->m_sEntityID);
+			GetEntity(currentEntity->m_sEntityParentID)->RemoveChildObject(currentEntity->m_sEntityID);
 		}
 
 		for (int i = 0; i < currentEntity->m_vChildEntityIDs.size(); i++)
 		{
-			int childIndex = GetEntityIndex(currentEntity->m_vChildEntityIDs.at(i));
-			DeleteEntity(childIndex);
+			DeleteEntity(currentEntity->m_vChildEntityIDs.at(i));
 		}
 
 		currentEntity->m_sEntityParentID = "";
 		currentEntity->m_vChildEntityIDs.clear();
 	}
 
-	for (int i = 0; i < m_vEntities.size(); i++)
+	std::map<std::string, Entity>::iterator it;
+	for (it = m_vEntities.begin(); it != m_vEntities.end(); it++)
 	{
-		m_vEntities.at(i).GetAllComponents();
+		it->second.GetAllComponents();
 	}
 }

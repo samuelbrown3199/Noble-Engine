@@ -80,18 +80,18 @@ void SceneHierarchyWindow::DoInterface()
 	}
 	ImGui::SetItemTooltip("Create a new entity, with a name of your choosing. Hold Shift to skip name choice.");
 
-	if (m_iSelEntity != -1)
+	if (m_sSelEntity != "")
 	{
 		ImGui::SameLine();
 		if (ImGui::Button("Delete Entity"))
 		{
-			DeleteEntityCommand* command = new DeleteEntityCommand(Application::GetApplication()->GetEntityList().at(m_iSelEntity).m_sEntityID);
+			DeleteEntityCommand* command = new DeleteEntityCommand(Application::GetApplication()->GetEntityList().at(m_sSelEntity).m_sEntityID);
 			editorManager->PushCommand(command);
 		}
 		ImGui::SetItemTooltip("Deletes the selected entity.");
 	}
 
-	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 	bool sceneTreeOpen = ImGui::TreeNode("Entities");
 	if (ImGui::BeginPopupContextItem())
 	{
@@ -115,26 +115,29 @@ void SceneHierarchyWindow::DoInterface()
 	{
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);
-		for (int i = 0; i < entities.size(); i++)
+
+		std::map<std::string, Entity>::iterator it;
+		int i = 0;
+		for(it = entities.begin(); it != entities.end(); it++, i++)
 		{
-			if (entities.at(i).m_sEntityParentID != "")
+			if (it->second.m_sEntityParentID != "")
 				continue;
 
 			static EntityDropdown entityDropdown;
-			entityDropdown.DoEntityDropdown(i, m_iSelEntity, 0);
+			entityDropdown.DoEntityDropdown(it->second.m_sEntityID, i, m_sSelEntity, 0);
 		}
 
 		ImGui::TreePop();
 	}
 
-	dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedEntity(m_iSelEntity);
+	dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedEntity(m_sSelEntity);
 
 	ImGui::End();
 }
 
-void SceneHierarchyWindow::SetSelectedEntity(int iEntity)
+void SceneHierarchyWindow::SetSelectedEntity(std::string ID)
 {
-	m_iSelEntity = iEntity;
-	Entity* pEntity = Application::GetApplication()->GetEntity(iEntity);
+	m_sSelEntity = ID;
+	Entity* pEntity = Application::GetApplication()->GetEntity(m_sSelEntity);
 	pEntity->InitializeEntityInterface();
 }

@@ -13,13 +13,13 @@ void DataEditorWindow::DoInterface()
 
 	UpdateWindowState();
 
-	if (m_iSelEntity != -1)
+	if (m_sSelEntity != "")
 	{
-		std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
+		std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
 
-		Entity& entity = entities.at(m_iSelEntity);
+		Entity& entity = entities.at(m_sSelEntity);
 		entity.DoEntityComponentInterface(compRegistry);
 	}
 
@@ -47,22 +47,19 @@ void DataEditorWindow::DoInterface()
 	ImGui::End();
 }
 
-void DataEditorWindow::SetSelectedEntity(int _index)
+void DataEditorWindow::SetSelectedEntity(std::string ID)
 { 
-	if (_index < 0)
+	if (m_sSelEntity == ID)
 		return;
 
-	if (_index >= Application::GetApplication()->GetEntityList().size())
-		return;
-
-	if (m_iSelEntity == _index)
-		return;
-
-	m_iSelEntity = _index;
+	m_sSelEntity = ID;
 	m_pSelResource = nullptr;
 
+	if(m_sSelEntity == "")
+		return;
+
 	//Initialize the entity's components interfaces
-	Entity* ent = Application::GetApplication()->GetEntity(m_iSelEntity);
+	Entity* ent = Application::GetApplication()->GetEntity(m_sSelEntity);
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 
 	std::map<std::string, int>::iterator itr;
@@ -81,7 +78,7 @@ void DataEditorWindow::SetSelectedResource(std::shared_ptr<Resource> _resource)
 		return;
 
 	m_pSelResource = _resource;
-	m_iSelEntity = -1;
+	m_sSelEntity = "";
 
 	//Initialize the resource's interface
 	m_pSelResource->InitializeInterface();

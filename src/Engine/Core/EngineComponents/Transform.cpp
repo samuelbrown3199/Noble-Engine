@@ -10,8 +10,7 @@ void Transform::OnUpdate()
 {
 	if (m_parentTransformIndex == -1 && !m_bDoneParentCheck)
 	{
-		int entityIndex = Application::GetApplication()->GetEntityIndex(m_sEntityID);
-		Entity* ent = Application::GetApplication()->GetEntity(entityIndex);
+		Entity* ent = Application::GetApplication()->GetEntity(m_sEntityID);
 
 		if (ent->m_sEntityParentID != "")
 		{

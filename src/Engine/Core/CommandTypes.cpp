@@ -14,7 +14,7 @@ void AddEntityCommand::Execute()
 void AddEntityCommand::Undo()
 {
 	for (int i = 0; i < m_entities.size(); i++)
-		Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(m_entities.at(i).m_sEntityID));
+		Application::GetApplication()->DeleteEntity(m_entities.at(i).m_sEntityID);
 }
 
 void AddEntityCommand::Redo()
@@ -30,13 +30,13 @@ void AddEntityCommand::Redo()
 
 DeleteEntityCommand::DeleteEntityCommand(std::string sEntityID)
 {
-	m_entities.push_back(*Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(sEntityID)));
+	m_entities.push_back(*Application::GetApplication()->GetEntity(sEntityID));
 
 	//First pass to get all child objects.
 	for (int i = 0; i < m_entities.size(); i++)
 	{
 		for(int j = 0; j < m_entities.at(i).m_vChildEntityIDs.size(); j++)
-			m_entities.push_back(*Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(m_entities.at(i).m_vChildEntityIDs.at(j))));
+			m_entities.push_back(*Application::GetApplication()->GetEntity(m_entities.at(i).m_vChildEntityIDs.at(j)));
 	}
 
 	//Second pass to get all components and behaviours.
@@ -62,7 +62,7 @@ void DeleteEntityCommand::Execute()
 {
 	for (int i = 0; i < m_entities.size(); i++)
 	{
-		Application::GetApplication()->DeleteEntity(Application::GetApplication()->GetEntityIndex(m_entities.at(i).m_sEntityID));
+		Application::GetApplication()->DeleteEntity(m_entities.at(i).m_sEntityID);
 	}
 }
 

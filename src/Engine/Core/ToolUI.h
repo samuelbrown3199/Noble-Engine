@@ -193,7 +193,7 @@ struct NobleTextInput : public BaseEdit
 
 struct EntityDropdown
 {
-	void DoEntityDropdown(int index, int& selEntity, int layer = 0);
+	void DoEntityDropdown(std::string ID, int index, std::string& selEntity, int layer = 0);
 };
 
 struct ResourceSelectionWidget : public BaseEdit

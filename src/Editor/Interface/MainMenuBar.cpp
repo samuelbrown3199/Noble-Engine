@@ -296,7 +296,7 @@ void MainMenuBar::DoSceneMenu()
 	if (ImGui::MenuItem("New Scene"))
 	{
 		dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
-		dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->SetSelectedEntity(-1);
+		dynamic_cast<DataEditorWindow*>(editorManager->GetEditorUI("DataEditor"))->ResetSelectedEntity();
 		Application::GetApplication()->GetSceneManager()->ClearLoadedScene();
 	}
 	ImGui::SetItemTooltip("Create a new Scene.");

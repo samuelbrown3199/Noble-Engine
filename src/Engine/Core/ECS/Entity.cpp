@@ -2,7 +2,7 @@
 
 #include "../CommandTypes.h"
 
-void Entity::DoEntityInterface(int& i, bool& node_open, int &selEntity, int layer)
+void Entity::DoEntityInterface(int& i, bool& node_open, std::string& selEntity, int layer)
 {
 	if (m_bAvailableForUse)
 		return;
@@ -35,10 +35,8 @@ void Entity::DoEntityInterface(int& i, bool& node_open, int &selEntity, int laye
 			//List all child entities.
 			for (int o = 0; o < m_vChildEntityIDs.size(); o++)
 			{
-				int childIndex = Application::GetApplication()->GetEntityIndex(m_vChildEntityIDs[o]);
-
 				static EntityDropdown entityDropdown;
-				entityDropdown.DoEntityDropdown(childIndex, selEntity, layer+1);
+				entityDropdown.DoEntityDropdown(m_vChildEntityIDs.at(o), o, selEntity, layer + 1);
 			}
 		}
 

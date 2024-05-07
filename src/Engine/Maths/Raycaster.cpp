@@ -44,7 +44,7 @@ Ray Raycaster::GetRayToInDirection(const glm::vec3& origin, const glm::vec3& dir
                 ray.m_hitPosition = ray.m_rayOrigin + hitDis * ray.m_rayDirection;
                 ray.m_hitDistance = hitDis;
                 closestHit = hitDis;
-                ray.m_hitEntity = Application::GetApplication()->GetEntity(Application::GetApplication()->GetEntityIndex(screenObjects->at(i)->m_sEntityID));
+                ray.m_hitEntity = Application::GetApplication()->GetEntity(screenObjects->at(i)->m_sEntityID);
             }
 
             vert += 3;

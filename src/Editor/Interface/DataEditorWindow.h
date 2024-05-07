@@ -9,14 +9,14 @@ class DataEditorWindow : public EditorToolUI
 {
 private:
 
-	int m_iSelEntity = -1;
+	std::string m_sSelEntity = "";
 	std::shared_ptr<Resource> m_pSelResource = nullptr;
 
 public:
 
 	void DoInterface() override;
 
-	void SetSelectedEntity(int _index);
-	void ResetSelectedEntity() { m_iSelEntity = -1; }
+	void SetSelectedEntity(std::string ID);
+	void ResetSelectedEntity() { m_sSelEntity = ""; }
 	void SetSelectedResource(std::shared_ptr<Resource> _resource);
 };

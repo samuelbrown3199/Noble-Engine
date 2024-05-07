@@ -248,9 +248,9 @@ void NobleTextInput::DoTextInput(const char* label, bool initialize, std::string
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
+void EntityDropdown::DoEntityDropdown(std::string ID, int index, std::string& selEntity, int layer)
 {
-	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 	static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 
 	// Disable the default "open on single-click behavior" + set Selected flag according to our selection.
@@ -260,21 +260,21 @@ void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
 	bool is_selected = false;
 	Entity* pSelEntity = Application::GetApplication()->GetEntity(selEntity);
 	if (pSelEntity != nullptr)
-		is_selected = pSelEntity->m_sEntityID == entities.at(index).m_sEntityID;
+		is_selected = pSelEntity->m_sEntityID == entities.at(ID).m_sEntityID;
 	if (is_selected)
 		node_flags |= ImGuiTreeNodeFlags_Selected;
 
-	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, entities.at(index).m_sEntityName.c_str());
+	bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, entities.at(ID).m_sEntityName.c_str());
 	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 	{
-		Application::GetApplication()->GetEditor()->SetSelectedEntity(Application::GetApplication()->GetEntityIndex(entities.at(index).m_sEntityID));
+		Application::GetApplication()->GetEditor()->SetSelectedEntity(entities.at(ID).m_sEntityID);
 	}
 
 	if (ImGui::BeginPopupContextItem())
 	{
 		if (ImGui::Button("Create Child Entity"))
 		{
-			AddEntityCommand* command = new AddEntityCommand("New Child Entity", entities.at(index).m_sEntityID);
+			AddEntityCommand* command = new AddEntityCommand("New Child Entity", entities.at(ID).m_sEntityID);
 			Application::GetApplication()->PushCommand(command);
 			ImGui::CloseCurrentPopup();
 		}
@@ -282,7 +282,7 @@ void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
 		ImGui::SameLine();
 		if (ImGui::Button("Delete"))
 		{
-			DeleteEntityCommand* command = new DeleteEntityCommand(entities.at(index).m_sEntityID);
+			DeleteEntityCommand* command = new DeleteEntityCommand(entities.at(ID).m_sEntityID);
 			Application::GetApplication()->PushCommand(command);
 
 			ImGui::CloseCurrentPopup();
@@ -296,7 +296,7 @@ void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
 			{
 				if (ImGui::MenuItem(compRegistry->at(o).first.c_str()))
 				{
-					AddComponentCommand* command = new AddComponentCommand(entities.at(index).m_sEntityID, o);
+					AddComponentCommand* command = new AddComponentCommand(entities.at(ID).m_sEntityID, o);
 					Application::GetApplication()->PushCommand(command);
 				}
 			}
@@ -309,7 +309,7 @@ void EntityDropdown::DoEntityDropdown(int index, int& selEntity, int layer)
 		ImGui::EndPopup();
 	}
 
-	entities.at(index).DoEntityInterface(index, node_open, selEntity, layer);
+	entities.at(ID).DoEntityInterface(index, node_open, selEntity, layer);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

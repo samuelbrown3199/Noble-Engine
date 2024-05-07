@@ -150,6 +150,6 @@ struct Entity
 	NobleTextInput* m_pNameEdit = nullptr;
 	bool m_bInitializeInterface = true;
 	void InitializeEntityInterface() { m_bInitializeInterface = true; }
-	void DoEntityInterface(int& i, bool& node_open, int& selEntity, int layer = 0);
+	void DoEntityInterface(int& i, bool& node_open, std::string& selEntity, int layer = 0);
 	void DoEntityComponentInterface(std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry);
 };

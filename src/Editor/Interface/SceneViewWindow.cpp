@@ -42,7 +42,7 @@ void SceneViewWindow::DoInterface()
 
 		if (ray.m_hitObject)
 		{
-			dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->SetSelectedEntity(Application::GetApplication()->GetEntityIndex(ray.m_hitEntity->m_sEntityID));
+			dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->SetSelectedEntity(ray.m_hitEntity->m_sEntityID);
 		}
 	}
 	ImGui::Image(m_drawWindowSet, ImVec2(contentSize.x / fRenderScale, contentSize.y / fRenderScale));

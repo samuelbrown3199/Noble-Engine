@@ -212,9 +212,9 @@ void EditorManager::PushCommand(Command* command)
 	m_pCommandSystem->PushCommand(command);
 }
 
-void EditorManager::SetSelectedEntity(int index)
+void EditorManager::SetSelectedEntity(std::string ID)
 {
-	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->SetSelectedEntity(index);
+	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->SetSelectedEntity(ID);
 }
 
 void EditorManager::ConsoleLog(std::string message)

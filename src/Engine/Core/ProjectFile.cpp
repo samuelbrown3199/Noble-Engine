@@ -7,8 +7,6 @@
 
 void ProjectFile::CreateProjectFile(std::string projectName, std::string projectDirectory, std::string projectFilePath)
 {
-	std::unique_lock<std::mutex> lock(m_projectFileMutex);
-
 	std::shared_ptr<Application> app = Application::GetApplication();
 
 	LoadProjectFile(projectFilePath);

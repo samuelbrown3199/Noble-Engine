@@ -38,7 +38,7 @@ public:
 
 	virtual void PushCommand(Command* command) = 0;
 	virtual void ConsoleLog(std::string message) = 0;
-	virtual void SetSelectedEntity(int index) = 0;
+	virtual void SetSelectedEntity(std::string ID) = 0;
 };
 
 class Application
@@ -72,7 +72,7 @@ private:
     PerformanceStats* m_pStats;
 
 	std::deque<Entity*> m_vDeletionEntities;
-	std::vector<Entity> m_vEntities;
+	std::map<std::string, Entity> m_vEntities;
 
 	std::vector<std::shared_ptr<ToolUI>> m_vToolUIs;
 
@@ -105,12 +105,11 @@ public:
 
 	void LinkChildEntities();
 
-	int GetEntityIndex(std::string _ID);
-	void DeleteEntity(int index);
-	Entity* GetEntity(int index);
+	void DeleteEntity(std::string ID);
+	Entity* GetEntity(std::string ID);
 	void CleanupDeletionEntities();
 
-	std::vector<Entity>& GetEntityList() { return m_vEntities; }
+	std::map<std::string, Entity>& GetEntityList() { return m_vEntities; }
 	void ClearLoadedScene();
 
 	NobleRegistry* GetRegistry() { return m_registry; }

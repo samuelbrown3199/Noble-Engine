@@ -19,13 +19,13 @@ class SceneHierarchyWindow : public EditorToolUI
 {
 private:
 
-	int m_iSelEntity = -1;
+	std::string m_sSelEntity = "";
 
 public:
 
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 
-	void SetSelectedEntity(int iEntity);
-	void ResetSelectedEntity() { m_iSelEntity = -1; }
+	void SetSelectedEntity(std::string ID);
+	void ResetSelectedEntity() { m_sSelEntity = ""; }
 };

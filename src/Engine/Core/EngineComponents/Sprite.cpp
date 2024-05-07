@@ -56,7 +56,7 @@ void Sprite::DoComponentInterface()
 
 	static NobleColourEdit colourEdit;
 	colourEdit.m_pComponent = this;
-	colourEdit.DoColourEdit4("Colour", m_bInitializeInterface, &m_colour);
+	colourEdit.DoColourEdit4("Sprite Colour", m_bInitializeInterface, &m_colour);
 
 	m_bInitializeInterface = false;
 }

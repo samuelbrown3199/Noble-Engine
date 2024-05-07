@@ -79,7 +79,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	LogInfo("Saving Scene " + scenePath);
 
-	std::vector<Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
@@ -91,13 +91,14 @@ void SceneManager::SaveScene(std::string scenePath)
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };
 	data["LightingSettings"]["AmbientColour"] = { renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y , renderer->m_sceneData.ambientColour.z , renderer->m_sceneData.ambientColour.w };
 
-	for (int i = 0; i < entities.size(); i++)
+	std::map<std::string, Entity>::iterator it;
+	for (it = entities.begin(); it != entities.end(); it++)
 	{
-		if (entities.at(i).m_bAvailableForUse)
+		if (it->second.m_bAvailableForUse)
 			continue;
 
-		data["Entities"][entities.at(i).m_sEntityID]["EntityName"] = entities.at(i).m_sEntityName;
-		data["Entities"][entities.at(i).m_sEntityID]["ParentID"] = entities.at(i).m_sEntityParentID;
+		data["Entities"][it->second.m_sEntityID]["EntityName"] = it->second.m_sEntityName;
+		data["Entities"][it->second.m_sEntityID]["ParentID"] = it->second.m_sEntityParentID;
 	}
 	for (int i = 0; i < compRegistry->size(); i++)
 	{

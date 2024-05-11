@@ -24,14 +24,15 @@ struct ResourceManager
 {
 	FT_Library m_fontLibrary;
 
+	std::map<std::string, std::filesystem::file_time_type> m_vPreviousScanFiles;
 	/**
 	*Stores all resources.
 	*/
-	std::vector<std::shared_ptr<Resource>> m_vResourceDatabase;
+	std::map<std::string, std::shared_ptr<Resource>> m_mResourceDatabase;
 	/**
 	*Stores all loaded resources.
 	*/
-	std::vector<std::shared_ptr<Resource>> m_vLoadedResources;
+	std::map<std::string, std::shared_ptr<Resource>> m_mLoadedResources;
 	std::string m_sWorkingDirectory;
 
 	nlohmann::json m_resourceDatabaseJson;
@@ -49,13 +50,11 @@ struct ResourceManager
 	template<typename T>
 	void AddNewResource(std::string path)
 	{
-		for (int i = 0; i < m_vResourceDatabase.size(); i++)
+		std::string relativeLocation = GetFolderLocationRelativeToGameData(path);
+		if (m_mResourceDatabase.find(relativeLocation) != m_mResourceDatabase.end())
 		{
-			if (m_vResourceDatabase.at(i)->m_sResourcePath == path)
-			{
-				LogError("Tried to add a duplicate resource.");
-				return;
-			}
+			LogError("Tried to add a duplicate resource.");
+			return;
 		}
 
 		std::shared_ptr<T> newResource = std::make_shared<T>();
@@ -64,7 +63,7 @@ struct ResourceManager
 
 		SetResourceToDefaults(newResource);
 
-		m_vResourceDatabase.push_back(newResource);
+		m_mResourceDatabase[relativeLocation] = newResource;
 		LogInfo("Added new resource " + newResource->m_sLocalPath);
 
 		WriteResourceDatabase();
@@ -73,23 +72,20 @@ struct ResourceManager
 	void AddNewResource(std::string type, std::string path);
 	void AddNewResource(Resource* resource);
 
-	void RemoveResourceFromDatabase(std::string path);
+	void RemoveResourceFromDatabase(std::string localPath);
 	void SetResourceToDefaults(std::shared_ptr<Resource> res);	
 	void LoadResourceDatabase(nlohmann::json resourceDatabase);
 	nlohmann::json WriteResourceDatabase();
 	
 	template<typename T>
-	std::shared_ptr<T> PrelimLoadResource(const std::string& _fileDirectory, const std::vector<std::shared_ptr<Resource>>& targetVector)
+	std::shared_ptr<T> PrelimLoadResource(const std::string& _localPath, const std::map<std::string, std::shared_ptr<Resource>>& targetMap)
 	{
-		for (size_t re = 0; re < targetVector.size(); re++)
+		if (targetMap.find(_localPath) != targetMap.end())
 		{
-			if (targetVector.at(re)->m_sResourcePath == _fileDirectory)
+			std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(targetMap.at(_localPath));
+			if (resource)
 			{
-				std::shared_ptr<T> resource = std::dynamic_pointer_cast<T>(targetVector.at(re));
-				if (resource)
-				{
-					return resource;
-				}
+				return resource;
 			}
 		}
 
@@ -107,17 +103,17 @@ struct ResourceManager
 	}
 
 	template<typename T>
-	std::shared_ptr<T> GetResourceFromDatabase(const std::string& _fileDirectory, const bool& requiresFile)
+	std::shared_ptr<T> GetResourceFromDatabase(const std::string& _localPath, const bool& requiresFile)
 	{
 		std::shared_ptr<T> oldResource = nullptr;
 
 		if (requiresFile)
 		{
-			oldResource = PrelimLoadResource<T>(GetResourcePath(_fileDirectory), m_vResourceDatabase);
+			oldResource = PrelimLoadResource<T>(_localPath, m_mResourceDatabase);
 		}
 		else
 		{
-			oldResource = PrelimLoadResource<T>(_fileDirectory, m_vResourceDatabase);
+			oldResource = PrelimLoadResource<T>(_localPath, m_mResourceDatabase);
 		}
 
 		return oldResource;
@@ -130,34 +126,34 @@ struct ResourceManager
 	std::shared_ptr<T> LoadResource(const std::string& _fileDirectory)
 	{
 		std::string searchPath = GetResourcePath(_fileDirectory);
-		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_vLoadedResources);
+		std::shared_ptr<T> oldResource = PrelimLoadResource<T>(searchPath, m_mLoadedResources);
 		if (oldResource != nullptr)
 		{
 			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
-		oldResource = PrelimLoadResource<T>(_fileDirectory, m_vLoadedResources);
+		oldResource = PrelimLoadResource<T>(_fileDirectory, m_mLoadedResources);
 		if (oldResource != nullptr)
 		{
 			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
-		oldResource = PrelimLoadResource<T>(searchPath, m_vResourceDatabase);
+		oldResource = PrelimLoadResource<T>(searchPath, m_mResourceDatabase);
 		if (oldResource != nullptr)
 		{
 			oldResource->OnLoad();
-			m_vLoadedResources.push_back(oldResource);
+			m_mLoadedResources[oldResource->m_sLocalPath] = oldResource;
 			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
 
-		oldResource = PrelimLoadResource<T>(_fileDirectory, m_vResourceDatabase);
+		oldResource = PrelimLoadResource<T>(_fileDirectory, m_mResourceDatabase);
 		if (oldResource != nullptr)
 		{
 			oldResource->OnLoad();
-			m_vLoadedResources.push_back(oldResource);
+			m_mLoadedResources[oldResource->m_sLocalPath] = oldResource;
 			LogInfo(FormatString("Loaded asset file %s", _fileDirectory.c_str()));
 			return oldResource;
 		}
@@ -167,11 +163,11 @@ struct ResourceManager
 	}
 
 	void ScanForResources();
-	bool IsFileInDatabase(std::string type, std::string path);
+	bool IsFileInDatabase(std::string path);
 	std::string GetResourceTypeFromPath(std::string path);
 	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType(std::string type);
 	/**
-	*Unloads resources whose use count is currently 1. This means that un-used resources are no longer kept in memory.
+	*Unloads resources whose use count is currently 2. This means that un-used resources are no longer kept in memory.
 	*/
 	void UnloadUnusedResources();
 

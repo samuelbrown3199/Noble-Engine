@@ -23,7 +23,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	m_vLoadedResources.clear();
+	UnloadAllResources();
 }
 
 void ResourceManager::RegisterResourceTypes()
@@ -70,24 +70,17 @@ void ResourceManager::AddNewResource(Resource* resource)
 {
 	std::shared_ptr<Resource> res(resource);
 
-	m_vResourceDatabase.push_back(res);
+	m_mResourceDatabase[res->m_sLocalPath] = res;
 	LogInfo(FormatString("Added new resource %s", res->m_sLocalPath.c_str()));
 
 	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
-void ResourceManager::RemoveResourceFromDatabase(std::string path)
+void ResourceManager::RemoveResourceFromDatabase(std::string localPath)
 {
-	for (int i = 0; i < m_vResourceDatabase.size(); i++)
-	{
-		if (m_vResourceDatabase.at(i)->m_sLocalPath == path)
-		{
-			m_vResourceDatabase.erase(m_vResourceDatabase.begin() + i);
-			LogInfo(FormatString("Remove asset %s from Resource Database", path.c_str()));
-			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
-			return;
-		}
-	}
+	m_mResourceDatabase.erase(localPath);
+	LogInfo(FormatString("Remove asset %s from Resource Database", localPath.c_str()));
+	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
@@ -112,8 +105,8 @@ void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 
 void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
-	m_vResourceDatabase.clear();
-	m_vLoadedResources.clear();
+	m_mResourceDatabase.clear();
+	m_mLoadedResources.clear();
 	m_resourceDatabaseJson = resourceDatabase;
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
@@ -140,7 +133,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 			for (auto it : ac.items())
 			{
 				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->m_resource->LoadFromJson(it.key(), it.value());
-				m_vResourceDatabase.push_back(res);
+				m_mResourceDatabase[it.key()] = res;
 			}
 
 			LogInfo(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
@@ -152,9 +145,10 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 {
 	m_resourceDatabaseJson.clear();
 
-	for (size_t re = 0; re < m_vResourceDatabase.size(); re++)
+	std::map<std::string, std::shared_ptr<Resource>>::iterator it = m_mResourceDatabase.begin();
+	for (; it != m_mResourceDatabase.end(); it++)
 	{
-		m_resourceDatabaseJson[m_vResourceDatabase.at(re)->m_resourceType][m_vResourceDatabase.at(re)->m_sLocalPath] = m_vResourceDatabase.at(re)->AddToDatabase();
+		m_resourceDatabaseJson[it->second->m_resourceType][it->first] = it->second->AddToDatabase();
 	}
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
@@ -175,45 +169,86 @@ void ResourceManager::ScanForResources()
 	if(Application::GetApplication()->GetProjectFile() == nullptr)
 		return;
 
-	std::vector<std::string> files = GetAllFiles(GetGameDataFolder(), true);
+	std::map<std::string, std::filesystem::file_time_type> files = GetAllFilesAndLastWriteTime(GetGameDataFolder(), true);
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	std::vector<std::pair<std::string, ResourceRegistryBase*>>* resourceRegistry = registry->GetResourceRegistry();
 
-	//most of the slowdown is in this loop.
-	for (size_t i = 0; i < files.size(); i++)
+	if (files == m_vPreviousScanFiles)
+		return;
+
+	//get a list of added files
+	std::map<std::string, std::filesystem::file_time_type> addedFiles;
+	std::map<std::string, std::filesystem::file_time_type>::iterator it = files.begin();
+	for (; it != files.end(); it++)
 	{
-		std::string type = GetResourceTypeFromPath(files.at(i));
+		if (m_vPreviousScanFiles.find(it->first) == m_vPreviousScanFiles.end())
+		{
+			addedFiles[it->first] = it->second;
+		}
+	}
+
+	//get a list of removed files
+	std::map<std::string, std::filesystem::file_time_type> removedFiles;
+	it = m_vPreviousScanFiles.begin();
+	for (; it != m_vPreviousScanFiles.end(); it++)
+	{
+		if (files.find(it->first) == files.end())
+		{
+			removedFiles[it->first] = it->second;
+		}
+	}
+
+	//get list of modified files
+	std::map<std::string, std::filesystem::file_time_type> modifiedFiles;
+	it = files.begin();
+	for (; it != files.end(); it++)
+	{
+		if (m_vPreviousScanFiles.find(it->first) != m_vPreviousScanFiles.end())
+		{
+			if (it->second != m_vPreviousScanFiles.at(it->first))
+			{
+				modifiedFiles[it->first] = it->second;
+			}
+		}
+	}
+
+	//most of the slowdown is in this loop.
+	it = addedFiles.begin();
+	for (; it != addedFiles.end(); it++)
+	{
+		std::string type = GetResourceTypeFromPath(it->first);
 
 		if(type == "NotSupported")
 			continue;
 
-		if (IsFileInDatabase(type, GetFolderLocationRelativeToGameData(files.at(i))))
+		if (IsFileInDatabase(GetFolderLocationRelativeToGameData(it->first)))
 			continue;
 
-		LogInfo("Found new resource " + files.at(i) + " of type " + type + " that is not in the database.");
-		AddNewResource(type, files.at(i));
+		LogInfo("Found new resource " + it->first + " of type " + type + " that is not in the database.");
+		AddNewResource(type, it->first);
 	}
+
 	for (int o = 0; o < resourceRegistry->size(); o++)
 	{
 		if (m_resourceDatabaseJson.find(resourceRegistry->at(o).first) != m_resourceDatabaseJson.end())
 		{
-			if (!resourceRegistry->at(o).second->m_bRequiresFile) //skip any resources that dont require a file
+			//skip any resources that dont require a file
+			if (!resourceRegistry->at(o).second->m_bRequiresFile)
 				continue;
 
 			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(o).first);
 			for (auto it : ac.items())
 			{
-				bool foundResource = false;
-
-				for (size_t i = 0; i < files.size(); i++)
+				bool foundResource = true;
+				std::map<std::string, std::filesystem::file_time_type>::iterator fileItr = removedFiles.begin();
+				for (; fileItr != removedFiles.end(); fileItr++)
 				{
-					if (files.at(i) == "")
+					if (fileItr->first == "")
 						continue;
 
-					if (GetFolderLocationRelativeToGameData(files.at(i)) == it.key())
+					if (GetFolderLocationRelativeToGameData(fileItr->first) == it.key())
 					{
-						foundResource = true;
-						files.erase(files.begin() + i);
+						foundResource = false;
 						break;
 					}
 				}
@@ -225,15 +260,35 @@ void ResourceManager::ScanForResources()
 			}
 		}
 	}
+
+	it = removedFiles.begin();
+	for (; it != removedFiles.end(); it++)
+	{
+		RemoveResourceFromDatabase(it->first);
+	}
+
+	//it = modifiedFiles.begin();
+	//for (; it != modifiedFiles.end(); it++)
+	//{
+	//	std::string type = GetResourceTypeFromPath(it->first);
+
+	//	if(type == "NotSupported")
+	//		continue;
+
+	//	std::shared_ptr<Resource> res = GetResourceFromDatabase<Resource>(GetFolderLocationRelativeToGameData(it->first), true);
+	//	if (res != nullptr)
+	//	{
+	//		res->ReloadResource();
+	//		LogInfo("Reloaded resource " + it->first);
+	//	}
+	//}
+
+	m_vPreviousScanFiles = files;
 }
 
-bool ResourceManager::IsFileInDatabase(std::string type, std::string path)
+bool ResourceManager::IsFileInDatabase(std::string path)
 {
-	if (type == "NotSupported")
-		return false;
-
-	nlohmann::json typeJson = m_resourceDatabaseJson[type];
-	bool isInDatabase = (typeJson.count(path) != 0);
+	bool isInDatabase = (m_mResourceDatabase.count(path) != 0);
 	return isInDatabase;
 }
 
@@ -258,12 +313,14 @@ std::string ResourceManager::GetResourceTypeFromPath(std::string path)
 
 std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(std::string type)
 {
+	
 	std::vector<std::shared_ptr<Resource>> returnVec;
 
-	for (int i = 0; i < m_vResourceDatabase.size(); i++)
+	std::map<std::string, std::shared_ptr<Resource>>::iterator it = m_mResourceDatabase.begin();
+	for (; it != m_mResourceDatabase.end(); it++)
 	{
-		if (m_vResourceDatabase.at(i)->m_resourceType == type)
-			returnVec.push_back(m_vResourceDatabase.at(i));
+		if (it->second->m_resourceType == type)
+			returnVec.push_back(it->second);
 	}
 
 	return returnVec;
@@ -271,25 +328,26 @@ std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(st
 
 void ResourceManager::UnloadUnusedResources()
 {
-	if (m_vLoadedResources.empty())
+	if (m_mLoadedResources.empty())
 		return;
 
-	for (size_t re = m_vLoadedResources.size()-1; re > 0 ; re--)
+	std::map<std::string, std::shared_ptr<Resource>>::iterator it;
+	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); it++)
 	{
-		if (m_vLoadedResources.at(re).use_count() == 2)
+		if (it->second.use_count() == 2)
 		{
-			LogInfo("Unloaded " + m_vLoadedResources.at(re)->m_sLocalPath);
+			it->second->OnUnload();
+			m_mLoadedResources.erase(it);
 
-			m_vLoadedResources.at(re)->OnUnload();
-			m_vLoadedResources.erase(m_vLoadedResources.begin() + re);
+			LogInfo("Unloaded " + it->second->m_sLocalPath);
 		}
 	}
 }
 
 void ResourceManager::UnloadAllResources()
 {
-	m_vLoadedResources.clear();
-	m_vResourceDatabase.clear();
+	m_mLoadedResources.clear();
+	m_mResourceDatabase.clear();
 }
 
 std::shared_ptr<Resource> ResourceManager::DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath, std::string type)

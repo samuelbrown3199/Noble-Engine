@@ -81,6 +81,8 @@ void ProjectFile::UpdateProjectFile()
 	m_projectData["Resources"] = app->GetResourceManager()->WriteResourceDatabase();
 	m_projectData["Scenes"] = app->GetSceneManager()->WriteSceneDatabase();
 
+	app->GetResourceManager()->LoadResourceDatabase(m_projectData.at("Resources"));
+
 	std::fstream file(m_sProjectFilePath, 'w');
 	file << m_projectData.dump();
 	file.close();

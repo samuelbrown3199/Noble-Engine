@@ -257,6 +257,19 @@ std::vector<std::string> GetAllFiles(std::string directory, bool recursive)
 	return files;
 }
 
+std::map<std::string, std::filesystem::file_time_type> GetAllFilesAndLastWriteTime(std::string directory, bool recursive)
+{
+    std::vector<std::string> files = GetAllFiles(directory, recursive);
+    std::map<std::string, std::filesystem::file_time_type> fileTimeMap;
+
+    for (auto& f : files)
+    {
+		fileTimeMap[f] = std::filesystem::last_write_time(f);
+    }
+
+    return fileTimeMap;
+}
+
 void DeleteFilePath(std::string path)
 {
     std::remove(path.c_str());

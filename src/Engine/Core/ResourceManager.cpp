@@ -147,7 +147,11 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 				}
 
 				m_mResourceDatabase[it.key()] = res;
-				m_vPreviousScanFiles[res->m_sResourcePath] = std::filesystem::file_time_type::min();
+				std::chrono::file_time fileTime = std::filesystem::file_time_type::min();
+				if(PathExists(res->m_sResourcePath))
+					fileTime = std::filesystem::last_write_time(res->m_sResourcePath);
+
+				m_vPreviousScanFiles[res->m_sResourcePath] = fileTime;
 			}
 
 			LogInfo(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
@@ -358,8 +362,11 @@ void ResourceManager::UnloadUnusedResources()
 		return;
 
 	std::map<std::string, std::shared_ptr<Resource>>::iterator it;
-	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); ++it)
+	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); it++)
 	{
+		if (it->second == nullptr)
+			continue;
+
 		if (it->second.use_count() == 2)
 		{
 			it->second->OnUnload();

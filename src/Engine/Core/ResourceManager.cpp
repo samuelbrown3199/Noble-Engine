@@ -104,6 +104,9 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
 	std::lock_guard<std::mutex> lock(m_resourceDatabaseMutex);
 
+	std::map<std::string, std::shared_ptr<Resource>> loadedResources;
+	loadedResources = m_mLoadedResources;
+
 	m_mResourceDatabase.clear();
 	m_mLoadedResources.clear();
 	m_resourceDatabaseJson = resourceDatabase;
@@ -131,7 +134,18 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 			nlohmann::json ac = m_resourceDatabaseJson.at(resourceRegistry->at(i).first);
 			for (auto it : ac.items())
 			{
-				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->m_resource->LoadFromJson(it.key(), it.value());
+				std::shared_ptr<Resource> res;
+				res = PrelimLoadResource<Resource>(it.key(), loadedResources);
+				if (res == nullptr)
+				{
+					res = resourceRegistry->at(i).second->m_resource->LoadFromJson(it.key(), it.value());
+				}
+				else
+				{
+					loadedResources.erase(it.key());
+					m_mLoadedResources[it.key()] = res;
+				}
+
 				m_mResourceDatabase[it.key()] = res;
 				m_vPreviousScanFiles[res->m_sResourcePath] = std::filesystem::file_time_type::min();
 			}

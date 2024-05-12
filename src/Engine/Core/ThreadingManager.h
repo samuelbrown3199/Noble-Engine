@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <functional>
 #include <vector>
+#include <map>
 #include <thread>
 #include <queue>
 #include <iostream>
@@ -56,6 +57,8 @@ public:
 		return wrapper->get_future();
 	}
 
+	void AddPermanentThread(std::string ID, std::thread& thread);
+
 	void WaitForTasksToClear()
 	{
 		while (!mTasks.empty() /* && !AreAllThreadsFinished()*/) {}
@@ -64,7 +67,8 @@ public:
 private:
 
 	int m_iNumberOfThreads;
-	std::vector<Thread> m_vThreads;
+	std::vector<Thread> m_vTaskThreads;
+	std::map<std::string, std::thread> m_mPermanentThreads;
 
 	std::condition_variable m_EventVar;
 	std::mutex m_EventMutex;

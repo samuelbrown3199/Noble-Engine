@@ -48,6 +48,8 @@ class Application
 
 private:
 
+	std::mutex m_criticalSection;
+
 	bool m_bPlayMode;
 
 	NobleRegistry* m_registry;
@@ -87,6 +89,7 @@ public:
 
 	void StopApplication();
 	void ForceQuit();
+	bool GetMainLoop();
 
 	void SetPlayMode(bool play);
 	bool GetPlayMode() { return m_bPlayMode; }

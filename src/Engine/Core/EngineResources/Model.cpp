@@ -26,6 +26,10 @@ void Model::OnLoad()
     if (m_bIsLoaded)
         return;
 
+    m_modelBoundingBox.clear();
+    m_vertices.clear();
+    m_indices.clear();
+
     Resource::OnLoad();
 
     tinyobj::attrib_t attrib;

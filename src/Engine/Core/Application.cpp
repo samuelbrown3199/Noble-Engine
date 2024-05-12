@@ -83,6 +83,8 @@ std::shared_ptr<Application> Application::StartApplication(const std::string _wi
 
 void Application::StopApplication()
 {
+	std::unique_lock<std::mutex> lock(m_criticalSection);
+
 	if(m_self.lock()->m_editor == nullptr)
 		m_bLoop = false;
 	else
@@ -93,7 +95,14 @@ void Application::StopApplication()
 
 void Application::ForceQuit()
 {
+	std::unique_lock<std::mutex> lock(m_criticalSection);
 	m_bLoop = false;
+}
+
+bool Application::GetMainLoop()
+{
+	std::unique_lock<std::mutex> lock(m_criticalSection);
+	return m_bLoop;
 }
 
 void Application::SetPlayMode(bool play)
@@ -399,8 +408,6 @@ void Application::SetProjectFile(std::string path)
 
 	m_gameDLL = new NobleDLL(m_projectFile->m_sProjectDirectory + "\\NobleGame.dll");
 	m_gameDLL->LoadDLL(GetApplication());
-
-	m_resourceManager->ScanForResources();
 
 	if(app->m_editor != nullptr)
 		app->m_editor->SetProjectFile(m_projectFile);

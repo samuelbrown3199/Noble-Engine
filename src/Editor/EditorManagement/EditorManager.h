@@ -36,6 +36,8 @@ private:
 
 	void UpdateRecentProjectFile();
 
+	void ResourceThread();
+
 public:
 
 	std::string m_sWindowName;

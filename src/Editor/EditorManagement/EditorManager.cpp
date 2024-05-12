@@ -44,6 +44,9 @@ void EditorManager::InitializeEditor()
 	ToggleUI("ResourceManager");
 
 	m_pEditorCam = new EditorCam(dynamic_cast<SceneViewWindow*>(GetEditorUI("SceneView")));
+
+	std::thread resourceThread(&EditorManager::ResourceThread, this);
+	Application::GetApplication()->GetThreadingManager()->AddPermanentThread("ResourceScanning", resourceThread);
 }
 
 void EditorManager::CheckAndInitializeData()
@@ -127,9 +130,6 @@ void EditorManager::OnUpdate()
 	m_pCommandSystem->ProcessCommandQueue();
 	m_pEditorCam->Update();
 
-	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-	rManager->ScanForResources();
-
 	std::unordered_map<std::string, std::shared_ptr<ToolUI>>::iterator uiItr;
 	for (uiItr = m_mEditorUIs.begin(); uiItr != m_mEditorUIs.end(); uiItr++)
 	{
@@ -206,6 +206,18 @@ void EditorManager::UpdateRecentProjectFile()
 	}
 	file.close();
 }
+
+void EditorManager::ResourceThread()
+{
+	while (Application::GetApplication()->GetMainLoop())
+	{
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+		rManager->ScanForResources();
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+		rManager->ReloadResources();
+	}
+}
+
 
 void EditorManager::PushCommand(Command* command)
 {

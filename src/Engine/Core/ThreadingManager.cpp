@@ -41,7 +41,7 @@ void ThreadingManager::InitializeThreads()
 	for (auto i = 0; i < m_iNumberOfThreads; ++i)
 	{
 		LogTrace(FormatString("Starting thread %d.", i));
-		m_vThreads.emplace_back(Thread(this));
+		m_vTaskThreads.emplace_back(Thread(this));
 	}
 }
 
@@ -53,10 +53,18 @@ void ThreadingManager::StopThreads() noexcept
 		m_bStopping = true;
 	}
 
-	m_EventVar.notify_all();
-	for (int i = 0; i < m_vThreads.size(); i++)
+	std::map<std::string, std::thread>::iterator it;
+	for (it = m_mPermanentThreads.begin(); it != m_mPermanentThreads.end(); it++)
 	{
-		m_vThreads[i].t.join();
+		it->second.join();
+		LogTrace(FormatString("Thread %s stopped.", it->first.c_str()));
+	}
+	m_mPermanentThreads.clear();
+
+	m_EventVar.notify_all();
+	for (int i = 0; i < m_vTaskThreads.size(); i++)
+	{
+		m_vTaskThreads[i].t.join();
 		LogTrace(FormatString("Thread %d stopped.", i));
 	}
 
@@ -67,9 +75,20 @@ bool ThreadingManager::AreAllThreadsFinished()
 {
 	for (int i = 0; i < m_iNumberOfThreads; i++)
 	{
-		if (!m_vThreads[i].busy)
+		if (!m_vTaskThreads[i].busy)
 			return false;
 	}
 
 	return true;
+}
+
+void ThreadingManager::AddPermanentThread(std::string ID, std::thread& thread)
+{
+	if (m_mPermanentThreads.count(ID) == 0)
+	{
+		m_mPermanentThreads[ID] = std::move(thread);
+		LogInfo(FormatString("Added permanent thread %s.", ID.c_str()));
+	}
+	else
+		LogFatalError(FormatString("Trying to add permanent thread %s that already exists.", ID.c_str()));
 }

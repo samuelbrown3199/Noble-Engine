@@ -72,15 +72,12 @@ void ResourceManager::AddNewResource(Resource* resource)
 
 	m_mResourceDatabase[res->m_sLocalPath] = res;
 	LogInfo(FormatString("Added new resource %s", res->m_sLocalPath.c_str()));
-
-	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void ResourceManager::RemoveResourceFromDatabase(std::string localPath)
 {
 	m_mResourceDatabase.erase(localPath);
 	LogInfo(FormatString("Remove asset %s from Resource Database", localPath.c_str()));
-	Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 }
 
 void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
@@ -105,6 +102,8 @@ void ResourceManager::SetResourceToDefaults(std::shared_ptr<Resource> res)
 
 void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
+	std::lock_guard<std::mutex> lock(m_resourceDatabaseMutex);
+
 	m_mResourceDatabase.clear();
 	m_mLoadedResources.clear();
 	m_resourceDatabaseJson = resourceDatabase;
@@ -134,6 +133,7 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 			{
 				std::shared_ptr<Resource> res = resourceRegistry->at(i).second->m_resource->LoadFromJson(it.key(), it.value());
 				m_mResourceDatabase[it.key()] = res;
+				m_vPreviousScanFiles[res->m_sResourcePath] = std::filesystem::file_time_type::min();
 			}
 
 			LogInfo(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
@@ -162,10 +162,6 @@ nlohmann::json ResourceManager::WriteResourceDatabase()
 
 void ResourceManager::ScanForResources()
 {
-	//some serious optimisation needed here, running this every frame is not good, but its needed for the editor to work nicely
-
-	std::unique_lock<std::mutex> lock(m_resourceDatabaseMutex);
-
 	if(Application::GetApplication()->GetProjectFile() == nullptr)
 		return;
 
@@ -221,9 +217,6 @@ void ResourceManager::ScanForResources()
 		if(type == "NotSupported")
 			continue;
 
-		if (IsFileInDatabase(GetFolderLocationRelativeToGameData(it->first)))
-			continue;
-
 		LogInfo("Found new resource " + it->first + " of type " + type + " that is not in the database.");
 		AddNewResource(type, it->first);
 	}
@@ -261,29 +254,46 @@ void ResourceManager::ScanForResources()
 		}
 	}
 
-	it = removedFiles.begin();
-	for (; it != removedFiles.end(); it++)
+	it = modifiedFiles.begin();
+	for (; it != modifiedFiles.end(); it++)
 	{
-		RemoveResourceFromDatabase(it->first);
+		std::string type = GetResourceTypeFromPath(it->first);
+
+		if(type == "NotSupported")
+			continue;
+
+		std::shared_ptr<Resource> res = GetResourceFromDatabase<Resource>(GetFolderLocationRelativeToGameData(it->first), true);
+		if (res != nullptr && res->IsLoaded())
+		{
+			m_qReloadQueue.push_back(res);
+			LogInfo("Found modified resource " + it->first + ", pushed into the reload queue");
+		}
 	}
 
-	//it = modifiedFiles.begin();
-	//for (; it != modifiedFiles.end(); it++)
-	//{
-	//	std::string type = GetResourceTypeFromPath(it->first);
-
-	//	if(type == "NotSupported")
-	//		continue;
-
-	//	std::shared_ptr<Resource> res = GetResourceFromDatabase<Resource>(GetFolderLocationRelativeToGameData(it->first), true);
-	//	if (res != nullptr)
-	//	{
-	//		res->ReloadResource();
-	//		LogInfo("Reloaded resource " + it->first);
-	//	}
-	//}
+	if(m_vPreviousScanFiles != files)
+		Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
 
 	m_vPreviousScanFiles = files;
+}
+
+void ResourceManager::ReloadResources()
+{
+	if(m_qReloadQueue.empty())
+		return;
+
+	std::shared_ptr<Resource> res = m_qReloadQueue.front();
+
+	if (res != nullptr)
+	{
+		std::ifstream file = std::ifstream(res->m_sResourcePath);
+		if (file.is_open())
+		{
+			file.close();
+
+			res->ReloadResource();
+			m_qReloadQueue.pop_front();
+		}
+	}
 }
 
 bool ResourceManager::IsFileInDatabase(std::string path)
@@ -313,7 +323,7 @@ std::string ResourceManager::GetResourceTypeFromPath(std::string path)
 
 std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(std::string type)
 {
-	
+	std::lock_guard<std::mutex> lock(m_resourceDatabaseMutex);
 	std::vector<std::shared_ptr<Resource>> returnVec;
 
 	std::map<std::string, std::shared_ptr<Resource>>::iterator it = m_mResourceDatabase.begin();
@@ -328,11 +338,13 @@ std::vector<std::shared_ptr<Resource>> ResourceManager::GetAllResourcesOfType(st
 
 void ResourceManager::UnloadUnusedResources()
 {
+	std::lock_guard<std::mutex> lock(m_resourceDatabaseMutex);
+
 	if (m_mLoadedResources.empty())
 		return;
 
 	std::map<std::string, std::shared_ptr<Resource>>::iterator it;
-	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); it++)
+	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); ++it)
 	{
 		if (it->second.use_count() == 2)
 		{

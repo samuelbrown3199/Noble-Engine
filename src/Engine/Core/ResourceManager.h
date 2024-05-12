@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <deque>
 #include <memory>
 #include <string>
 #include <mutex>
@@ -33,11 +34,12 @@ struct ResourceManager
 	*Stores all loaded resources.
 	*/
 	std::map<std::string, std::shared_ptr<Resource>> m_mLoadedResources;
+
 	std::string m_sWorkingDirectory;
-
 	nlohmann::json m_resourceDatabaseJson;
-
 	std::mutex m_resourceDatabaseMutex;
+
+	std::deque<std::shared_ptr<Resource>> m_qReloadQueue;
 
 	ResourceManager();
 	~ResourceManager();
@@ -73,7 +75,7 @@ struct ResourceManager
 	void AddNewResource(Resource* resource);
 
 	void RemoveResourceFromDatabase(std::string localPath);
-	void SetResourceToDefaults(std::shared_ptr<Resource> res);	
+	void SetResourceToDefaults(std::shared_ptr<Resource> res);
 	void LoadResourceDatabase(nlohmann::json resourceDatabase);
 	nlohmann::json WriteResourceDatabase();
 	
@@ -163,6 +165,7 @@ struct ResourceManager
 	}
 
 	void ScanForResources();
+	void ReloadResources();
 	bool IsFileInDatabase(std::string path);
 	std::string GetResourceTypeFromPath(std::string path);
 	std::vector<std::shared_ptr<Resource>> GetAllResourcesOfType(std::string type);

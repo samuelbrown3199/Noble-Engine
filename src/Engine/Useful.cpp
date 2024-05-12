@@ -264,7 +264,9 @@ std::map<std::string, std::filesystem::file_time_type> GetAllFilesAndLastWriteTi
 
     for (auto& f : files)
     {
-		fileTimeMap[f] = std::filesystem::last_write_time(f);
+        //Double check that the file hasnt been deleted since the initial scan
+        if(PathExists(f))
+		    fileTimeMap[f] = std::filesystem::last_write_time(f);
     }
 
     return fileTimeMap;

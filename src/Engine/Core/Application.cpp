@@ -284,7 +284,7 @@ std::string Application::GetUniqueEntityID()
 	return id;
 }
 
-Entity* Application::CreateEntity() //this will need optimisation
+Entity* Application::CreateEntity()
 {
 	if(!m_vDeletionEntities.empty())
 	{

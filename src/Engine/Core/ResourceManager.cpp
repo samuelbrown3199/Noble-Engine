@@ -142,8 +142,8 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 				}
 				else
 				{
-					loadedResources.erase(it.key());
 					m_mLoadedResources[it.key()] = res;
+					loadedResources.erase(it.key());
 				}
 
 				m_mResourceDatabase[it.key()] = res;
@@ -362,8 +362,11 @@ void ResourceManager::UnloadUnusedResources()
 		return;
 
 	std::map<std::string, std::shared_ptr<Resource>>::iterator it;
-	for (it = m_mLoadedResources.begin(); it != m_mLoadedResources.end(); it++)
+	for (it = m_mLoadedResources.end(); it != m_mLoadedResources.begin(); it--)
 	{
+		if (it == m_mLoadedResources.end())
+			continue;
+
 		if (it->second == nullptr)
 			continue;
 

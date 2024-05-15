@@ -42,9 +42,8 @@ void Texture::OnUnload()
     LogTrace("Unloading texture: " + m_sLocalPath);
 
     Renderer* renderer = Application::GetApplication()->GetRenderer();
-
-    renderer->DestroyImage(m_texture);
     vkDestroySampler(renderer->GetLogicalDevice(), m_textureSampler, nullptr);
+    renderer->DestroyImage(&m_texture);
 
     m_bIsLoaded = false;
 }

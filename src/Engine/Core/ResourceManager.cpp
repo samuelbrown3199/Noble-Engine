@@ -299,6 +299,9 @@ void ResourceManager::ReloadResources()
 	if(m_qReloadQueue.empty())
 		return;
 
+	Renderer* renderer = Application::GetApplication()->GetRenderer();
+	vkDeviceWaitIdle(renderer->GetLogicalDevice());
+
 	std::shared_ptr<Resource> res = m_qReloadQueue.front();
 
 	if (res != nullptr)

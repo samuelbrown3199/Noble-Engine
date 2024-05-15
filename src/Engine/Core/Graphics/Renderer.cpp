@@ -100,8 +100,8 @@ void Renderer::CleanupVulkan()
 {
 	vkDeviceWaitIdle(m_device);
 
-	DestroyImage(m_drawImage);
-	DestroyImage(m_depthImage);
+	DestroyImage(&m_drawImage);
+	DestroyImage(&m_depthImage);
 
 	for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
@@ -234,8 +234,8 @@ void Renderer::RecreateSwapchain()
 {
 	vkDeviceWaitIdle(m_device);
 
-	DestroyImage(m_drawImage);
-	DestroyImage(m_depthImage);
+	DestroyImage(&m_drawImage);
+	DestroyImage(&m_depthImage);
 
 	DestroySwapchain();
 	InitializeSwapchain();
@@ -807,7 +807,7 @@ void Renderer::InitializeDefaultData()
 	{
 		vkDestroySampler(m_device, m_defaultSamplerLinear, nullptr);
 		vkDestroySampler(m_device, m_defaultSamplerNearest, nullptr);
-		DestroyImage(m_errorCheckerboardImage);
+		DestroyImage(&m_errorCheckerboardImage);
 	});
 }
 
@@ -1118,10 +1118,10 @@ AllocatedImage Renderer::CreateImage(void* data, VkExtent3D size, VkFormat forma
 	return new_image;
 }
 
-void Renderer::DestroyImage(AllocatedImage& img)
+void Renderer::DestroyImage(AllocatedImage* img)
 {
-	vkDestroyImageView(m_device, img.m_imageView, nullptr);
-	vmaDestroyImage(m_allocator, img.m_image, img.m_allocation);
+	vkDestroyImageView(m_device, img->m_imageView, nullptr);
+	vmaDestroyImage(m_allocator, img->m_image, img->m_allocation);
 }
 
 

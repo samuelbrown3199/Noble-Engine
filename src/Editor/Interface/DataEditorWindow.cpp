@@ -33,7 +33,7 @@ void DataEditorWindow::DoInterface()
 		if (ImGui::Button("Save Resource, To be removed.")) //this should be removed and the resource should automatically save when the user changes something
 		{
 			Application::GetApplication()->GetProjectFile()->UpdateProjectFile();
-			m_pSelResource->ReloadResource();
+			resourceManager->m_qReloadQueue.push_back(m_pSelResource);
 		}
 		/*ImGui::SameLine();
 		if (ImGui::Button("Remove Resource"))

@@ -257,7 +257,7 @@ public:
 
 	AllocatedImage CreateImage(VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName);
 	AllocatedImage CreateImage(void* data, VkExtent3D size, VkFormat format, VkImageUsageFlags usage, bool mipmapped, std::string imageName);
-	void DestroyImage(AllocatedImage& img);
+	void DestroyImage(AllocatedImage* img);
 
 	AllocatedImage GetCheckerboardErrorTexture() { return m_errorCheckerboardImage; }
 	VkSampler GetDefaultSampler() { return m_defaultSamplerNearest; }

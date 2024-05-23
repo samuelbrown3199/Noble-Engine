@@ -45,6 +45,8 @@ public:
 
 	EditorManager();
 
+	void CleanupEditor() override;
+
 	void ToggleUI(std::string ID);
 	void CloseUI(std::string ID);
 	void OpenUI(std::string ID);

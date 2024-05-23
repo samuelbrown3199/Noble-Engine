@@ -256,6 +256,9 @@ void Application::CleanupApplication()
 	m_gameRenderer->WaitForRenderingToFinish();
 	m_gameRenderer->SetCamera(nullptr);
 
+	if(m_editor != nullptr)
+		m_editor->CleanupEditor();
+
 	m_threadManager->StopThreads();
 	ClearLoadedScene();
 

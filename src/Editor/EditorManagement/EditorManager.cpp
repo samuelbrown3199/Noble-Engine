@@ -107,6 +107,14 @@ EditorManager::EditorManager()
 	InitializeEditor();
 }
 
+void EditorManager::CleanupEditor()
+{
+	delete m_pCommandSystem;
+	delete m_pEditorCam;
+
+	m_mEditorUIs.clear();
+}
+
 void EditorManager::UpdateEditorWindowTitle()
 {
 	std::string title = m_sWindowName;

@@ -29,6 +29,8 @@ public:
 
 	ProjectFile* m_projectFile = nullptr;
 
+	virtual void CleanupEditor() = 0;
+
 	virtual void OnUpdate() = 0;
 	virtual void OnRender() = 0;
 

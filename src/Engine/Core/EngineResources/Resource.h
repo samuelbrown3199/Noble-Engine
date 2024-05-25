@@ -89,4 +89,9 @@ public:
 	{
 		return PathExists(m_sResourcePath);
 	}
+
+	bool CheckIfLocalPathMatches(std::string path)
+	{
+		return m_sLocalPath == path;
+	}
 };

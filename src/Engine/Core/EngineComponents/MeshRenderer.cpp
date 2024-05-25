@@ -8,6 +8,11 @@
 
 void MeshRenderer::OnPreRender() 
 {
+	if(m_model == nullptr && m_sTargetModelPath != "")
+		m_model = Application::GetApplication()->GetResourceManager()->LoadResource<Model>(m_sTargetModelPath);
+	else if(!m_model->CheckIfLocalPathMatches(m_sTargetModelPath))
+		m_model = Application::GetApplication()->GetResourceManager()->LoadResource<Model>(m_sTargetModelPath);
+
 	if (m_model == nullptr)
 		return;
 
@@ -40,11 +45,18 @@ void MeshRenderer::DoComponentInterface()
 	static ResourceSelectionWidget modelWidget;
 	modelWidget.m_pComponent = this;
 	modelWidget.m_sResourceType = "Model";
-	//modelWidget.DoResourceSelection("Model", m_bInitializeInterface, m_model); //doesnt work yet, needs more work
+	modelWidget.DoResourceSelection("Model", m_bInitializeInterface, &m_sTargetModelPath);
 
-	ChangeModel(std::dynamic_pointer_cast<Model>(rManager->DoResourceSelectInterface("Model", m_model != nullptr ? m_model->m_sLocalPath : "none", "Model")));
-	ChangeTexture(std::dynamic_pointer_cast<Texture>(rManager->DoResourceSelectInterface("Texture", m_texture != nullptr ? m_texture->m_sLocalPath : "none", "Texture")));
-	ChangePipeline(std::dynamic_pointer_cast<Pipeline>(rManager->DoResourceSelectInterface("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none", "Pipeline")));
+
+	static ResourceSelectionWidget textureWidget;
+	textureWidget.m_pComponent = this;
+	textureWidget.m_sResourceType = "Texture";
+	textureWidget.DoResourceSelection("Texture", m_bInitializeInterface, &m_sTargetTexturePath);
+
+	static ResourceSelectionWidget pipelineWidget;
+	pipelineWidget.m_pComponent = this;
+	pipelineWidget.m_sResourceType = "Pipeline";
+	pipelineWidget.DoResourceSelection("Pipeline", m_bInitializeInterface, &m_sTargetPipelinePath);
 
 	static NobleColourEdit colourEdit;
 	colourEdit.m_pComponent = this;

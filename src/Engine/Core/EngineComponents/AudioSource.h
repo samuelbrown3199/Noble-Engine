@@ -14,7 +14,10 @@ struct AudioSource : public Component
 {
 	FMOD_CHANNEL* channel = nullptr;
 	int m_transformIndex = -1;
+
+	std::string m_sTargetClipPath = "";
 	std::shared_ptr<AudioClip> m_clip = nullptr;
+
 	int m_iLoopCount = 0;
 	float m_fPitch = 1;
 	float m_fVolume = 1;
@@ -39,7 +42,7 @@ struct AudioSource : public Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_velocity.x, m_velocity.y, m_velocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_iMixerOption} };
+		nlohmann::json data = { {"clipPath", m_sTargetClipPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_velocity.x, m_velocity.y, m_velocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_iMixerOption} };
 		return data;
 	}
 
@@ -47,7 +50,7 @@ struct AudioSource : public Component
 	{
 		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
-		m_clip = rManager->LoadResource<AudioClip>(j["clipPath"]);
+		m_sTargetClipPath = j["clipPath"];
 		m_iLoopCount = j["loopCount"];
 		m_fPitch = j["pitch"];
 		m_fVolume = j["volume"];
@@ -65,20 +68,6 @@ struct AudioSource : public Component
 	void OnRemove() override
 	{
 		m_transformIndex = -1;
-	}
-
-	void ChangeAudioClip(std::shared_ptr<AudioClip> clip)
-	{
-		if (clip == nullptr)
-			return;
-
-		if (m_clip != nullptr && clip->m_sLocalPath == m_clip->m_sLocalPath)
-			return;
-
-		FMOD_Channel_Stop(channel);
-		channel = nullptr;
-
-		m_clip = clip;
 	}
 
 	virtual void DoComponentInterface() override;

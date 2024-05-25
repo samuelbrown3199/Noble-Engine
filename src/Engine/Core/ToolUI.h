@@ -214,12 +214,12 @@ struct EntityDropdown
 
 struct ResourceSelectionWidget : public BaseEdit
 {
-	std::shared_ptr<Resource> m_pResource = nullptr;
+	std::string* m_pResourcePath = nullptr;
 	std::string m_sResourceType;
 
-	void Initialize(std::shared_ptr<Resource> targetVal)
+	void Initialize(std::string* targetVal)
 	{
-		m_pResource = targetVal;
+		m_pResourcePath = targetVal;
 	}
-	void DoResourceSelection(const char* label, bool initialize, std::shared_ptr<Resource> targetVal);
+	void DoResourceSelection(const char* label, bool initialize, std::string* targetVal);
 };

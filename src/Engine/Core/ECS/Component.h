@@ -13,6 +13,8 @@
 
 #include <vulkan/vulkan.h>
 
+struct Resource;
+
 struct Component
 {
 	/**

@@ -6,6 +6,11 @@
 
 void AudioSource::OnUpdate()
 {
+	if (m_clip == nullptr && m_sTargetClipPath != "")
+		m_clip = Application::GetApplication()->GetResourceManager()->LoadResource<AudioClip>(m_sTargetClipPath);
+	else if (!m_clip->CheckIfLocalPathMatches(m_sTargetClipPath))
+		m_clip = Application::GetApplication()->GetResourceManager()->LoadResource<AudioClip>(m_sTargetClipPath);
+
 	if (!m_bPaused)
 	{
 		if (m_clip == nullptr || !m_clip->IsLoaded())
@@ -80,8 +85,11 @@ void AudioSource::DoComponentInterface()
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
 
-	ChangeAudioClip(std::dynamic_pointer_cast<AudioClip>(rManager->DoResourceSelectInterface("Audio Clip", m_clip != nullptr ? m_clip->m_sLocalPath : "none", "AudioClip")));
-
+	static ResourceSelectionWidget audioClipWidget;
+	audioClipWidget.m_pComponent = this;
+	audioClipWidget.m_sResourceType = "AudioClip";
+	audioClipWidget.DoResourceSelection("Audio Clip", m_bInitializeInterface, &m_sTargetClipPath);
+	
 	static NobleDragFloat velocityDrag;
 	velocityDrag.m_pComponent = this;
 	velocityDrag.DoDragFloat3("Velocity", m_bInitializeInterface, &m_velocity, 0.1f);

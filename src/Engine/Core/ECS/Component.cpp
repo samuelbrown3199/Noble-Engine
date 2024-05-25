@@ -1,5 +1,6 @@
 #include "Component.h"
 
+#include "../ResourceManager.h"
 #include "../Registry.h"
 
 int Component::GetComponentIndex(std::string entityID)

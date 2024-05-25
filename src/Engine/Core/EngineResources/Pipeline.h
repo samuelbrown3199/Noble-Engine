@@ -38,8 +38,6 @@ struct Pipeline : public Resource
 
 private:
 
-	std::string ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName);
-
 public:
 	Pipeline();
 	~Pipeline();

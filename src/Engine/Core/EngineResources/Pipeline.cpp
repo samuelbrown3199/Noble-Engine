@@ -73,19 +73,7 @@ void Shader::SetDefaults(const nlohmann::json& data)
     m_shaderType = data["ShaderType"];
 }
 
-
-
-std::string Pipeline::ChangeShader(Shader::ShaderType type, std::string currentPath, std::string elementName)
-{
-    //Need to consider type here.
-    ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
-    std::shared_ptr<Resource> shader = rManager->DoResourceSelectInterface(elementName, currentPath != "" ? currentPath : "none", "Shader");
-    std::shared_ptr<Shader> shaderRes = std::dynamic_pointer_cast<Shader>(shader);
-    if (shader == nullptr || shaderRes->m_shaderType != type)
-        return "";
-
-    return shader->m_sLocalPath;
-}
+//----------------------------------------------------------------------------------------------------------------------------
 
 Pipeline::Pipeline()
 {
@@ -159,11 +147,15 @@ void Pipeline::DoResourceInterface()
 
     if (m_pipelineType == Graphics)
     {
-        std::string newPath = ChangeShader(Shader::vertex, m_vertexShaderPath, "Vertex Shader");
-        m_vertexShaderPath = newPath == "" ? m_vertexShaderPath : newPath;
-
-        newPath = ChangeShader(Shader::fragment, m_fragmentShaderPath, "Fragment Shader");
-        m_fragmentShaderPath = newPath == "" ? m_fragmentShaderPath : newPath;
+        static ResourceSelectionWidget vertexShaderWidget;
+        vertexShaderWidget.m_pResource = this;
+        vertexShaderWidget.m_sResourceType = "Shader";
+        vertexShaderWidget.DoResourceSelection("Vertex Shader", m_bInitializeInterface, &m_vertexShaderPath);
+        
+        static ResourceSelectionWidget fragmentShaderWidget;
+        fragmentShaderWidget.m_pResource = this;
+        fragmentShaderWidget.m_sResourceType = "Shader";
+        fragmentShaderWidget.DoResourceSelection("Fragment Shader", m_bInitializeInterface, &m_fragmentShaderPath);
     }
 
     ImGui::Text("Pipeline Push Constants");

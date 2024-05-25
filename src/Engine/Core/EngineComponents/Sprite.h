@@ -37,10 +37,10 @@ struct Sprite : public Renderable
 	{
 		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
-		if(j.find("spritePath") != j.end())
-			m_texture = rManager->LoadResource<Texture>(j["spritePath"]);
+		if (j.find("spritePath") != j.end())
+			m_sTargetTexturePath = j["spritePath"];
 		if (j.find("pipeline") != j.end())
-			m_pipeline = rManager->LoadResource<Pipeline>(j["pipeline"]);
+			m_sTargetPipelinePath = j["pipeline"];
 		if(j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
 	}

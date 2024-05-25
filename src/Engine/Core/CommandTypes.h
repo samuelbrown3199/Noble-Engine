@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "ResourceManager.h"
+#include "EngineResources/Resource.h"
 #include "ECS/Entity.h"
 #include "ECS/Component.h"
 
@@ -148,23 +150,24 @@ struct ChangeValueCommand : public Command
 struct ChangeResourceCommand : public Command
 {
 	std::shared_ptr<Resource>* m_pTargetValue;
-	std::shared_ptr<Resource> m_newValue;
-	std::shared_ptr<Resource> m_oldValue;
+	std::string m_newValue;
+	std::string m_oldValue;
 
 	Component* m_pComponent = nullptr;
 	Entity* m_entity = nullptr;
 	Resource* m_resource = nullptr;
 	
-	ChangeResourceCommand(std::shared_ptr<Resource>* target, std::shared_ptr<Resource> newValue)
+	ChangeResourceCommand(std::shared_ptr<Resource>* target, std::string newValue)
 	{
 		m_pTargetValue = target;
 		m_newValue = newValue;
-		m_oldValue = *target;
+		m_oldValue = m_pTargetValue->get()->m_sLocalPath;
 	}
 
 	void Execute() override
 	{
-		*m_pTargetValue = m_newValue;
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+		*m_pTargetValue = rManager->LoadResource<Resource>(m_newValue);
 
 		if (m_pComponent != nullptr)
 			m_pComponent->m_bInitializeInterface = true;
@@ -178,7 +181,8 @@ struct ChangeResourceCommand : public Command
 
 	void Undo()
 	{
-		*m_pTargetValue = m_oldValue;
+		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+		*m_pTargetValue = rManager->LoadResource<Resource>(m_oldValue);
 
 		if (m_pComponent != nullptr)
 			m_pComponent->m_bInitializeInterface = true;

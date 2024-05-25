@@ -10,6 +10,7 @@
 
 struct MeshRenderer : public Renderable
 {
+	std::string m_sTargetModelPath = "";
 	std::shared_ptr<Model> m_model = nullptr;
 
 	std::string GetComponentID() override
@@ -22,11 +23,11 @@ struct MeshRenderer : public Renderable
 		nlohmann::json data;
 
 		if (m_texture != nullptr)
-			data["texturePath"] = m_texture->m_sLocalPath;
+			data["texturePath"] = m_sTargetTexturePath;
 		if(m_model != nullptr)
-			data["modelPath"] = m_model->m_sLocalPath;
+			data["modelPath"] = m_sTargetModelPath;
 		if (m_pipeline != nullptr)
-			data["pipeline"] = m_pipeline->m_sLocalPath;
+			data["pipeline"] = m_sTargetPipelinePath;
 
 		data["colour"] = { m_colour.x, m_colour.y, m_colour.z, m_colour.w };
 
@@ -38,24 +39,13 @@ struct MeshRenderer : public Renderable
 		ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
 		if (j.find("texturePath") != j.end())
-			m_texture = rManager->LoadResource<Texture>(j["texturePath"]);
+			m_sTargetTexturePath = j["texturePath"];
 		if (j.find("modelPath") != j.end())
-			m_model = rManager->LoadResource<Model>(j["modelPath"]);
+			m_sTargetModelPath = j["modelPath"];
 		if (j.find("pipeline") != j.end())
-			m_pipeline = rManager->LoadResource<Pipeline>(j["pipeline"]);
+			m_sTargetPipelinePath = j["pipeline"];
 		if (j.find("colour") != j.end())
 			m_colour = glm::vec4(j["colour"][0], j["colour"][1], j["colour"][2], j["colour"][3]);
-	}
-
-	void ChangeModel(std::shared_ptr<Model> model)
-	{
-		if (model == nullptr)
-			return;
-
-		if (m_model != nullptr && m_model->m_sLocalPath == model->m_sLocalPath)
-			return;
-
-		m_model = model;
 	}
 
 	virtual void DoComponentInterface() override;

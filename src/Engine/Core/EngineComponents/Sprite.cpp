@@ -51,8 +51,15 @@ void Sprite::DoComponentInterface()
 	ImGui::Checkbox("On Screen", &m_bOnScreen);
 	ImGui::EndDisabled();
 
-	ChangeTexture(std::dynamic_pointer_cast<Texture>(rManager->DoResourceSelectInterface("Sprite", m_texture != nullptr ? m_texture->m_sLocalPath : "none", "Texture")));
-	ChangePipeline(std::dynamic_pointer_cast<Pipeline>(rManager->DoResourceSelectInterface("Pipeline", m_pipeline != nullptr ? m_pipeline->m_sLocalPath : "none", "Pipeline")));
+	static ResourceSelectionWidget textureWidget;
+	textureWidget.m_pComponent = this;
+	textureWidget.m_sResourceType = "Texture";
+	textureWidget.DoResourceSelection("Sprite", m_bInitializeInterface, &m_sTargetTexturePath);
+
+	static ResourceSelectionWidget pipelineWidget;
+	pipelineWidget.m_pComponent = this;
+	pipelineWidget.m_sResourceType = "Pipeline";
+	pipelineWidget.DoResourceSelection("Pipeline", m_bInitializeInterface, &m_sTargetPipelinePath);
 
 	static NobleColourEdit colourEdit;
 	colourEdit.m_pComponent = this;

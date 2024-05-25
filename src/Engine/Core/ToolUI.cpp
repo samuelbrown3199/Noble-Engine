@@ -406,7 +406,7 @@ void EntityDropdown::DoEntityDropdown(std::string ID, int index, std::string& se
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void ResourceSelectionWidget::DoResourceSelection(const char* label, bool initialize, std::shared_ptr<Resource> targetVal)
+void ResourceSelectionWidget::DoResourceSelection(const char* label, bool initialize, std::string* targetVal)
 {
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
 
@@ -415,11 +415,11 @@ void ResourceSelectionWidget::DoResourceSelection(const char* label, bool initia
 		Initialize(targetVal);
 	}
 
-	std::shared_ptr<Resource> newRes = rManager->DoResourceSelectInterface(label, m_pResource != nullptr ? m_pResource->m_sLocalPath : "none", m_sResourceType);
+	std::shared_ptr<Resource> newRes = rManager->DoResourceSelectInterface(label, m_pResourcePath->empty() ? "none" : *m_pResourcePath, m_sResourceType);
 
-	if (newRes != nullptr && newRes != m_pResource)
+	if (newRes != nullptr && newRes->m_sLocalPath != *m_pResourcePath)
 	{
-		ChangeResourceCommand* command = new ChangeResourceCommand(&targetVal, newRes);
+		ChangeValueCommand<std::string>* command = new ChangeValueCommand<std::string>(m_pResourcePath, newRes->m_sLocalPath);
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
 

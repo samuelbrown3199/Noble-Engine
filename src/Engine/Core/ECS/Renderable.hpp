@@ -18,8 +18,10 @@ struct Renderable : public Component
 	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
 
+	std::string m_sTargetTexturePath = "";
 	std::shared_ptr<Texture> m_texture = nullptr;
 
+	std::string m_sTargetPipelinePath = "";
 	std::shared_ptr<Pipeline> m_pipeline;
 
 	GPUMeshBuffers m_meshBuffers;
@@ -35,32 +37,19 @@ struct Renderable : public Component
 		m_transformIndex = -1;
 	}
 
-	void ChangeTexture(std::shared_ptr<Texture> sprite)
-	{
-		if (sprite == nullptr)
-			return;
-
-		if (m_texture != nullptr && sprite->m_sLocalPath == m_texture->m_sLocalPath)
-			return;
-
-		m_texture = sprite;
-	}
-
-	void ChangePipeline(std::shared_ptr<Pipeline> pipeline)
-	{
-		if (pipeline == nullptr)
-			return;
-
-		if (m_pipeline != nullptr && m_pipeline->m_sLocalPath == pipeline->m_sLocalPath)
-			return;
-
-		m_pipeline = pipeline;
-	}
-
-
 	virtual void OnPreRender() 
 	{
 		Renderer* renderer = Application::GetApplication()->GetRenderer();
+
+		if (m_texture == nullptr && m_sTargetTexturePath != "")
+			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
+		else if (!m_texture->CheckIfLocalPathMatches(m_sTargetTexturePath))
+			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
+
+		if (m_pipeline == nullptr && m_sTargetPipelinePath != "")
+			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
+		else if (!m_pipeline->CheckIfLocalPathMatches(m_sTargetPipelinePath))
+			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
 
 		renderer->IncrementRenderables();
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();

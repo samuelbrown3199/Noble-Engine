@@ -40,7 +40,7 @@ void ThreadingManager::InitializeThreads()
 
 	for (auto i = 0; i < m_iNumberOfThreads; ++i)
 	{
-		LogTrace(FormatString("Starting thread %d.", i));
+		LogTrace(FormatString("Starting worker thread %d.", i));
 		m_vTaskThreads.emplace_back(Thread(this));
 	}
 }
@@ -65,7 +65,7 @@ void ThreadingManager::StopThreads() noexcept
 	for (int i = 0; i < m_vTaskThreads.size(); i++)
 	{
 		m_vTaskThreads[i].t.join();
-		LogTrace(FormatString("Thread %d stopped.", i));
+		LogTrace(FormatString("Worker Thread %d stopped.", i));
 	}
 
 	LogTrace("Stopped threads.");

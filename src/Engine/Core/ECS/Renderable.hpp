@@ -43,12 +43,12 @@ struct Renderable : public Component
 
 		if (m_texture == nullptr && m_sTargetTexturePath != "")
 			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
-		else if (!m_texture->CheckIfLocalPathMatches(m_sTargetTexturePath))
+		else if (m_sTargetTexturePath != "" && !m_texture->CheckIfLocalPathMatches(m_sTargetTexturePath))
 			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
 
 		if (m_pipeline == nullptr && m_sTargetPipelinePath != "")
 			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
-		else if (!m_pipeline->CheckIfLocalPathMatches(m_sTargetPipelinePath))
+		else if (m_sTargetPipelinePath != "" && !m_pipeline->CheckIfLocalPathMatches(m_sTargetPipelinePath))
 			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
 
 		renderer->IncrementRenderables();

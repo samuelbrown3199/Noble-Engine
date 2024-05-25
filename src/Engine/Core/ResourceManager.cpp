@@ -364,6 +364,7 @@ void ResourceManager::UnloadUnusedResources()
 		return;
 
 	std::map<std::string, std::shared_ptr<Resource>>::iterator it;
+	std::vector<std::string> keysToDelete;
 	for (it = m_mLoadedResources.end(); it != m_mLoadedResources.begin(); it--)
 	{
 		if (it == m_mLoadedResources.end())
@@ -374,11 +375,15 @@ void ResourceManager::UnloadUnusedResources()
 
 		if (it->second.use_count() == 2)
 		{
-			it->second->OnUnload();
-			m_mLoadedResources.erase(it);
-
-			LogInfo("Unloaded " + it->second->m_sLocalPath);
+			keysToDelete.push_back(it->first);
 		}
+	}
+
+	for (int i = 0; i < keysToDelete.size(); i++)
+	{
+		m_mLoadedResources[keysToDelete.at(i)]->OnUnload();
+		m_mLoadedResources.erase(keysToDelete.at(i));
+		LogInfo("Unloaded " + keysToDelete.at(i));
 	}
 }
 

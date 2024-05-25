@@ -92,6 +92,9 @@ public:
 
 	bool CheckIfLocalPathMatches(std::string path)
 	{
+		if (path == "")
+			return false;
+
 		return m_sLocalPath == path;
 	}
 };

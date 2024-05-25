@@ -238,7 +238,7 @@ void Application::MainLoop()
 		m_pStats->StartPerformanceMeasurement("Cleanup");
 		CleanupDeletionEntities();
 		m_inputManager->ClearFrameInputs();
-		//m_resourceManager->UnloadUnusedResources();
+		m_resourceManager->UnloadUnusedResources();
 		m_pStats->EndPerformanceMeasurement("Cleanup");
 
 		m_pStats->UpdatePerformanceStats();

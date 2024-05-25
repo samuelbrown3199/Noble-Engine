@@ -237,6 +237,12 @@ void EditorManager::SetSelectedEntity(std::string ID)
 	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->SetSelectedEntity(ID);
 }
 
+void EditorManager::SetSelectedResource(std::string localPath)
+{
+	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
+	dynamic_cast<DataEditorWindow*>(GetEditorUI("DataEditor"))->SetSelectedResource(rManager->LoadResource<Resource>(localPath));
+}
+
 void EditorManager::ConsoleLog(std::string message)
 {
 	LogInfo("Console TBD : " + message);

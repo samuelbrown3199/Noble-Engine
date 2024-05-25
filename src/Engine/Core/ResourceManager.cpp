@@ -441,6 +441,16 @@ std::shared_ptr<Resource> ResourceManager::DoResourceSelectInterface(std::string
 
 		ImGui::EndMenu();
 	}
+
+	//if current resource path is not empty, let me double click to select it
+	if (currentResourcePath != "")
+	{
+		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+		{
+			Application::GetApplication()->GetEditor()->SetSelectedResource(currentResourcePath);
+		}
+	}
+
 	ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 	if (res != -1)

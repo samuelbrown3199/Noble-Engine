@@ -41,6 +41,7 @@ public:
 	virtual void PushCommand(Command* command) = 0;
 	virtual void ConsoleLog(std::string message) = 0;
 	virtual void SetSelectedEntity(std::string ID) = 0;
+	virtual void SetSelectedResource(std::string localPath) = 0;
 };
 
 class Application

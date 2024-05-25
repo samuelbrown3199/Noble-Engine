@@ -5,6 +5,9 @@
 #include <Engine/Core/ProjectFile.h>
 #include <Engine/Core/ECS/Entity.h>
 
+#include "../EditorManagement/EditorManager.h"
+#include "SceneHierarchyWindow.h"
+
 void DataEditorWindow::DoInterface()
 {
 	ResourceManager* resourceManager = Application::GetApplication()->GetResourceManager();
@@ -74,6 +77,8 @@ void DataEditorWindow::SetSelectedEntity(std::string ID)
 
 void DataEditorWindow::SetSelectedResource(std::shared_ptr<Resource> _resource)
 {
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+
 	if (_resource == nullptr)
 		return;
 
@@ -82,6 +87,8 @@ void DataEditorWindow::SetSelectedResource(std::shared_ptr<Resource> _resource)
 
 	m_pSelResource = _resource;
 	m_sSelEntity = "";
+
+	dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"))->ResetSelectedEntity();
 
 	//Initialize the resource's interface
 	m_pSelResource->InitializeInterface();

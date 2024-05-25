@@ -70,6 +70,7 @@ public:
 	void PushCommand(Command* command) override;
 	CommandSystem* GetCommandSystem() { return m_pCommandSystem; }
 	void SetSelectedEntity(std::string ID) override;
+	void SetSelectedResource(std::string localPath) override;
 
 	void ConsoleLog(std::string message) override;
 	void ChangeEditorMode();

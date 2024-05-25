@@ -155,6 +155,7 @@ struct BaseEdit
 
 	Component* m_pComponent = nullptr;
 	Entity* m_pEntity = nullptr;
+	Resource* m_pResource = nullptr;
 };
 
 struct NobleColourEdit : public BaseEdit
@@ -189,6 +190,21 @@ struct NobleTextInput : public BaseEdit
 
 	void Initialize(std::string* targetVal);
 	void DoTextInput(const char* label, bool initialize, std::string* targetVal);
+};
+
+struct NobleSelectionList : public BaseEdit
+{
+	int m_iSelectedIndex = 0;
+
+	void DoCombo(const char* label, bool initialize, int* targetVal, std::vector<std::string> items);
+	void DoSelectionList(const char* label, bool initialize, int* targetVal, std::vector<std::string> items);
+};
+
+struct NobleCheckbox : public BaseEdit
+{
+	bool m_bValue = false;
+
+	void DoCheckbox(const char* label, bool initialize, bool* targetVal);
 };
 
 struct EntityDropdown

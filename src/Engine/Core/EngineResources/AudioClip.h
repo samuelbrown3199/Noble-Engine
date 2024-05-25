@@ -16,7 +16,8 @@ struct AudioClip : public Resource
 	AudioClip();
 	~AudioClip();
 	
-
+	bool m_bLoop = false;
+	bool m_b3DSound = false;
 	FMOD_MODE m_mode;
 	FMOD_SOUND* m_sound;
 	/**

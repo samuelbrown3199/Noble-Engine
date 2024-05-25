@@ -60,3 +60,15 @@ void AudioManager::UpdateAudioMixerOption(std::string _optionName, float _newVal
 		}
 	}
 }
+
+std::vector<std::string> AudioManager::GetMixerOptionNames()
+{
+	std::vector<std::string> names;
+	std::map<std::string, float>::iterator itr;
+	for (itr = m_mMixerOptions.begin(); itr != m_mMixerOptions.end(); itr++)
+	{
+		names.push_back(itr->first);
+	}
+
+	return names;
+}

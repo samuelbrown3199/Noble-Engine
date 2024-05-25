@@ -22,7 +22,7 @@ struct AudioSource : public Component
 	bool m_bPaused = false;
 	bool m_b3DSound = false;
 
-	std::string m_sMixerOption;
+	int m_iMixerOption;
 
 	~AudioSource()
 	{
@@ -39,7 +39,7 @@ struct AudioSource : public Component
 
 	nlohmann::json WriteJson() override
 	{
-		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_velocity.x, m_velocity.y, m_velocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_sMixerOption} };
+		nlohmann::json data = { {"clipPath", m_clip->m_sLocalPath}, {"loopCount", m_iLoopCount}, {"pitch", m_fPitch}, {"volume", m_fVolume}, {"velocity", {m_velocity.x, m_velocity.y, m_velocity.z }}, {"paused", m_bPaused}, {"3DSound", m_b3DSound},{"mixerOption", m_iMixerOption} };
 		return data;
 	}
 
@@ -54,7 +54,7 @@ struct AudioSource : public Component
 		m_velocity = glm::vec3(j["velocity"][0], j["velocity"][1], j["velocity"][2]);
 		m_bPaused = j["paused"];
 		m_b3DSound = j["3DSound"];
-		m_sMixerOption = j["mixerOption"];
+		m_iMixerOption = j["mixerOption"];
 	}
 
 	void OnInitialize()

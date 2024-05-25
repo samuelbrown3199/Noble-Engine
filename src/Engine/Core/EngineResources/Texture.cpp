@@ -27,7 +27,7 @@ void Texture::OnLoad()
     Renderer* renderer = Application::GetApplication()->GetRenderer();
 
     m_texture = renderer->CreateImage(pixels, VkExtent3D(m_iWidth, m_iHeight, 1), VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_SAMPLED_BIT, true, m_sLocalPath);
-    CreateTextureSampler(m_textureFilter);
+    CreateTextureSampler((VkFilter)m_textureFilter);
 
     free(pixels);
 
@@ -111,11 +111,10 @@ void Texture::DoResourceInterface()
     ImGui::Text(m_sLocalPath.c_str());
 
     ImGui::Dummy(ImVec2(0.0f, 10.0f));
-    const char* items[] = { "Nearest", "Linear" };
-    int item = m_textureFilter;
-    ImGui::Combo("Filter Mode", &item, items, IM_ARRAYSIZE(items));
 
-    m_textureFilter = (VkFilter)item;
+    static NobleSelectionList filterList;
+    filterList.DoCombo("Filter Mode", m_bInitializeInterface, &m_textureFilter, { "Nearest", "Linear" });
+    filterList.m_pResource = this;
 
     m_bInitializeInterface = false;
 }

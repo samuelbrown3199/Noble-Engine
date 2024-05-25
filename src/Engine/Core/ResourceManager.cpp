@@ -303,7 +303,6 @@ void ResourceManager::ReloadResources()
 	vkDeviceWaitIdle(renderer->GetLogicalDevice());
 
 	std::shared_ptr<Resource> res = m_qReloadQueue.front();
-
 	if (res != nullptr)
 	{
 		std::ifstream file = std::ifstream(res->m_sResourcePath);

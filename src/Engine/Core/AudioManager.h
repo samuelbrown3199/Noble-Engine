@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include <FMOD/fmod.h>
 #include <FMOD/fmod_common.h>
@@ -38,7 +39,8 @@ public:
 	*/
 	float GetAudioMixerOption(std::string _optionName);
 	void UpdateAudioMixerOption(std::string _optionName, float _newValue);
-	std::map<std::string, float> GetMixerOptions() { return m_mMixerOptions; }
+	std::map<std::string, float>& GetMixerOptions() { return m_mMixerOptions; }
+	std::vector<std::string> GetMixerOptionNames();
 
 	FMOD_SYSTEM* GetFMODSystem() { return m_fmodSystem; }
 	void UpdateSystem() { FMOD_System_Update(m_fmodSystem); }

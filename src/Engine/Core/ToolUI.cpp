@@ -28,6 +28,7 @@ void NobleColourEdit::DoColourEdit3(const char* label, bool initialize, glm::vec
 		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(targetVal, glm::vec3(m_fColour[0], m_fColour[1], m_fColour[2]));
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -57,6 +58,7 @@ void NobleColourEdit::DoColourEdit4(const char* label, bool initialize, glm::vec
 		ChangeValueCommand<glm::vec4>* command = new ChangeValueCommand<glm::vec4>(targetVal, glm::vec4(m_fColour[0], m_fColour[1], m_fColour[2], m_fColour[3]));
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -85,6 +87,7 @@ void NobleDragFloat::DoDragFloat(const char* label, bool initialize, float* targ
 		ChangeValueCommand<float>* command = new ChangeValueCommand<float>(targetVal, m_fValue[0]);
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -112,6 +115,7 @@ void NobleDragFloat::DoDragFloat2(const char* label, bool initialize, glm::vec2*
 		ChangeValueCommand<glm::vec2>* command = new ChangeValueCommand<glm::vec2>(targetVal, glm::vec2(m_fValue[0], m_fValue[1]));
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -140,6 +144,7 @@ void NobleDragFloat::DoDragFloat3(const char* label, bool initialize, glm::vec3*
 		ChangeValueCommand<glm::vec3>* command = new ChangeValueCommand<glm::vec3>(targetVal, glm::vec3(m_fValue[0], m_fValue[1], m_fValue[2]));
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -169,6 +174,7 @@ void NobleDragFloat::DoDragFloat4(const char* label, bool initialize, glm::vec4*
 		ChangeValueCommand<glm::vec4>* command = new ChangeValueCommand<glm::vec4>(targetVal, glm::vec4(m_fValue[0], m_fValue[1], m_fValue[2], m_fValue[3]));
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -197,6 +203,7 @@ void NobleDragInt::DoDragInt(const char* label, bool initialize, int* targetVal,
 		ChangeValueCommand<int>* command = new ChangeValueCommand<int>(targetVal, m_iValue);
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
@@ -239,10 +246,95 @@ void NobleTextInput::DoTextInput(const char* label, bool initialize, std::string
 		ChangeValueCommand<std::string>* command = new ChangeValueCommand<std::string>(targetVal, m_sValue);
 		command->m_pComponent = m_pComponent;
 		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
 
 		Application::GetApplication()->PushCommand(command);
 
 		m_bEdited = false;
+	}
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void NobleSelectionList::DoCombo(const char* label, bool initialize, int* targetVal, std::vector<std::string> items)
+{
+	if (initialize)
+	{
+		m_iSelectedIndex = *targetVal;
+		m_bEdited = false;
+	}
+
+	if (ImGui::BeginCombo(label, items.at(*targetVal).c_str()))
+	{
+		for (int i = 0; i < items.size(); i++)
+		{
+			const bool is_selected = (*targetVal == i);
+			if (ImGui::Selectable(items.at(i).c_str(), is_selected))
+			{
+				ChangeValueCommand<int>* command = new ChangeValueCommand<int>(targetVal, i);
+				command->m_pComponent = m_pComponent;
+				command->m_entity = m_pEntity;
+				command->m_resource = m_pResource;
+
+				Application::GetApplication()->PushCommand(command);
+
+				m_bEdited = false;
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+}
+
+void NobleSelectionList::DoSelectionList(const char* label, bool initialize, int* targetVal, std::vector<std::string> items)
+{
+	if (initialize)
+	{
+		m_iSelectedIndex = *targetVal;
+		m_bEdited = false;
+	}
+
+	if (ImGui::BeginListBox(label))
+	{
+		for (int i = 0; i < items.size(); i++)
+		{
+			const bool is_selected = (*targetVal == i);
+			if (ImGui::Selectable(items.at(i).c_str(), is_selected))
+			{
+				ChangeValueCommand<int>* command = new ChangeValueCommand<int>(targetVal, i);
+				command->m_pComponent = m_pComponent;
+				command->m_entity = m_pEntity;
+				command->m_resource = m_pResource;
+
+				Application::GetApplication()->PushCommand(command);
+
+				m_bEdited = false;
+			}
+		}
+
+		ImGui::EndListBox();
+	}
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void NobleCheckbox::DoCheckbox(const char* label, bool initialize, bool* targetVal) 
+{
+	if (initialize)
+	{
+		m_bValue = *targetVal;
+		m_bEdited = false;
+	}
+
+	if (ImGui::Checkbox(label, &m_bValue))
+	{
+		ChangeValueCommand<bool>* command = new ChangeValueCommand<bool>(targetVal, m_bValue);
+		command->m_pComponent = m_pComponent;
+		command->m_entity = m_pEntity;
+		command->m_resource = m_pResource;
+
+		Application::GetApplication()->PushCommand(command);
 	}
 }
 

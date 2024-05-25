@@ -102,6 +102,7 @@ struct ChangeValueCommand : public Command
 
 	Component* m_pComponent = nullptr;
 	Entity* m_entity = nullptr;
+	Resource* m_resource = nullptr;
 
 	ChangeValueCommand(T* target, T newValue)
 	{
@@ -119,6 +120,9 @@ struct ChangeValueCommand : public Command
 
 		if (m_entity != nullptr)
 			m_entity->m_bInitializeInterface = true;
+
+		if (m_resource != nullptr)
+			m_resource->m_bInitializeInterface = true;
 	}
 
 	void Undo()
@@ -130,6 +134,9 @@ struct ChangeValueCommand : public Command
 
 		if (m_entity != nullptr)
 			m_entity->m_bInitializeInterface = true;
+
+		if(m_resource != nullptr)
+			m_resource->m_bInitializeInterface = true;
 	}
 
 	void Redo() override
@@ -146,6 +153,7 @@ struct ChangeResourceCommand : public Command
 
 	Component* m_pComponent = nullptr;
 	Entity* m_entity = nullptr;
+	Resource* m_resource = nullptr;
 	
 	ChangeResourceCommand(std::shared_ptr<Resource>* target, std::shared_ptr<Resource> newValue)
 	{
@@ -163,6 +171,9 @@ struct ChangeResourceCommand : public Command
 
 		if (m_entity != nullptr)
 			m_entity->m_bInitializeInterface = true;
+
+		if (m_resource != nullptr)
+			m_resource->m_bInitializeInterface = true;
 	}
 
 	void Undo()
@@ -174,6 +185,9 @@ struct ChangeResourceCommand : public Command
 
 		if (m_entity != nullptr)
 			m_entity->m_bInitializeInterface = true;
+
+		if (m_resource != nullptr)
+			m_resource->m_bInitializeInterface = true;
 	}
 
 	void Redo() override

@@ -17,7 +17,7 @@ struct Texture : public Resource
     int m_iTexChannels = 0;
 
     uint32_t m_iMipLevels;
-    VkFilter m_textureFilter = VK_FILTER_LINEAR;
+    int m_textureFilter = VK_FILTER_LINEAR;
 
     AllocatedImage m_texture;
     VkSampler m_textureSampler;

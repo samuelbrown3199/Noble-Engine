@@ -154,9 +154,8 @@ void Pipeline::ChangePushConstant(int index, std::string name)
 
 void Pipeline::DoResourceInterface()
 {
-    int val = m_pipelineType;
-    ImGui::DragInt("Pipeline Type", &val, 1, 0, 5); //should be a dropdown at some point.
-    m_pipelineType = (PipelineType)val;
+    static NobleSelectionList pipelineTypeList;
+    pipelineTypeList.DoCombo("Pipeline Type", m_bInitializeInterface, &m_pipelineType, { "Graphics", "Compute" });
 
     if (m_pipelineType == Graphics)
     {

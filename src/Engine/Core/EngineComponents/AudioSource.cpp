@@ -40,8 +40,8 @@ void AudioSource::OnUpdate()
 			FMOD_Channel_SetLoopCount(channel, loopCount);
 		}
 
-		float volumeMixerValue = aManager->GetAudioMixerOption(m_sMixerOption);
-		if (m_sMixerOption != "Master")
+		float volumeMixerValue = aManager->GetAudioMixerOption(aManager->GetMixerOptionNames()[m_iMixerOption]);
+		if (aManager->GetMixerOptionNames()[m_iMixerOption] != "Master")
 			volumeMixerValue *= aManager->GetAudioMixerOption("Master");
 
 		FMOD_Channel_SetVolume(channel, m_fVolume * volumeMixerValue);
@@ -98,35 +98,16 @@ void AudioSource::DoComponentInterface()
 	volumeDrag.m_pComponent = this;
 	volumeDrag.DoDragFloat("Volume", m_bInitializeInterface, &m_fVolume, 0.1f, 0.0f, 10.0f);
 
-	bool paused = m_bPaused;
-	if (ImGui::Checkbox("Paused", &paused))
-	{
-		ChangeValueCommand<bool>* command = new ChangeValueCommand<bool>(&m_bPaused, paused);
-		Application::GetApplication()->PushCommand(command);
-	}
-	bool sound3D = m_b3DSound;
-	if (ImGui::Checkbox("3D Sound", &sound3D))
-	{
-		ChangeValueCommand<bool>* command = new ChangeValueCommand<bool>(&m_b3DSound, sound3D);
-		Application::GetApplication()->PushCommand(command);
-	}
+	static NobleCheckbox pausedCheckBox;
+	pausedCheckBox.m_pComponent = this;
+	pausedCheckBox.DoCheckbox("Paused", m_bInitializeInterface, &m_bPaused);
 
-	std::map<std::string, float> mixerOptions = aManager->GetMixerOptions();
-	if (ImGui::BeginListBox("Mixer Option"))
-	{
-		std::map<std::string, float>::iterator itr;
-		for (itr = mixerOptions.begin(); itr != mixerOptions.end(); itr++)
-		{
-			const bool is_selected = (m_sMixerOption == itr->first);
-			if(ImGui::Selectable(itr->first.c_str(), is_selected))
-			{
-				ImGui::SetItemDefaultFocus();
-				ChangeValueCommand<std::string>* command = new ChangeValueCommand<std::string>(&m_sMixerOption, itr->first);
-				Application::GetApplication()->PushCommand(command);
-			}
-		}
-		ImGui::EndListBox();
-	}
+	static NobleCheckbox sound3DCheckBox;
+	sound3DCheckBox.m_pComponent = this;
+	sound3DCheckBox.DoCheckbox("3D Sound", m_bInitializeInterface, &m_b3DSound);
+
+	static NobleSelectionList mixerList;
+	mixerList.DoSelectionList("Mixer Option", m_bInitializeInterface, &m_iMixerOption, aManager->GetMixerOptionNames());
 
 	m_bInitializeInterface = false;
 }

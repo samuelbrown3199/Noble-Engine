@@ -55,7 +55,7 @@ public:
 		Graphics,
 		Compute
 	};
-	PipelineType m_pipelineType;
+	int m_pipelineType;
 
 	//Currently only concerned about these shader types, will need extending in the future.
 	std::string m_vertexShaderPath;

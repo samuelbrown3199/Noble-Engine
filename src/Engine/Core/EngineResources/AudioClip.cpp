@@ -5,6 +5,7 @@
 #include "../../Core/Application.h"
 #include "../../Core/AudioManager.h"
 #include "../../Core/ResourceManager.h"
+#include "../../Core/ToolUI.h"
 
 AudioClip::AudioClip()
 {
@@ -59,24 +60,30 @@ void AudioClip::DoResourceInterface()
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-	bool loop = m_mode & FMOD_LOOP_NORMAL;
-	ImGui::Checkbox("Loop", &loop);
+	static NobleCheckbox loopCheckbox;
+	loopCheckbox.m_pResource = this;
+	loopCheckbox.DoCheckbox("Loop", m_bInitializeInterface, &m_bLoop);
 
-	bool spatialSound = m_mode & FMOD_3D;
-	ImGui::Checkbox("3D Sound", &spatialSound);
+	static NobleCheckbox spatialSoundCheckbox;
+	spatialSoundCheckbox.m_pResource = this;
+	spatialSoundCheckbox.DoCheckbox("3D Sound", m_bInitializeInterface, &m_b3DSound);
 
 	m_mode = FMOD_DEFAULT;
-	if (loop)
+	if (m_bLoop)
 		m_mode |= FMOD_LOOP_NORMAL;
 
-	if (spatialSound)
+	if (m_b3DSound)
 		m_mode |= FMOD_3D;
+
+	m_bInitializeInterface = false;
 }
 
 nlohmann::json AudioClip::AddToDatabase()
 {
 	nlohmann::json data;
 
+	data["Loop"] = m_bLoop;
+	data["3DSound"] = m_b3DSound;
 	data["SoundMode"] = m_mode;
 
 	return data;
@@ -88,11 +95,17 @@ std::shared_ptr<Resource> AudioClip::LoadFromJson(const std::string& path, const
 
 	res->m_sLocalPath = path;
 	res->m_sResourcePath = GetGameFolder() + path;
+	if(data.find("Loop") != data.end())
+	{
+		res->m_bLoop = data["Loop"];
+	}
+	if(data.find("3DSound") != data.end())
+	{
+		res->m_b3DSound = data["3DSound"];
+	}
 	res->m_mode = data["SoundMode"];
 
 	return res;
-
-
 }
 
 void AudioClip::SetDefaults(const nlohmann::json& data)

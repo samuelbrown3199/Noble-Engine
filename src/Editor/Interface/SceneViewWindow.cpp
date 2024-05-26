@@ -49,3 +49,11 @@ void SceneViewWindow::DoInterface()
 
 	ImGui::End();
 }
+
+void SceneViewWindow::HandleShortcutInputs()
+{
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+	SceneHierarchyWindow* sceneHierarchy = dynamic_cast<SceneHierarchyWindow*>(editorManager->GetEditorUI("SceneHierarchy"));
+
+	sceneHierarchy->HandleShortcutInputs();
+}

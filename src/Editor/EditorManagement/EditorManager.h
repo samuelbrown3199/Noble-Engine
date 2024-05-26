@@ -74,4 +74,6 @@ public:
 
 	void ConsoleLog(std::string message) override;
 	void ChangeEditorMode();
+
+	void CreateEntityCopy(Entity* entity) override;
 };

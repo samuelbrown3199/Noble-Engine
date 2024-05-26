@@ -67,4 +67,6 @@ struct Component
 
 	virtual void LoadComponentDataFromJson(nlohmann::json& j);
 	virtual nlohmann::json WriteComponentDataToJson();
+
+	virtual Component* CopyComponent(Component* comp, std::string entityID);
 };

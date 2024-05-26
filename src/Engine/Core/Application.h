@@ -42,6 +42,8 @@ public:
 	virtual void ConsoleLog(std::string message) = 0;
 	virtual void SetSelectedEntity(std::string ID) = 0;
 	virtual void SetSelectedResource(std::string localPath) = 0;
+
+	virtual void CreateEntityCopy(Entity* entity) = 0;
 };
 
 class Application

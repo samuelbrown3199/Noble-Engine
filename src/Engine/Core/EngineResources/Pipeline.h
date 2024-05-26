@@ -56,8 +56,8 @@ public:
 	int m_pipelineType;
 
 	//Currently only concerned about these shader types, will need extending in the future.
-	std::string m_vertexShaderPath;
-	std::string m_fragmentShaderPath;
+	std::string m_vertexShaderPath = "none";
+	std::string m_fragmentShaderPath = "none";
 
 	void OnLoad() override;
 	void OnUnload() override;

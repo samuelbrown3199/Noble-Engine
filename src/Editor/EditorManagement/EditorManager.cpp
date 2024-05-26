@@ -252,3 +252,8 @@ void EditorManager::ChangeEditorMode()
 {
 	Application::GetApplication()->SetPlayMode(!Application::GetApplication()->GetPlayMode());
 }
+
+void EditorManager::CreateEntityCopy(Entity* entity)
+{
+	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->CreateEntityCopy(entity);
+}

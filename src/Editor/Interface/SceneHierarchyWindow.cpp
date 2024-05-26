@@ -108,6 +108,18 @@ void SceneHierarchyWindow::DoInterface()
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SetItemTooltip("Create a new entity, with a name of your choosing. Hold Shift to skip name choice.");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Paste Entity"))
+		{
+			if (m_pEntityCopy)
+			{
+				CopyEntityCommand* command = new CopyEntityCommand(m_pEntityCopy);
+				editorManager->PushCommand(command);
+			}
+		}
+		ImGui::SetItemTooltip("Paste the copied entity.");
+
 		ImGui::EndPopup();
 	}
 
@@ -120,6 +132,9 @@ void SceneHierarchyWindow::DoInterface()
 		int i = 0;
 		for(it = entities.begin(); it != entities.end(); it++, i++)
 		{
+			if (it->second.m_bAvailableForUse)
+				continue;
+
 			if (it->second.m_sEntityParentID != "")
 				continue;
 
@@ -135,9 +150,47 @@ void SceneHierarchyWindow::DoInterface()
 	ImGui::End();
 }
 
+void SceneHierarchyWindow::HandleShortcutInputs()
+{
+	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
+
+	if (m_pEntityCopy != nullptr)
+	{
+		if (Application::GetApplication()->GetInputManager()->GetKeyDown(SDLK_v) && Application::GetApplication()->GetInputManager()->GetKey(SDLK_LCTRL))
+		{
+			CopyEntityCommand* command = new CopyEntityCommand(m_pEntityCopy);
+			editorManager->PushCommand(command);
+		}
+	}
+
+	if (m_sSelEntity != "")
+	{
+		if (Application::GetApplication()->GetInputManager()->GetKeyDown(SDLK_DELETE))
+		{
+			DeleteEntityCommand* command = new DeleteEntityCommand(m_sSelEntity);
+			editorManager->PushCommand(command);
+		}
+
+		if (Application::GetApplication()->GetInputManager()->GetKeyDown(SDLK_c) && Application::GetApplication()->GetInputManager()->GetKey(SDLK_LCTRL))
+		{
+			Entity* entity = Application::GetApplication()->GetEntity(m_sSelEntity);
+			CreateEntityCopy(entity);
+		}
+	}
+}
+
 void SceneHierarchyWindow::SetSelectedEntity(std::string ID)
 {
 	m_sSelEntity = ID;
 	Entity* pEntity = Application::GetApplication()->GetEntity(m_sSelEntity);
 	pEntity->InitializeEntityInterface();
+}
+
+void SceneHierarchyWindow::CreateEntityCopy(Entity* entity)
+{
+	if(m_pEntityCopy)
+		delete m_pEntityCopy;
+
+	m_pEntityCopy = new EntityCopy(entity);
+	LogTrace("Created Entity Copy: " + m_pEntityCopy->m_sName);
 }

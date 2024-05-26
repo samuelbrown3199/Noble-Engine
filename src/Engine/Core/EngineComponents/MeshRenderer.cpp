@@ -8,9 +8,9 @@
 
 void MeshRenderer::OnPreRender() 
 {
-	if(m_model == nullptr && m_sTargetModelPath != "")
+	if(m_model == nullptr && m_sTargetModelPath != "none")
 		m_model = Application::GetApplication()->GetResourceManager()->LoadResource<Model>(m_sTargetModelPath);
-	else if(m_sTargetModelPath != "" && !m_model->CheckIfLocalPathMatches(m_sTargetModelPath))
+	else if(m_sTargetModelPath != "none" && !m_model->CheckIfLocalPathMatches(m_sTargetModelPath))
 		m_model = Application::GetApplication()->GetResourceManager()->LoadResource<Model>(m_sTargetModelPath);
 
 	if (m_model == nullptr)

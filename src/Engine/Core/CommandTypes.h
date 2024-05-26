@@ -199,3 +199,32 @@ struct ChangeResourceCommand : public Command
 		Execute();
 	}
 };
+
+struct EntityCopy
+{
+	std::string m_sName;
+	std::string m_sParentID;
+	std::map<std::string, int> m_vComponents;
+
+	EntityCopy(Entity* entity)
+	{
+		m_sName = entity->m_sEntityName;
+		m_sParentID = entity->m_sEntityParentID;
+		m_vComponents = entity->m_vComponents;
+	}
+};
+
+struct CopyEntityCommand : public Command
+{
+	EntityCopy* m_entityCopy;
+	Entity* m_copiedEntity;
+
+	CopyEntityCommand(EntityCopy* entity)
+	{
+		m_entityCopy = entity;
+	}
+
+	void Execute() override;
+	void Undo() override;
+	void Redo() override;
+};

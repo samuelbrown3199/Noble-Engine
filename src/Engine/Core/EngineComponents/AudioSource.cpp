@@ -6,9 +6,9 @@
 
 void AudioSource::OnUpdate()
 {
-	if (m_clip == nullptr && m_sTargetClipPath != "")
+	if (m_clip == nullptr && m_sTargetClipPath != "none")
 		m_clip = Application::GetApplication()->GetResourceManager()->LoadResource<AudioClip>(m_sTargetClipPath);
-	else if (m_sTargetClipPath != "" && !m_clip->CheckIfLocalPathMatches(m_sTargetClipPath))
+	else if (m_sTargetClipPath != "none" && !m_clip->CheckIfLocalPathMatches(m_sTargetClipPath))
 		m_clip = Application::GetApplication()->GetResourceManager()->LoadResource<AudioClip>(m_sTargetClipPath);
 
 	if (!m_bPaused)

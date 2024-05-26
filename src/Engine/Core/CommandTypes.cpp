@@ -98,6 +98,7 @@ void AddComponentCommand::Execute()
 	compRegistry->at(m_registryIndex).second.m_comp->AddComponentToEntity(m_sEntityID);
 
 	m_component = compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponent(compRegistry->at(m_registryIndex).second.m_componentDatalist->GetComponentIndex(m_sEntityID));
+	m_component->m_bInitializeInterface = true;
 }
 
 void AddComponentCommand::Undo()
@@ -135,3 +136,39 @@ void RemoveComponentCommand::Redo()
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void CopyEntityCommand::Execute()
+{
+	m_copiedEntity = Application::GetApplication()->CreateEntity("", m_entityCopy->m_sName + "_Copy", m_entityCopy->m_sParentID);
+
+	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+	std::map<std::string, int>::iterator it;
+	for (it = m_entityCopy->m_vComponents.begin(); it != m_entityCopy->m_vComponents.end(); it++)
+	{
+		for (int i = 0; i < compRegistry->size(); i++)
+		{
+			if (compRegistry->at(i).first == it->first)
+			{
+				Component* compToCopy = compRegistry->at(i).second.m_componentDatalist->GetComponent(it->second);
+				Component* pastedComp = compRegistry->at(i).second.m_comp->CopyComponent(compToCopy, m_copiedEntity->m_sEntityID);
+
+				break;
+			}
+		}
+	}
+
+	m_copiedEntity->GetAllComponents();
+
+	if(Application::GetApplication()->GetEditor() != nullptr)
+		Application::GetApplication()->GetEditor()->SetSelectedEntity(m_copiedEntity->m_sEntityID);
+}
+
+void CopyEntityCommand::Undo()
+{
+	Application::GetApplication()->DeleteEntity(m_copiedEntity->m_sEntityID);
+}
+
+void CopyEntityCommand::Redo()
+{
+	Execute();
+}

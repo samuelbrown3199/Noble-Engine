@@ -14,6 +14,21 @@ struct Sprite : public Renderable
 	static std::vector<Vertex> spriteQuadVertices;
 	static std::vector<glm::vec3> boundingBox;
 
+	Sprite& operator=(const Sprite& other)
+	{
+		m_transformIndex = -1;
+
+		m_sTargetTexturePath = other.m_sTargetTexturePath;
+		m_texture = nullptr;
+
+		m_sTargetPipelinePath = other.m_sTargetPipelinePath;
+		m_pipeline = nullptr;
+
+		m_colour = other.m_colour;
+
+		return *this;
+	}
+
 	std::string GetComponentID() override
 	{
 		return "Sprite";

@@ -15,7 +15,7 @@ struct AudioSource : public Component
 	FMOD_CHANNEL* channel = nullptr;
 	int m_transformIndex = -1;
 
-	std::string m_sTargetClipPath = "";
+	std::string m_sTargetClipPath = "none";
 	std::shared_ptr<AudioClip> m_clip = nullptr;
 
 	int m_iLoopCount = 0;
@@ -26,6 +26,24 @@ struct AudioSource : public Component
 	bool m_b3DSound = false;
 
 	int m_iMixerOption;
+
+	AudioSource& operator=(const AudioSource& other)
+	{
+		m_transformIndex = -1;
+
+		m_sTargetClipPath = other.m_sTargetClipPath;
+		m_clip = other.m_clip;
+
+		m_iLoopCount = other.m_iLoopCount;
+		m_fPitch = other.m_fPitch;
+		m_fVolume = other.m_fVolume;
+		m_velocity = other.m_velocity;
+		m_bPaused = other.m_bPaused;
+		m_b3DSound = other.m_b3DSound;
+		m_iMixerOption = other.m_iMixerOption;
+
+		return *this;
+	}
 
 	~AudioSource()
 	{

@@ -396,6 +396,13 @@ void EntityDropdown::DoEntityDropdown(std::string ID, int index, std::string& se
 			ImGui::EndMenu();
 		}
 
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+		if(ImGui::Button("Copy Entity"))
+		{
+			Application::GetApplication()->GetEditor()->CreateEntityCopy(&entities.at(ID));
+		}
+
 		if (ImGui::Button("Close"))
 			ImGui::CloseCurrentPopup();
 		ImGui::EndPopup();
@@ -415,7 +422,10 @@ void ResourceSelectionWidget::DoResourceSelection(const char* label, bool initia
 		Initialize(targetVal);
 	}
 
-	std::shared_ptr<Resource> newRes = rManager->DoResourceSelectInterface(label, m_pResourcePath->empty() ? "none" : *m_pResourcePath, m_sResourceType);
+	if (m_pResourcePath == nullptr)
+		return;
+
+	std::shared_ptr<Resource> newRes = rManager->DoResourceSelectInterface(label, *m_pResourcePath, m_sResourceType);
 
 	if (newRes != nullptr && newRes->m_sLocalPath != *m_pResourcePath)
 	{

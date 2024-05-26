@@ -10,8 +10,26 @@
 
 struct MeshRenderer : public Renderable
 {
-	std::string m_sTargetModelPath = "";
+	std::string m_sTargetModelPath = "none";
 	std::shared_ptr<Model> m_model = nullptr;
+
+	MeshRenderer& operator=(const MeshRenderer& other)
+	{
+		m_transformIndex = -1;
+
+		m_sTargetModelPath = other.m_sTargetModelPath;
+		m_model = nullptr;
+
+		m_sTargetTexturePath = other.m_sTargetTexturePath;
+		m_texture = nullptr;
+
+		m_sTargetPipelinePath = other.m_sTargetPipelinePath;
+		m_pipeline = nullptr;
+
+		m_colour = other.m_colour;
+
+		return *this;
+	}
 
 	std::string GetComponentID() override
 	{

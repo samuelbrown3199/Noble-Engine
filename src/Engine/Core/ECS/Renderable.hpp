@@ -18,10 +18,10 @@ struct Renderable : public Component
 	std::vector<uint32_t>* m_indices;
 	std::vector<glm::vec3>* m_boundingBox;
 
-	std::string m_sTargetTexturePath = "";
+	std::string m_sTargetTexturePath = "none";
 	std::shared_ptr<Texture> m_texture = nullptr;
 
-	std::string m_sTargetPipelinePath = "";
+	std::string m_sTargetPipelinePath = "none";
 	std::shared_ptr<Pipeline> m_pipeline;
 
 	GPUMeshBuffers m_meshBuffers;
@@ -41,14 +41,14 @@ struct Renderable : public Component
 	{
 		Renderer* renderer = Application::GetApplication()->GetRenderer();
 
-		if (m_texture == nullptr && m_sTargetTexturePath != "")
+		if (m_texture == nullptr && m_sTargetTexturePath != "none")
 			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
-		else if (m_sTargetTexturePath != "" && !m_texture->CheckIfLocalPathMatches(m_sTargetTexturePath))
+		else if (m_sTargetTexturePath != "none" && !m_texture->CheckIfLocalPathMatches(m_sTargetTexturePath))
 			m_texture = Application::GetApplication()->GetResourceManager()->LoadResource<Texture>(m_sTargetTexturePath);
 
-		if (m_pipeline == nullptr && m_sTargetPipelinePath != "")
+		if (m_pipeline == nullptr && m_sTargetPipelinePath != "none")
 			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
-		else if (m_sTargetPipelinePath != "" && !m_pipeline->CheckIfLocalPathMatches(m_sTargetPipelinePath))
+		else if (m_sTargetPipelinePath != "none" && !m_pipeline->CheckIfLocalPathMatches(m_sTargetPipelinePath))
 			m_pipeline = Application::GetApplication()->GetResourceManager()->LoadResource<Pipeline>(m_sTargetPipelinePath);
 
 		renderer->IncrementRenderables();

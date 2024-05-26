@@ -72,3 +72,10 @@ nlohmann::json Component::WriteComponentDataToJson()
 	Datalist* dataList = registry->GetComponentList(GetComponentID());
 	return dataList->WriteComponentDataToJson();
 }
+
+Component* Component::CopyComponent(Component* comp, std::string entityID)
+{
+	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
+	Datalist* dataList = registry->GetComponentList(GetComponentID());
+	return dataList->CopyComponent(comp, entityID);
+}

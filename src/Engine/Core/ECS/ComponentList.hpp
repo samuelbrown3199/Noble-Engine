@@ -24,6 +24,8 @@ struct Datalist
 	virtual void ThreadPreRender(int _buffer, int _amount) = 0;
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
 	virtual nlohmann::json WriteComponentDataToJson() = 0;
+
+	virtual Component* CopyComponent(Component* comp, std::string entityID) = 0;
 };
 
 template <typename T>
@@ -188,6 +190,17 @@ struct ComponentDatalist : public Datalist
 		}
 
 		return data;
+	}
+
+	Component* CopyComponent(Component* comp, std::string entityID) override
+	{
+		T* newComp = new T();
+		*newComp = *dynamic_cast<T*>(comp);
+		newComp->m_sEntityID = entityID;
+
+		AddComponent(newComp);
+
+		return newComp;
 	}
 };
 

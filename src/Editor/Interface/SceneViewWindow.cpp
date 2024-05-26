@@ -26,6 +26,9 @@ void SceneViewWindow::DoInterface()
 	ImGui::Begin("Scene View", &m_uiOpen, m_windowFlags);
 	UpdateWindowState();
 
+	if(m_bWindowHovered && ImGui::IsMouseClicked(1))
+		ImGui::SetFocusID(ImGui::GetID("Scene View"), ImGui::GetCurrentWindow());
+
 	ImVec2 contentSize = ImGui::GetWindowContentRegionMax();
 	contentSize.x -= 8;
 	contentSize.y -= 19;

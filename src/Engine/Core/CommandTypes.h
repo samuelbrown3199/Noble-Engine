@@ -205,23 +205,32 @@ struct EntityCopy
 	std::string m_sName;
 	std::string m_sParentID;
 	std::map<std::string, int> m_vComponents;
+	std::vector<EntityCopy> m_vChildrenCopy;
 
 	EntityCopy(Entity* entity)
 	{
 		m_sName = entity->m_sEntityName;
 		m_sParentID = entity->m_sEntityParentID;
 		m_vComponents = entity->m_vComponents;
+
+		for (std::string child : entity->m_vChildEntityIDs)
+		{
+			EntityCopy childCopy = EntityCopy(Application::GetApplication()->GetEntity(child));
+			m_vChildrenCopy.push_back(childCopy);
+		}
 	}
+
+	Entity* ProcessEntityCopy();
 };
 
 struct CopyEntityCommand : public Command
 {
-	EntityCopy* m_entityCopy;
-	Entity* m_copiedEntity;
+	std::vector<EntityCopy*> m_vEntityCopies;
+	std::vector<Entity*> m_vCopiedEntities;
 
-	CopyEntityCommand(EntityCopy* entity)
+	CopyEntityCommand(std::vector<EntityCopy*> entities)
 	{
-		m_entityCopy = entity;
+		m_vEntityCopies = entities;
 	}
 
 	void Execute() override;

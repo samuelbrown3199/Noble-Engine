@@ -23,6 +23,19 @@ struct Transform : Component
 	bool m_bDoneParentCheck = false;
 	int m_parentTransformIndex = -1;
 
+	Transform& operator=(const Transform& _other)
+	{
+		m_position = _other.m_position;
+		m_rotation = _other.m_rotation;
+		m_scale = _other.m_scale;
+
+		m_localPosition = _other.m_localPosition;
+		m_localRotation = _other.m_localRotation;
+		m_localScale = _other.m_localScale;
+
+		return *this;
+	}
+
 	std::string GetComponentID() override
 	{
 		return "Transform";

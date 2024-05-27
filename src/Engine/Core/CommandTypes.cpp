@@ -137,35 +137,54 @@ void RemoveComponentCommand::Redo()
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void CopyEntityCommand::Execute()
+Entity* EntityCopy::ProcessEntityCopy()
 {
-	m_copiedEntity = Application::GetApplication()->CreateEntity("", m_entityCopy->m_sName + "_Copy", m_entityCopy->m_sParentID);
+	Entity* copiedEntity = Application::GetApplication()->CreateEntity("", m_sName + "_Copy", m_sParentID);
 
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
 	std::map<std::string, int>::iterator it;
-	for (it = m_entityCopy->m_vComponents.begin(); it != m_entityCopy->m_vComponents.end(); it++)
+	for (it = m_vComponents.begin(); it != m_vComponents.end(); it++)
 	{
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
 			if (compRegistry->at(i).first == it->first)
 			{
 				Component* compToCopy = compRegistry->at(i).second.m_componentDatalist->GetComponent(it->second);
-				Component* pastedComp = compRegistry->at(i).second.m_comp->CopyComponent(compToCopy, m_copiedEntity->m_sEntityID);
+				Component* pastedComp = compRegistry->at(i).second.m_comp->CopyComponent(compToCopy, copiedEntity->m_sEntityID);
 
 				break;
 			}
 		}
 	}
 
-	m_copiedEntity->GetAllComponents();
+	copiedEntity->GetAllComponents();
 
-	if(Application::GetApplication()->GetEditor() != nullptr)
-		Application::GetApplication()->GetEditor()->SetSelectedEntity(m_copiedEntity->m_sEntityID);
+	if (Application::GetApplication()->GetEditor() != nullptr)
+		Application::GetApplication()->GetEditor()->SetSelectedEntity(copiedEntity->m_sEntityID);
+
+	for(int i = 0; i < m_vChildrenCopy.size(); i++)
+	{
+		m_vChildrenCopy.at(i).m_sParentID = copiedEntity->m_sEntityID;
+		Entity* childCopy = m_vChildrenCopy.at(i).ProcessEntityCopy();
+	}
+
+	return copiedEntity;
+}
+
+void CopyEntityCommand::Execute()
+{
+	for (int i = 0; i < m_vEntityCopies.size(); i++)
+	{
+		m_vCopiedEntities.push_back(m_vEntityCopies.at(i)->ProcessEntityCopy());
+	}
+
+	Application::GetApplication()->LinkChildEntities();
 }
 
 void CopyEntityCommand::Undo()
 {
-	Application::GetApplication()->DeleteEntity(m_copiedEntity->m_sEntityID);
+	for(int i = 0; i < m_vCopiedEntities.size(); i++)
+		Application::GetApplication()->DeleteEntity(m_vCopiedEntities.at(i)->m_sEntityID);
 }
 
 void CopyEntityCommand::Redo()

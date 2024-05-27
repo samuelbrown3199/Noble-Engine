@@ -114,7 +114,9 @@ void SceneHierarchyWindow::DoInterface()
 		{
 			if (m_pEntityCopy)
 			{
-				CopyEntityCommand* command = new CopyEntityCommand(m_pEntityCopy);
+				std::vector<EntityCopy*> entityCopies;
+				entityCopies.push_back(m_pEntityCopy);
+				CopyEntityCommand* command = new CopyEntityCommand(entityCopies);
 				editorManager->PushCommand(command);
 			}
 		}
@@ -154,15 +156,19 @@ void SceneHierarchyWindow::HandleShortcutInputs()
 {
 	EditorManager* editorManager = dynamic_cast<EditorManager*>(m_pEditor);
 
+	//rework for multiple selected entities
 	if (m_pEntityCopy != nullptr)
 	{
 		if (Application::GetApplication()->GetInputManager()->GetKeyDown(SDLK_v) && Application::GetApplication()->GetInputManager()->GetKey(SDLK_LCTRL))
 		{
-			CopyEntityCommand* command = new CopyEntityCommand(m_pEntityCopy);
+			std::vector<EntityCopy*> entityCopies;
+			entityCopies.push_back(m_pEntityCopy);
+			CopyEntityCommand* command = new CopyEntityCommand(entityCopies);
 			editorManager->PushCommand(command);
 		}
 	}
 
+	//rework for multiple selected entities
 	if (m_sSelEntity != "")
 	{
 		if (Application::GetApplication()->GetInputManager()->GetKeyDown(SDLK_DELETE))

@@ -355,7 +355,7 @@ Entity* Application::CreateEntity(std::string _desiredID, std::string _name, std
 
 void Application::LinkChildEntities()
 {
-	std::map<std::string, Entity>::iterator it;
+	std::unordered_map<std::string, Entity>::iterator it;
 	for (it = m_vEntities.begin(); it != m_vEntities.end(); it++)
 	{
 		if (it->second.m_sEntityParentID == "")
@@ -477,7 +477,7 @@ void Application::CleanupDeletionEntities()
 		currentEntity->m_vChildEntityIDs.clear();
 	}
 
-	std::map<std::string, Entity>::iterator it;
+	std::unordered_map<std::string, Entity>::iterator it;
 	for (it = m_vEntities.begin(); it != m_vEntities.end(); it++)
 	{
 		it->second.GetAllComponents();

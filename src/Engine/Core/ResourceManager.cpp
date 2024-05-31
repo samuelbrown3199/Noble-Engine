@@ -104,6 +104,8 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 {
 	std::lock_guard<std::mutex> lock(m_resourceDatabaseMutex);
 
+	LogInfo("Loading Resource Database");
+
 	std::map<std::string, std::shared_ptr<Resource>> loadedResources;
 	loadedResources = m_mLoadedResources;
 
@@ -154,9 +156,11 @@ void ResourceManager::LoadResourceDatabase(nlohmann::json resourceDatabase)
 				m_vPreviousScanFiles[res->m_sResourcePath] = fileTime;
 			}
 
-			LogInfo(FormatString("Loaded %d %s", ac.size(), resourceRegistry->at(i).first.c_str()));
+			LogInfo(FormatString("Loaded %d %s into database", ac.size(), resourceRegistry->at(i).first.c_str()));
 		}
 	}
+
+	LogInfo("Resource Database Loaded");
 }
 
 nlohmann::json ResourceManager::WriteResourceDatabase()

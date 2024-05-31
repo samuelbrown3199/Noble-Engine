@@ -342,7 +342,7 @@ void NobleCheckbox::DoCheckbox(const char* label, bool initialize, bool* targetV
 
 void EntityDropdown::DoEntityDropdown(std::string ID, int index, std::string& selEntity, int layer)
 {
-	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::unordered_map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 	static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 
 	// Disable the default "open on single-click behavior" + set Selected flag according to our selection.

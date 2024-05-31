@@ -8,6 +8,8 @@
 
 #include "../imgui/imgui.h"
 
+#include <unordered_map>
+
 void SceneManager::ClearLoadedScene()
 {
 	m_currentScene = nullptr;
@@ -79,7 +81,7 @@ void SceneManager::SaveScene(std::string scenePath)
 
 	LogInfo("Saving Scene " + scenePath);
 
-	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::unordered_map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 
 	NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
@@ -91,7 +93,7 @@ void SceneManager::SaveScene(std::string scenePath)
 	data["LightingSettings"]["ClearColour"] = { clearColour.x, clearColour.y, clearColour.z };
 	data["LightingSettings"]["AmbientColour"] = { renderer->m_sceneData.ambientColour.x, renderer->m_sceneData.ambientColour.y , renderer->m_sceneData.ambientColour.z , renderer->m_sceneData.ambientColour.w };
 
-	std::map<std::string, Entity>::iterator it;
+	std::unordered_map<std::string, Entity>::iterator it;
 	for (it = entities.begin(); it != entities.end(); it++)
 	{
 		if (it->second.m_bAvailableForUse)

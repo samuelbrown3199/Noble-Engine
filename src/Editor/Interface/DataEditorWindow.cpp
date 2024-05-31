@@ -18,7 +18,7 @@ void DataEditorWindow::DoInterface()
 
 	if (m_sSelEntity != "")
 	{
-		std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
+		std::unordered_map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 		NobleRegistry* registry = Application::GetApplication()->GetRegistry();
 		std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = registry->GetComponentRegistry();
 

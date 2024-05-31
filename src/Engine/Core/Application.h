@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <unordered_map>
 #include <SDL/SDL.h>
 
 #include "Graphics/Renderer.h"
@@ -79,7 +80,7 @@ private:
     PerformanceStats* m_pStats;
 
 	std::deque<Entity*> m_vDeletionEntities;
-	std::map<std::string, Entity> m_vEntities;
+	std::unordered_map<std::string, Entity> m_vEntities;
 
 	std::vector<std::shared_ptr<ToolUI>> m_vToolUIs;
 
@@ -117,7 +118,7 @@ public:
 	Entity* GetEntity(std::string ID);
 	void CleanupDeletionEntities();
 
-	std::map<std::string, Entity>& GetEntityList() { return m_vEntities; }
+	std::unordered_map<std::string, Entity>& GetEntityList() { return m_vEntities; }
 	void ClearLoadedScene();
 
 	NobleRegistry* GetRegistry() { return m_registry; }

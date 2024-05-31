@@ -31,7 +31,7 @@ struct Datalist
 template <typename T>
 struct ComponentDatalist : public Datalist
 {
-	std::vector<T> m_componentData;
+	std::vector<T> m_componentData; //could this be a unordered map for faster access?
 	std::deque<T*> m_deletedComponents;
 
 	void AddComponent(Component* comp) override

@@ -202,8 +202,8 @@ struct ChangeResourceCommand : public Command
 
 struct EntityCopy
 {
-	std::string m_sName;
-	std::string m_sParentID;
+	std::string m_sName = "";
+	std::string m_sParentID = "";
 	std::map<std::string, int> m_vComponents;
 	std::vector<EntityCopy> m_vChildrenCopy;
 

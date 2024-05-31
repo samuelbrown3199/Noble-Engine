@@ -9,6 +9,8 @@
 
 #include "DataEditorWindow.h"
 
+#include <unordered_map>
+
 void CreateEntityModal::CreateEntity()
 {
 	SceneHierarchyWindow* sceneHierarchy = dynamic_cast<SceneHierarchyWindow*>(m_pParentUI);
@@ -91,7 +93,7 @@ void SceneHierarchyWindow::DoInterface()
 		ImGui::SetItemTooltip("Deletes the selected entity.");
 	}
 
-	std::map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
+	std::unordered_map<std::string, Entity>& entities = Application::GetApplication()->GetEntityList();
 	bool sceneTreeOpen = ImGui::TreeNode("Entities");
 	if (ImGui::BeginPopupContextItem())
 	{
@@ -130,7 +132,7 @@ void SceneHierarchyWindow::DoInterface()
 		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selection_mask = (1 << 2);
 
-		std::map<std::string, Entity>::iterator it;
+		std::unordered_map<std::string, Entity>::iterator it;
 		int i = 0;
 		for(it = entities.begin(); it != entities.end(); it++, i++)
 		{

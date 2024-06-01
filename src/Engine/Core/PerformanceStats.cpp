@@ -155,14 +155,17 @@ void PerformanceStats::EndComponentMeasurement(std::string name, bool update)
 
 void PerformanceStats::UpdateMemoryUsageStats()
 {
-	m_iPhysicalMemoryUsageByEngine = (GetPhysicalMemoryUsedByEngine() / 1024) / 1024;
-	m_iVirtualMemoryUsageByEngine = (GetVirtualMemoryUsedByEngine() / 1024) / 1024;
+	m_fPhysicalMemoryUsageByEngine = (GetPhysicalMemoryUsedByEngine() / 1024.0f) / 1024.0f;
+	m_fVirtualMemoryUsageByEngine = (GetVirtualMemoryUsedByEngine() / 1024.0f) / 1024.0f;
 
-	m_iPhysicalMemoryUsage = (GetPhysicalMemoryUsed() / 1024) / 1024;
-	m_iVirtualMemoryUsage = (GetVirtualMemoryUsed() / 1024) / 1024;
+	m_fPhysicalMemoryUsage = (GetPhysicalMemoryUsed() / 1024.0f) / 1024.0f;
+	m_fVirtualMemoryUsage = (GetVirtualMemoryUsed() / 1024.0f) / 1024.0f;
 
-	m_iTotalPhysicalMemory = (GetTotalPhysicalMemory() / 1024) / 1024;
-	m_iTotalVirtualMemory = (GetTotalVirtualMemory() / 1024) / 1024;
+	m_fTotalPhysicalMemory = (GetTotalPhysicalMemory() / 1024.0f) / 1024.0f;
+	m_fTotalVirtualMemory = (GetTotalVirtualMemory() / 1024.0f) / 1024.0f;
+
+	m_fPhysicalMemoryAvailable = (GetPhysicalMemoryAvailable() / 1024.0f) / 1024.0f;
+	m_fVirtualMemoryAvailable = (GetVirtualMemoryAvailable() / 1024.0f) / 1024.0f;
 }
 
 DWORDLONG PerformanceStats::GetTotalVirtualMemory()
@@ -202,6 +205,20 @@ SIZE_T PerformanceStats::GetVirtualMemoryUsedByEngine()
     return virtualMemUsedByMe;
 }
 
+SIZE_T PerformanceStats::GetVirtualMemoryAvailable()
+{
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	if (!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+	SIZE_T virtualMemAvailable = memInfo.ullAvailPageFile;
+
+	return virtualMemAvailable;
+}
+
 DWORDLONG PerformanceStats::GetTotalPhysicalMemory()
 {
     MEMORYSTATUSEX memInfo;
@@ -237,4 +254,18 @@ SIZE_T PerformanceStats::GetPhysicalMemoryUsedByEngine()
     SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
 
     return physMemUsedByMe;
+}
+
+SIZE_T PerformanceStats::GetPhysicalMemoryAvailable()
+{
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	if (!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+	SIZE_T physMemAvailable = memInfo.ullAvailPhys;
+
+	return physMemAvailable;
 }

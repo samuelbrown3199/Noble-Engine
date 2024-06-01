@@ -57,10 +57,12 @@ private:
 	DWORDLONG GetTotalVirtualMemory();
 	DWORDLONG GetVirtualMemoryUsed();
 	SIZE_T GetVirtualMemoryUsedByEngine();
+	DWORDLONG GetVirtualMemoryAvailable();
 
 	DWORDLONG GetTotalPhysicalMemory();
 	DWORDLONG GetPhysicalMemoryUsed();
 	SIZE_T GetPhysicalMemoryUsedByEngine();
+	DWORDLONG GetPhysicalMemoryAvailable();
 
 public:
 
@@ -72,13 +74,15 @@ public:
 
 	PerformanceStats();
 
-	DWORDLONG m_iTotalVirtualMemory;
-	DWORDLONG m_iVirtualMemoryUsage;
-	float m_iVirtualMemoryUsageByEngine;
+	float m_fTotalVirtualMemory;
+	float m_fVirtualMemoryUsage;
+	float m_fVirtualMemoryUsageByEngine;
+	float m_fVirtualMemoryAvailable;
 
-	DWORDLONG m_iTotalPhysicalMemory;
-	DWORDLONG m_iPhysicalMemoryUsage;
-	float m_iPhysicalMemoryUsageByEngine;
+	float m_fTotalPhysicalMemory;
+	float m_fPhysicalMemoryUsage;
+	float m_fPhysicalMemoryUsageByEngine;
+	float m_fPhysicalMemoryAvailable;
 
 	/**
 	*Logs perfomance information for the current frame.

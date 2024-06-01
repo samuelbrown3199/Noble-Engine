@@ -385,6 +385,7 @@ void Application::ClearLoadedScene()
 	m_vEntities.clear();
 	m_vDeletionEntities.clear();
 
+	m_gameRenderer->m_onScreenObjects.clear();
 	m_gameRenderer->RemoveCamera();
 
 	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = m_registry->GetComponentRegistry();

@@ -5,13 +5,19 @@
 
 #include <deque>
 
+
+namespace NobleProfiling
+{
+	const int m_iMaxSamples = 500;
+};
+
 struct FrameTimeStat
 {
 	std::string m_sName;
 	std::deque<double> m_qTimes;
 
-	double m_frameTimeArrayX[100] = { 0 };
-	double m_frameTimeArray[100] = { 0 };
+	double m_frameTimeArrayX[NobleProfiling::m_iMaxSamples] = { 0 };
+	double m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
 	double m_fMaxFrameTime = 0;
 	double m_fAvgFrameTime = 0;
 
@@ -27,8 +33,8 @@ struct MemoryStat
 	std::deque<double> m_qMemoryValues;
 	float* m_fTargetValue;
 
-	double m_dMemoryValuesX[100] = { 0 };
-	double m_dMemoryValues[100] = { 0 };
+	double m_dMemoryValuesX[NobleProfiling::m_iMaxSamples] = { 0 };
+	double m_dMemoryValues[NobleProfiling::m_iMaxSamples] = { 0 };
 
 	MemoryStat(std::string name, float* targetValue)
 	{
@@ -39,6 +45,7 @@ struct MemoryStat
 
 class Profiler : public EditorToolUI
 {
+
 private:
 
 	PerformanceStats* m_pStats = nullptr;
@@ -47,10 +54,9 @@ private:
 	
 	std::vector<MemoryStat> m_vMemoryStats;
 
-	const int m_iMaxSamples = 100;
 	const double m_dMaxFPS = 200;
 
-	float m_fFrameRateArray[100] = { 0 };
+	float m_fFrameRateArray[NobleProfiling::m_iMaxSamples] = { 0 };
 	float m_fMaxFrameTime = 0;
 	float m_fMaxFrameRate = 0;
 	float m_fAvgFrameRate = 0;
@@ -60,6 +66,7 @@ private:
 	void ProcessData();
 
 public:
+
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
 };

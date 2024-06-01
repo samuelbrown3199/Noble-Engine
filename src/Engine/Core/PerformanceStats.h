@@ -39,9 +39,9 @@ struct PerformanceStats
 
 private:
 
-	const int avgFrameRateCount = 1440;
-	std::vector<int> framerateList;
-	int currentFrameCount = 0;
+	const int m_iAvgFrameRateCount = 1440;
+	std::vector<int> m_vFramerateList;
+	int m_iCurrentFrameCount = 0;
 
 	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemUpdateTimes;
 	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemRenderTimes;

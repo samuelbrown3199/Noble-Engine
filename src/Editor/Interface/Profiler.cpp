@@ -4,16 +4,17 @@
 #include <vector>
 
 #include <Engine\Core\Application.h>
+#include <Engine\Core\Registry.h>
 
 void Profiler::ProcessData()
 {
     for (int i = 0; i < m_vFrameTimeStats.size(); i++)
     {
-        m_vFrameTimeStats[i].m_frameTimeArray[m_iMaxSamples] = { 0 };
-        m_vFrameTimeStats[i].m_frameTimeArrayX[m_iMaxSamples] = { 0 };
+        m_vFrameTimeStats[i].m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
+        m_vFrameTimeStats[i].m_frameTimeArrayX[NobleProfiling::m_iMaxSamples] = { 0 };
 
         m_vFrameTimeStats[i].m_qTimes.push_back(m_pStats->GetPerformanceMeasurementInMicroSeconds(m_vFrameTimeStats[i].m_sName) / 1000);
-        if (m_vFrameTimeStats[i].m_qTimes.size() > m_iMaxSamples)
+        if (m_vFrameTimeStats[i].m_qTimes.size() > NobleProfiling::m_iMaxSamples)
             m_vFrameTimeStats[i].m_qTimes.pop_front();
 
         for (int o = 0; o < m_vFrameTimeStats[i].m_qTimes.size(); o++)
@@ -34,7 +35,7 @@ void Profiler::ProcessData()
     m_fMaxFrameTime = m_fMaxFrameTime > 20.0f ? m_fMaxFrameTime : 20.0f;
 
     m_qFrameRates.push_back(m_pStats->m_dFPS);
-    if (m_qFrameRates.size() > m_iMaxSamples)
+    if (m_qFrameRates.size() > NobleProfiling::m_iMaxSamples)
         m_qFrameRates.pop_front();
 
     for (int i = 0; i < m_qFrameRates.size(); i++)
@@ -50,10 +51,10 @@ void Profiler::ProcessData()
 
     for (int i = 0; i < m_vMemoryStats.size(); i++)
     {
-        m_vMemoryStats[i].m_dMemoryValuesX[m_iMaxSamples] = { 0 };
+        m_vMemoryStats[i].m_dMemoryValuesX[NobleProfiling::m_iMaxSamples] = { 0 };
 
         m_vMemoryStats[i].m_qMemoryValues.push_back(*m_vMemoryStats[i].m_fTargetValue);
-        if (m_vMemoryStats[i].m_qMemoryValues.size() > m_iMaxSamples)
+        if (m_vMemoryStats[i].m_qMemoryValues.size() > NobleProfiling::m_iMaxSamples)
             m_vMemoryStats[i].m_qMemoryValues.pop_front();
 
         for (int o = 0; o < m_vMemoryStats[i].m_qMemoryValues.size(); o++)
@@ -84,6 +85,12 @@ void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
 
     m_vMemoryStats.push_back(MemoryStat("Physical Memory Used", &m_pStats->m_fPhysicalMemoryUsageByEngine));
     m_vMemoryStats.push_back(MemoryStat("Virtual Memory Used", &m_pStats->m_fVirtualMemoryUsageByEngine));
+
+    std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+    for (int i = 0; i < compRegistry->size(); i++)
+    {
+        m_vMemoryStats.push_back(MemoryStat(compRegistry->at(i).first + " Memory Used", &compRegistry->at(i).second.m_fDataListMemoryUsage));
+    }
 }
 
 void Profiler::DoInterface()
@@ -107,18 +114,23 @@ void Profiler::DoInterface()
         ImPlotShadedFlags flags = 0;
 
         ImPlot::SetupAxes(nullptr, nullptr, flags, flags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, 0, m_iMaxSamples, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_X1, 0, NobleProfiling::m_iMaxSamples, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, m_fMaxFrameTime);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
-        ImPlot::PlotShaded(m_vFrameTimeStats[0].m_sName.c_str(), m_vFrameTimeStats[0].m_frameTimeArrayX, m_vFrameTimeStats[0].m_frameTimeArray, 100);
+        ImPlot::PlotShaded(m_vFrameTimeStats[0].m_sName.c_str(), m_vFrameTimeStats[0].m_frameTimeArrayX, m_vFrameTimeStats[0].m_frameTimeArray, NobleProfiling::m_iMaxSamples);
 
         for (int i = 1; i < m_vFrameTimeStats.size(); i++)
         {
             ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-            ImPlot::PlotLine(m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_frameTimeArrayX, m_vFrameTimeStats[i].m_frameTimeArray, 100);
+            ImPlot::PlotLine(m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_frameTimeArrayX, m_vFrameTimeStats[i].m_frameTimeArray, NobleProfiling::m_iMaxSamples);
         }
         ImPlot::EndPlot();
+    }
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
+    for (int i = 0; i < m_vFrameTimeStats.size(); i++)
+    {
+        ImGui::Text(FormatString("%s Avg Frame Time: %.2f", m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_fAvgFrameTime).c_str());
     }
 
     ImGui::SeparatorText("Memory Usage");
@@ -128,23 +140,32 @@ void Profiler::DoInterface()
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 1.0f);
 
         ImPlot::SetupAxes(nullptr, nullptr, flags, flags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, 0, m_iMaxSamples, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_X1, 0, NobleProfiling::m_iMaxSamples, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, m_fMaxMemory);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
         for (int i = 0; i < m_vMemoryStats.size(); i++)
         {
-            ImPlot::PlotShaded(m_vMemoryStats[i].m_sName.c_str(), m_vMemoryStats[i].m_dMemoryValuesX, m_vMemoryStats[i].m_dMemoryValues, 100);
+            ImPlot::PlotShaded(m_vMemoryStats[i].m_sName.c_str(), m_vMemoryStats[i].m_dMemoryValuesX, m_vMemoryStats[i].m_dMemoryValues, NobleProfiling::m_iMaxSamples);
         }
 
         ImPlot::EndPlot();
     }
 
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
     std::string memoryAvailableString = FormatString("Total Physical Memory: %.2fMB | Physical Memory Available: %.2fMB | Total Virtual Memory: %.2fMB | Virtual Memory Available: %.2fMB", m_pStats->m_fTotalPhysicalMemory, m_pStats->m_fPhysicalMemoryAvailable, m_pStats->m_fTotalVirtualMemory, m_pStats->m_fVirtualMemoryAvailable);
     ImGui::Text(memoryAvailableString.c_str());
 
     std::string memoryUsageString = FormatString("Physical Memory Used By Engine : % .2fMB | Virtual Memory Used By Engine : % .2fMB", m_pStats->m_fPhysicalMemoryUsageByEngine, m_pStats->m_fVirtualMemoryUsageByEngine);
     ImGui::Text(memoryUsageString.c_str());
+
+    ImGui::SeparatorText("Component Memory Usage");
+    std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+    for (int i = 0; i < compRegistry->size(); i++)
+    {
+        std::string componentUsageString = FormatString("%s Memory Used: %.2fMB | ", compRegistry->at(i).first.c_str(), compRegistry->at(i).second.m_fDataListMemoryUsage);
+        ImGui::Text(componentUsageString.c_str());
+    }
 
     ImGui::SeparatorText("Renderer Stats");
     ImGui::Text(FormatString("Scene Render Objects: %d. On Screen Objects: %d.", renderer->GetRenderableCount(), renderer->GetOnScreenRenderableCount()).c_str());

@@ -17,6 +17,8 @@ struct ComponentRegistry
 	bool m_bUseThreads = false;	
 	int m_iMaxComponentsPerThread = 1024;
 
+	float m_fDataListMemoryUsage = 0;
+
 	bool m_bUpdateInEditor = false, m_bRenderInEditor = false;
 
 	Datalist* m_componentDatalist = nullptr;
@@ -36,6 +38,14 @@ struct ComponentRegistry
 		m_iMaxComponentsPerThread = maxComponentsPerThread;
 		m_bUpdateInEditor = updateEditMode;
 		m_bRenderInEditor = renderEditMode;
+	}
+
+	void UpdateMemoryUse()
+	{
+		if (m_componentDatalist == nullptr)
+			return;
+
+		m_fDataListMemoryUsage = (m_componentDatalist->GetDataListMemoryUsage() / 1024.0f) / 1024.0f;
 	}
 };
 

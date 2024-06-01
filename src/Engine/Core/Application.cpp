@@ -186,6 +186,8 @@ void Application::MainLoop()
 		}
 		for (int i = 0; i < compRegistry->size(); i++)
 		{
+			compRegistry->at(i).second.UpdateMemoryUse();
+
 			if (!m_bPlayMode && !compRegistry->at(i).second.m_bUpdateInEditor)
 				continue;
 
@@ -241,8 +243,8 @@ void Application::MainLoop()
 		m_resourceManager->UnloadUnusedResources();
 		m_pStats->EndPerformanceMeasurement("Cleanup");
 
-		m_pStats->UpdatePerformanceStats();
 		m_pStats->UpdateMemoryUsageStats();
+		m_pStats->UpdatePerformanceStats();
 		m_pStats->EndPerformanceMeasurement("Frame");
 		m_pStats->LogPerformanceStats();
 	}

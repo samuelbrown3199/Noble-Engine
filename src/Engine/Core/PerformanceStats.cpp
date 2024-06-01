@@ -11,19 +11,19 @@ void PerformanceStats::UpdatePerformanceStats()
 	double frameMilliseconds = GetPerformanceMeasurementInMicroSeconds("Frame") / 1000;
 	m_dFPS = 1000.0f / frameMilliseconds;
 	m_dDeltaT = 1.0f / m_dFPS;
-	framerateList.push_back(m_dFPS);
-	currentFrameCount++;
+	m_vFramerateList.push_back(m_dFPS);
+	m_iCurrentFrameCount++;
 
-	if (avgFrameRateCount == currentFrameCount)
+	if (m_iAvgFrameRateCount == m_iCurrentFrameCount)
 	{
 		m_dAvgFPS = 0;
-		for (int i = 0; i < framerateList.size(); i++)
+		for (int i = 0; i < m_vFramerateList.size(); i++)
 		{
-			m_dAvgFPS += framerateList.at(i);
+			m_dAvgFPS += m_vFramerateList.at(i);
 		}
-		framerateList.clear();
-		m_dAvgFPS /= avgFrameRateCount;
-		currentFrameCount = 0;
+		m_vFramerateList.clear();
+		m_dAvgFPS /= m_iAvgFrameRateCount;
+		m_iCurrentFrameCount = 0;
 	}
 }
 
@@ -40,7 +40,7 @@ PerformanceStats::PerformanceStats()
 	m_mSystemUpdateTimes = std::vector<std::pair<std::string, PerformanceMeasurement>>();
 	m_mSystemRenderTimes = std::vector<std::pair<std::string, PerformanceMeasurement>>();
 
-	currentFrameCount = 0;
+	m_iCurrentFrameCount = 0;
 }
 
 void PerformanceStats::LogPerformanceStats()
@@ -48,7 +48,7 @@ void PerformanceStats::LogPerformanceStats()
 	if (!m_bLogPerformance)
 		return;
 
-	if (currentFrameCount != 0)
+	if (m_iCurrentFrameCount != 0)
 		return;
 
 	std::string performanceStatsString = FormatString("FPS: %.2f | Delta Time: %.5f", m_dFPS, m_dDeltaT);
@@ -155,6 +155,9 @@ void PerformanceStats::EndComponentMeasurement(std::string name, bool update)
 
 void PerformanceStats::UpdateMemoryUsageStats()
 {
+	if (m_iAvgFrameRateCount < m_iCurrentFrameCount)
+		return;
+
 	m_fPhysicalMemoryUsageByEngine = (GetPhysicalMemoryUsedByEngine() / 1024.0f) / 1024.0f;
 	m_fVirtualMemoryUsageByEngine = (GetVirtualMemoryUsedByEngine() / 1024.0f) / 1024.0f;
 

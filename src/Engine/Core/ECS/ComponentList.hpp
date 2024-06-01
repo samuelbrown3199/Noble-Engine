@@ -25,6 +25,8 @@ struct Datalist
 	virtual void LoadComponentDataFromJson(nlohmann::json& j) = 0;
 	virtual nlohmann::json WriteComponentDataToJson() = 0;
 
+	virtual int GetDataListMemoryUsage() = 0;
+
 	virtual Component* CopyComponent(Component* comp, std::string entityID) = 0;
 };
 
@@ -194,6 +196,12 @@ struct ComponentDatalist : public Datalist
 		}
 
 		return data;
+	}
+
+	int GetDataListMemoryUsage()
+	{
+		int size = sizeof(T) * m_componentData.size();
+		return size;
 	}
 
 	Component* CopyComponent(Component* comp, std::string entityID) override

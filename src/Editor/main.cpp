@@ -25,6 +25,7 @@ void StartupEditor()
 }
 
 #ifndef NDEBUG
+
 int main()
 {
     StartupEditor();

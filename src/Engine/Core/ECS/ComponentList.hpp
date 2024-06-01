@@ -38,8 +38,12 @@ struct ComponentDatalist : public Datalist
 	{
 		if (!m_deletedComponents.empty())
 		{
+			std::string entityID = comp->m_sEntityID;
+
 			T* co = m_deletedComponents.front();
 			*co = *dynamic_cast<T*>(comp);
+			co->m_bAvailableForReuse = false;
+			co->m_sEntityID = entityID;
 
 			m_deletedComponents.pop_front();
 

@@ -159,7 +159,8 @@ Entity* EntityCopy::ProcessEntityCopy()
 
 	copiedEntity->GetAllComponents();
 
-	if (Application::GetApplication()->GetEditor() != nullptr)
+	//TODO: rework when we have multiple selection.
+	if (Application::GetApplication()->GetEditor() != nullptr && copiedEntity->m_sEntityParentID == "")
 		Application::GetApplication()->GetEditor()->SetSelectedEntity(copiedEntity->m_sEntityID);
 
 	for(int i = 0; i < m_vChildrenCopy.size(); i++)

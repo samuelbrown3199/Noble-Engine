@@ -242,6 +242,7 @@ void Application::MainLoop()
 		m_pStats->EndPerformanceMeasurement("Cleanup");
 
 		m_pStats->UpdatePerformanceStats();
+		m_pStats->UpdateMemoryUsageStats();
 		m_pStats->EndPerformanceMeasurement("Frame");
 		m_pStats->LogPerformanceStats();
 	}

@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "../Useful.h"
 
+#include "psapi.h"
+
 double PerformanceStats::m_dDeltaT;
 
 void PerformanceStats::UpdatePerformanceStats()
@@ -149,4 +151,90 @@ void PerformanceStats::EndComponentMeasurement(std::string name, bool update)
 		if (targetList->at(i).first == name)
 			targetList->at(i).second.EndMeasurement();
 	}
+}
+
+void PerformanceStats::UpdateMemoryUsageStats()
+{
+	m_iPhysicalMemoryUsageByEngine = (GetPhysicalMemoryUsedByEngine() / 1024) / 1024;
+	m_iVirtualMemoryUsageByEngine = (GetVirtualMemoryUsedByEngine() / 1024) / 1024;
+
+	m_iPhysicalMemoryUsage = (GetPhysicalMemoryUsed() / 1024) / 1024;
+	m_iVirtualMemoryUsage = (GetVirtualMemoryUsed() / 1024) / 1024;
+
+	m_iTotalPhysicalMemory = (GetTotalPhysicalMemory() / 1024) / 1024;
+	m_iTotalVirtualMemory = (GetTotalVirtualMemory() / 1024) / 1024;
+}
+
+DWORDLONG PerformanceStats::GetTotalVirtualMemory()
+{
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    if(!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+    DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+
+    return totalVirtualMem;
+}
+
+DWORDLONG PerformanceStats::GetVirtualMemoryUsed()
+{
+    MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	if (!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+	DWORDLONG virtualMemUsed = memInfo.ullTotalPageFile - memInfo.ullAvailPageFile;
+
+	return virtualMemUsed;
+}
+
+SIZE_T PerformanceStats::GetVirtualMemoryUsedByEngine()
+{
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+    SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
+
+    return virtualMemUsedByMe;
+}
+
+DWORDLONG PerformanceStats::GetTotalPhysicalMemory()
+{
+    MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	if (!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+	DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+
+	return totalPhysMem;
+}
+
+DWORDLONG PerformanceStats::GetPhysicalMemoryUsed()
+{
+    MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	if (!GlobalMemoryStatusEx(&memInfo))
+	{
+		LogFatalError("Failed to get memory status.");
+		return 0;
+	}
+	DWORDLONG physMemUsed = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
+
+	return physMemUsed;
+}
+
+SIZE_T PerformanceStats::GetPhysicalMemoryUsedByEngine()
+{
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+    SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+
+    return physMemUsedByMe;
 }

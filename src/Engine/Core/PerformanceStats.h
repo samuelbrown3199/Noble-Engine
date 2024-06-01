@@ -7,6 +7,9 @@
 #include <map>
 #include <chrono>
 
+#define NOMINMAX
+#include <Windows.h>
+
 #include <SDL/SDL.h>
 
 struct PerformanceMeasurement
@@ -49,6 +52,15 @@ private:
 	*Updates the performance stats. Done every frame by the engine.
 	*/
 	void UpdatePerformanceStats();
+	void UpdateMemoryUsageStats();
+
+	DWORDLONG GetTotalVirtualMemory();
+	DWORDLONG GetVirtualMemoryUsed();
+	SIZE_T GetVirtualMemoryUsedByEngine();
+
+	DWORDLONG GetTotalPhysicalMemory();
+	DWORDLONG GetPhysicalMemoryUsed();
+	SIZE_T GetPhysicalMemoryUsedByEngine();
 
 public:
 
@@ -59,6 +71,14 @@ public:
 	double m_dAvgFPS;
 
 	PerformanceStats();
+
+	DWORDLONG m_iTotalVirtualMemory;
+	DWORDLONG m_iVirtualMemoryUsage;
+	float m_iVirtualMemoryUsageByEngine;
+
+	DWORDLONG m_iTotalPhysicalMemory;
+	DWORDLONG m_iPhysicalMemoryUsage;
+	float m_iPhysicalMemoryUsageByEngine;
 
 	/**
 	*Logs perfomance information for the current frame.

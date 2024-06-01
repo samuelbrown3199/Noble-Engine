@@ -88,6 +88,8 @@ struct AudioSource : public Component
 		m_transformIndex = -1;
 	}
 
+	float GetEffectiveVolume();
+
 	virtual void DoComponentInterface() override;
 	virtual void OnUpdate() override;
 };

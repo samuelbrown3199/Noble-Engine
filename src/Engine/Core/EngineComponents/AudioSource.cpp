@@ -45,11 +45,8 @@ void AudioSource::OnUpdate()
 			FMOD_Channel_SetLoopCount(channel, loopCount);
 		}
 
-		float volumeMixerValue = aManager->GetAudioMixerOption(aManager->GetMixerOptionNames()[m_iMixerOption]);
-		if (aManager->GetMixerOptionNames()[m_iMixerOption] != "Master")
-			volumeMixerValue *= aManager->GetAudioMixerOption("Master");
-
-		FMOD_Channel_SetVolume(channel, m_fVolume * volumeMixerValue);
+		float volumeMixerValue = GetEffectiveVolume();
+		FMOD_Channel_SetVolume(channel, volumeMixerValue);
 		FMOD_Channel_SetPitch(channel, m_fPitch);
 		if (m_b3DSound)
 		{
@@ -80,6 +77,17 @@ void AudioSource::OnUpdate()
 	}
 }
 
+float AudioSource::GetEffectiveVolume()
+{
+	AudioManager* aManager = Application::GetApplication()->GetAudioManager();
+
+	float volumeMixerValue = aManager->GetAudioMixerOption(aManager->GetMixerOptionNames()[m_iMixerOption]);
+	if (aManager->GetMixerOptionNames()[m_iMixerOption] != "Master")
+		volumeMixerValue *= aManager->GetAudioMixerOption("Master");
+
+	return m_fVolume * volumeMixerValue;
+}
+
 void AudioSource::DoComponentInterface()
 {
 	ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
@@ -105,6 +113,11 @@ void AudioSource::DoComponentInterface()
 	static NobleDragFloat volumeDrag;
 	volumeDrag.m_pComponent = this;
 	volumeDrag.DoDragFloat("Volume", m_bInitializeInterface, &m_fVolume, 0.1f, 0.0f, 10.0f);
+
+	ImGui::BeginDisabled();
+	float effectiveVolume = GetEffectiveVolume();
+	ImGui::DragFloat("Effective Volume", &effectiveVolume);
+	ImGui::EndDisabled();
 
 	static NobleCheckbox pausedCheckBox;
 	pausedCheckBox.m_pComponent = this;

@@ -90,6 +90,10 @@ public:
 	float m_fPhysicalMemoryUsageByEngine;
 	float m_fPhysicalMemoryAvailable;
 
+	float m_fOtherMemoryUsage;
+	float m_fResourceMemoryUsage;
+	float m_fEntityMemoryUsage;
+
 	/**
 	*Logs perfomance information for the current frame.
 	*/

@@ -69,6 +69,7 @@ std::string GetFolderLocationRelativeToGameData(std::string path);
 
 float GenerateNumberBetween01();
 
+float ConvertBytesToMB(uint64_t bytes);
 
 
 //-------------------MATHS-------------------------------

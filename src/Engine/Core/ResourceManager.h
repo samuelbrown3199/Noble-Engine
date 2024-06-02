@@ -179,4 +179,6 @@ struct ResourceManager
 	*/
 	void UnloadAllResources();
 	std::shared_ptr<Resource> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath, std::string type);
+
+	float GetResourceMemoryUsage();
 };

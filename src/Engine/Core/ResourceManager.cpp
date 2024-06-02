@@ -467,3 +467,15 @@ std::shared_ptr<Resource> ResourceManager::DoResourceSelectInterface(std::string
 
 	return nullptr;
 }
+
+float ResourceManager::GetResourceMemoryUsage()
+{
+	float totalMemory = 0.0f;
+	std::map<std::string, std::shared_ptr<Resource>>::iterator it = m_mLoadedResources.begin();
+	for (; it != m_mLoadedResources.end(); it++)
+	{
+		totalMemory += it->second->GetResourceSize();
+	}
+
+	return ConvertBytesToMB(totalMemory);
+}

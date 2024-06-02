@@ -314,6 +314,11 @@ float GenerateNumberBetween01()
     return clampedNum;
 }
 
+float ConvertBytesToMB(uint64_t bytes)
+{
+    return (float)bytes / 1024.0f / 1024.0f;
+}
+
 //-------------------MATHS-------------------------------
 
 bool IsPointInViewFrustum(const glm::vec3& point, const glm::mat4& VP)

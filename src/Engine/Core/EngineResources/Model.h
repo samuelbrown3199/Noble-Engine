@@ -26,6 +26,8 @@ struct Model : public Resource
 	virtual void AddResource(std::string path) override;
 
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
+
+	float GetResourceSize() override;
 };
 
 #endif

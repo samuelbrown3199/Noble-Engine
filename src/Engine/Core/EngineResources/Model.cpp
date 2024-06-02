@@ -136,3 +136,8 @@ std::shared_ptr<Resource> Model::LoadFromJson(const std::string& path, const nlo
 
     return res;
 }
+
+float Model::GetResourceSize()
+{ 
+    return Resource::GetResourceSize() + ((sizeof(Vertex) * m_vertices.size()) + (sizeof(uint32_t) * m_indices.size()) + (sizeof(glm::vec3) * m_modelBoundingBox.size()));
+}

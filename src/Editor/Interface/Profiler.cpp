@@ -155,8 +155,11 @@ void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
     std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
     for (int i = 0; i < compRegistry->size(); i++)
     {
-        m_vMemoryStats.push_back(MemoryStat(compRegistry->at(i).first + " Memory Used", &compRegistry->at(i).second.m_fDataListMemoryUsage));
+        m_vMemoryStats.push_back(MemoryStat(compRegistry->at(i).first, &compRegistry->at(i).second.m_fDataListMemoryUsage));
     }
+    m_vMemoryStats.push_back(MemoryStat("Resource", &m_pStats->m_fResourceMemoryUsage));
+    m_vMemoryStats.push_back(MemoryStat("Other", &m_pStats->m_fOtherMemoryUsage));
+    m_vMemoryStats.push_back(MemoryStat("Entity", &m_pStats->m_fEntityMemoryUsage));
 }
 
 void Profiler::DoInterface()
@@ -250,13 +253,13 @@ void Profiler::DoInterface()
     std::string memoryAvailableString = FormatString("Total Physical Memory: %.2fMB | Physical Memory Available: %.2fMB | Total Virtual Memory: %.2fMB | Virtual Memory Available: %.2fMB", m_pStats->m_fTotalPhysicalMemory, m_pStats->m_fPhysicalMemoryAvailable, m_pStats->m_fTotalVirtualMemory, m_pStats->m_fVirtualMemoryAvailable);
     ImGui::Text(memoryAvailableString.c_str());
 
-    std::string memoryUsageString = FormatString("Physical Memory Used By Engine : % .2fMB | Virtual Memory Used By Engine : % .2fMB", m_pStats->m_fPhysicalMemoryUsageByEngine, m_pStats->m_fVirtualMemoryUsageByEngine);
+    std::string memoryUsageString = FormatString("Physical Memory Used By Engine: %.2fMB | Virtual Memory Used By Engine: %.2fMB", m_pStats->m_fPhysicalMemoryUsageByEngine, m_pStats->m_fVirtualMemoryUsageByEngine);
     ImGui::Text(memoryUsageString.c_str());
 
-    ImGui::SeparatorText("Component Memory Usage");
-    for (int i = 0; i < compRegistry->size(); i++)
+    ImGui::SeparatorText("Detailed Memory Usage");
+    for (int i = 0; i < m_vMemoryStats.size(); i++)
     {
-        std::string componentUsageString = FormatString("%s Memory Used: %.2fMB", compRegistry->at(i).first.c_str(), compRegistry->at(i).second.m_fDataListMemoryUsage);
+        std::string componentUsageString = FormatString("%s Memory Used: %.2fMB", m_vMemoryStats.at(i).m_sName.c_str(), *m_vMemoryStats.at(i).m_fTargetValue);
         ImGui::Text(componentUsageString.c_str());
     }
 

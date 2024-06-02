@@ -110,6 +110,7 @@ public:
     void CleanupApplication();
 
 	PerformanceStats* GetPerformanceStats() { return m_pStats; }
+	float GetEntityMemoryUsage();
 
 	Entity* CreateEntity();
 	Entity* CreateEntity(std::string _desiredID, std::string _name, std::string _parentID);

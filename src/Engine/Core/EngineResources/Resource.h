@@ -97,4 +97,9 @@ public:
 
 		return m_sLocalPath == path;
 	}
+
+	virtual float GetResourceSize()
+	{
+		return sizeof(Resource);
+	}
 };

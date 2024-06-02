@@ -56,6 +56,17 @@ struct Entity
 		}
 	}
 
+	float GetEntityMemoryUsage()
+	{
+		int bytes = 0;
+		bytes = sizeof(Entity);
+
+		bytes += sizeof(std::string) * m_vChildEntityIDs.size();
+		bytes += (sizeof(std::string)+sizeof(int)) * m_vComponents.size();
+		
+		return ConvertBytesToMB(bytes);
+	}
+
 	/**
 	*Adds a component of the type to the Entity.
 	*/

@@ -55,6 +55,7 @@ private:
 	std::vector<FrameTimeStat> m_vComponentUpdateTimes;
 	std::vector<FrameTimeStat> m_vComponentRenderTimes;
 
+	std::vector<MemoryStat> m_vMainMemoryStats;
 	std::vector<MemoryStat> m_vMemoryStats;
 
 	const double m_dMaxFPS = 200;

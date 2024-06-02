@@ -96,6 +96,25 @@ void Profiler::ProcessData()
     m_fAvgFrameRate /= m_qFrameRates.size();
     m_fMaxFrameRate = m_fMaxFrameRate > m_dMaxFPS ? m_fMaxFrameRate : m_dMaxFPS;
 
+    for (int i = 0; i < m_vMainMemoryStats.size(); i++)
+    {
+        m_vMainMemoryStats[i].m_dMemoryValuesX[NobleProfiling::m_iMaxSamples] = { 0 };
+
+        m_vMainMemoryStats[i].m_qMemoryValues.push_back(*m_vMainMemoryStats[i].m_fTargetValue);
+        if (m_vMainMemoryStats[i].m_qMemoryValues.size() > NobleProfiling::m_iMaxSamples)
+            m_vMainMemoryStats[i].m_qMemoryValues.pop_front();
+
+        for (int o = 0; o < m_vMainMemoryStats[i].m_qMemoryValues.size(); o++)
+        {
+            m_vMainMemoryStats[i].m_dMemoryValues[o] = m_vMainMemoryStats[i].m_qMemoryValues[o];
+            m_vMainMemoryStats[i].m_dMemoryValuesX[o] = o;
+
+            if (m_vMainMemoryStats[i].m_qMemoryValues[o] > m_fMaxMemory)
+                m_fMaxMemory = m_vMainMemoryStats[i].m_qMemoryValues[o];
+        }
+    }
+    std::sort(m_vMainMemoryStats.begin(), m_vMainMemoryStats.end(), [](MemoryStat a, MemoryStat b) { return *a.m_fTargetValue > *b.m_fTargetValue; });
+
     for (int i = 0; i < m_vMemoryStats.size(); i++)
     {
         m_vMemoryStats[i].m_dMemoryValuesX[NobleProfiling::m_iMaxSamples] = { 0 };
@@ -130,8 +149,8 @@ void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
     m_vFrameTimeStats.push_back(FrameTimeStat("EditorRender"));
     m_vFrameTimeStats.push_back(FrameTimeStat("Cleanup"));
 
-    m_vMemoryStats.push_back(MemoryStat("Physical Memory Used", &m_pStats->m_fPhysicalMemoryUsageByEngine));
-    m_vMemoryStats.push_back(MemoryStat("Virtual Memory Used", &m_pStats->m_fVirtualMemoryUsageByEngine));
+    m_vMainMemoryStats.push_back(MemoryStat("Physical Memory Used", &m_pStats->m_fPhysicalMemoryUsageByEngine));
+    m_vMainMemoryStats.push_back(MemoryStat("Virtual Memory Used", &m_pStats->m_fVirtualMemoryUsageByEngine));
 
     std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
     for (int i = 0; i < compRegistry->size(); i++)
@@ -219,9 +238,9 @@ void Profiler::DoInterface()
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, m_fMaxMemory);
         ImPlot::SetNextFillStyle(IMPLOT_AUTO_COL, 0.5f);
 
-        for (int i = 0; i < m_vMemoryStats.size(); i++)
+        for (int i = 0; i < m_vMainMemoryStats.size(); i++)
         {
-            ImPlot::PlotShaded(m_vMemoryStats[i].m_sName.c_str(), m_vMemoryStats[i].m_dMemoryValuesX, m_vMemoryStats[i].m_dMemoryValues, NobleProfiling::m_iMaxSamples);
+            ImPlot::PlotShaded(m_vMainMemoryStats[i].m_sName.c_str(), m_vMainMemoryStats[i].m_dMemoryValuesX, m_vMainMemoryStats[i].m_dMemoryValues, NobleProfiling::m_iMaxSamples);
         }
 
         ImPlot::EndPlot();
@@ -237,7 +256,7 @@ void Profiler::DoInterface()
     ImGui::SeparatorText("Component Memory Usage");
     for (int i = 0; i < compRegistry->size(); i++)
     {
-        std::string componentUsageString = FormatString("%s Memory Used: %.2fMB | ", compRegistry->at(i).first.c_str(), compRegistry->at(i).second.m_fDataListMemoryUsage);
+        std::string componentUsageString = FormatString("%s Memory Used: %.2fMB", compRegistry->at(i).first.c_str(), compRegistry->at(i).second.m_fDataListMemoryUsage);
         ImGui::Text(componentUsageString.c_str());
     }
 

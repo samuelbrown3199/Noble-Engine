@@ -52,6 +52,9 @@ private:
 	std::deque<float> m_qFrameRates;
 	std::vector<FrameTimeStat> m_vFrameTimeStats;
 	
+	std::vector<FrameTimeStat> m_vComponentUpdateTimes;
+	std::vector<FrameTimeStat> m_vComponentRenderTimes;
+
 	std::vector<MemoryStat> m_vMemoryStats;
 
 	const double m_dMaxFPS = 200;
@@ -69,4 +72,6 @@ public:
 
 	void InitializeInterface(ImGuiWindowFlags defaultFlags) override;
 	void DoInterface() override;
+
+	void AddComponentMeasurement(std::string name);
 };

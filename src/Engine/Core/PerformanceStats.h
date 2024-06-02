@@ -28,6 +28,12 @@ struct PerformanceMeasurement
 		m_measurementEnd = std::chrono::high_resolution_clock::now();
 		m_measurementTime = std::chrono::duration_cast<std::chrono::microseconds>(m_measurementEnd - m_measurementStart);
 	}
+
+	double GetPerformanceMeasurementInMicroSeconds()
+	{
+		int returnVal = m_measurementTime.count();
+		return returnVal;
+	}
 };
 
 /**
@@ -43,10 +49,10 @@ private:
 	std::vector<int> m_vFramerateList;
 	int m_iCurrentFrameCount = 0;
 
-	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemUpdateTimes;
-	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mSystemRenderTimes;
+	std::map<std::string, PerformanceMeasurement> m_mSystemUpdateTimes;
+	std::map<std::string, PerformanceMeasurement> m_mSystemRenderTimes;
 
-	std::vector<std::pair<std::string, PerformanceMeasurement>> m_mPerformanceMeasurements;
+	std::map<std::string, PerformanceMeasurement> m_mPerformanceMeasurements;
 
 	/**
 	*Updates the performance stats. Done every frame by the engine.
@@ -91,17 +97,20 @@ public:
 
 	void ClearComponentMeasurements();
 
-	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemUpdateTimes() { return m_mSystemUpdateTimes; }
-	std::vector<std::pair<std::string, PerformanceMeasurement>> GetSystemRenderTimes() { return m_mSystemRenderTimes; }
+	std::map<std::string, PerformanceMeasurement>* GetSystemUpdateTimes() { return &m_mSystemUpdateTimes; }
+	std::map<std::string, PerformanceMeasurement>* GetSystemRenderTimes() { return &m_mSystemRenderTimes; }
 
 	void AddPerformanceMeasurement(std::string name);
 	void StartPerformanceMeasurement(std::string name);
 	void EndPerformanceMeasurement(std::string name);
-	double GetPerformanceMeasurementInMicroSeconds(std::string name);
 
 	void AddComponentMeasurement(std::string name);
 	void StartComponentMeasurement(std::string name, bool update);
 	void EndComponentMeasurement(std::string name, bool update);
+
+	PerformanceMeasurement* GetComponentUpdateMeasurement(std::string name);
+	PerformanceMeasurement* GetComponentRenderMeasurement(std::string name);
+	PerformanceMeasurement* GetPerformanceMeasurement(std::string name);
 };
 
 #endif

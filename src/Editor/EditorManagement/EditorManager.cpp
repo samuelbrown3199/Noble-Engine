@@ -257,3 +257,8 @@ void EditorManager::CreateEntityCopy(Entity* entity)
 {
 	dynamic_cast<SceneHierarchyWindow*>(GetEditorUI("SceneHierarchy"))->CreateEntityCopy(entity);
 }
+
+void EditorManager::AddComponentMeasurement(std::string name)
+{
+	dynamic_cast<Profiler*>(GetEditorUI("Profiler"))->AddComponentMeasurement(name);
+}

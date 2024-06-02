@@ -13,7 +13,7 @@ void Profiler::ProcessData()
         m_vFrameTimeStats[i].m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
         m_vFrameTimeStats[i].m_frameTimeArrayX[NobleProfiling::m_iMaxSamples] = { 0 };
 
-        m_vFrameTimeStats[i].m_qTimes.push_back(m_pStats->GetPerformanceMeasurementInMicroSeconds(m_vFrameTimeStats[i].m_sName) / 1000);
+        m_vFrameTimeStats[i].m_qTimes.push_back(m_pStats->GetPerformanceMeasurement(m_vFrameTimeStats[i].m_sName)->GetPerformanceMeasurementInMicroSeconds() / 1000);
         if (m_vFrameTimeStats[i].m_qTimes.size() > NobleProfiling::m_iMaxSamples)
             m_vFrameTimeStats[i].m_qTimes.pop_front();
 
@@ -31,6 +31,53 @@ void Profiler::ProcessData()
         if (m_vFrameTimeStats[i].m_fMaxFrameTime > m_fMaxFrameTime)
             m_fMaxFrameTime = m_vFrameTimeStats[i].m_fMaxFrameTime;
     }
+
+    std::map<std::string, PerformanceMeasurement>* updateTimes = m_pStats->GetSystemUpdateTimes();
+    std::map<std::string, PerformanceMeasurement>* renderTimes = m_pStats->GetSystemRenderTimes();
+    for (int i = 0; i < m_vComponentUpdateTimes.size(); i++)
+    {
+        m_vComponentUpdateTimes[i].m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
+        m_vComponentUpdateTimes[i].m_frameTimeArrayX[NobleProfiling::m_iMaxSamples] = { 0 };
+
+        m_vComponentRenderTimes[i].m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
+        m_vComponentRenderTimes[i].m_frameTimeArrayX[NobleProfiling::m_iMaxSamples] = { 0 };
+
+        m_vComponentUpdateTimes[i].m_qTimes.push_back(updateTimes->at(m_vComponentUpdateTimes[i].m_sName).m_measurementTime.count() / 1000);
+        if (m_vComponentUpdateTimes[i].m_qTimes.size() > NobleProfiling::m_iMaxSamples)
+			m_vComponentUpdateTimes[i].m_qTimes.pop_front();
+
+        m_vComponentRenderTimes[i].m_qTimes.push_back(renderTimes->at(m_vComponentRenderTimes[i].m_sName).m_measurementTime.count() / 1000);
+        if (m_vComponentRenderTimes[i].m_qTimes.size() > NobleProfiling::m_iMaxSamples) 
+            m_vComponentRenderTimes[i].m_qTimes.pop_front();
+
+        for (int o = 0; o < m_vComponentUpdateTimes[i].m_qTimes.size(); o++)
+		{
+			m_vComponentUpdateTimes[i].m_fAvgFrameTime += m_vComponentUpdateTimes[i].m_qTimes[o];
+			m_vComponentUpdateTimes[i].m_frameTimeArray[o] = m_vComponentUpdateTimes[i].m_qTimes[o];
+			m_vComponentUpdateTimes[i].m_frameTimeArrayX[o] = o;
+
+			if (m_vComponentUpdateTimes[i].m_qTimes[o] > m_vComponentUpdateTimes[i].m_fMaxFrameTime)
+				m_vComponentUpdateTimes[i].m_fMaxFrameTime = m_vComponentUpdateTimes[i].m_qTimes[o];
+		}
+		m_vComponentUpdateTimes[i].m_fAvgFrameTime /= m_vComponentUpdateTimes[i].m_qTimes.size();
+
+		if (m_vComponentUpdateTimes[i].m_fMaxFrameTime > m_fMaxFrameTime)
+			m_fMaxFrameTime = m_vComponentUpdateTimes[i].m_fMaxFrameTime;
+
+        for (int o = 0; o < m_vComponentRenderTimes[i].m_qTimes.size(); o++)
+        {
+			m_vComponentRenderTimes[i].m_fAvgFrameTime += m_vComponentRenderTimes[i].m_qTimes[o];
+			m_vComponentRenderTimes[i].m_frameTimeArray[o] = m_vComponentRenderTimes[i].m_qTimes[o];
+			m_vComponentRenderTimes[i].m_frameTimeArrayX[o] = o;
+
+			if (m_vComponentRenderTimes[i].m_qTimes[o] > m_vComponentRenderTimes[i].m_fMaxFrameTime)
+				m_vComponentRenderTimes[i].m_fMaxFrameTime = m_vComponentRenderTimes[i].m_qTimes[o];
+		}
+        m_vComponentRenderTimes[i].m_fAvgFrameTime /= m_vComponentRenderTimes[i].m_qTimes.size();
+
+        if (m_vComponentRenderTimes[i].m_fMaxFrameTime > m_fMaxFrameTime)
+            m_fMaxFrameTime = m_vComponentRenderTimes[i].m_fMaxFrameTime;
+	}
 
     m_fMaxFrameTime = m_fMaxFrameTime > 20.0f ? m_fMaxFrameTime : 20.0f;
 
@@ -96,7 +143,8 @@ void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
 void Profiler::DoInterface()
 {
     Renderer* renderer = Application::GetApplication()->GetRenderer();
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
+
     if (!ImGui::Begin("Profiler", &m_uiOpen, m_windowFlags))
     {
         ImGui::End();
@@ -133,6 +181,33 @@ void Profiler::DoInterface()
         ImGui::Text(FormatString("%s Avg Frame Time: %.2f", m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_fAvgFrameTime).c_str());
     }
 
+    ImGui::SeparatorText("Component Frame Times");
+    std::map<std::string, PerformanceMeasurement>* updateTimes = m_pStats->GetSystemUpdateTimes();
+    std::map<std::string, PerformanceMeasurement>* renderTimes = m_pStats->GetSystemRenderTimes();
+    for (int i = 0; i < compRegistry->size(); i++)
+    {
+        double updateTime = 0;
+        for (int o = 0; o < m_vComponentUpdateTimes.size(); o++)
+        {
+            if (m_vComponentUpdateTimes[o].m_sName == compRegistry->at(i).first)
+            {
+                updateTime = m_vComponentUpdateTimes[o].m_fAvgFrameTime;
+                break;
+            }
+        }
+        double renderTime = 0;
+        for (int o = 0; o < m_vComponentRenderTimes.size(); o++)
+        {
+            if (m_vComponentRenderTimes[o].m_sName == compRegistry->at(i).first)
+            {
+                renderTime = m_vComponentRenderTimes[o].m_fAvgFrameTime;
+                break;
+            }
+        }
+
+        ImGui::Text(FormatString("%s Avg Update Time: %.2f | Avg Render Time: %.2f", compRegistry->at(i).first.c_str(), updateTime, renderTime).c_str());
+    }
+
     ImGui::SeparatorText("Memory Usage");
     if (ImPlot::BeginPlot("Memory Usage", ImVec2(-1, 0), plotFlags))
     {
@@ -160,7 +235,6 @@ void Profiler::DoInterface()
     ImGui::Text(memoryUsageString.c_str());
 
     ImGui::SeparatorText("Component Memory Usage");
-    std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
     for (int i = 0; i < compRegistry->size(); i++)
     {
         std::string componentUsageString = FormatString("%s Memory Used: %.2fMB | ", compRegistry->at(i).first.c_str(), compRegistry->at(i).second.m_fDataListMemoryUsage);
@@ -178,4 +252,10 @@ void Profiler::DoInterface()
     UpdateWindowState();
 
     ImGui::End();
+}
+
+void Profiler::AddComponentMeasurement(std::string name)
+{
+    m_vComponentUpdateTimes.push_back(FrameTimeStat(name));
+	m_vComponentRenderTimes.push_back(FrameTimeStat(name));
 }

@@ -45,6 +45,8 @@ public:
 	virtual void SetSelectedResource(std::string localPath) = 0;
 
 	virtual void CreateEntityCopy(Entity* entity) = 0;
+
+	virtual void AddComponentMeasurement(std::string name) = 0;
 };
 
 class Application

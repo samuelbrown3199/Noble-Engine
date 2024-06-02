@@ -76,4 +76,6 @@ public:
 	void ChangeEditorMode();
 
 	void CreateEntityCopy(Entity* entity) override;
+
+	void AddComponentMeasurement(std::string name);
 };

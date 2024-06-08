@@ -8,6 +8,10 @@
 
 void Profiler::ProcessData()
 {
+    m_fMaxMemory = 0;
+    m_fMaxFrameRate = 0;
+    m_fMaxFrameTime = 0;
+
     for (int i = 0; i < m_vFrameTimeStats.size(); i++)
     {
         m_vFrameTimeStats[i].m_frameTimeArray[NobleProfiling::m_iMaxSamples] = { 0 };
@@ -79,7 +83,7 @@ void Profiler::ProcessData()
             m_fMaxFrameTime = m_vComponentRenderTimes[i].m_fMaxFrameTime;
 	}
 
-    m_fMaxFrameTime = m_fMaxFrameTime > 20.0f ? m_fMaxFrameTime : 20.0f;
+    m_fMaxFrameTime = m_fMaxFrameTime > 20.0f ? m_fMaxFrameTime+(m_fMaxFrameTime/10) : 20.0f;
 
     m_qFrameRates.push_back(m_pStats->m_dFPS);
     if (m_qFrameRates.size() > NobleProfiling::m_iMaxSamples)
@@ -94,7 +98,7 @@ void Profiler::ProcessData()
             m_fMaxFrameRate = m_qFrameRates[i];
     }
     m_fAvgFrameRate /= m_qFrameRates.size();
-    m_fMaxFrameRate = m_fMaxFrameRate > m_dMaxFPS ? m_fMaxFrameRate : m_dMaxFPS;
+    m_fMaxFrameRate = m_fMaxFrameRate > m_dMaxFPS ? m_fMaxFrameRate+(m_fMaxFrameRate/10) : m_dMaxFPS;
 
     for (int i = 0; i < m_vMainMemoryStats.size(); i++)
     {
@@ -113,6 +117,7 @@ void Profiler::ProcessData()
                 m_fMaxMemory = m_vMainMemoryStats[i].m_qMemoryValues[o];
         }
     }
+    m_fMaxMemory = m_fMaxMemory + (m_fMaxMemory / 10);
     std::sort(m_vMainMemoryStats.begin(), m_vMainMemoryStats.end(), [](MemoryStat a, MemoryStat b) { return *a.m_fTargetValue > *b.m_fTargetValue; });
 
     for (int i = 0; i < m_vMemoryStats.size(); i++)
@@ -128,8 +133,7 @@ void Profiler::ProcessData()
             m_vMemoryStats[i].m_dMemoryValues[o] = m_vMemoryStats[i].m_qMemoryValues[o];
             m_vMemoryStats[i].m_dMemoryValuesX[o] = o;
 
-            if (m_vMemoryStats[i].m_qMemoryValues[o] > m_fMaxMemory)
-				m_fMaxMemory = m_vMemoryStats[i].m_qMemoryValues[o];
+            //if I add a max memory value for this do it here.
         }
     }
 
@@ -157,9 +161,6 @@ void Profiler::InitializeInterface(ImGuiWindowFlags defaultFlags)
     {
         m_vMemoryStats.push_back(MemoryStat(compRegistry->at(i).first, &compRegistry->at(i).second.m_fDataListMemoryUsage));
     }
-    m_vMemoryStats.push_back(MemoryStat("Resource", &m_pStats->m_fResourceMemoryUsage));
-    m_vMemoryStats.push_back(MemoryStat("Other", &m_pStats->m_fOtherMemoryUsage));
-    m_vMemoryStats.push_back(MemoryStat("Entity", &m_pStats->m_fEntityMemoryUsage));
 }
 
 void Profiler::DoInterface()
@@ -200,7 +201,7 @@ void Profiler::DoInterface()
     ImGui::Dummy(ImVec2(0.0f, 5.0f));
     for (int i = 0; i < m_vFrameTimeStats.size(); i++)
     {
-        ImGui::Text(FormatString("%s Avg Frame Time: %.2f", m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_fAvgFrameTime).c_str());
+        ImGui::Text(FormatString("%s Avg Frame Time: %.2fms", m_vFrameTimeStats[i].m_sName.c_str(), m_vFrameTimeStats[i].m_fAvgFrameTime).c_str());
     }
 
     ImGui::SeparatorText("Component Frame Times");
@@ -227,7 +228,7 @@ void Profiler::DoInterface()
             }
         }
 
-        ImGui::Text(FormatString("%s Avg Update Time: %.2f | Avg Render Time: %.2f", compRegistry->at(i).first.c_str(), updateTime, renderTime).c_str());
+        ImGui::Text(FormatString("%s Avg Update Time: %.2fms | Avg Render Time: %.2fms", compRegistry->at(i).first.c_str(), updateTime, renderTime).c_str());
     }
 
     ImGui::SeparatorText("Memory Usage");
@@ -257,11 +258,21 @@ void Profiler::DoInterface()
     ImGui::Text(memoryUsageString.c_str());
 
     ImGui::SeparatorText("Detailed Memory Usage");
+    std::vector<std::string> memoryUsageNames;
+    std::vector<float> memoryUsageValues;
+
+    memoryUsageNames.clear();
+    memoryUsageValues.clear();
+
     for (int i = 0; i < m_vMemoryStats.size(); i++)
     {
         std::string componentUsageString = FormatString("%s Memory Used: %.2fMB", m_vMemoryStats.at(i).m_sName.c_str(), *m_vMemoryStats.at(i).m_fTargetValue);
         ImGui::Text(componentUsageString.c_str());
+
+        memoryUsageNames.push_back(m_vMemoryStats.at(i).m_sName);
+        memoryUsageValues.push_back(*m_vMemoryStats.at(i).m_fTargetValue);
     }
+    //TODO: Add Pie chart here for visual representation of memory usage.
 
     ImGui::SeparatorText("Renderer Stats");
     ImGui::Text(FormatString("Scene Render Objects: %d. On Screen Objects: %d.", renderer->GetRenderableCount(), renderer->GetOnScreenRenderableCount()).c_str());

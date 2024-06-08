@@ -155,19 +155,7 @@ void PerformanceStats::UpdateMemoryUsageStats()
 	m_fVirtualMemoryAvailable = (GetVirtualMemoryAvailable() / 1024.0f) / 1024.0f;
 
 	//--------------------Other Memory Usage Breakdown--------------------
-
-	m_fResourceMemoryUsage = Application::GetApplication()->GetResourceManager()->GetResourceMemoryUsage();
-	m_fEntityMemoryUsage = Application::GetApplication()->GetEntityMemoryUsage();
-
-	m_fOtherMemoryUsage = m_fPhysicalMemoryUsageByEngine;
-	m_fOtherMemoryUsage -= m_fResourceMemoryUsage;
-	m_fOtherMemoryUsage -= m_fEntityMemoryUsage;
-
-	std::vector<std::pair<std::string, ComponentRegistry>>* compRegistry = Application::GetApplication()->GetRegistry()->GetComponentRegistry();
-	for (int i = 0; i < compRegistry->size(); i++)
-	{
-		m_fOtherMemoryUsage -= compRegistry->at(i).second.m_fDataListMemoryUsage;
-	}
+	//TBD
 }
 
 DWORDLONG PerformanceStats::GetTotalVirtualMemory()

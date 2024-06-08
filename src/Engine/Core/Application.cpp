@@ -279,19 +279,6 @@ void Application::CleanupApplication()
 	SDL_Quit();
 }
 
-float Application::GetEntityMemoryUsage()
-{
-	float totalMemory = 0.0f;
-
-	std::unordered_map<std::string, Entity>::iterator it;
-	for (it = m_vEntities.begin(); it != m_vEntities.end(); it++)
-	{
-		totalMemory += it->second.GetEntityMemoryUsage();
-	}
-
-	return totalMemory;
-}
-
 std::string Application::GetUniqueEntityID()
 {
 	std::string id = GenerateRandomString(25);

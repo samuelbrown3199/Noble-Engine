@@ -24,7 +24,26 @@ void Shader::OnLoad()
 
     Renderer* renderer = Application::GetApplication()->GetRenderer();
 
-    if (!vkutil::LoadShaderModule(m_sResourcePath.c_str(), renderer->GetLogicalDevice(), &m_shaderModule))
+    //When we load the shader that hasnt been compiled, we need to load the code in for compilation. Otherwise we create a shader module like normal
+    if(m_sCompiledShaderPath == "" || !PathExists(m_sCompiledShaderPath))
+	{
+        //open the shader file and read in the code
+        std::ifstream file(m_sResourcePath, std::ios::ate | std::ios::binary);
+        if (!file.is_open())
+            LogError(FormatString("Failed to open shader file: %s", m_sLocalPath));
+
+        size_t fileSize = (size_t)file.tellg();
+        m_sShaderCode.resize(fileSize);
+
+        file.seekg(0);
+        file.read(m_sShaderCode.data(), fileSize);
+
+        file.close();
+
+        return;
+	}
+
+    if (!vkutil::LoadShaderModule(m_sCompiledShaderPath.c_str(), renderer->GetLogicalDevice(), &m_shaderModule))
         LogError(FormatString("Failed to load shader module: %s", m_sLocalPath));
 }
 
@@ -36,10 +55,8 @@ void Shader::OnUnload()
 
 void Shader::DoResourceInterface()
 {
-    int val = m_shaderType;
-    ImGui::DragInt("Shader Type", &val, 1, 0, 5);
-
-    m_shaderType = (ShaderType)val;
+    static NobleSelectionList shaderTypeList;
+    shaderTypeList.DoCombo("Shader Type", m_bInitializeInterface, &m_shaderType, { "Vertex", "Tesselation Control", "Tesselation Evaluation", "Geometry", "Fragment", "Compute" });
 }
 
 void Shader::AddResource(std::string path)
@@ -53,6 +70,8 @@ nlohmann::json Shader::AddToDatabase()
     nlohmann::json data;
 
     data["ShaderType"] = m_shaderType;
+    data["CompiledShaderPath"] = m_sCompiledShaderPath;
+    data["CompiledShaderName"] = m_sCompiledShaderName;
 
     return data;
 }
@@ -64,6 +83,11 @@ std::shared_ptr<Resource> Shader::LoadFromJson(const std::string& path, const nl
     res->m_sLocalPath = path;
     res->m_sResourcePath = GetGameFolder() + path;
     res->m_shaderType = data["ShaderType"];
+
+    if(data.find("CompiledShaderPath") != data.end())
+		res->m_sCompiledShaderPath = data["CompiledShaderPath"];
+    if(data.find("CompiledShaderName") != data.end())
+        res->m_sCompiledShaderName = data["CompiledShaderName"];
 
     return res;
 }
@@ -90,9 +114,7 @@ Pipeline::~Pipeline()
 void Pipeline::OnLoad()
 {
     if (!m_bIsLoaded)
-        CreatePipeline();
-
-    m_bIsLoaded = true;
+        m_bIsLoaded = CreatePipeline();
 }
 
 void Pipeline::OnUnload()
@@ -272,7 +294,7 @@ std::shared_ptr<Resource> Pipeline::LoadFromJson(const std::string& path, const 
     return res;
 }
 
-void Pipeline::CreatePipeline()
+bool Pipeline::CreatePipeline()
 {
     Renderer* renderer = Application::GetApplication()->GetRenderer();
     ResourceManager* rManager = Application::GetApplication()->GetResourceManager();
@@ -285,16 +307,22 @@ void Pipeline::CreatePipeline()
         if (m_vertexShaderPath.empty())
         {
             LogError(FormatString("Pipeline %s does not have a vertex shader set.", m_sResourcePath));
-            return;
+            return false;
         }
         if (m_fragmentShaderPath.empty())
         {
             LogError(FormatString("Pipeline %s does not have a fragment shader set.", m_sResourcePath));
-            return;
+            return false;
         }
 
         vertexShader = rManager->LoadResource<Shader>(m_vertexShaderPath);
         fragmentShader = rManager->LoadResource<Shader>(m_fragmentShaderPath);
+
+        if (vertexShader->m_sCompiledShaderPath.empty() || fragmentShader->m_sCompiledShaderPath.empty())
+        {
+            LogError("A shader has not been compiled, cannot create pipeline.");
+            return false;
+        }
 
         std::vector<VkPushConstantRange> pushConstants;
         for (int i = 0; i < m_vPushConstants.size(); i++)
@@ -350,6 +378,8 @@ void Pipeline::CreatePipeline()
 
         //finally build the pipeline
         m_pipeline = pipelineBuilder.BuildPipeline(renderer->GetLogicalDevice());
+
+        return true;
     }
 
     LogInfo("Created pipeline " + m_sLocalPath);

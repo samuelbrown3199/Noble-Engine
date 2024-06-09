@@ -22,8 +22,12 @@ struct Shader : public Resource
 		fragment,
 		compute
 	};
-	ShaderType m_shaderType;
+	int m_shaderType;
 	VkShaderModule m_shaderModule;
+
+	std::string m_sCompiledShaderName;
+	std::string m_sCompiledShaderPath;
+	std::string m_sShaderCode;
 
 	virtual void DoResourceInterface() override;
 
@@ -76,5 +80,5 @@ public:
 	nlohmann::json AddToDatabase() override;
 	std::shared_ptr<Resource> LoadFromJson(const std::string& path, const nlohmann::json& data) override;
 
-	void CreatePipeline();
+	bool CreatePipeline();
 };

@@ -105,6 +105,9 @@ bool PathExists(const std::string& _filePath)
 
 bool CreateNewDirectory(const std::string& _path)
 {
+    if (PathExists(_path))
+        return true;
+
     LogInfo(FormatString("Created file directory %s", _path.c_str()));
     return (_mkdir(_path.c_str()) == 0);
 }
@@ -272,6 +275,11 @@ std::map<std::string, std::filesystem::file_time_type> GetAllFilesAndLastWriteTi
     return fileTimeMap;
 }
 
+std::filesystem::file_time_type GetFileLastWriteTime(std::string path)
+{
+	return std::filesystem::last_write_time(path);
+}
+
 void DeleteFilePath(std::string path)
 {
     std::remove(path.c_str());
@@ -301,6 +309,12 @@ std::string GetFolderLocationRelativeToGameData(std::string path)
 
     path.erase(0, rManager->GetResourceManagerWorkingDirectory().length());
     return path;
+}
+
+std::string GetFolderLocationRelativeToWorkingDirectory(std::string path)
+{
+	path.erase(0, GetGameFolder().length());
+	return path;
 }
 
 //--------------------NUMBERS----------------------------

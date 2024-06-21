@@ -61,6 +61,7 @@ void ProjectFile::LoadProjectFile(const std::string& file)
 		rManager->LoadResourceDatabase(m_projectData.at("Resources"));
 	else
 		LogFatalError("Project file is malformed, missing Resources information.");
+	rManager->CompileShaders();
 
 	if(m_projectData.find("Scenes") != m_projectData.end())
 		Application::GetApplication()->GetSceneManager()->LoadSceneDatabase(m_projectData.at("Scenes"));

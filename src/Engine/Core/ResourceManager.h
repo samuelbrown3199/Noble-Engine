@@ -181,4 +181,6 @@ struct ResourceManager
 	std::shared_ptr<Resource> DoResourceSelectInterface(std::string interfaceText, std::string currentResourcePath, std::string type);
 
 	float GetResourceMemoryUsage();
+
+	void CompileShaders();
 };

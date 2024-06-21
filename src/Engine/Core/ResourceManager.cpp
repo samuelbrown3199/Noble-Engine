@@ -35,7 +35,7 @@ void ResourceManager::RegisterResourceTypes()
 	registry->RegisterResource<Model>("Model", true, ".obj");
 	registry->RegisterResource<Pipeline>("Pipeline", false, "");
 	registry->RegisterResource<Script>("Script", true, ".lua");
-	registry->RegisterResource<Shader>("Shader", true, ".vert,.frag,.comp,.spv"); //spv here doesnt make sense, at some point the engine will compile the shader to spv, as that isnt implemented yet, this is fine.
+	registry->RegisterResource<Shader>("Shader", true, ".vert,.frag,.comp");
 }
 
 void ResourceManager::SetWorkingDirectory(std::string directory)
@@ -478,4 +478,72 @@ float ResourceManager::GetResourceMemoryUsage()
 	}
 
 	return ConvertBytesToMB(totalMemory);
+}
+
+void ResourceManager::CompileShaders()
+{
+	LogInfo("Checking shaders for compilation.");
+
+	//Create a shader cache folder if it doesnt exist
+	std::string cacheFolder = GetGameFolder() + "\\ShaderCache";
+	if (!CreateNewDirectory(cacheFolder))
+	{
+		LogFatalError("Could not create shader cache folder.");
+		return;
+	}
+
+	std::vector<std::shared_ptr<Resource>> shaders = GetAllResourcesOfType("Shader");
+	for (int i = 0; i < shaders.size(); i++)
+	{
+		std::shared_ptr<Shader> shader = std::dynamic_pointer_cast<Shader>(shaders.at(i));
+		if (shader != nullptr)
+		{
+			//We need to get the source file modified time and compare it to the compiled file modified time.
+			//Check if the compiled shader is out of date or doesnt exist.
+			//If it is, recompile the shader.
+
+			bool shaderNeedsRecompiling = false;
+
+			if (!shader->m_sCompiledShaderPath.empty() && PathExists(shader->m_sCompiledShaderPath))
+			{
+				std::filesystem::file_time_type sourceFileTime = GetFileLastWriteTime(shader->m_sResourcePath);
+				std::filesystem::file_time_type compiledFileTime = GetFileLastWriteTime(shader->m_sCompiledShaderPath);
+
+				if (sourceFileTime > compiledFileTime)
+				{
+					shaderNeedsRecompiling = true;
+					LogTrace("Shader " + shader->m_sLocalPath + " needs recompiling as the source file has been modified since the last compile.");
+				}
+			}
+			else
+			{
+				shaderNeedsRecompiling = true;
+				LogTrace("Shader " + shader->m_sLocalPath + " needs recompiling as the compiled shader does not exist.");
+			}
+
+			if (shaderNeedsRecompiling)
+			{
+				std::string shadername = shader->m_sCompiledShaderName.empty() ? GenerateRandomString(10) + ".spv" : shader->m_sCompiledShaderName;
+				std::string compilePath = cacheFolder + "\\" + shadername;
+
+				while(shader->m_sCompiledShaderName.empty() && PathExists(compilePath))
+				{
+					shadername = GenerateRandomString(10) + ".spv";
+					compilePath = cacheFolder + "\\" + shadername;
+				}
+				shader->m_sCompiledShaderName = shadername;
+				shader->m_sCompiledShaderPath = GetFolderLocationRelativeToWorkingDirectory(compilePath);
+
+				LogInfo("Compiling shader to " + compilePath); //remove this later, this log is for debugging purposes
+
+				//TODO: Compile the shader here
+			}
+		}
+		else
+		{
+			LogFatalError("Trying to compile a resource that is not a shader.");
+		}
+	}
+
+	LogInfo("Shader compilation complete.");
 }

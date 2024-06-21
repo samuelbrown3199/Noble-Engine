@@ -55,6 +55,7 @@ void CopyDirectory(std::string source, std::string destination);
 std::vector<std::string> GetAllFilesOfType(std::string directory, std::string fileType, bool recursive);
 std::vector<std::string> GetAllFiles(std::string directory, bool recursive);
 std::map<std::string, std::filesystem::file_time_type> GetAllFilesAndLastWriteTime(std::string directory, bool recursive);
+std::filesystem::file_time_type GetFileLastWriteTime(std::string path);
 void DeleteFilePath(std::string path);
 
 void AddVersionDataToJson(nlohmann::json& data);
@@ -64,6 +65,7 @@ void AddVersionDataToJson(nlohmann::json& data);
 std::string GetGameFolder();
 std::string GetGameDataFolder();
 std::string GetFolderLocationRelativeToGameData(std::string path);
+std::string GetFolderLocationRelativeToWorkingDirectory(std::string path);
 
 //--------------------NUMBERS----------------------------
 

@@ -239,28 +239,15 @@ set (
 	src/Engine/Core/EngineComponents/Transform.cpp
 )
 
-set (
-
-	game_source
-
-)
-
 add_definitions(-DSDL_MAIN_HANDLED)
-add_library(Engine ${SRC_IMGUI}
+add_library(Engine
 	
 	${source_list}
-	${game_source}
 )
 target_link_libraries(Engine SDL2 enet64 ws2_32 winmm fmod_vc freetype vulkan-1)
 target_compile_features(Engine PRIVATE cxx_std_20)
 
 foreach(source IN LISTS source_list)
-    get_filename_component(source_path "${source}" PATH)
-    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
-    source_group("${source_path_msvc}" FILES "${source}")
-endforeach()
-
-foreach(source IN LISTS game_source)
     get_filename_component(source_path "${source}" PATH)
     string(REPLACE "/" "\\" source_path_msvc "${source_path}")
     source_group("${source_path_msvc}" FILES "${source}")
